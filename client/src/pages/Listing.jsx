@@ -1,5 +1,5 @@
 import React from "react";
-import { apiGet } from "../api/http.js";
+import { apiGet, apiPost } from "../api/http";
 
 export default function Listing() {
   const id = window.location.pathname.split("/").pop();

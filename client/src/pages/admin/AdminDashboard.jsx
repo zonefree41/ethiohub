@@ -24,10 +24,10 @@ export default function AdminDashboard() {
     const res = await apiPost("/api/payments/create-checkout-session", {
       listingId: id
     });
-    window.location.href = res.url;
-  } catch (err) {
-    alert("Payment failed");
-  }
+    window.location.assign(res.url);
+  } catch {
+  alert("Payment failed");
+}
 }
 
   React.useEffect(() => {
