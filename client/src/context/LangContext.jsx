@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import React from "react";
 
 export const LangContext = React.createContext({ lang: "en", setLang: () => {} });
