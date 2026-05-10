@@ -43,11 +43,13 @@ router.post("/create-checkout-session", async (req, res) => {
 
     res.json({ url: session.url });
   } catch (err) {
-    console.error("Stripe checkout error:", err.message);
-    res.status(500).json({
-      message: err.message || "Stripe error"
-    });
-  }
+  console.error("❌ Stripe checkout error:", err.message);
+  console.error(err);
+  res.status(500).json({
+    error: "Payment failed",
+    details: err.message,
+  });
+}
 });
 
 export default router;
