@@ -38,6 +38,21 @@ export default function Listing() {
   const address = [listing.address, listing.city, listing.state, listing.zip].filter(Boolean).join(", ");
   const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
+  {listing.imageUrl && (
+  <img
+    src={listing.imageUrl}
+    alt={listing.title}
+    style={{
+      width: "100%",
+      maxHeight: 320,
+      objectFit: "cover",
+      borderRadius: 12,
+      marginBottom: 20,
+      border: "1px solid #ddd",
+    }}
+  />
+)}
+
   return (
     <div style={{ maxWidth: 820, margin: "0 auto", padding: 16 }}>
       <a href="/">← Back Home</a>
