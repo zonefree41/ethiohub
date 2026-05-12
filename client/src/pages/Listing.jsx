@@ -34,6 +34,22 @@ export default function Listing() {
     };
   }, [id]);
 
+  React.useEffect(() => {
+  if (!listing) return;
+
+  document.title = `${listing.title} | HubEthio`;
+
+  const meta = document.querySelector('meta[name="description"]');
+
+  if (meta) {
+    meta.setAttribute(
+      "content",
+      listing.description_en ||
+        `Find ${listing.title} on HubEthio.`
+    );
+  }
+}, [listing]);
+
   if (loading) return <div className="listing-page">Loading...</div>;
   if (error) return <div className="listing-page">Error: {error}</div>;
   if (!listing) return <div className="listing-page">Listing not found.</div>;
