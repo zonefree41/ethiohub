@@ -19,7 +19,13 @@ export default function Listing() {
 
         const data = await apiGet(`/api/listings/${id}`);
 
-        if (alive) setListing(data);
+        if (alive) {
+  setListing(data);
+
+  setTimeout(() => {
+    // document.title = `${data.title} | HubEthio`;
+  }, 100);
+}
       } catch (err) {
         if (alive) setError(err.message || "Failed to load listing");
       } finally {
@@ -34,25 +40,16 @@ export default function Listing() {
     };
   }, [id]);
 
-  React.useEffect(() => {
-  if (!listing) return;
-
-  document.title = `${listing.title} | HubEthio`;
-
-  const meta = document.querySelector('meta[name="description"]');
-
-  if (meta) {
-    meta.setAttribute(
-      "content",
-      listing.description_en ||
-        `Find ${listing.title} on HubEthio.`
-    );
-  }
-}, [listing]);
-
   if (loading) return <div className="listing-page">Loading...</div>;
   if (error) return <div className="listing-page">Error: {error}</div>;
   if (!listing) return <div className="listing-page">Listing not found.</div>;
+
+  document.title = `${listing.title || "Business"} | HubEthio`;
+console.log("TITLE SHOULD BE:", document.title);
+
+// document.title = `${listing.title || "Business"} | HubEthio`;
+
+  // document.title = `${listing.title || "Business"} | HubEthio`;
 
   const phone = listing.phone || "";
   const whatsapp = String(listing.whatsapp || listing.phone || "").replace(/\D/g, "");

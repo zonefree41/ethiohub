@@ -76,19 +76,6 @@ export default function Home() {
     };
   }, []);
 
-  React.useEffect(() => {
-  document.title = "HubEthio - Ethiopian Community Services";
-
-  const meta = document.querySelector('meta[name="description"]');
-
-  if (meta) {
-    meta.setAttribute(
-      "content",
-      "Find Ethiopian businesses, restaurants, tax services, immigration help, mechanics, and community professionals near you."
-    );
-  }
-}, []);
-
   function goSearch(e) {
     e.preventDefault();
 
