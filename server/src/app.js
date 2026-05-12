@@ -11,6 +11,8 @@ import authRoutes from "./routes/auth.js";
 import paymentRoutes from "./routes/payments.js";
 import webhookRoutes from "./routes/stripeWebhook.js";
 import uploadRoutes from "./routes/upload.js";
+import reviewRoutes from "./routes/reviews.js";
+import ownerAuthRoutes from "./routes/ownerAuth.js";
 
 const app = express();
 
@@ -64,7 +66,10 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/upload", uploadRoutes);
-
+app.use("/api", publicRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/owner/auth", ownerAuthRoutes);
 /*
 |--------------------------------------------------------------------------
 | Start Server

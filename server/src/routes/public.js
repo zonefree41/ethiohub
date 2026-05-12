@@ -1,6 +1,7 @@
 import express from "express";
 import Category from "../models/Category.js";
 import Listing from "../models/Listing.js";
+import Review from "../models/Review.js";
 
 const router = express.Router();
 
@@ -46,7 +47,46 @@ router.get("/listings", async (req, res) => {
         .limit(100);
     }
 
-    res.json(listings);
+    const listingIds = listings.map((l) => l._id);
+
+const reviewStats = await Review.aggregate([
+  {
+    $match: {
+      listingId: { $in: listingIds },
+      approved: true,
+    },
+  },
+  {
+    $group: {
+      _id: "$listingId",
+      totalReviews: { $sum: 1 },
+      averageRating: { $avg: "$rating" },
+    },
+  },
+]);
+
+const statsMap = new Map(
+  reviewStats.map((s) => [
+    String(s._id),
+    {
+      totalReviews: s.totalReviews,
+      averageRating: Number(s.averageRating.toFixed(1)),
+    },
+  ])
+);
+
+const listingsWithReviews = listings.map((listing) => {
+  const obj = listing.toObject();
+  const stats = statsMap.get(String(listing._id));
+
+  return {
+    ...obj,
+    totalReviews: stats?.totalReviews || 0,
+    averageRating: stats?.averageRating || 0,
+  };
+});
+
+res.json(listingsWithReviews);
   } catch (err) {
     res.status(500).json({ message: "Failed to load listings" });
   }
@@ -124,6 +164,7 @@ router.post("/submissions", async (req, res) => {
   zip: req.body.zip || "",
   description_en: req.body.description_en || "",
   description_am: req.body.description_am || "",
+  logoUrl: req.body.logoUrl || "",
   imageUrl: req.body.imageUrl || "",
   submittedBy: req.body.submittedBy || {},
   status: "pending",
