@@ -1,26 +1,29 @@
 import React from "react";
 import { apiGet, apiPost } from "../api/http.js";
 
+const emptyForm = {
+  title: "",
+  categoryId: "",
+  phone: "",
+  whatsapp: "",
+  website: "",
+  address: "",
+  city: "",
+  state: "",
+  zip: "",
+  description_en: "",
+  description_am: "",
+  submittedByName: "",
+  submittedByContact: "",
+  imageUrl: "",
+};
+
 export default function Submit() {
   const [categories, setCategories] = React.useState([]);
   const [message, setMessage] = React.useState("");
   const [error, setError] = React.useState("");
-
-  const [form, setForm] = React.useState({
-    title: "",
-    categoryId: "",
-    phone: "",
-    whatsapp: "",
-    website: "",
-    address: "",
-    city: "",
-    state: "",
-    zip: "",
-    description_en: "",
-    description_am: "",
-    submittedByName: "",
-    submittedByContact: ""
-  });
+  const [uploading, setUploading] = React.useState(false);
+  const [form, setForm] = React.useState(emptyForm);
 
   React.useEffect(() => {
     apiGet("/api/categories")
@@ -29,7 +32,41 @@ export default function Submit() {
   }, []);
 
   function update(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setUploading(true);
+    setError("");
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Image upload failed");
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        imageUrl: data.url,
+      }));
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Image upload failed");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function submit(e) {
@@ -50,28 +87,15 @@ export default function Submit() {
         zip: form.zip,
         description_en: form.description_en,
         description_am: form.description_am,
+        imageUrl: form.imageUrl,
         submittedBy: {
           name: form.submittedByName,
-          contact: form.submittedByContact
-        }
+          contact: form.submittedByContact,
+        },
       });
 
       setMessage("✅ Listing submitted successfully. Waiting for admin approval.");
-      setForm({
-        title: "",
-        categoryId: "",
-        phone: "",
-        whatsapp: "",
-        website: "",
-        address: "",
-        city: "",
-        state: "",
-        zip: "",
-        description_en: "",
-        description_am: "",
-        submittedByName: "",
-        submittedByContact: ""
-      });
+      setForm(emptyForm);
     } catch (err) {
       setError(err.message || "Submit failed");
     }
@@ -82,13 +106,33 @@ export default function Submit() {
       <a href="/">← Back Home</a>
       <h1>Submit Ethiopian Business / Service</h1>
 
-      {message && <div style={{ padding: 12, border: "1px solid green", marginBottom: 12 }}>{message}</div>}
-      {error && <div style={{ padding: 12, border: "1px solid red", marginBottom: 12 }}>Error: {error}</div>}
+      {message && (
+        <div style={{ padding: 12, border: "1px solid green", marginBottom: 12 }}>
+          {message}
+        </div>
+      )}
+
+      {error && (
+        <div style={{ padding: 12, border: "1px solid red", marginBottom: 12 }}>
+          Error: {error}
+        </div>
+      )}
 
       <form onSubmit={submit} style={{ display: "grid", gap: 10 }}>
-        <input name="title" value={form.title} onChange={update} placeholder="Business / Service Name *" required />
+        <input
+          name="title"
+          value={form.title}
+          onChange={update}
+          placeholder="Business / Service Name *"
+          required
+        />
 
-        <select name="categoryId" value={form.categoryId} onChange={update} required>
+        <select
+          name="categoryId"
+          value={form.categoryId}
+          onChange={update}
+          required
+        >
           <option value="">Select Category *</option>
           {categories.map((c) => (
             <option key={c._id} value={c._id}>
@@ -106,15 +150,64 @@ export default function Submit() {
         <input name="state" value={form.state} onChange={update} placeholder="State * ex: VA, MD, DC" required />
         <input name="zip" value={form.zip} onChange={update} placeholder="ZIP" />
 
-        <textarea name="description_en" value={form.description_en} onChange={update} placeholder="Description English" rows="4" />
-        <textarea name="description_am" value={form.description_am} onChange={update} placeholder="Description Amharic" rows="4" />
+        <div>
+          <label style={{ display: "block", marginBottom: 6 }}>
+            Business Image / Logo
+          </label>
+
+          <input type="file" accept="image/*" onChange={handleImageUpload} />
+
+          {uploading && <p>Uploading image...</p>}
+
+          {form.imageUrl && (
+            <img
+              src={form.imageUrl}
+              alt="Business preview"
+              style={{
+                width: "100%",
+                maxWidth: 250,
+                marginTop: 12,
+                borderRadius: 12,
+                border: "1px solid #ddd",
+              }}
+            />
+          )}
+        </div>
+
+        <textarea
+          name="description_en"
+          value={form.description_en}
+          onChange={update}
+          placeholder="Description English"
+          rows="4"
+        />
+
+        <textarea
+          name="description_am"
+          value={form.description_am}
+          onChange={update}
+          placeholder="Description Amharic"
+          rows="4"
+        />
 
         <h3>Submitted By</h3>
-        <input name="submittedByName" value={form.submittedByName} onChange={update} placeholder="Your name" />
-        <input name="submittedByContact" value={form.submittedByContact} onChange={update} placeholder="Your email or phone" />
 
-        <button type="submit" style={{ padding: 12 }}>
-          Submit Listing
+        <input
+          name="submittedByName"
+          value={form.submittedByName}
+          onChange={update}
+          placeholder="Your name"
+        />
+
+        <input
+          name="submittedByContact"
+          value={form.submittedByContact}
+          onChange={update}
+          placeholder="Your email or phone"
+        />
+
+        <button type="submit" style={{ padding: 12 }} disabled={uploading}>
+          {uploading ? "Uploading..." : "Submit Listing"}
         </button>
       </form>
     </div>
