@@ -51,6 +51,9 @@ const ListingSchema = new mongoose.Schema(
       default: "pending",
     },
 
+    logoUrl: { type: String, default: "" },
+imageUrl: { type: String, default: "" },
+
     isFeatured: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
 

@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import express from "express";
 import cors from "cors";
+
 import { connectDB } from "./config/db.js";
 
 import publicRoutes from "./routes/public.js";
@@ -12,12 +13,23 @@ import webhookRoutes from "./routes/stripeWebhook.js";
 
 const app = express();
 
+/*
+|--------------------------------------------------------------------------
+| Stripe Webhook
+|--------------------------------------------------------------------------
+| MUST come BEFORE express.json()
+*/
 app.use(
   "/api/webhooks/stripe",
   express.raw({ type: "application/json" }),
   webhookRoutes
 );
 
+/*
+|--------------------------------------------------------------------------
+| CORS
+|--------------------------------------------------------------------------
+*/
 app.use(
   cors({
     origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
@@ -25,25 +37,45 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: "1mb" }));
+/*
+|--------------------------------------------------------------------------
+| JSON Parser
+|--------------------------------------------------------------------------
+*/
+app.use(express.json({ limit: "5mb" }));
 
-// ✅ Stripe webhook MUST use raw body before express.json()
-app.use("/api/webhooks/stripe", express.raw({ type: "application/json" }), webhookRoutes);
+/*
+|--------------------------------------------------------------------------
+| Health Check
+|--------------------------------------------------------------------------
+*/
+app.get("/health", (_req, res) => {
+  res.json({ ok: true });
+});
 
-app.use(express.json({ limit: "1mb" }));
-
-app.get("/health", (_req, res) => res.json({ ok: true }));
-
+/*
+|--------------------------------------------------------------------------
+| Routes
+|--------------------------------------------------------------------------
+*/
 app.use("/api", publicRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/payments", paymentRoutes);
 
+/*
+|--------------------------------------------------------------------------
+| Start Server
+|--------------------------------------------------------------------------
+*/
 const port = process.env.PORT || 5000;
 
 try {
   await connectDB(process.env.MONGO_URI);
-  app.listen(port, () => console.log(`✅ API running on http://localhost:${port}`));
+
+  app.listen(port, () => {
+    console.log(`✅ API running on http://localhost:${port}`);
+  });
 } catch (err) {
   console.error("❌ Server failed to start:", err.message);
   process.exit(1);
