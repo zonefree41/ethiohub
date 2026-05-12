@@ -13,10 +13,23 @@ export default function Home() {
   const [error, setError] = React.useState("");
 
   const keywordSuggestions = [
-    "tax", "tax preparer", "lawyer", "immigration", "mechanic",
-    "auto repair", "restaurant", "translator", "notary", "tutor",
-    "insurance", "real estate", "Silver Spring", "Alexandria",
-    "Falls Church", "Washington DC", "Arlington",
+    "tax",
+    "tax preparer",
+    "lawyer",
+    "immigration",
+    "mechanic",
+    "auto repair",
+    "restaurant",
+    "translator",
+    "notary",
+    "tutor",
+    "insurance",
+    "real estate",
+    "Silver Spring",
+    "Alexandria",
+    "Falls Church",
+    "Washington DC",
+    "Arlington",
   ];
 
   const suggestions = [
@@ -165,38 +178,50 @@ export default function Home() {
             </p>
 
             <div className="home-grid">
-              {featuredListings.slice(0, 6).map((l) => (
-                <a key={l._id} href={`/listing/${l._id}`} className="home-card-link">
+              {featuredListings.slice(0, 6).map((listing) => (
+                <a
+                  key={listing._id}
+                  href={`/listing/${listing._id}`}
+                  className="home-card-link"
+                >
                   <article className="home-card">
-                    {l.imageUrl ? (
-                      <img src={l.imageUrl} alt={l.title} />
+                    {listing.imageUrl ? (
+                      <img
+                        src={listing.imageUrl}
+                        alt={listing.title}
+                        className="home-card-banner"
+                      />
                     ) : (
                       <div className="home-no-image">No image</div>
                     )}
 
                     <div className="home-card-body">
+                      {listing.logoUrl ? (
+                        <img
+                          src={listing.logoUrl}
+                          alt={`${listing.title} logo`}
+                          className="home-business-logo"
+                        />
+                      ) : (
+                        <div className="home-business-logo-placeholder">
+                          {listing.title?.charAt(0)?.toUpperCase() || "B"}
+                        </div>
+                      )}
+
                       <span className="home-featured-badge">⭐ Featured</span>
 
-                      {l.logoUrl && (
-  <img
-    src={l.logoUrl}
-    alt={l.title}
-    className="home-business-logo"
-  />
-)}
+                      <h3>{listing.title}</h3>
 
-                      <h3>{l.title}</h3>
-
-                      <p>{l.categoryId?.name_en || "Business"}</p>
+                      <p>{listing.categoryId?.name_en || "Business"}</p>
 
                       <p>
-                        {l.city}
-                        {l.state ? `, ${l.state}` : ""}
+                        {listing.city}
+                        {listing.state ? `, ${listing.state}` : ""}
                       </p>
 
                       <p className="home-description">
-                        {l.description_en?.slice(0, 110)}
-                        {l.description_en?.length > 110 ? "..." : ""}
+                        {listing.description_en?.slice(0, 110)}
+                        {listing.description_en?.length > 110 ? "..." : ""}
                       </p>
                     </div>
                   </article>
@@ -214,11 +239,15 @@ export default function Home() {
             </p>
 
             <div className="home-category-grid">
-              {categories.map((c) => (
-                <a key={c._id} href={`/category/${c.slug}`} className="home-category-card">
-                  <div className="home-category-icon">{c.icon || "📌"}</div>
-                  <div className="home-category-name">{c.name_en}</div>
-                  <div className="home-category-am">{c.name_am}</div>
+              {categories.map((category) => (
+                <a
+                  key={category._id}
+                  href={`/category/${category.slug}`}
+                  className="home-category-card"
+                >
+                  <div className="home-category-icon">{category.icon || "📌"}</div>
+                  <div className="home-category-name">{category.name_en}</div>
+                  <div className="home-category-am">{category.name_am}</div>
                 </a>
               ))}
             </div>

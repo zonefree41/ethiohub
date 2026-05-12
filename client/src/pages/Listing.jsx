@@ -1,5 +1,6 @@
 import React from "react";
 import { apiGet, apiPost } from "../api/http";
+import "./Listing.css";
 
 export default function Listing() {
   const id = window.location.pathname.split("/").pop();
@@ -11,7 +12,7 @@ export default function Listing() {
   React.useEffect(() => {
     let alive = true;
 
-    (async () => {
+    async function loadListing() {
       try {
         setLoading(true);
         setError("");
@@ -24,137 +25,176 @@ export default function Listing() {
       } finally {
         if (alive) setLoading(false);
       }
-    })();
+    }
+
+    loadListing();
 
     return () => {
       alive = false;
     };
   }, [id]);
 
-  if (loading) return <div style={{ padding: 16 }}>Loading...</div>;
-  if (error) return <div style={{ padding: 16 }}>Error: {error}</div>;
-  if (!listing) return <div style={{ padding: 16 }}>Listing not found.</div>;
+  if (loading) return <div className="listing-page">Loading...</div>;
+  if (error) return <div className="listing-page">Error: {error}</div>;
+  if (!listing) return <div className="listing-page">Listing not found.</div>;
 
   const phone = listing.phone || "";
   const whatsapp = String(listing.whatsapp || listing.phone || "").replace(/\D/g, "");
+
   const address = [listing.address, listing.city, listing.state, listing.zip]
     .filter(Boolean)
     .join(", ");
+
   const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     address
   )}`;
 
+  const websiteUrl = listing.website?.startsWith("http")
+    ? listing.website
+    : `https://${listing.website}`;
+
   return (
-    <div style={{ maxWidth: 820, margin: "0 auto", padding: 16 }}>
-      <a href="/">← Back Home</a>
+    <main className="listing-page">
+      <div className="listing-container">
+        <a href="/" className="listing-back">
+          ← Back Home
+        </a>
 
-      <div
-        style={{
-          border: "1px solid #ddd",
-          borderRadius: 14,
-          padding: 18,
-          marginTop: 14,
-        }}
-      >
-        {listing.imageUrl && (
-          <img
-            src={listing.imageUrl}
-            alt={listing.title}
-            style={{
-              width: "100%",
-              maxHeight: 320,
-              objectFit: "cover",
-              borderRadius: 12,
-              marginBottom: 20,
-              border: "1px solid #ddd",
-            }}
-          />
-        )}
-
-        <h1>{listing.title}</h1>
-
-        <div style={{ marginBottom: 10 }}>
-          {listing.isFeatured && <span>⭐ Featured </span>}
-          {listing.isVerified && <span>✅ Verified</span>}
-        </div>
-
-        <p>
-          <b>Category:</b> {listing.categoryId?.name_en || "N/A"}
-        </p>
-
-        <p>
-          <b>Location:</b> {address || "N/A"}
-        </p>
-
-        <p>
-          <b>Phone:</b> {phone || "N/A"}
-        </p>
-
-        <div
-          style={{
-            display: "flex",
-            gap: 10,
-            flexWrap: "wrap",
-            margin: "16px 0",
-          }}
-        >
-          {phone && (
-            <a
-              href={`tel:${phone}`}
-              onClick={() => apiPost(`/api/track/${listing._id}`, { type: "call" })}
-            >
-              <button>Call</button>
-            </a>
+        <section className="listing-card">
+          {listing.imageUrl ? (
+            <img
+              src={listing.imageUrl}
+              alt={listing.title}
+              className="listing-banner"
+            />
+          ) : (
+            <div className="listing-banner-placeholder">No banner image</div>
           )}
 
-          {whatsapp && (
-            <a
-              href={`https://wa.me/${whatsapp}`}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => apiPost(`/api/track/${listing._id}`, { type: "whatsapp" })}
-            >
-              <button>WhatsApp</button>
-            </a>
-          )}
+          <div className="listing-content">
+            <div className="listing-header">
+              {listing.logoUrl ? (
+                <img
+                  src={listing.logoUrl}
+                  alt={`${listing.title} logo`}
+                  className="listing-logo"
+                />
+              ) : (
+                <div className="listing-logo-placeholder">
+                  {listing.title?.charAt(0)?.toUpperCase() || "B"}
+                </div>
+              )}
 
-          {address && (
-            <a
-              href={directionsUrl}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => apiPost(`/api/track/${listing._id}`, { type: "directions" })}
-            >
-              <button>Directions</button>
-            </a>
-          )}
+              <div className="listing-title-wrap">
+                <h1>{listing.title}</h1>
 
-          {listing.website && (
-            <a
-              href={
-                listing.website.startsWith("http")
-                  ? listing.website
-                  : `https://${listing.website}`
-              }
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => apiPost(`/api/track/${listing._id}`, { type: "website" })}
-            >
-              <button>Website</button>
-            </a>
-          )}
-        </div>
+                <div className="listing-badges">
+                  {listing.isFeatured && <span>⭐ Featured</span>}
+                  {listing.isVerified && <span>✅ Verified</span>}
+                </div>
+              </div>
+            </div>
 
-        <h3>Description</h3>
-        <p>{listing.description_en || "No description provided."}</p>
+            <div className="listing-info">
+              <p>
+                <b>Category:</b> {listing.categoryId?.name_en || "N/A"}
+              </p>
 
-        {listing.description_am && (
-          <>
-            <h3>Amharic Description</h3>
-            <p>{listing.description_am}</p>
-          </>
-        )}
-      </div>
+              <p>
+                <b>Location:</b> {address || "N/A"}
+              </p>
+
+              <p>
+                <b>Phone:</b> {phone || "N/A"}
+              </p>
+            </div>
+
+            <div className="listing-actions">
+              {phone && (
+                <a
+                  href={`tel:${phone}`}
+                  onClick={() =>
+                    apiPost(`/api/track/${listing._id}`, { type: "call" })
+                  }
+                >
+                  Call
+                </a>
+              )}
+
+              {whatsapp && (
+                <a
+                  href={`https://wa.me/${whatsapp}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() =>
+                    apiPost(`/api/track/${listing._id}`, { type: "whatsapp" })
+                  }
+                >
+                  WhatsApp
+                </a>
+              )}
+
+              {address && (
+                <a
+                  href={directionsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() =>
+                    apiPost(`/api/track/${listing._id}`, { type: "directions" })
+                  }
+                >
+                  Directions
+                </a>
+              )}
+
+              {listing.website && (
+                <a
+                  href={websiteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() =>
+                    apiPost(`/api/track/${listing._id}`, { type: "website" })
+                  }
+                >
+                  Website
+                </a>
+              )}
+            </div>
+
+            <div className="listing-description">
+  <h3>Description</h3>
+
+  <p>
+    {listing.description_en || "No description provided."}
+  </p>
+
+  {listing.description_am && (
+    <>
+      <h3>Amharic Description</h3>
+
+      <p>{listing.description_am}</p>
+    </>
+  )}
+
+  {address && (
+    <div className="listing-map-section">
+      <h3>Location Map</h3>
+
+      <iframe
+        title="Google Map"
+        src={`https://www.google.com/maps?q=${encodeURIComponent(
+          address
+        )}&output=embed`}
+        className="listing-map"
+        loading="lazy"
+        allowFullScreen
+      />
     </div>
+  )}
+</div>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }
