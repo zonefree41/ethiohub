@@ -372,3 +372,9 @@
   margin-bottom: 8px;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
 }
+
+.home-rating {
+  margin-top: 6px;
+  font-weight: 800;
+  color: #92400e !important;
+}

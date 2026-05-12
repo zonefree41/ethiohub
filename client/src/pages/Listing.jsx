@@ -9,6 +9,18 @@ export default function Listing() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(true);
 
+  const [reviews, setReviews] = React.useState([]);
+const [averageRating, setAverageRating] = React.useState(0);
+const [totalReviews, setTotalReviews] = React.useState(0);
+const [reviewMessage, setReviewMessage] = React.useState("");
+const [reviewError, setReviewError] = React.useState("");
+
+const [reviewForm, setReviewForm] = React.useState({
+  name: "",
+  rating: "5",
+  comment: "",
+});
+
   React.useEffect(() => {
     let alive = true;
 
@@ -39,6 +51,56 @@ export default function Listing() {
       alive = false;
     };
   }, [id]);
+
+  async function loadReviews() {
+  try {
+    const data = await apiGet(`/api/reviews/${id}`);
+
+    setReviews(data.reviews || []);
+    setAverageRating(data.averageRating || 0);
+    setTotalReviews(data.totalReviews || 0);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+React.useEffect(() => {
+  loadReviews();
+}, [id]);
+
+function updateReviewForm(e) {
+  setReviewForm((prev) => ({
+    ...prev,
+    [e.target.name]: e.target.value,
+  }));
+}
+
+async function submitReview(e) {
+  e.preventDefault();
+
+  setReviewMessage("");
+  setReviewError("");
+
+  try {
+    await apiPost("/api/reviews", {
+      listingId: id,
+      name: reviewForm.name,
+      rating: Number(reviewForm.rating),
+      comment: reviewForm.comment,
+    });
+
+    setReviewMessage("✅ Review submitted successfully.");
+    setReviewForm({
+      name: "",
+      rating: "5",
+      comment: "",
+    });
+
+    await loadReviews();
+  } catch (err) {
+    setReviewError(err.message || "Failed to submit review");
+  }
+}
 
   if (loading) return <div className="listing-page">Loading...</div>;
   if (error) return <div className="listing-page">Error: {error}</div>;
@@ -102,9 +164,15 @@ console.log("TITLE SHOULD BE:", document.title);
                 <h1>{listing.title}</h1>
 
                 <div className="listing-badges">
-                  {listing.isFeatured && <span>⭐ Featured</span>}
-                  {listing.isVerified && <span>✅ Verified</span>}
-                </div>
+  {listing.isFeatured && <span>⭐ Featured</span>}
+  {listing.isVerified && <span>✅ Verified</span>}
+
+  {totalReviews > 0 && (
+    <span>
+      ⭐ {averageRating} ({totalReviews} review{totalReviews !== 1 ? "s" : ""})
+    </span>
+  )}
+</div>
               </div>
             </div>
 
@@ -204,6 +272,91 @@ console.log("TITLE SHOULD BE:", document.title);
       />
     </div>
   )}
+</div>
+<div className="listing-reviews">
+  <h2>⭐ Reviews</h2>
+
+  <div className="listing-review-summary">
+    <strong>{averageRating}</strong> / 5
+    <span>
+      {" "}
+      ({totalReviews} review{totalReviews !== 1 ? "s" : ""})
+    </span>
+  </div>
+
+  {reviewMessage && (
+    <div className="listing-review-success">
+      {reviewMessage}
+    </div>
+  )}
+
+  {reviewError && (
+    <div className="listing-review-error">
+      {reviewError}
+    </div>
+  )}
+
+  <form onSubmit={submitReview} className="listing-review-form">
+    <input
+      name="name"
+      placeholder="Your name"
+      value={reviewForm.name}
+      onChange={updateReviewForm}
+      required
+    />
+
+    <select
+      name="rating"
+      value={reviewForm.rating}
+      onChange={updateReviewForm}
+    >
+      <option value="5">⭐⭐⭐⭐⭐ 5</option>
+      <option value="4">⭐⭐⭐⭐ 4</option>
+      <option value="3">⭐⭐⭐ 3</option>
+      <option value="2">⭐⭐ 2</option>
+      <option value="1">⭐ 1</option>
+    </select>
+
+    <textarea
+      name="comment"
+      placeholder="Write your review..."
+      rows="4"
+      value={reviewForm.comment}
+      onChange={updateReviewForm}
+      required
+    />
+
+    <button type="submit">
+      Submit Review
+    </button>
+  </form>
+
+  <div className="listing-review-list">
+    {reviews.length === 0 && (
+      <p>No reviews yet.</p>
+    )}
+
+    {reviews.map((review) => (
+      <div
+        key={review._id}
+        className="listing-review-card"
+      >
+        <div className="listing-review-top">
+          <strong>{review.name}</strong>
+
+          <span>
+            {"⭐".repeat(review.rating)}
+          </span>
+        </div>
+
+        <p>{review.comment}</p>
+
+        <small>
+          {new Date(review.createdAt).toLocaleDateString()}
+        </small>
+      </div>
+    ))}
+  </div>
 </div>
           </div>
         </section>

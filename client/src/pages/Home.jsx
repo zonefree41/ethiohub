@@ -214,6 +214,15 @@ export default function Home() {
 
                       <p>{listing.categoryId?.name_en || "Business"}</p>
 
+                      {listing.totalReviews > 0 && (
+  <p className="home-rating">
+    ⭐ {listing.averageRating} (
+    {listing.totalReviews} review
+    {listing.totalReviews !== 1 ? "s" : ""}
+    )
+  </p>
+)}
+
                       <p>
                         {listing.city}
                         {listing.state ? `, ${listing.state}` : ""}
