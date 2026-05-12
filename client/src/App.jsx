@@ -7,6 +7,10 @@ import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PaymentCancelled from "./pages/PaymentCancelled.jsx";
+import OwnerLogin from "./pages/owner/OwnerLogin.jsx";
+import OwnerRegister from "./pages/owner/OwnerRegister.jsx";
+import OwnerDashboard from "./pages/owner/OwnerDashboard.jsx";
+import EditListing from "./pages/owner/EditListing.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -30,6 +34,12 @@ export default function App() {
 
   if (path.startsWith("/admin/login")) return <AdminLogin />;
   if (path.startsWith("/admin")) return <AdminDashboard />;
+
+  if (path.startsWith("/owner/login")) return <OwnerLogin />;
+if (path.startsWith("/owner/register")) return <OwnerRegister />;
+if (path.startsWith("/owner/listings/edit/")) return <EditListing />;
+if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
+
   if (path.startsWith("/submit")) return <Submit />;
   if (path.startsWith("/listing/")) return <Listing />;
   if (path.startsWith("/category/")) return <Category />;
