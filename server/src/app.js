@@ -13,6 +13,7 @@ import webhookRoutes from "./routes/stripeWebhook.js";
 import uploadRoutes from "./routes/upload.js";
 import reviewRoutes from "./routes/reviews.js";
 import ownerAuthRoutes from "./routes/ownerAuth.js";
+import ownerListingRoutes from "./routes/ownerListings.js";
 
 const app = express();
 
@@ -70,6 +71,7 @@ app.use("/api", publicRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/owner/auth", ownerAuthRoutes);
+app.use("/api/owner/listings", ownerListingRoutes);
 /*
 |--------------------------------------------------------------------------
 | Start Server

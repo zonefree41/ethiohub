@@ -26,6 +26,12 @@ const ListingSchema = new mongoose.Schema(
       required: true,
     },
 
+    ownerId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  default: null,
+},
+
     phone: { type: String, required: true, trim: true },
     whatsapp: { type: String, default: "", trim: true },
     website: { type: String, default: "", trim: true },
