@@ -30,7 +30,7 @@ router.post("/create-checkout-session", async (req, res) => {
         }
       ],
       success_url: `${process.env.CLIENT_URL}/success?listing=${listingId}`,
-      cancel_url: `${process.env.CLIENT_URL}/admin`,
+cancel_url: `${process.env.CLIENT_URL}/payment-cancelled`,
       metadata: {
         listingId
       },
