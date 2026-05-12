@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 export default function PaymentCancelled() {
   return (
     <main style={{ maxWidth: 720, margin: "60px auto", padding: 24 }}>
