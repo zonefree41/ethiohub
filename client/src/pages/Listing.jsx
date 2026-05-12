@@ -15,7 +15,9 @@ export default function Listing() {
       try {
         setLoading(true);
         setError("");
+
         const data = await apiGet(`/api/listings/${id}`);
+
         if (alive) setListing(data);
       } catch (err) {
         if (alive) setError(err.message || "Failed to load listing");
@@ -35,34 +37,46 @@ export default function Listing() {
 
   const phone = listing.phone || "";
   const whatsapp = String(listing.whatsapp || listing.phone || "").replace(/\D/g, "");
-  const address = [listing.address, listing.city, listing.state, listing.zip].filter(Boolean).join(", ");
-  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-
-  {listing.imageUrl && (
-  <img
-    src={listing.imageUrl}
-    alt={listing.title}
-    style={{
-      width: "100%",
-      maxHeight: 320,
-      objectFit: "cover",
-      borderRadius: 12,
-      marginBottom: 20,
-      border: "1px solid #ddd",
-    }}
-  />
-)}
+  const address = [listing.address, listing.city, listing.state, listing.zip]
+    .filter(Boolean)
+    .join(", ");
+  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    address
+  )}`;
 
   return (
     <div style={{ maxWidth: 820, margin: "0 auto", padding: 16 }}>
       <a href="/">← Back Home</a>
 
-      <div style={{ border: "1px solid #ddd", borderRadius: 14, padding: 18, marginTop: 14 }}>
+      <div
+        style={{
+          border: "1px solid #ddd",
+          borderRadius: 14,
+          padding: 18,
+          marginTop: 14,
+        }}
+      >
+        {listing.imageUrl && (
+          <img
+            src={listing.imageUrl}
+            alt={listing.title}
+            style={{
+              width: "100%",
+              maxHeight: 320,
+              objectFit: "cover",
+              borderRadius: 12,
+              marginBottom: 20,
+              border: "1px solid #ddd",
+            }}
+          />
+        )}
+
         <h1>{listing.title}</h1>
+
         <div style={{ marginBottom: 10 }}>
-  {listing.isFeatured && <span>⭐ Featured </span>}
-  {listing.isVerified && <span>✅ Verified</span>}
-</div>
+          {listing.isFeatured && <span>⭐ Featured </span>}
+          {listing.isVerified && <span>✅ Verified</span>}
+        </div>
 
         <p>
           <b>Category:</b> {listing.categoryId?.name_en || "N/A"}
@@ -76,50 +90,60 @@ export default function Listing() {
           <b>Phone:</b> {phone || "N/A"}
         </p>
 
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", margin: "16px 0" }}>
-  
-  {phone && (
-    <a
-      href={`tel:${phone}`}
-      onClick={() => apiPost(`/api/track/${listing._id}`, { type: "call" })}
-    >
-      <button>Call</button>
-    </a>
-  )}
+        <div
+          style={{
+            display: "flex",
+            gap: 10,
+            flexWrap: "wrap",
+            margin: "16px 0",
+          }}
+        >
+          {phone && (
+            <a
+              href={`tel:${phone}`}
+              onClick={() => apiPost(`/api/track/${listing._id}`, { type: "call" })}
+            >
+              <button>Call</button>
+            </a>
+          )}
 
-  {whatsapp && (
-    <a
-      href={`https://wa.me/${whatsapp}`}
-      target="_blank"
-      rel="noreferrer"
-      onClick={() => apiPost(`/api/track/${listing._id}`, { type: "whatsapp" })}
-    >
-      <button>WhatsApp</button>
-    </a>
-  )}
+          {whatsapp && (
+            <a
+              href={`https://wa.me/${whatsapp}`}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => apiPost(`/api/track/${listing._id}`, { type: "whatsapp" })}
+            >
+              <button>WhatsApp</button>
+            </a>
+          )}
 
-  {address && (
-    <a
-      href={directionsUrl}
-      target="_blank"
-      rel="noreferrer"
-      onClick={() => apiPost(`/api/track/${listing._id}`, { type: "directions" })}
-    >
-      <button>Directions</button>
-    </a>
-  )}
+          {address && (
+            <a
+              href={directionsUrl}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => apiPost(`/api/track/${listing._id}`, { type: "directions" })}
+            >
+              <button>Directions</button>
+            </a>
+          )}
 
-  {listing.website && (
-    <a
-      href={listing.website.startsWith("http") ? listing.website : `https://${listing.website}`}
-      target="_blank"
-      rel="noreferrer"
-      onClick={() => apiPost(`/api/track/${listing._id}`, { type: "website" })}
-    >
-      <button>Website</button>
-    </a>
-  )}
-</div>
+          {listing.website && (
+            <a
+              href={
+                listing.website.startsWith("http")
+                  ? listing.website
+                  : `https://${listing.website}`
+              }
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => apiPost(`/api/track/${listing._id}`, { type: "website" })}
+            >
+              <button>Website</button>
+            </a>
+          )}
+        </div>
 
         <h3>Description</h3>
         <p>{listing.description_en || "No description provided."}</p>
