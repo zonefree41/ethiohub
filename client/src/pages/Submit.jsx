@@ -15,6 +15,7 @@ const emptyForm = {
   description_am: "",
   submittedByName: "",
   submittedByContact: "",
+  logoUrl: "",
   imageUrl: "",
 };
 
@@ -22,7 +23,8 @@ export default function Submit() {
   const [categories, setCategories] = React.useState([]);
   const [message, setMessage] = React.useState("");
   const [error, setError] = React.useState("");
-  const [uploading, setUploading] = React.useState(false);
+  const [uploadingLogo, setUploadingLogo] = React.useState(false);
+  const [uploadingBanner, setUploadingBanner] = React.useState(false);
   const [form, setForm] = React.useState(emptyForm);
 
   React.useEffect(() => {
@@ -35,37 +37,58 @@ export default function Submit() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  async function handleImageUpload(e) {
-    const file = e.target.files?.[0];
+  async function uploadImage(file, fieldName) {
     if (!file) return;
 
     const formData = new FormData();
     formData.append("image", file);
 
-    setUploading(true);
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Image upload failed");
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      [fieldName]: data.url,
+    }));
+  }
+
+  async function handleLogoUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
     setError("");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Image upload failed");
-      }
-
-      setForm((prev) => ({
-        ...prev,
-        imageUrl: data.url,
-      }));
+      await uploadImage(file, "logoUrl");
     } catch (err) {
-      console.error(err);
-      setError(err.message || "Image upload failed");
+      setError(err.message || "Logo upload failed");
     } finally {
-      setUploading(false);
+      setUploadingLogo(false);
+    }
+  }
+
+  async function handleBannerUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingBanner(true);
+    setError("");
+
+    try {
+      await uploadImage(file, "imageUrl");
+    } catch (err) {
+      setError(err.message || "Banner upload failed");
+    } finally {
+      setUploadingBanner(false);
     }
   }
 
@@ -87,6 +110,7 @@ export default function Submit() {
         zip: form.zip,
         description_en: form.description_en,
         description_am: form.description_am,
+        logoUrl: form.logoUrl,
         imageUrl: form.imageUrl,
         submittedBy: {
           name: form.submittedByName,
@@ -100,6 +124,8 @@ export default function Submit() {
       setError(err.message || "Submit failed");
     }
   }
+
+  const isUploading = uploadingLogo || uploadingBanner;
 
   return (
     <div style={{ maxWidth: 760, margin: "0 auto", padding: 16 }}>
@@ -150,22 +176,57 @@ export default function Submit() {
         <input name="state" value={form.state} onChange={update} placeholder="State * ex: VA, MD, DC" required />
         <input name="zip" value={form.zip} onChange={update} placeholder="ZIP" />
 
-        <div>
-          <label style={{ display: "block", marginBottom: 6 }}>
-            Business Image / Logo
+        <div style={{ border: "1px solid #ddd", borderRadius: 12, padding: 14 }}>
+          <label style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
+            Business Logo
           </label>
 
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <p style={{ marginTop: 0, color: "#666" }}>
+            Recommended: square image, like 500x500.
+          </p>
 
-          {uploading && <p>Uploading image...</p>}
+          <input type="file" accept="image/*" onChange={handleLogoUpload} />
+
+          {uploadingLogo && <p>Uploading logo...</p>}
+
+          {form.logoUrl && (
+            <img
+              src={form.logoUrl}
+              alt="Business logo preview"
+              style={{
+                width: 110,
+                height: 110,
+                objectFit: "cover",
+                marginTop: 12,
+                borderRadius: "50%",
+                border: "1px solid #ddd",
+              }}
+            />
+          )}
+        </div>
+
+        <div style={{ border: "1px solid #ddd", borderRadius: 12, padding: 14 }}>
+          <label style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>
+            Business Banner Image
+          </label>
+
+          <p style={{ marginTop: 0, color: "#666" }}>
+            Recommended: wide landscape image, like 1200x600.
+          </p>
+
+          <input type="file" accept="image/*" onChange={handleBannerUpload} />
+
+          {uploadingBanner && <p>Uploading banner...</p>}
 
           {form.imageUrl && (
             <img
               src={form.imageUrl}
-              alt="Business preview"
+              alt="Business banner preview"
               style={{
                 width: "100%",
-                maxWidth: 250,
+                maxWidth: 420,
+                height: 180,
+                objectFit: "cover",
                 marginTop: 12,
                 borderRadius: 12,
                 border: "1px solid #ddd",
@@ -206,8 +267,8 @@ export default function Submit() {
           placeholder="Your email or phone"
         />
 
-        <button type="submit" style={{ padding: 12 }} disabled={uploading}>
-          {uploading ? "Uploading..." : "Submit Listing"}
+        <button type="submit" style={{ padding: 12 }} disabled={isUploading}>
+          {isUploading ? "Uploading..." : "Submit Listing"}
         </button>
       </form>
     </div>

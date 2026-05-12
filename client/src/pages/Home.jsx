@@ -1,5 +1,6 @@
 import React from "react";
 import { apiGet } from "../api/http.js";
+import "./Home.css";
 
 export default function Home() {
   const [categories, setCategories] = React.useState([]);
@@ -12,23 +13,10 @@ export default function Home() {
   const [error, setError] = React.useState("");
 
   const keywordSuggestions = [
-    "tax",
-    "tax preparer",
-    "lawyer",
-    "immigration",
-    "mechanic",
-    "auto repair",
-    "restaurant",
-    "translator",
-    "notary",
-    "tutor",
-    "insurance",
-    "real estate",
-    "Silver Spring",
-    "Alexandria",
-    "Falls Church",
-    "Washington DC",
-    "Arlington",
+    "tax", "tax preparer", "lawyer", "immigration", "mechanic",
+    "auto repair", "restaurant", "translator", "notary", "tutor",
+    "insurance", "real estate", "Silver Spring", "Alexandria",
+    "Falls Church", "Washington DC", "Arlington",
   ];
 
   const suggestions = [
@@ -88,295 +76,155 @@ export default function Home() {
   }
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: 16 }}>
-      <section
-        style={{
-          padding: "34px 0 20px",
-        }}
-      >
-        <h1 style={{ fontSize: 38, marginBottom: 8 }}>
-          Ethiopian Community Services
-        </h1>
+    <main className="home-page">
+      <section className="home-hero">
+        <div className="home-hero-content">
+          <span className="home-badge">🇪🇹 Ethiopian Community Marketplace</span>
 
-        <p style={{ color: "#555", fontSize: 18 }}>
-          Find Ethiopian businesses, professionals, and community services near you.
-        </p>
+          <h1>Find trusted Ethiopian services near you</h1>
 
-        <form
-          onSubmit={goSearch}
-          style={{
-            display: "grid",
-            gap: 10,
-            padding: 16,
-            border: "1px solid #eee",
-            borderRadius: 16,
-            marginTop: 18,
-            boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-            background: "#fff",
-          }}
-        >
-          <div style={{ position: "relative" }}>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search: tax, lawyer, mechanic, restaurant..."
-              style={{
-                padding: 14,
-                width: "100%",
-                boxSizing: "border-box",
-                borderRadius: 10,
-                border: "1px solid #ccc",
-              }}
-            />
+          <p className="home-subtitle">
+            Search businesses, professionals, restaurants, tax preparers,
+            mechanics, immigration help, and more.
+          </p>
 
-            {suggestions.length > 0 && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 50,
-                  left: 0,
-                  right: 0,
-                  background: "white",
-                  border: "1px solid #ddd",
-                  borderRadius: 10,
-                  zIndex: 20,
-                  overflow: "hidden",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-                }}
-              >
-                {suggestions.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setSearch(s)}
-                    style={{
-                      display: "block",
-                      width: "100%",
-                      textAlign: "left",
-                      padding: 10,
-                      border: "none",
-                      background: "white",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <form onSubmit={goSearch} className="home-search-box">
+            <div className="home-input-wrap">
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search: tax, lawyer, mechanic..."
+                className="home-input"
+              />
 
-          <select
-            value={categorySlug}
-            onChange={(e) => setCategorySlug(e.target.value)}
-            style={{
-              padding: 14,
-              borderRadius: 10,
-              border: "1px solid #ccc",
-            }}
-          >
-            <option value="all">All Categories</option>
-            {categories.map((c) => (
-              <option key={c._id} value={c.slug}>
-                {c.icon} {c.name_en}
-              </option>
-            ))}
-          </select>
+              {suggestions.length > 0 && (
+                <div className="home-suggestions">
+                  {suggestions.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setSearch(s)}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <input
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              placeholder="City (ex: Silver Spring)"
-              style={{
-                padding: 14,
-                flex: 1,
-                minWidth: 220,
-                borderRadius: 10,
-                border: "1px solid #ccc",
-              }}
-            />
-
-            <input
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              placeholder="State (VA/MD/DC)"
-              style={{
-                padding: 14,
-                width: 180,
-                borderRadius: 10,
-                border: "1px solid #ccc",
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            style={{
-              padding: "14px 16px",
-              borderRadius: 10,
-              border: "none",
-              background: "#111827",
-              color: "white",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            Search Services
-          </button>
-        </form>
-
-        <div style={{ marginTop: 14 }}>
-          <a href="/submit">
-            <button
-              style={{
-                padding: "12px 18px",
-                borderRadius: 10,
-                border: "1px solid #111827",
-                background: "white",
-                cursor: "pointer",
-                fontWeight: 700,
-              }}
+            <select
+              value={categorySlug}
+              onChange={(e) => setCategorySlug(e.target.value)}
+              className="home-input"
             >
-              Add Your Business
+              <option value="all">All Categories</option>
+              {categories.map((c) => (
+                <option key={c._id} value={c.slug}>
+                  {c.icon} {c.name_en}
+                </option>
+              ))}
+            </select>
+
+            <div className="home-location-row">
+              <input
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="City"
+                className="home-input"
+              />
+
+              <input
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                placeholder="State"
+                className="home-state-input"
+              />
+            </div>
+
+            <button type="submit" className="home-primary-btn">
+              Search Services
             </button>
+          </form>
+
+          <a href="/submit" className="home-secondary-btn">
+            Add Your Business
           </a>
         </div>
       </section>
 
-      {loading && <p>Loading...</p>}
+      <div className="home-container">
+        {loading && <p className="home-message">Loading HubEthio...</p>}
 
-      {error && (
-        <div style={{ padding: 12, border: "1px solid red", borderRadius: 10 }}>
-          Error: {error}
-        </div>
-      )}
+        {error && <div className="home-error">Error: {error}</div>}
 
-      {!loading && !error && featuredListings.length > 0 && (
-        <section style={{ marginTop: 28 }}>
-          <h2>⭐ Featured Businesses</h2>
+        {!loading && !error && featuredListings.length > 0 && (
+          <section className="home-section">
+            <h2>⭐ Featured Businesses</h2>
+            <p className="home-section-text">
+              Promoted Ethiopian businesses and community services.
+            </p>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: 18,
-            }}
-          >
-            {featuredListings.slice(0, 6).map((l) => (
-              <a
-                key={l._id}
-                href={`/listing/${l._id}`}
-                style={{
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-              >
-                <article
-                  style={{
-                    border: "1px solid #ddd",
-                    borderRadius: 18,
-                    overflow: "hidden",
-                    background: "#fff",
-                    boxShadow: "0 4px 18px rgba(0,0,0,0.08)",
-                  }}
-                >
-                  {l.imageUrl ? (
-                    <img
-                      src={l.imageUrl}
-                      alt={l.title}
-                      style={{
-                        width: "100%",
-                        height: 180,
-                        objectFit: "cover",
-                        display: "block",
-                      }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        height: 180,
-                        display: "grid",
-                        placeItems: "center",
-                        background: "#f3f4f6",
-                        color: "#777",
-                      }}
-                    >
-                      No image
+            <div className="home-grid">
+              {featuredListings.slice(0, 6).map((l) => (
+                <a key={l._id} href={`/listing/${l._id}`} className="home-card-link">
+                  <article className="home-card">
+                    {l.imageUrl ? (
+                      <img src={l.imageUrl} alt={l.title} />
+                    ) : (
+                      <div className="home-no-image">No image</div>
+                    )}
+
+                    <div className="home-card-body">
+                      <span className="home-featured-badge">⭐ Featured</span>
+
+                      {l.logoUrl && (
+  <img
+    src={l.logoUrl}
+    alt={l.title}
+    className="home-business-logo"
+  />
+)}
+
+                      <h3>{l.title}</h3>
+
+                      <p>{l.categoryId?.name_en || "Business"}</p>
+
+                      <p>
+                        {l.city}
+                        {l.state ? `, ${l.state}` : ""}
+                      </p>
+
+                      <p className="home-description">
+                        {l.description_en?.slice(0, 110)}
+                        {l.description_en?.length > 110 ? "..." : ""}
+                      </p>
                     </div>
-                  )}
+                  </article>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
 
-                  <div style={{ padding: 16 }}>
-                    <div style={{ marginBottom: 10 }}>
-                      <span
-                        style={{
-                          background: "#ffe082",
-                          padding: "5px 10px",
-                          borderRadius: 999,
-                          fontSize: 13,
-                          fontWeight: 800,
-                        }}
-                      >
-                        ⭐ Featured
-                      </span>
-                    </div>
+        {!loading && !error && (
+          <section className="home-section">
+            <h2>Browse Categories</h2>
+            <p className="home-section-text">
+              Quickly explore popular Ethiopian community services.
+            </p>
 
-                    <h3 style={{ margin: "0 0 8px" }}>{l.title}</h3>
-
-                    <p style={{ margin: "6px 0", color: "#555" }}>
-                      {l.categoryId?.name_en || "Business"}
-                    </p>
-
-                    <p style={{ margin: "6px 0", color: "#555" }}>
-                      {l.city}
-                      {l.state ? `, ${l.state}` : ""}
-                    </p>
-
-                    <p style={{ color: "#444", marginTop: 10 }}>
-                      {l.description_en?.slice(0, 100)}
-                      {l.description_en?.length > 100 ? "..." : ""}
-                    </p>
-                  </div>
-                </article>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {!loading && !error && (
-        <section style={{ marginTop: 30 }}>
-          <h2>Categories</h2>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: 12,
-            }}
-          >
-            {categories.map((c) => (
-              <a
-                key={c._id}
-                href={`/category/${c.slug}`}
-                style={{
-                  border: "1px solid #eee",
-                  borderRadius: 14,
-                  padding: 16,
-                  textDecoration: "none",
-                  color: "inherit",
-                  background: "#fff",
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-                }}
-              >
-                <div style={{ fontSize: 26 }}>{c.icon || "📌"}</div>
-                <div style={{ fontWeight: 800, marginTop: 6 }}>{c.name_en}</div>
-                <div style={{ color: "#666", marginTop: 4 }}>{c.name_am}</div>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
+            <div className="home-category-grid">
+              {categories.map((c) => (
+                <a key={c._id} href={`/category/${c.slug}`} className="home-category-card">
+                  <div className="home-category-icon">{c.icon || "📌"}</div>
+                  <div className="home-category-name">{c.name_en}</div>
+                  <div className="home-category-am">{c.name_am}</div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </main>
   );
 }
