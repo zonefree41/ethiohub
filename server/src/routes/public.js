@@ -113,25 +113,21 @@ router.post("/submissions", async (req, res) => {
     }
 
     const listing = await Listing.create({
-      title,
-      description_en,
-      description_am,
-      categoryId,
-      phone,
-      whatsapp,
-      website,
-      address,
-      city,
-      state,
-      zip,
-      languages,
-      tags,
-      status: "pending",
-      submittedBy: {
-        name: submittedBy?.name || "",
-        contact: submittedBy?.contact || ""
-      }
-    });
+  title: req.body.title,
+  categoryId: req.body.categoryId,
+  phone: req.body.phone,
+  whatsapp: req.body.whatsapp || "",
+  website: req.body.website || "",
+  address: req.body.address || "",
+  city: req.body.city,
+  state: req.body.state,
+  zip: req.body.zip || "",
+  description_en: req.body.description_en || "",
+  description_am: req.body.description_am || "",
+  imageUrl: req.body.imageUrl || "",
+  submittedBy: req.body.submittedBy || {},
+  status: "pending",
+});
 
     res.status(201).json({
       message: "Submitted for approval",
