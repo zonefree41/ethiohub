@@ -6,7 +6,7 @@ export default function PaymentCancelled() {
       <h1>Payment Cancelled</h1>
       <p>No payment was completed. Your listing was not upgraded.</p>
 
-      <Link to="/admin">Return to Admin</Link>
+      <a href="/admin">Return to Admin</a>
     </main>
   );
 }
