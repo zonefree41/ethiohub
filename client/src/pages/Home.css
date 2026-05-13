@@ -458,3 +458,103 @@
 .home-footer-links a:hover {
   text-decoration: underline;
 }
+
+/* Final mobile polish */
+@media (max-width: 640px) {
+  .home-page {
+    overflow-x: hidden;
+  }
+
+  .home-container {
+    padding: 20px 14px 44px;
+  }
+
+  .home-hero {
+    padding: 34px 14px 34px;
+  }
+
+  .home-badge {
+    font-size: 13px;
+    padding: 7px 10px;
+  }
+
+  .home-hero h1 {
+    font-size: 34px;
+    line-height: 1.08;
+  }
+
+  .home-subtitle {
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .home-search-box {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .home-input,
+  .home-state-input {
+    min-height: 52px;
+    font-size: 16px;
+  }
+
+  .home-location-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .home-state-input {
+    width: 100%;
+  }
+
+  .home-primary-btn {
+    width: 100%;
+    min-height: 54px;
+    font-size: 16px;
+  }
+
+  .home-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .home-secondary-btn,
+  .home-owner-btn {
+    width: 100%;
+    height: 56px;
+    font-size: 16px;
+  }
+
+  .home-grid,
+  .home-category-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-card-banner,
+  .home-card img,
+  .home-no-image {
+    height: 175px;
+  }
+
+  .home-section {
+    margin-top: 28px;
+  }
+
+  .home-section h2 {
+    font-size: 24px;
+  }
+
+  .home-footer {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .home-footer-links {
+    justify-content: center;
+  }
+}

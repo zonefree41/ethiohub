@@ -298,3 +298,127 @@
 .listing-review-card small {
   color: #6b7280;
 }
+
+/* Final mobile polish */
+@media (max-width: 640px) {
+  .listing-page {
+    overflow-x: hidden;
+    padding: 12px 10px 40px;
+  }
+
+  .listing-container {
+    width: 100%;
+  }
+
+  .listing-back {
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  .listing-card {
+    border-radius: 18px;
+  }
+
+  .listing-banner,
+  .listing-banner-placeholder {
+    height: 210px;
+  }
+
+  .listing-content {
+    padding: 0 14px 22px;
+  }
+
+  .listing-header {
+    display: block;
+    margin-bottom: 22px;
+  }
+
+  .listing-logo,
+  .listing-logo-placeholder {
+    width: 86px;
+    height: 86px;
+    margin-top: -43px;
+    margin-bottom: 12px;
+  }
+
+  .listing-header h1 {
+    font-size: 28px;
+    line-height: 1.12;
+    word-break: break-word;
+  }
+
+  .listing-badges {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .listing-badges span {
+    font-size: 12px;
+    padding: 6px 9px;
+  }
+
+  .listing-info {
+    padding-top: 14px;
+  }
+
+  .listing-info p {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .listing-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .listing-actions a {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .listing-description {
+    font-size: 15px;
+  }
+
+  .listing-map {
+    height: 260px;
+    border-radius: 14px;
+  }
+
+  .listing-reviews {
+    margin-top: 34px;
+    padding-top: 24px;
+  }
+
+  .listing-review-summary {
+    font-size: 17px;
+  }
+
+  .listing-review-summary strong {
+    font-size: 24px;
+  }
+
+  .listing-review-form input,
+  .listing-review-form select,
+  .listing-review-form textarea {
+    font-size: 16px;
+    min-height: 50px;
+  }
+
+  .listing-review-form button {
+    min-height: 54px;
+    font-size: 16px;
+  }
+
+  .listing-review-top {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
