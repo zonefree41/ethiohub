@@ -11,6 +11,9 @@ import OwnerLogin from "./pages/owner/OwnerLogin.jsx";
 import OwnerRegister from "./pages/owner/OwnerRegister.jsx";
 import OwnerDashboard from "./pages/owner/OwnerDashboard.jsx";
 import EditListing from "./pages/owner/EditListing.jsx";
+import Privacy from "./pages/Privacy.jsx";
+import Terms from "./pages/Terms.jsx";
+import Contact from "./pages/Contact.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -46,6 +49,10 @@ if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
 
   if (path.startsWith("/success")) return <PaymentSuccess />;
   if (path.startsWith("/payment-cancelled")) return <PaymentCancelled />;
+
+  if (path.startsWith("/privacy")) return <Privacy />;
+if (path.startsWith("/terms")) return <Terms />;
+if (path.startsWith("/contact")) return <Contact />;
 
   return <Home />;
 }

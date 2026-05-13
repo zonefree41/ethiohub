@@ -269,6 +269,17 @@ export default function Home() {
           </section>
         )}
       </div>
+      <footer className="home-footer">
+  <div>
+    © 2026 HubEthio. All rights reserved.
+  </div>
+
+  <div className="home-footer-links">
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms</a>
+    <a href="/contact">Contact</a>
+  </div>
+</footer>
     </main>
   );
 }

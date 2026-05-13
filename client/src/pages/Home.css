@@ -430,3 +430,31 @@
 .home-owner-btn:hover {
   background: #fbbf24;
 }
+
+.home-footer {
+  max-width: 1180px;
+  margin: 40px auto 0;
+  padding: 24px 16px;
+  border-top: 1px solid #e5e7eb;
+  color: #6b7280;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.home-footer-links {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.home-footer-links a {
+  color: #111827;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.home-footer-links a:hover {
+  text-decoration: underline;
+}
