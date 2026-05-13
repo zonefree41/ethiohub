@@ -14,8 +14,30 @@ import uploadRoutes from "./routes/upload.js";
 import reviewRoutes from "./routes/reviews.js";
 import ownerAuthRoutes from "./routes/ownerAuth.js";
 import ownerListingRoutes from "./routes/ownerListings.js";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 const app = express();
+
+app.use(helmet());
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  message: {
+    message: "Too many requests. Please try again later.",
+  },
+});
+
+app.use(generalLimiter);
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: {
+    message: "Too many login attempts. Please try again later.",
+  },
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -70,7 +92,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api", publicRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/reviews", reviewRoutes);
-app.use("/api/owner/auth", ownerAuthRoutes);
+app.use("/api/owner/auth", authLimiter, ownerAuthRoutes);
 app.use("/api/owner/listings", ownerListingRoutes);
 /*
 |--------------------------------------------------------------------------
