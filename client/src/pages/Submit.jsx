@@ -98,25 +98,30 @@ export default function Submit() {
     setError("");
 
     try {
-      await apiPost("/api/submissions", {
-        title: form.title,
-        categoryId: form.categoryId,
-        phone: form.phone,
-        whatsapp: form.whatsapp,
-        website: form.website,
-        address: form.address,
-        city: form.city,
-        state: form.state,
-        zip: form.zip,
-        description_en: form.description_en,
-        description_am: form.description_am,
-        logoUrl: form.logoUrl,
-        imageUrl: form.imageUrl,
-        submittedBy: {
-          name: form.submittedByName,
-          contact: form.submittedByContact,
-        },
-      });
+      const ownerToken = localStorage.getItem("ownerToken");
+      await apiPost(
+  "/api/submissions",
+  {
+    title: form.title,
+    categoryId: form.categoryId,
+    phone: form.phone,
+    whatsapp: form.whatsapp,
+    website: form.website,
+    address: form.address,
+    city: form.city,
+    state: form.state,
+    zip: form.zip,
+    description_en: form.description_en,
+    description_am: form.description_am,
+    logoUrl: form.logoUrl,
+    imageUrl: form.imageUrl,
+    submittedBy: {
+      name: form.submittedByName,
+      contact: form.submittedByContact,
+    },
+  },
+  ownerToken
+);
 
       setMessage("✅ Listing submitted successfully. Waiting for admin approval.");
       setForm(emptyForm);

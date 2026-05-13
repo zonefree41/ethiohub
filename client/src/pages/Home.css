@@ -378,3 +378,55 @@
   font-weight: 800;
   color: #92400e !important;
 }
+
+.home-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.home-secondary-btn,
+.home-owner-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 280px;
+  height: 60px;
+
+  padding: 0;
+  margin: 0;
+
+  border-radius: 14px;
+
+  text-decoration: none;
+
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+
+  box-sizing: border-box;
+
+  transition: all 0.2s ease;
+}
+
+.home-secondary-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.home-secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.home-owner-btn {
+  background: #f59e0b;
+  color: #111827;
+}
+
+.home-owner-btn:hover {
+  background: #fbbf24;
+}

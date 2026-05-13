@@ -159,9 +159,15 @@ export default function Home() {
             </button>
           </form>
 
-          <a href="/submit" className="home-secondary-btn">
-            Add Your Business
-          </a>
+          <div className="home-hero-actions">
+  <a href="/submit" className="home-secondary-btn">
+    Add Your Business
+  </a>
+
+  <a href="/owner/login" className="home-owner-btn">
+    Business Owner Login
+  </a>
+</div>
         </div>
       </section>
 

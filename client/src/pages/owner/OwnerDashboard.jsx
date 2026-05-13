@@ -197,9 +197,15 @@ export default function OwnerDashboard() {
                   marginTop: 16,
                 }}
               >
-                <a href={`/listing/${listing._id}`}>
-                  View Listing
-                </a>
+                {listing.status === "approved" ? (
+  <a href={`/listing/${listing._id}`}>
+    View Public Listing
+  </a>
+) : (
+  <span style={{ color: "#666" }}>
+    Public page available after admin approval
+  </span>
+)}
 
                 <a href={`/owner/listings/edit/${listing._id}`}>
   Edit Listing

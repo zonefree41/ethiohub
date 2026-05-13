@@ -95,7 +95,7 @@ async function handleBannerUpload(e) {
     setLoading(true);
     setError("");
 
-    const data = await apiGet(`/api/listings/${id}`);
+    const data = await apiGet(`/api/owner/listings/${id}`, token);
 
     setForm({
       title: data.title || "",
