@@ -17,7 +17,7 @@ export async function sendEmail({ to, subject, html }) {
     console.log("📧 Sending email to:", to);
 
     const { data, error } = await resend.emails.send({
-      from: "HubEthio <onboarding@resend.dev>",
+      from: "HubEthio <support@diasporastay.com>",
       to: [to],
       subject,
       html,
