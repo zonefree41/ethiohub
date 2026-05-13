@@ -56,6 +56,26 @@ router.patch("/claim/:id", async (req, res) => {
 /**
  * Update owned listing
  */
+router.get("/:id", async (req, res) => {
+  try {
+    const listing = await Listing.findOne({
+      _id: req.params.id,
+      ownerId: req.owner.id,
+    }).populate("categoryId");
+
+    if (!listing) {
+      return res.status(404).json({
+        message: "Listing not found or you do not own this listing",
+      });
+    }
+
+    res.json(listing);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to load listing" });
+  }
+});
+
 router.patch("/:id", async (req, res) => {
   try {
     const listing = await Listing.findOne({

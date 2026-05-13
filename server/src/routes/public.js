@@ -2,6 +2,7 @@ import express from "express";
 import Category from "../models/Category.js";
 import Listing from "../models/Listing.js";
 import Review from "../models/Review.js";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -152,9 +153,12 @@ router.post("/submissions", async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    const ownerId = getOptionalOwnerId(req);
+
     const listing = await Listing.create({
   title: req.body.title,
   categoryId: req.body.categoryId,
+  ownerId,
   phone: req.body.phone,
   whatsapp: req.body.whatsapp || "",
   website: req.body.website || "",
@@ -178,6 +182,23 @@ router.post("/submissions", async (req, res) => {
     res.status(500).json({ message: "Failed to submit listing" });
   }
 });
+
+function getOptionalOwnerId(req) {
+  try {
+    const authHeader = req.headers.authorization || "";
+    const token = authHeader.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : null;
+
+    if (!token) return null;
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    return decoded?.id || null;
+  } catch {
+    return null;
+  }
+}
 
 function escapeRegex(str) {
   return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
