@@ -14,6 +14,8 @@ import EditListing from "./pages/owner/EditListing.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Terms from "./pages/Terms.jsx";
 import Contact from "./pages/Contact.jsx";
+import ForgotPassword from "./pages/owner/ForgotPassword.jsx";
+import ResetPassword from "./pages/owner/ResetPassword.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -40,6 +42,8 @@ export default function App() {
 
   if (path.startsWith("/owner/login")) return <OwnerLogin />;
 if (path.startsWith("/owner/register")) return <OwnerRegister />;
+if (path.startsWith("/owner/forgot-password")) return <ForgotPassword />;
+if (path.startsWith("/owner/reset-password/")) return <ResetPassword />;
 if (path.startsWith("/owner/listings/edit/")) return <EditListing />;
 if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
 

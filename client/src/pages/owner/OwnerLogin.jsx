@@ -78,6 +78,9 @@ export default function OwnerLogin() {
         <button type="submit" style={{ padding: 12 }}>
           Login
         </button>
+        <p>
+  <a href="/owner/forgot-password">Forgot password?</a>
+</p>
       </form>
 
       <p>
