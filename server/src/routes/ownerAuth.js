@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const router = express.Router();
 
@@ -37,6 +38,42 @@ router.post("/register", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
+
+    await sendEmail({
+  to: user.email,
+  subject: "Welcome to HubEthio",
+  html: `
+    <h1>Welcome to HubEthio</h1>
+
+    <p>Hello ${user.name},</p>
+
+    <p>
+      Your business owner account has been successfully created.
+    </p>
+
+    <p>
+      You can now:
+    </p>
+
+    <ul>
+      <li>Submit business listings</li>
+      <li>Manage your listings</li>
+      <li>Edit your business profile</li>
+      <li>Upgrade to featured listings</li>
+    </ul>
+
+    <p>
+      Thank you for supporting the Ethiopian community through HubEthio.
+    </p>
+
+    <p>
+      Visit:
+      <a href="https://www.hubethio.com">
+        www.hubethio.com
+      </a>
+    </p>
+  `,
+});
 
     res.status(201).json({
       token,
