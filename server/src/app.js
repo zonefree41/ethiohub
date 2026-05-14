@@ -56,10 +56,24 @@ app.use(
 | CORS
 |--------------------------------------------------------------------------
 */
+const allowedOrigins = [
+  process.env.CLIENT_ORIGIN,
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "https://localhost",
+  "capacitor://localhost",
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
-    credentials: true
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   })
 );
 
