@@ -16,6 +16,8 @@ import Terms from "./pages/Terms.jsx";
 import Contact from "./pages/Contact.jsx";
 import ForgotPassword from "./pages/owner/ForgotPassword.jsx";
 import ResetPassword from "./pages/owner/ResetPassword.jsx";
+import DeleteData from "./pages/DeleteData.jsx";
+import Footer from "./components/Footer.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -47,16 +49,17 @@ if (path.startsWith("/owner/reset-password/")) return <ResetPassword />;
 if (path.startsWith("/owner/listings/edit/")) return <EditListing />;
 if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
 
-  if (path.startsWith("/submit")) return <Submit />;
-  if (path.startsWith("/listing/")) return <Listing />;
-  if (path.startsWith("/category/")) return <Category />;
+  if (path.startsWith("/submit")) return <><Submit /><Footer /></>;
+if (path.startsWith("/listing/")) return <><Listing /><Footer /></>;
+if (path.startsWith("/category/")) return <><Category /><Footer /></>;
 
-  if (path.startsWith("/success")) return <PaymentSuccess />;
-  if (path.startsWith("/payment-cancelled")) return <PaymentCancelled />;
+if (path.startsWith("/success")) return <><PaymentSuccess /><Footer /></>;
+if (path.startsWith("/payment-cancelled")) return <><PaymentCancelled /><Footer /></>;
 
-  if (path.startsWith("/privacy")) return <Privacy />;
-if (path.startsWith("/terms")) return <Terms />;
-if (path.startsWith("/contact")) return <Contact />;
+if (path.startsWith("/privacy")) return <><Privacy /><Footer /></>;
+if (path.startsWith("/terms")) return <><Terms /><Footer /></>;
+if (path.startsWith("/contact")) return <><Contact /><Footer /></>;
+if (path.startsWith("/delete-data")) return <><DeleteData /><Footer /></>;
 
-  return <Home />;
+return <><Home /><Footer /></>;
 }

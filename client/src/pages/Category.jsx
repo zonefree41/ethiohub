@@ -1,5 +1,6 @@
 import React from "react";
-import { apiGet } from "../api/http.js";
+import { apiGet, apiPost } from "../api/http.js";
+import "./Category.css";
 
 function getParam(name) {
   const url = new URL(window.location.href);
@@ -27,15 +28,18 @@ export default function Category() {
 
         const cats = await apiGet("/api/categories");
         if (!alive) return;
-        setCategories(cats);
+
+        setCategories(cats || []);
 
         let categoryId = "";
+
         if (slug !== "all") {
-          const found = cats.find((c) => c.slug === slug);
+          const found = (cats || []).find((c) => c.slug === slug);
           categoryId = found?._id || "";
         }
 
         const qs = new URLSearchParams();
+
         if (search) qs.set("search", search);
         if (city) qs.set("city", city);
         if (state) qs.set("state", state);
@@ -43,11 +47,16 @@ export default function Category() {
 
         const data = await apiGet(`/api/listings?${qs.toString()}`);
         if (!alive) return;
-        setListings(data);
+
+        setListings(Array.isArray(data) ? data : []);
       } catch (err) {
-        if (alive) setError(err.message || "Failed to load listings");
+        if (alive) {
+          setError(err.message || "Failed to load listings");
+        }
       } finally {
-        if (alive) setLoading(false);
+        if (alive) {
+          setLoading(false);
+        }
       }
     }
 
@@ -63,90 +72,148 @@ export default function Category() {
       ? "Search Results"
       : categories.find((c) => c.slug === slug)?.name_en || "Category";
 
+  React.useEffect(() => {
+    document.title = `${title} | HubEthio`;
+  }, [title]);
+
   return (
-    <div style={{ maxWidth: 1000, margin: "0 auto", padding: 16 }}>
-      <a href="/">← Back Home</a>
+    <main className="category-page">
+      <div className="category-container">
+        <a href="/" className="category-back">
+          ← Back Home
+        </a>
 
-      <h1 style={{ marginTop: 10 }}>{title}</h1>
+        <div className="category-header">
+          <h1>{title}</h1>
 
-      {(search || city || state) && (
-        <p style={{ color: "#555" }}>
-          {search && `Search: "${search}"`}{" "}
-          {city && `| City: ${city}`}{" "}
-          {state && `| State: ${state}`}
+          {(search || city || state) && (
+            <p className="category-filters">
+              {search && <span>Search: “{search}”</span>}
+              {city && <span>City: {city}</span>}
+              {state && <span>State: {state}</span>}
+            </p>
+          )}
+        </div>
+
+        {loading && (
+          <div className="category-state-card">
+            <div className="category-spinner"></div>
+            <h2>Loading businesses...</h2>
+            <p>Please wait while we find matching listings.</p>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="category-state-card">
+            <h2>Something went wrong</h2>
+            <p>{error}</p>
+            <button type="button" onClick={() => window.location.reload()}>
+              Try Again
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && listings.length === 0 && (
+          <div className="category-state-card">
+            <h2>No businesses found</h2>
+            <p>Try searching for a different service, city, or state.</p>
+            <a href="/" className="category-primary-link">
+              Back to Home
+            </a>
+          </div>
+        )}
+
+        {!loading && !error && listings.length > 0 && (
+          <div className="category-grid">
+            {listings.map((listing) => {
+              const phone = listing.phone || "";
+              const whatsapp = String(
+                listing.whatsapp || listing.phone || ""
+              ).replace(/\D/g, "");
+
+              return (
+                <article key={listing._id} className="category-card">
+  <div className="category-card-top">
+    <div className="category-card-identity">
+      {listing.logoUrl ? (
+        <img
+          src={listing.logoUrl}
+          alt={`${listing.title} logo`}
+          className="category-card-logo"
+        />
+      ) : (
+        <div className="category-card-logo-placeholder">
+          {listing.title?.charAt(0)?.toUpperCase() || "B"}
+        </div>
+      )}
+
+      <div>
+        <h2>{listing.title}</h2>
+
+        <p className="category-location">
+          {[listing.city, listing.state].filter(Boolean).join(", ") ||
+            "Location not available"}
         </p>
-      )}
 
-      {loading && <p>Loading...</p>}
-
-      {error && (
-        <div style={{ border: "1px solid red", padding: 10 }}>
-          Error: {error}
-        </div>
-      )}
-
-      {!loading && !error && listings.length === 0 && (
-        <div style={{ marginTop: 20 }}>
-          <h3>No results found</h3>
-          <p>Try a different search or city.</p>
-        </div>
-      )}
-
-      {!loading && !error && listings.length > 0 && (
-        <div style={{ display: "grid", gap: 14, marginTop: 14 }}>
-          {listings.map((l) => (
-            <div
-              key={l._id}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: 12,
-                padding: 16
-              }}
-            >
-              <h2>
-                {l.title}{" "}
-                {l.isFeatured && <span>⭐</span>}{" "}
-                {l.isVerified && <span>✅</span>}
-              </h2>
-
-              <p style={{ color: "#666" }}>
-                {l.city}, {l.state}
-              </p>
-
-              <p style={{ marginTop: 6 }}>
-                {l.description_en || "No description available."}
-              </p>
-
-              <div
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  flexWrap: "wrap",
-                  marginTop: 10
-                }}
-              >
-                <a href={`tel:${l.phone}`}>
-                  <button>Call</button>
-                </a>
-
-                {l.whatsapp && (
-                  <a
-                    href={`https://wa.me/${String(l.whatsapp).replace(/\D/g, "")}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <button>WhatsApp</button>
-                  </a>
-                )}
-
-                <a href={`/listing/${l._id}`}>
-                  <button>View Details</button>
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+        {listing.totalReviews > 0 && (
+  <p className="category-rating">
+    ⭐ {listing.averageRating || 0} ({listing.totalReviews} review
+    {listing.totalReviews !== 1 ? "s" : ""})
+  </p>
+)}
+      </div>
     </div>
+
+    <div className="category-badges">
+      {listing.isFeatured && <span>⭐ Featured</span>}
+      {listing.isVerified && <span>✅ Verified</span>}
+    </div>
+  </div>
+
+                  <p className="category-description">
+                    {listing.description_en || "No description available."}
+                  </p>
+
+                  <div className="category-actions">
+  {phone && (
+    <a
+      href={`tel:${phone}`}
+      className="category-action-btn"
+      onClick={() =>
+        apiPost(`/api/track/${listing._id}`, { type: "call" })
+      }
+    >
+      Call
+    </a>
+  )}
+
+  {whatsapp && (
+    <a
+      href={`https://wa.me/${whatsapp}`}
+      target="_blank"
+      rel="noreferrer"
+      className="category-action-btn"
+      onClick={() =>
+        apiPost(`/api/track/${listing._id}`, { type: "whatsapp" })
+      }
+    >
+      WhatsApp
+    </a>
+  )}
+
+  <a
+    href={`/listing/${listing._id}`}
+    className="category-action-btn category-action-main"
+  >
+    View Details
+  </a>
+</div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

@@ -1,0 +1,140 @@
+.contact-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 24px 16px 60px;
+}
+
+.contact-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.contact-back {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.contact-back:hover {
+  text-decoration: underline;
+}
+
+.contact-hero {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #ffffff;
+  border-radius: 24px;
+  padding: 42px 28px;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+  margin-bottom: 24px;
+}
+
+.contact-label {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.contact-hero h1 {
+  margin: 0 0 12px;
+  font-size: 38px;
+  line-height: 1.1;
+}
+
+.contact-hero p {
+  max-width: 720px;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.7;
+  opacity: 0.95;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.contact-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.contact-card h2 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 21px;
+}
+
+.contact-card p {
+  margin: 0 0 14px;
+  color: #4b5563;
+  line-height: 1.65;
+}
+
+.contact-card a {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.contact-card a:hover {
+  text-decoration: underline;
+}
+
+.contact-community {
+  margin-top: 24px;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 26px;
+  border: 1px solid #e5e7eb;
+}
+
+.contact-community h2 {
+  margin: 0 0 10px;
+  color: #111827;
+}
+
+.contact-community p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.contact-footer {
+  margin-top: 36px;
+  color: #6b7280;
+  font-size: 14px;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .contact-page {
+    padding: 18px 12px 48px;
+  }
+
+  .contact-hero {
+    padding: 32px 22px;
+    border-radius: 20px;
+  }
+
+  .contact-hero h1 {
+    font-size: 30px;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-card {
+    padding: 20px;
+  }
+}

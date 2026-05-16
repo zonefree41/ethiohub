@@ -422,3 +422,57 @@
     gap: 6px;
   }
 }
+
+.listing-state-card {
+  max-width: 520px;
+  margin: 80px auto;
+  padding: 32px 24px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.listing-state-card h2 {
+  margin-bottom: 10px;
+  color: #1f2937;
+}
+
+.listing-state-card p {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.listing-state-card button,
+.listing-state-card a {
+  display: inline-block;
+  padding: 11px 18px;
+  border-radius: 10px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.listing-state-card button:hover,
+.listing-state-card a:hover {
+  background: #1d4ed8;
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 18px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

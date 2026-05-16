@@ -11,6 +11,7 @@ export default function Home() {
   const [state, setState] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
+  const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
 
   const keywordSuggestions = [
     "tax",
@@ -44,6 +45,10 @@ export default function Home() {
         item.toLowerCase().includes(search.toLowerCase())
     )
     .slice(0, 8);
+
+  React.useEffect(() => {
+    document.title = "HubEthio | Ethiopian Business Directory";
+  }, []);
 
   React.useEffect(() => {
     let alive = true;
@@ -90,6 +95,41 @@ export default function Home() {
 
   return (
     <main className="home-page">
+      <header className="home-topbar">
+        <div className="home-topbar-inner">
+          <a href="/" className="home-brand">
+            <span className="home-brand-mark">ET</span>
+            <span className="home-brand-text">
+              Hub<span>Ethio</span>
+            </span>
+          </a>
+
+          <button
+            type="button"
+            className="home-mobile-menu-btn"
+            onClick={() => setMobileNavOpen((prev) => !prev)}
+            aria-label="Toggle navigation menu"
+          >
+            ☰
+          </button>
+
+          <nav
+            className={`home-nav ${mobileNavOpen ? "home-nav-open" : ""}`}
+            aria-label="Main navigation"
+          >
+            <a href="/" className="active">
+              Home
+            </a>
+            <a href="/category/all">Categories</a>
+            <a href="/submit">Submit Business</a>
+            <a href="/contact">Contact</a>
+            <a href="/owner/login" className="home-nav-login">
+              Business Owner Login
+            </a>
+          </nav>
+        </div>
+      </header>
+
       <section className="home-hero">
         <div className="home-hero-content">
           <span className="home-badge">🇪🇹 Ethiopian Community Marketplace</span>
@@ -160,14 +200,14 @@ export default function Home() {
           </form>
 
           <div className="home-hero-actions">
-  <a href="/submit" className="home-secondary-btn">
-    Add Your Business
-  </a>
+            <a href="/submit" className="home-secondary-btn">
+              Add Your Business
+            </a>
 
-  <a href="/owner/login" className="home-owner-btn">
-    Business Owner Login
-  </a>
-</div>
+            <a href="/owner/login" className="home-owner-btn">
+              Business Owner Login
+            </a>
+          </div>
         </div>
       </section>
 
@@ -176,73 +216,87 @@ export default function Home() {
 
         {error && <div className="home-error">Error: {error}</div>}
 
-        {!loading && !error && featuredListings.length > 0 && (
+        {!loading && !error && (
           <section className="home-section">
             <h2>⭐ Featured Businesses</h2>
             <p className="home-section-text">
               Promoted Ethiopian businesses and community services.
             </p>
 
-            <div className="home-grid">
-              {featuredListings.slice(0, 6).map((listing) => (
-                <a
-                  key={listing._id}
-                  href={`/listing/${listing._id}`}
-                  className="home-card-link"
-                >
-                  <article className="home-card">
-                    {listing.imageUrl ? (
-                      <img
-                        src={listing.imageUrl}
-                        alt={listing.title}
-                        className="home-card-banner"
-                      />
-                    ) : (
-                      <div className="home-no-image">No image</div>
-                    )}
+            {featuredListings.length === 0 ? (
+              <div className="home-empty-state">
+                <h3>No featured businesses yet</h3>
+                <p>
+                  Featured Ethiopian businesses will appear here after they are
+                  approved and upgraded. Be one of the first businesses to join
+                  HubEthio.
+                </p>
 
-                    <div className="home-card-body">
-                      {listing.logoUrl ? (
+                <div className="home-empty-actions">
+                  <a href="/submit">Add Your Business</a>
+                  <a href="/owner/register">Create Owner Account</a>
+                </div>
+              </div>
+            ) : (
+              <div className="home-grid">
+                {featuredListings.slice(0, 6).map((listing) => (
+                  <a
+                    key={listing._id}
+                    href={`/listing/${listing._id}`}
+                    className="home-card-link"
+                  >
+                    <article className="home-card">
+                      {listing.imageUrl ? (
                         <img
-                          src={listing.logoUrl}
-                          alt={`${listing.title} logo`}
-                          className="home-business-logo"
+                          src={listing.imageUrl}
+                          alt={listing.title}
+                          className="home-card-banner"
                         />
                       ) : (
-                        <div className="home-business-logo-placeholder">
-                          {listing.title?.charAt(0)?.toUpperCase() || "B"}
-                        </div>
+                        <div className="home-no-image">No image</div>
                       )}
 
-                      <span className="home-featured-badge">⭐ Featured</span>
+                      <div className="home-card-body">
+                        {listing.logoUrl ? (
+                          <img
+                            src={listing.logoUrl}
+                            alt={`${listing.title} logo`}
+                            className="home-business-logo"
+                          />
+                        ) : (
+                          <div className="home-business-logo-placeholder">
+                            {listing.title?.charAt(0)?.toUpperCase() || "B"}
+                          </div>
+                        )}
 
-                      <h3>{listing.title}</h3>
+                        <span className="home-featured-badge">⭐ Featured</span>
 
-                      <p>{listing.categoryId?.name_en || "Business"}</p>
+                        <h3>{listing.title}</h3>
 
-                      {listing.totalReviews > 0 && (
-  <p className="home-rating">
-    ⭐ {listing.averageRating} (
-    {listing.totalReviews} review
-    {listing.totalReviews !== 1 ? "s" : ""}
-    )
-  </p>
-)}
+                        <p>{listing.categoryId?.name_en || "Business"}</p>
 
-                      <p>
-                        {listing.city}
-                        {listing.state ? `, ${listing.state}` : ""}
-                      </p>
+                        {listing.totalReviews > 0 && (
+                          <p className="home-rating">
+                            ⭐ {listing.averageRating} ({listing.totalReviews}{" "}
+                            review{listing.totalReviews !== 1 ? "s" : ""})
+                          </p>
+                        )}
 
-                      <p className="home-description">
-                        {listing.description_en?.slice(0, 110)}
-                        {listing.description_en?.length > 110 ? "..." : ""}
-                      </p>
-                    </div>
-                  </article>
-                </a>
-              ))}
-            </div>
+                        <p>
+                          {listing.city}
+                          {listing.state ? `, ${listing.state}` : ""}
+                        </p>
+
+                        <p className="home-description">
+                          {listing.description_en?.slice(0, 110)}
+                          {listing.description_en?.length > 110 ? "..." : ""}
+                        </p>
+                      </div>
+                    </article>
+                  </a>
+                ))}
+              </div>
+            )}
           </section>
         )}
 
@@ -253,33 +307,36 @@ export default function Home() {
               Quickly explore popular Ethiopian community services.
             </p>
 
-            <div className="home-category-grid">
-              {categories.map((category) => (
-                <a
-                  key={category._id}
-                  href={`/category/${category.slug}`}
-                  className="home-category-card"
-                >
-                  <div className="home-category-icon">{category.icon || "📌"}</div>
-                  <div className="home-category-name">{category.name_en}</div>
-                  <div className="home-category-am">{category.name_am}</div>
-                </a>
-              ))}
-            </div>
+            {categories.length === 0 ? (
+              <div className="home-empty-state">
+                <h3>No categories available yet</h3>
+                <p>
+                  Categories are being prepared. Please check back soon or add a
+                  business to help grow the HubEthio community.
+                </p>
+              </div>
+            ) : (
+              <div className="home-category-grid">
+                {categories.map((category) => (
+                  <a
+                    key={category._id}
+                    href={`/category/${category.slug}`}
+                    className="home-category-card"
+                  >
+                    <div className="home-category-icon">
+                      {category.icon || "📌"}
+                    </div>
+                    <div className="home-category-name">
+                      {category.name_en}
+                    </div>
+                    <div className="home-category-am">{category.name_am}</div>
+                  </a>
+                ))}
+              </div>
+            )}
           </section>
         )}
       </div>
-      <footer className="home-footer">
-  <div>
-    © 2026 HubEthio. All rights reserved.
-  </div>
-
-  <div className="home-footer-links">
-    <a href="/privacy">Privacy Policy</a>
-    <a href="/terms">Terms</a>
-    <a href="/contact">Contact</a>
-  </div>
-</footer>
     </main>
   );
 }
