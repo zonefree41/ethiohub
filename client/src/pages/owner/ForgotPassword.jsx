@@ -1,10 +1,15 @@
 import React from "react";
 import { apiPost } from "../../api/http.js";
+import "./OwnerAuth.css";
 
 export default function ForgotPassword() {
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    document.title = "Forgot Password | HubEthio";
+  }, []);
 
   async function submit(e) {
     e.preventDefault();
@@ -16,49 +21,49 @@ export default function ForgotPassword() {
         email,
       });
 
-      setMessage(data.message || "If an account exists, a reset link has been sent.");
+      setMessage(
+        data.message || "If an account exists, a reset link has been sent."
+      );
     } catch (err) {
       setError(err.message || "Failed to request password reset");
     }
   }
 
   return (
-    <main style={{ maxWidth: 460, margin: "60px auto", padding: 16 }}>
-      <a href="/owner/login">← Back to Login</a>
+    <main className="owner-auth-page">
+      <div className="owner-auth-card">
+        <a href="/owner/login" className="owner-auth-back">
+          ← Back to Login
+        </a>
 
-      <h1>Forgot Password</h1>
-
-      <p>
-        Enter your business owner email address. If an account exists, we’ll send
-        a reset link.
-      </p>
-
-      {message && (
-        <div style={{ border: "1px solid green", padding: 12, marginBottom: 12 }}>
-          {message}
+        <div className="owner-auth-header">
+          <p className="owner-auth-label">Account Recovery</p>
+          <h1>Forgot Password</h1>
+          <p>
+            Enter your business owner email address. If an account exists, we’ll
+            send a password reset link.
+          </p>
         </div>
-      )}
 
-      {error && (
-        <div style={{ border: "1px solid red", padding: 12, marginBottom: 12 }}>
-          Error: {error}
+        {message && <div className="owner-auth-success">{message}</div>}
+        {error && <div className="owner-auth-error">Error: {error}</div>}
+
+        <form onSubmit={submit} className="owner-auth-form">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
+            required
+          />
+
+          <button type="submit">Send Reset Link</button>
+        </form>
+
+        <div className="owner-auth-links">
+          <a href="/owner/login">Remembered your password? Login</a>
         </div>
-      )}
-
-      <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email address"
-          required
-          style={{ padding: 12 }}
-        />
-
-        <button type="submit" style={{ padding: 12 }}>
-          Send Reset Link
-        </button>
-      </form>
+      </div>
     </main>
   );
 }

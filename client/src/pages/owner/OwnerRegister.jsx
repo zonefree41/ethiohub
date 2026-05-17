@@ -1,5 +1,6 @@
 import React from "react";
 import { apiPost } from "../../api/http.js";
+import "./OwnerAuth.css";
 
 export default function OwnerRegister() {
   const [form, setForm] = React.useState({
@@ -10,6 +11,10 @@ export default function OwnerRegister() {
 
   const [error, setError] = React.useState("");
   const [message, setMessage] = React.useState("");
+
+  React.useEffect(() => {
+    document.title = "Create Business Owner Account | HubEthio";
+  }, []);
 
   function update(e) {
     setForm((prev) => ({
@@ -37,62 +42,55 @@ export default function OwnerRegister() {
   }
 
   return (
-    <main style={{ maxWidth: 460, margin: "60px auto", padding: 16 }}>
-      <a href="/">← Back Home</a>
+    <main className="owner-auth-page">
+      <div className="owner-auth-card">
+        <a href="/" className="owner-auth-back">
+          ← Back Home
+        </a>
 
-      <h1>Create Business Owner Account</h1>
-      <p>Create an account to manage your HubEthio business listing.</p>
-
-      {message && (
-        <div style={{ border: "1px solid green", padding: 12, marginBottom: 12 }}>
-          {message}
+        <div className="owner-auth-header">
+          <p className="owner-auth-label">Business Portal</p>
+          <h1>Create Business Owner Account</h1>
+          <p>Create an account to manage your HubEthio business listing.</p>
         </div>
-      )}
 
-      {error && (
-        <div style={{ border: "1px solid red", padding: 12, marginBottom: 12 }}>
-          Error: {error}
+        {message && <div className="owner-auth-success">{message}</div>}
+        {error && <div className="owner-auth-error">Error: {error}</div>}
+
+        <form onSubmit={submit} className="owner-auth-form">
+          <input
+            name="name"
+            value={form.name}
+            onChange={update}
+            placeholder="Full name"
+            required
+          />
+
+          <input
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={update}
+            placeholder="Email"
+            required
+          />
+
+          <input
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={update}
+            placeholder="Password, minimum 6 characters"
+            required
+          />
+
+          <button type="submit">Create Account</button>
+        </form>
+
+        <div className="owner-auth-links">
+          <a href="/owner/login">Already have an account? Login</a>
         </div>
-      )}
-
-      <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
-        <input
-          name="name"
-          value={form.name}
-          onChange={update}
-          placeholder="Full name"
-          required
-          style={{ padding: 12 }}
-        />
-
-        <input
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={update}
-          placeholder="Email"
-          required
-          style={{ padding: 12 }}
-        />
-
-        <input
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={update}
-          placeholder="Password, minimum 6 characters"
-          required
-          style={{ padding: 12 }}
-        />
-
-        <button type="submit" style={{ padding: 12 }}>
-          Create Account
-        </button>
-      </form>
-
-      <p>
-        Already have an account? <a href="/owner/login">Login</a>
-      </p>
+      </div>
     </main>
   );
 }

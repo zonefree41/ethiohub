@@ -1,5 +1,6 @@
 import React from "react";
 import { apiPost } from "../../api/http.js";
+import "./OwnerAuth.css";
 
 export default function ResetPassword() {
   const token = window.location.pathname.split("/").pop();
@@ -8,6 +9,10 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    document.title = "Reset Password | HubEthio";
+  }, []);
 
   async function submit(e) {
     e.preventDefault();
@@ -32,56 +37,49 @@ export default function ResetPassword() {
   }
 
   return (
-    <main style={{ maxWidth: 460, margin: "60px auto", padding: 16 }}>
-      <a href="/owner/login">← Back to Login</a>
+    <main className="owner-auth-page">
+      <div className="owner-auth-card">
+        <a href="/owner/login" className="owner-auth-back">
+          ← Back to Login
+        </a>
 
-      <h1>Reset Password</h1>
-
-      <p>Enter your new password below.</p>
-
-      {message && (
-        <div style={{ border: "1px solid green", padding: 12, marginBottom: 12 }}>
-          {message}
+        <div className="owner-auth-header">
+          <p className="owner-auth-label">Account Recovery</p>
+          <h1>Reset Password</h1>
+          <p>Enter your new password below.</p>
         </div>
-      )}
 
-      {error && (
-        <div style={{ border: "1px solid red", padding: 12, marginBottom: 12 }}>
-          Error: {error}
-        </div>
-      )}
+        {message && <div className="owner-auth-success">{message}</div>}
+        {error && <div className="owner-auth-error">Error: {error}</div>}
 
-      <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="New password"
-          required
-          minLength={6}
-          style={{ padding: 12 }}
-        />
+        <form onSubmit={submit} className="owner-auth-form">
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="New password"
+            required
+            minLength={6}
+          />
 
-        <input
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Confirm new password"
-          required
-          minLength={6}
-          style={{ padding: 12 }}
-        />
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm new password"
+            required
+            minLength={6}
+          />
 
-        <button type="submit" style={{ padding: 12 }}>
-          Reset Password
-        </button>
-      </form>
+          <button type="submit">Reset Password</button>
+        </form>
 
-      {message && (
-        <p>
-          <a href="/owner/login">Go to login</a>
-        </p>
-      )}
+        {message && (
+          <div className="owner-auth-links">
+            <a href="/owner/login">Go to login</a>
+          </div>
+        )}
+      </div>
     </main>
   );
 }
