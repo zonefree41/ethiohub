@@ -1,0 +1,238 @@
+.pricing-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 24px 16px 60px;
+}
+
+.pricing-container {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.pricing-back {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.pricing-back:hover {
+  text-decoration: underline;
+}
+
+.pricing-hero {
+  background: linear-gradient(135deg, #07111f, #92400e);
+  color: #ffffff;
+  border-radius: 26px;
+  padding: 46px 30px;
+  box-shadow: 0 14px 34px rgba(146, 64, 14, 0.25);
+  margin-bottom: 22px;
+}
+
+.pricing-label {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.pricing-hero h1 {
+  margin: 0 0 12px;
+  max-width: 780px;
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1.05;
+}
+
+.pricing-hero p {
+  max-width: 760px;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.7;
+  opacity: 0.95;
+}
+
+.pricing-error {
+  background: #fef2f2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.pricing-listing-box {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+  margin-bottom: 22px;
+}
+
+.pricing-listing-box h2 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 24px;
+}
+
+.pricing-listing-box p {
+  margin: 0 0 14px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.pricing-listing-box input {
+  width: 100%;
+  max-width: 520px;
+  min-height: 50px;
+  border: 1px solid #d1d5db;
+  border-radius: 13px;
+  padding: 12px 14px;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.pricing-listing-box input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22);
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.pricing-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  padding: 26px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+}
+
+.pricing-featured {
+  border: 2px solid #f59e0b;
+  box-shadow: 0 16px 38px rgba(245, 158, 11, 0.2);
+}
+
+.pricing-popular {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: #f59e0b;
+  color: #111827;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 7px 10px;
+  border-radius: 999px;
+}
+
+.pricing-card h2 {
+  margin: 0 0 12px;
+  color: #111827;
+  font-size: 25px;
+}
+
+.pricing-price {
+  margin: 0;
+  color: #111827;
+  font-size: 38px;
+  font-weight: 900;
+}
+
+.pricing-note {
+  margin: 8px 0 18px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.pricing-card ul {
+  margin: 0 0 24px 20px;
+  padding: 0;
+  color: #374151;
+  line-height: 1.7;
+}
+
+.pricing-card li {
+  margin-bottom: 7px;
+}
+
+.pricing-card button,
+.pricing-secondary-btn {
+  margin-top: auto;
+  min-height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.pricing-card button:hover,
+.pricing-secondary-btn:hover {
+  background: #fbbf24;
+}
+
+.pricing-card button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.pricing-secondary-btn {
+  background: #111827;
+  color: #ffffff;
+}
+
+.pricing-secondary-btn:hover {
+  background: #1f2937;
+}
+
+@media (max-width: 900px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .pricing-page {
+    padding: 18px 12px 48px;
+  }
+
+  .pricing-hero {
+    padding: 34px 22px;
+    border-radius: 22px;
+  }
+
+  .pricing-listing-box,
+  .pricing-card {
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .pricing-popular {
+    position: static;
+    width: fit-content;
+    margin-bottom: 14px;
+  }
+}

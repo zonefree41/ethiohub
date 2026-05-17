@@ -211,6 +211,18 @@ export default function OwnerDashboard() {
   Edit Listing
 </a>
 
+{listing.status === "approved" && !listing.isFeatured && (
+  <a href={`/pricing?listingId=${listing._id}`}>
+    Upgrade to Featured
+  </a>
+)}
+
+{listing.isFeatured && (
+  <span style={{ color: "green", fontWeight: 700 }}>
+    ⭐ Featured Active
+  </span>
+)}
+
                 <button
                   onClick={() => claimListing(listing._id)}
                 >

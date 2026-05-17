@@ -1,0 +1,145 @@
+.payment-status-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #07111f, #111827 55%, #92400e);
+  padding: 40px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-status-card {
+  width: 100%;
+  max-width: 720px;
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 42px 32px;
+  text-align: center;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.28);
+  animation: paymentStatusFadeIn 0.22s ease-out;
+}
+
+.payment-status-icon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 38px;
+  background: #f8fafc;
+}
+
+.payment-status-label {
+  margin: 0 0 8px;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.payment-status-card h1 {
+  margin: 0 0 14px;
+  color: #111827;
+  font-size: clamp(34px, 5vw, 48px);
+  line-height: 1.08;
+}
+
+.payment-status-card p {
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #4b5563;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.payment-status-actions {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.payment-status-primary,
+.payment-status-secondary,
+.payment-status-link {
+  min-height: 50px;
+  padding: 0 18px;
+  border-radius: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-status-primary {
+  background: #f59e0b;
+  color: #111827;
+}
+
+.payment-status-primary:hover {
+  background: #fbbf24;
+}
+
+.payment-status-secondary {
+  background: #111827;
+  color: #ffffff;
+}
+
+.payment-status-secondary:hover {
+  background: #1f2937;
+}
+
+.payment-status-link {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.payment-status-link:hover {
+  background: #e5e7eb;
+}
+
+.payment-status-success .payment-status-icon {
+  background: #ecfdf5;
+}
+
+.payment-status-cancelled .payment-status-icon {
+  background: #fff7ed;
+}
+
+@keyframes paymentStatusFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 560px) {
+  .payment-status-page {
+    padding: 24px 12px;
+    align-items: flex-start;
+  }
+
+  .payment-status-card {
+    padding: 34px 22px;
+    border-radius: 22px;
+  }
+
+  .payment-status-actions {
+    flex-direction: column;
+  }
+
+  .payment-status-primary,
+  .payment-status-secondary,
+  .payment-status-link {
+    width: 100%;
+  }
+}

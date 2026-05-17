@@ -11,6 +11,7 @@ export default function Footer() {
         </div>
 
         <nav className="site-footer-links" aria-label="Footer navigation">
+          <a href="/pricing">Pricing</a>
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
           <a href="/contact">Contact</a>

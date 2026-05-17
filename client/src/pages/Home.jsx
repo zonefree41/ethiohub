@@ -121,6 +121,7 @@ export default function Home() {
               Home
             </a>
             <a href="/category/all">Categories</a>
+            <a href="/pricing">Pricing</a>
             <a href="/submit">Submit Business</a>
             <a href="/contact">Contact</a>
             <a href="/owner/login" className="home-nav-login">

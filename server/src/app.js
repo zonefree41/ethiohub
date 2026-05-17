@@ -16,6 +16,7 @@ import ownerAuthRoutes from "./routes/ownerAuth.js";
 import ownerListingRoutes from "./routes/ownerListings.js";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import stripeCheckoutRoutes from "./routes/stripeCheckout.js";
 
 const app = express();
 
@@ -103,11 +104,10 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/upload", uploadRoutes);
-app.use("/api", publicRoutes);
-app.use("/api/admin", adminRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/owner/auth", authLimiter, ownerAuthRoutes);
 app.use("/api/owner/listings", ownerListingRoutes);
+app.use("/api/stripe", stripeCheckoutRoutes);
 /*
 |--------------------------------------------------------------------------
 | Start Server

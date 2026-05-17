@@ -18,6 +18,7 @@ import ForgotPassword from "./pages/owner/ForgotPassword.jsx";
 import ResetPassword from "./pages/owner/ResetPassword.jsx";
 import DeleteData from "./pages/DeleteData.jsx";
 import Footer from "./components/Footer.jsx";
+import Pricing from "./pages/Pricing.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -55,6 +56,8 @@ if (path.startsWith("/category/")) return <><Category /><Footer /></>;
 
 if (path.startsWith("/success")) return <><PaymentSuccess /><Footer /></>;
 if (path.startsWith("/payment-cancelled")) return <><PaymentCancelled /><Footer /></>;
+
+if (path.startsWith("/pricing")) return <><Pricing /><Footer /></>;
 
 if (path.startsWith("/privacy")) return <><Privacy /><Footer /></>;
 if (path.startsWith("/terms")) return <><Terms /><Footer /></>;
