@@ -302,6 +302,61 @@ export default function Home() {
           </section>
         )}
 
+        <section className="home-locations-section">
+  <div className="home-section-heading">
+    <div>
+      <p className="home-section-kicker">Browse by city</p>
+      <h2>Popular Ethiopian community locations</h2>
+    </div>
+
+    <a href="/category/all" className="home-section-link">
+      View all services →
+    </a>
+  </div>
+
+  <div className="home-location-grid">
+    <a href="/location/silver-spring-md" className="home-location-card">
+      <span>📍</span>
+      <div>
+        <h3>Silver Spring, MD</h3>
+        <p>Restaurants, tax help, legal services, mechanics, and more.</p>
+      </div>
+    </a>
+
+    <a href="/location/alexandria-va" className="home-location-card">
+      <span>📍</span>
+      <div>
+        <h3>Alexandria, VA</h3>
+        <p>Find Ethiopian businesses and trusted local professionals.</p>
+      </div>
+    </a>
+
+    <a href="/location/washington-dc" className="home-location-card">
+      <span>📍</span>
+      <div>
+        <h3>Washington, DC</h3>
+        <p>Discover Ethiopian services and community businesses in DC.</p>
+      </div>
+    </a>
+
+    <a href="/location/falls-church-va" className="home-location-card">
+      <span>📍</span>
+      <div>
+        <h3>Falls Church, VA</h3>
+        <p>Browse Ethiopian restaurants, auto services, salons, and more.</p>
+      </div>
+    </a>
+
+    <a href="/location/arlington-va" className="home-location-card">
+      <span>📍</span>
+      <div>
+        <h3>Arlington, VA</h3>
+        <p>Find Ethiopian-owned businesses and community services nearby.</p>
+      </div>
+    </a>
+  </div>
+</section>
+
         {!loading && !error && (
           <section className="home-section">
             <h2>Browse Categories</h2>
