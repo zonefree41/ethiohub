@@ -19,6 +19,7 @@ import ResetPassword from "./pages/owner/ResetPassword.jsx";
 import DeleteData from "./pages/DeleteData.jsx";
 import Footer from "./components/Footer.jsx";
 import Pricing from "./pages/Pricing.jsx";
+import Location from "./pages/Location.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -52,6 +53,7 @@ if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
 
   if (path.startsWith("/submit")) return <><Submit /><Footer /></>;
 if (path.startsWith("/listing/")) return <><Listing /><Footer /></>;
+if (path.startsWith("/location/")) return <><Location /><Footer /></>;
 if (path.startsWith("/category/")) return <><Category /><Footer /></>;
 
 if (path.startsWith("/success")) return <><PaymentSuccess /><Footer /></>;
