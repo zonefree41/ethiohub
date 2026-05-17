@@ -1,5 +1,5 @@
 import React from "react";
-import { apiGet, apiPatch, apiPost } from "../../api/http.js";
+import { apiGet, apiPatch, apiPost, apiDelete } from "../../api/http.js";
 
 export default function AdminDashboard() {
   const token = localStorage.getItem("adminToken");
@@ -9,6 +9,11 @@ export default function AdminDashboard() {
   const [error, setError] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [adminSearch, setAdminSearch] = React.useState("");
+
+  React.useEffect(() => {
+    document.title = "Admin Dashboard | HubEthio";
+  }, []);
 
   async function load(nextStatus = status) {
     try {
@@ -61,6 +66,28 @@ export default function AdminDashboard() {
     await updateListing(id, { status: "rejected" });
   }
 
+  async function deleteListing(id, title) {
+    const confirmed = window.confirm(
+      `Are you sure you want to permanently delete "${
+        title || "this listing"
+      }"? This cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setMessage("");
+      setError("");
+
+      await apiDelete(`/api/admin/listings/${id}`, token);
+
+      setMessage("✅ Listing deleted successfully");
+      await load();
+    } catch (err) {
+      setError(err.message || "Delete failed");
+    }
+  }
+
   async function payFeatured(id) {
     try {
       setError("");
@@ -80,6 +107,20 @@ export default function AdminDashboard() {
     window.location.href = "/admin/login";
   }
 
+  const filteredItems = items.filter((item) => {
+    const query = adminSearch.trim().toLowerCase();
+
+    if (!query) return true;
+
+    return (
+      item.title?.toLowerCase().includes(query) ||
+      item.city?.toLowerCase().includes(query) ||
+      item.state?.toLowerCase().includes(query) ||
+      item.phone?.toLowerCase().includes(query) ||
+      item.categoryId?.name_en?.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <main style={styles.page}>
       <div style={styles.container}>
@@ -95,7 +136,7 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          <button onClick={logout} style={styles.logoutBtn}>
+          <button type="button" onClick={logout} style={styles.logoutBtn}>
             Logout
           </button>
         </header>
@@ -104,8 +145,10 @@ export default function AdminDashboard() {
           {["pending", "approved", "rejected"].map((s) => (
             <button
               key={s}
+              type="button"
               onClick={() => {
                 setMessage("");
+                setAdminSearch("");
                 setStatus(s);
               }}
               style={{
@@ -120,7 +163,8 @@ export default function AdminDashboard() {
 
         <section style={styles.sectionHeader}>
           <h2 style={styles.sectionTitle}>{status.toUpperCase()} Listings</h2>
-          <button onClick={() => load()} style={styles.refreshBtn}>
+
+          <button type="button" onClick={() => load()} style={styles.refreshBtn}>
             Refresh
           </button>
         </section>
@@ -135,170 +179,210 @@ export default function AdminDashboard() {
           <p style={styles.empty}>No {status} listings.</p>
         )}
 
+        {!loading && items.length > 0 && (
+          <div style={styles.searchBox}>
+            <input
+              value={adminSearch}
+              onChange={(e) => setAdminSearch(e.target.value)}
+              placeholder="Search listings by name, city, state, phone, or category..."
+              style={styles.searchInput}
+            />
+          </div>
+        )}
+
+        {!loading && items.length > 0 && filteredItems.length === 0 && (
+          <p style={styles.empty}>No matching listings found.</p>
+        )}
+
         <div style={styles.grid}>
-          {items.map((item) => {
-            const address = [item.address, item.city, item.state, item.zip]
-              .filter(Boolean)
-              .join(", ");
+          {!loading &&
+            filteredItems.map((item) => {
+              const address = [item.address, item.city, item.state, item.zip]
+                .filter(Boolean)
+                .join(", ");
 
-            return (
-              <article key={item._id} style={styles.card}>
-                {item.imageUrl ? (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    style={styles.banner}
-                  />
-                ) : (
-                  <div style={styles.noBanner}>No banner image</div>
-                )}
+              return (
+                <article key={item._id} style={styles.card}>
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      style={styles.banner}
+                    />
+                  ) : (
+                    <div style={styles.noBanner}>No banner image</div>
+                  )}
 
-                <div style={styles.cardBody}>
-                  <div style={styles.businessHeader}>
-                    {item.logoUrl ? (
-                      <img
-                        src={item.logoUrl}
-                        alt={`${item.title} logo`}
-                        style={styles.logo}
-                      />
-                    ) : (
-                      <div style={styles.logoPlaceholder}>
-                        {item.title?.charAt(0)?.toUpperCase() || "B"}
-                      </div>
-                    )}
+                  <div style={styles.cardBody}>
+                    <div style={styles.businessHeader}>
+                      {item.logoUrl ? (
+                        <img
+                          src={item.logoUrl}
+                          alt={`${item.title} logo`}
+                          style={styles.logo}
+                        />
+                      ) : (
+                        <div style={styles.logoPlaceholder}>
+                          {item.title?.charAt(0)?.toUpperCase() || "B"}
+                        </div>
+                      )}
 
-                    <div>
-                      <h3 style={styles.cardTitle}>
-                        {item.title}
-                      </h3>
+                      <div>
+                        <h3 style={styles.cardTitle}>{item.title}</h3>
 
-                      <div style={styles.badges}>
-                        <span style={styles.statusBadge}>{item.status}</span>
-                        {item.isFeatured && (
-                          <span style={styles.featuredBadge}>⭐ Featured</span>
-                        )}
-                        {item.isVerified && (
-                          <span style={styles.verifiedBadge}>✅ Verified</span>
-                        )}
+                        <div style={styles.badges}>
+                          <span style={styles.statusBadge}>
+                            {item.status || "pending"}
+                          </span>
+
+                          {item.isFeatured && (
+                            <span style={styles.featuredBadge}>
+                              ⭐ Featured
+                            </span>
+                          )}
+
+                          {item.isVerified && (
+                            <span style={styles.verifiedBadge}>
+                              ✅ Verified
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div style={styles.details}>
-                    <p>
-                      <b>Category:</b> {item.categoryId?.name_en || "N/A"}
-                    </p>
-                    <p>
-                      <b>Phone:</b> {item.phone || "N/A"}
-                    </p>
-                    <p>
-                      <b>WhatsApp:</b> {item.whatsapp || "N/A"}
-                    </p>
-                    <p>
-                      <b>Website:</b> {item.website || "N/A"}
-                    </p>
-                    <p>
-                      <b>Location:</b> {address || "N/A"}
-                    </p>
-                    <p>
-                      <b>Description:</b>{" "}
-                      {item.description_en
-                        ? `${item.description_en.slice(0, 180)}${
-                            item.description_en.length > 180 ? "..." : ""
-                          }`
-                        : "N/A"}
-                    </p>
-                    <p>
-                      <b>Submitted by:</b>{" "}
-                      {item.submittedBy?.name || "N/A"} —{" "}
-                      {item.submittedBy?.contact || "N/A"}
-                    </p>
-                  </div>
+                    <div style={styles.details}>
+                      <p>
+                        <b>Category:</b> {item.categoryId?.name_en || "N/A"}
+                      </p>
+                      <p>
+                        <b>Phone:</b> {item.phone || "N/A"}
+                      </p>
+                      <p>
+                        <b>WhatsApp:</b> {item.whatsapp || "N/A"}
+                      </p>
+                      <p>
+                        <b>Website:</b> {item.website || "N/A"}
+                      </p>
+                      <p>
+                        <b>Location:</b> {address || "N/A"}
+                      </p>
+                      <p>
+                        <b>Description:</b>{" "}
+                        {item.description_en
+                          ? `${item.description_en.slice(0, 180)}${
+                              item.description_en.length > 180 ? "..." : ""
+                            }`
+                          : "N/A"}
+                      </p>
+                      <p>
+                        <b>Submitted by:</b>{" "}
+                        {item.submittedBy?.name || "N/A"} —{" "}
+                        {item.submittedBy?.contact || "N/A"}
+                      </p>
+                    </div>
 
-                  <div style={styles.clicks}>
-                    <b>Clicks:</b>
-                    <span>📞 {item.clicks?.call || 0}</span>
-                    <span>💬 {item.clicks?.whatsapp || 0}</span>
-                    <span>🌐 {item.clicks?.website || 0}</span>
-                    <span>📍 {item.clicks?.directions || 0}</span>
-                  </div>
+                    <div style={styles.clicks}>
+                      <b>Clicks:</b>
+                      <span>📞 {item.clicks?.call || 0}</span>
+                      <span>💬 {item.clicks?.whatsapp || 0}</span>
+                      <span>🌐 {item.clicks?.website || 0}</span>
+                      <span>📍 {item.clicks?.directions || 0}</span>
+                    </div>
 
-                  <div style={styles.actions}>
-                    {item.status !== "approved" && (
+                    <div style={styles.actions}>
+                      {item.status !== "approved" && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateListing(item._id, { status: "approved" })
+                          }
+                          style={styles.approveBtn}
+                        >
+                          Approve
+                        </button>
+                      )}
+
+                      {item.status !== "rejected" && (
+                        <button
+                          type="button"
+                          onClick={() => rejectListing(item._id)}
+                          style={styles.rejectBtn}
+                        >
+                          Reject
+                        </button>
+                      )}
+
+                      {item.status !== "pending" && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateListing(item._id, { status: "pending" })
+                          }
+                          style={styles.neutralBtn}
+                        >
+                          Move to Pending
+                        </button>
+                      )}
+
                       <button
+                        type="button"
                         onClick={() =>
-                          updateListing(item._id, { status: "approved" })
-                        }
-                        style={styles.approveBtn}
-                      >
-                        Approve
-                      </button>
-                    )}
-
-                    {item.status !== "rejected" && (
-                      <button
-                        onClick={() => rejectListing(item._id)}
-                        style={styles.rejectBtn}
-                      >
-                        Reject
-                      </button>
-                    )}
-
-                    {item.status !== "pending" && (
-                      <button
-                        onClick={() =>
-                          updateListing(item._id, { status: "pending" })
+                          updateListing(item._id, {
+                            isFeatured: !item.isFeatured,
+                          })
                         }
                         style={styles.neutralBtn}
                       >
-                        Move to Pending
+                        {item.isFeatured
+                          ? "Remove Featured"
+                          : "Make Featured ⭐"}
                       </button>
-                    )}
 
-                    <button
-                      onClick={() =>
-                        updateListing(item._id, {
-                          isFeatured: !item.isFeatured,
-                        })
-                      }
-                      style={styles.neutralBtn}
-                    >
-                      {item.isFeatured ? "Remove Featured" : "Make Featured ⭐"}
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        updateListing(item._id, {
-                          isVerified: !item.isVerified,
-                        })
-                      }
-                      style={styles.neutralBtn}
-                    >
-                      {item.isVerified ? "Remove Verified" : "Make Verified ✅"}
-                    </button>
-
-                    <button
-                      onClick={() => payFeatured(item._id)}
-                      style={styles.payBtn}
-                    >
-                      Pay to Feature ⭐
-                    </button>
-
-                    {item.status === "approved" && (
-                      <a
-                        href={`/listing/${item._id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={styles.viewLink}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateListing(item._id, {
+                            isVerified: !item.isVerified,
+                          })
+                        }
+                        style={styles.neutralBtn}
                       >
-                        View Public Page
-                      </a>
-                    )}
+                        {item.isVerified
+                          ? "Remove Verified"
+                          : "Make Verified ✅"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => payFeatured(item._id)}
+                        style={styles.payBtn}
+                      >
+                        Pay to Feature ⭐
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => deleteListing(item._id, item.title)}
+                        style={styles.deleteBtn}
+                      >
+                        Delete Listing
+                      </button>
+
+                      {item.status === "approved" && (
+                        <a
+                          href={`/listing/${item._id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={styles.viewLink}
+                        >
+                          View Public Page
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </article>
-            );
-          })}
+                </article>
+              );
+            })}
         </div>
       </div>
     </main>
@@ -338,7 +422,8 @@ const styles = {
     padding: "10px 14px",
     borderRadius: 10,
     border: "1px solid #d1d5db",
-    background: "white",
+    background: "#ffffff",
+    color: "#111827",
     cursor: "pointer",
     fontWeight: 800,
   },
@@ -349,16 +434,19 @@ const styles = {
     marginBottom: 18,
   },
   tabBtn: {
-    padding: "10px 16px",
+    padding: "10px 18px",
     borderRadius: 999,
     border: "1px solid #d1d5db",
-    background: "white",
+    background: "#ffffff",
+    color: "#111827",
     cursor: "pointer",
-    fontWeight: 800,
+    fontWeight: 900,
+    fontSize: 14,
+    minWidth: 120,
   },
   activeTab: {
     background: "#111827",
-    color: "white",
+    color: "#ffffff",
     borderColor: "#111827",
   },
   sectionHeader: {
@@ -375,9 +463,25 @@ const styles = {
     padding: "9px 13px",
     borderRadius: 10,
     border: "1px solid #d1d5db",
-    background: "white",
+    background: "#ffffff",
+    color: "#111827",
     cursor: "pointer",
     fontWeight: 800,
+  },
+  searchBox: {
+    marginBottom: 16,
+  },
+  searchInput: {
+    width: "100%",
+    minHeight: 48,
+    border: "1px solid #d1d5db",
+    borderRadius: 14,
+    padding: "12px 14px",
+    fontSize: 15,
+    outline: "none",
+    boxSizing: "border-box",
+    background: "#ffffff",
+    color: "#111827",
   },
   success: {
     border: "1px solid #22c55e",
@@ -396,17 +500,18 @@ const styles = {
     marginBottom: 12,
   },
   empty: {
-    background: "white",
+    background: "#ffffff",
     borderRadius: 14,
     padding: 16,
     color: "#6b7280",
+    border: "1px solid #e5e7eb",
   },
   grid: {
     display: "grid",
     gap: 18,
   },
   card: {
-    background: "white",
+    background: "#ffffff",
     border: "1px solid #e5e7eb",
     borderRadius: 22,
     overflow: "hidden",
@@ -441,7 +546,7 @@ const styles = {
     borderRadius: "50%",
     border: "3px solid white",
     boxShadow: "0 8px 18px rgba(15,23,42,0.16)",
-    background: "white",
+    background: "#ffffff",
   },
   logoPlaceholder: {
     width: 72,
@@ -515,7 +620,7 @@ const styles = {
     borderRadius: 10,
     border: "none",
     background: "#16a34a",
-    color: "white",
+    color: "#ffffff",
     fontWeight: 900,
     cursor: "pointer",
   },
@@ -524,7 +629,7 @@ const styles = {
     borderRadius: 10,
     border: "none",
     background: "#dc2626",
-    color: "white",
+    color: "#ffffff",
     fontWeight: 900,
     cursor: "pointer",
   },
@@ -532,7 +637,7 @@ const styles = {
     padding: "10px 13px",
     borderRadius: 10,
     border: "1px solid #d1d5db",
-    background: "white",
+    background: "#ffffff",
     color: "#111827",
     fontWeight: 800,
     cursor: "pointer",
@@ -546,11 +651,20 @@ const styles = {
     fontWeight: 900,
     cursor: "pointer",
   },
+  deleteBtn: {
+    padding: "10px 13px",
+    borderRadius: 10,
+    border: "1px solid #fecaca",
+    background: "#fff1f2",
+    color: "#be123c",
+    fontWeight: 900,
+    cursor: "pointer",
+  },
   viewLink: {
     padding: "10px 13px",
     borderRadius: 10,
     background: "#111827",
-    color: "white",
+    color: "#ffffff",
     textDecoration: "none",
     fontWeight: 900,
   },

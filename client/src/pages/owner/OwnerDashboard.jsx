@@ -1,5 +1,6 @@
 import React from "react";
-import { apiGet, apiPatch } from "../../api/http.js";
+import { apiGet, apiPatch, apiPost } from "../../api/http.js";
+import "./OwnerDashboard.css";
 
 export default function OwnerDashboard() {
   const token = localStorage.getItem("ownerToken");
@@ -7,16 +8,18 @@ export default function OwnerDashboard() {
   const [listings, setListings] = React.useState([]);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(true);
+  const [ownerSearch, setOwnerSearch] = React.useState("");
+
+  React.useEffect(() => {
+    document.title = "Owner Dashboard | HubEthio";
+  }, []);
 
   async function loadListings() {
     try {
       setLoading(true);
       setError("");
 
-      const data = await apiGet(
-        "/api/owner/listings/my-listings",
-        token
-      );
+      const data = await apiGet("/api/owner/listings/my-listings", token);
 
       setListings(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -37,11 +40,7 @@ export default function OwnerDashboard() {
 
   async function claimListing(id) {
     try {
-      await apiPatch(
-        `/api/owner/listings/claim/${id}`,
-        {},
-        token
-      );
+      await apiPatch(`/api/owner/listings/claim/${id}`, {}, token);
 
       await loadListings();
       alert("Listing claimed successfully");
@@ -50,188 +49,268 @@ export default function OwnerDashboard() {
     }
   }
 
+  async function manageSubscription(stripeCustomerId) {
+    try {
+      const data = await apiPost("/api/stripe/create-portal-session", {
+        stripeCustomerId,
+      });
+
+      if (!data.url) {
+        throw new Error("Billing portal link was not created.");
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      alert(err.message || "Failed to open billing portal");
+    }
+  }
+
   function logout() {
     localStorage.removeItem("ownerToken");
     localStorage.removeItem("ownerUser");
-
     window.location.href = "/";
   }
 
+  function getStatusClass(status) {
+    if (status === "approved") return "owner-status-approved";
+    if (status === "rejected") return "owner-status-rejected";
+    return "owner-status-pending";
+  }
+
+  const approvedCount = listings.filter((l) => l.status === "approved").length;
+  const pendingCount = listings.filter((l) => l.status === "pending").length;
+  const featuredCount = listings.filter((l) => l.isFeatured).length;
+
+  const filteredListings = listings.filter((listing) => {
+    const query = ownerSearch.trim().toLowerCase();
+
+    if (!query) return true;
+
+    return (
+      listing.title?.toLowerCase().includes(query) ||
+      listing.city?.toLowerCase().includes(query) ||
+      listing.state?.toLowerCase().includes(query) ||
+      listing.categoryId?.name_en?.toLowerCase().includes(query) ||
+      listing.status?.toLowerCase().includes(query)
+    );
+  });
+
   return (
-    <main style={{ maxWidth: 1000, margin: "40px auto", padding: 16 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 24,
-        }}
-      >
-        <div>
-          <h1>Business Owner Dashboard</h1>
-          <p>Manage your HubEthio business listings.</p>
-        </div>
+    <main className="owner-dashboard-page">
+      <div className="owner-dashboard-container">
+        <header className="owner-dashboard-header">
+          <div>
+            <a href="/" className="owner-dashboard-back">
+              ← Back Home
+            </a>
 
-        <button onClick={logout}>
-          Logout
-        </button>
-      </div>
+            <p className="owner-dashboard-label">Business Portal</p>
+            <h1>Business Owner Dashboard</h1>
+            <p>Manage your HubEthio business listings and subscriptions.</p>
+          </div>
 
-      {error && (
-        <div
-          style={{
-            border: "1px solid red",
-            padding: 12,
-            marginBottom: 16,
-          }}
-        >
-          Error: {error}
-        </div>
-      )}
+          <div className="owner-dashboard-header-actions">
+            <a href="/submit">Submit New Listing</a>
+            <button type="button" onClick={logout}>
+              Logout
+            </button>
+          </div>
+        </header>
 
-      {loading && <p>Loading listings...</p>}
+        {error && <div className="owner-dashboard-error">Error: {error}</div>}
 
-      {!loading && listings.length === 0 && (
-        <div
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: 12,
-            padding: 20,
-          }}
-        >
-          <p>You do not own any listings yet.</p>
+        {loading && (
+          <div className="owner-dashboard-state">
+            <div className="owner-dashboard-spinner"></div>
+            <h2>Loading listings...</h2>
+            <p>Please wait while we load your business listings.</p>
+          </div>
+        )}
 
-          <p>
-            You can submit a listing first, then later
-            claim ownership.
-          </p>
+        {!loading && listings.length === 0 && (
+          <div className="owner-dashboard-empty">
+            <h2>You do not own any listings yet</h2>
+            <p>
+              Submit a business listing first. After admin approval, you can
+              edit it and upgrade it to Featured.
+            </p>
 
-          <a href="/submit">
-            Submit Business Listing
-          </a>
-        </div>
-      )}
-
-      <div
-        style={{
-          display: "grid",
-          gap: 20,
-        }}
-      >
-        {listings.map((listing) => (
-          <div
-            key={listing._id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 16,
-              overflow: "hidden",
-              background: "white",
-            }}
-          >
-            {listing.imageUrl && (
-              <img
-                src={listing.imageUrl}
-                alt={listing.title}
-                style={{
-                  width: "100%",
-                  height: 220,
-                  objectFit: "cover",
-                }}
-              />
-            )}
-
-            <div style={{ padding: 16 }}>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 14,
-                  alignItems: "center",
-                  marginBottom: 12,
-                }}
-              >
-                {listing.logoUrl ? (
-                  <img
-                    src={listing.logoUrl}
-                    alt={listing.title}
-                    style={{
-                      width: 70,
-                      height: 70,
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: 70,
-                      height: 70,
-                      borderRadius: "50%",
-                      background: "#eee",
-                    }}
-                  />
-                )}
-
-                <div>
-                  <h2 style={{ margin: 0 }}>
-                    {listing.title}
-                  </h2>
-
-                  <p style={{ margin: "6px 0" }}>
-                    {listing.city}, {listing.state}
-                  </p>
-
-                  <div>
-                    Status:{" "}
-                    <strong>
-                      {listing.status}
-                    </strong>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  flexWrap: "wrap",
-                  marginTop: 16,
-                }}
-              >
-                {listing.status === "approved" ? (
-  <a href={`/listing/${listing._id}`}>
-    View Public Listing
-  </a>
-) : (
-  <span style={{ color: "#666" }}>
-    Public page available after admin approval
-  </span>
-)}
-
-                <a href={`/owner/listings/edit/${listing._id}`}>
-  Edit Listing
-</a>
-
-{listing.status === "approved" && !listing.isFeatured && (
-  <a href={`/pricing?listingId=${listing._id}`}>
-    Upgrade to Featured
-  </a>
-)}
-
-{listing.isFeatured && (
-  <span style={{ color: "green", fontWeight: 700 }}>
-    ⭐ Featured Active
-  </span>
-)}
-
-                <button
-                  onClick={() => claimListing(listing._id)}
-                >
-                  Claim Listing
-                </button>
-              </div>
+            <div className="owner-dashboard-empty-actions">
+              <a href="/submit">Submit Business Listing</a>
+              <a href="/pricing">View Pricing</a>
             </div>
           </div>
-        ))}
+        )}
+
+        {!loading && listings.length > 0 && (
+          <>
+            <section className="owner-dashboard-summary">
+              <div>
+                <strong>{listings.length}</strong>
+                <span>Total Listings</span>
+              </div>
+
+              <div>
+                <strong>{approvedCount}</strong>
+                <span>Approved</span>
+              </div>
+
+              <div>
+                <strong>{pendingCount}</strong>
+                <span>Pending</span>
+              </div>
+
+              <div>
+                <strong>{featuredCount}</strong>
+                <span>Featured</span>
+              </div>
+            </section>
+
+            <section className="owner-dashboard-search">
+              <input
+                value={ownerSearch}
+                onChange={(e) => setOwnerSearch(e.target.value)}
+                placeholder="Search your listings by name, city, category, or status..."
+              />
+            </section>
+
+            {filteredListings.length === 0 && (
+              <div className="owner-dashboard-empty">
+                <h2>No matching listings found</h2>
+                <p>Try a different search term.</p>
+              </div>
+            )}
+
+            {filteredListings.length > 0 && (
+              <section className="owner-dashboard-grid">
+                {filteredListings.map((listing) => (
+                  <article key={listing._id} className="owner-listing-card">
+                    {listing.imageUrl ? (
+                      <img
+                        src={listing.imageUrl}
+                        alt={listing.title}
+                        className="owner-listing-banner"
+                      />
+                    ) : (
+                      <div className="owner-listing-no-banner">
+                        No banner image
+                      </div>
+                    )}
+
+                    <div className="owner-listing-body">
+                      <div className="owner-listing-top">
+                        {listing.logoUrl ? (
+                          <img
+                            src={listing.logoUrl}
+                            alt={listing.title}
+                            className="owner-listing-logo"
+                          />
+                        ) : (
+                          <div className="owner-listing-logo-placeholder">
+                            {listing.title?.charAt(0)?.toUpperCase() || "B"}
+                          </div>
+                        )}
+
+                        <div>
+                          <h2>{listing.title}</h2>
+
+                          <p>
+                            {[listing.city, listing.state]
+                              .filter(Boolean)
+                              .join(", ") || "Location not available"}
+                          </p>
+
+                          <div className="owner-listing-badges">
+                            <span className={getStatusClass(listing.status)}>
+                              {listing.status || "pending"}
+                            </span>
+
+                            {listing.isFeatured && (
+                              <span className="owner-featured-badge">
+                                ⭐ Featured Active
+                              </span>
+                            )}
+
+                            {listing.isVerified && (
+                              <span className="owner-verified-badge">
+                                ✅ Verified
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="owner-listing-info">
+                        <p>
+                          <strong>Category:</strong>{" "}
+                          {listing.categoryId?.name_en || "N/A"}
+                        </p>
+
+                        <p>
+                          <strong>Subscription:</strong>{" "}
+                          {listing.stripeSubscriptionId
+                            ? "Active Stripe subscription"
+                            : listing.isFeatured
+                            ? "Featured manually or missing Stripe subscription"
+                            : "Not featured"}
+                        </p>
+
+                        <p>
+                          <strong>Payment Status:</strong>{" "}
+                          {listing.paymentStatus || "N/A"}
+                        </p>
+                      </div>
+
+                      <div className="owner-listing-actions">
+                        {listing.status === "approved" ? (
+                          <a href={`/listing/${listing._id}`}>
+                            View Public Listing
+                          </a>
+                        ) : (
+                          <span className="owner-muted-note">
+                            Public page available after admin approval
+                          </span>
+                        )}
+
+                        <a href={`/owner/listings/edit/${listing._id}`}>
+                          Edit Listing
+                        </a>
+
+                        {listing.status === "approved" &&
+                          !listing.isFeatured && (
+                            <a
+                              href={`/pricing?listingId=${listing._id}`}
+                              className="owner-upgrade-btn"
+                            >
+                              Upgrade to Featured
+                            </a>
+                          )}
+
+                        {listing.isFeatured && listing.stripeCustomerId && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              manageSubscription(listing.stripeCustomerId)
+                            }
+                          >
+                            Manage Subscription
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => claimListing(listing._id)}
+                        >
+                          Claim Listing
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </section>
+            )}
+          </>
+        )}
       </div>
     </main>
   );

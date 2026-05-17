@@ -73,3 +73,16 @@ export async function apiPatch(path, body, token) {
     handleFetchError(err);
   }
 }
+
+export async function apiDelete(path, token) {
+  try {
+    const res = await fetch(`${API}${path}`, {
+      method: "DELETE",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+
+    return await handleResponse(res);
+  } catch (err) {
+    handleFetchError(err);
+  }
+}
