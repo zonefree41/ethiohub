@@ -5,6 +5,27 @@ import Listing from "../models/Listing.js";
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+async function findListingBySubscription(subscriptionId) {
+  if (!subscriptionId) return null;
+
+  return Listing.findOne({
+    stripeSubscriptionId: subscriptionId,
+  });
+}
+
+async function setListingPaymentStatus(subscriptionId, patch) {
+  const listing = await findListingBySubscription(subscriptionId);
+
+  if (!listing) {
+    console.log("⚠️ No listing found for subscription:", subscriptionId);
+    return;
+  }
+
+  await Listing.findByIdAndUpdate(listing._id, patch);
+
+  console.log("✅ Listing payment updated:", listing._id, patch);
+}
+
 router.post("/", async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
@@ -32,11 +53,71 @@ router.post("/", async (req, res) => {
           paymentStatus: "active",
           stripeSessionId: session.id,
           stripeCustomerId: session.customer || "",
-          stripeSubscriptionId: session.subscription || ""
+          stripeSubscriptionId: session.subscription || "",
         });
 
-        console.log("✅ Listing featured after payment:", listingId);
+        console.log("✅ Listing featured after checkout:", listingId);
       }
+    }
+
+    if (event.type === "invoice.payment_succeeded") {
+      const invoice = event.data.object;
+      const subscriptionId = invoice.subscription;
+
+      await setListingPaymentStatus(subscriptionId, {
+        isFeatured: true,
+        paymentStatus: "active",
+      });
+    }
+
+    if (event.type === "invoice.payment_failed") {
+      const invoice = event.data.object;
+      const subscriptionId = invoice.subscription;
+
+      await setListingPaymentStatus(subscriptionId, {
+        isFeatured: false,
+        paymentStatus: "failed",
+      });
+    }
+
+    if (event.type === "customer.subscription.updated") {
+      const subscription = event.data.object;
+      const subscriptionId = subscription.id;
+
+      if (subscription.status === "active" || subscription.status === "trialing") {
+        await setListingPaymentStatus(subscriptionId, {
+          isFeatured: true,
+          paymentStatus: "active",
+        });
+      }
+
+      if (
+        subscription.status === "past_due" ||
+        subscription.status === "unpaid" ||
+        subscription.status === "incomplete_expired"
+      ) {
+        await setListingPaymentStatus(subscriptionId, {
+          isFeatured: false,
+          paymentStatus: "failed",
+        });
+      }
+
+      if (subscription.status === "canceled") {
+        await setListingPaymentStatus(subscriptionId, {
+          isFeatured: false,
+          paymentStatus: "canceled",
+        });
+      }
+    }
+
+    if (event.type === "customer.subscription.deleted") {
+      const subscription = event.data.object;
+      const subscriptionId = subscription.id;
+
+      await setListingPaymentStatus(subscriptionId, {
+        isFeatured: false,
+        paymentStatus: "canceled",
+      });
     }
 
     res.json({ received: true });
