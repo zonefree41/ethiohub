@@ -299,15 +299,23 @@
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
 }
 
-.home-card img,
+.home-card-banner,
 .home-no-image {
   width: 100%;
-  height: 190px;
+  height: 240px;
 }
 
-.home-card img {
+.home-card-banner {
   object-fit: cover;
   display: block;
+  background: #f3f4f6;
+}
+
+.home-no-image {
+  display: grid;
+  place-items: center;
+  background: #e5e7eb;
+  color: #6b7280;
 }
 
 .home-no-image {
@@ -451,13 +459,6 @@
   border: 3px solid white;
   margin-top: -44px;
   background: white;
-}
-
-.home-card-banner {
-  width: 100%;
-  height: 190px;
-  object-fit: cover;
-  display: block;
 }
 
 .home-business-logo {
@@ -634,10 +635,9 @@
   }
 
   .home-card-banner,
-  .home-card img,
-  .home-no-image {
-    height: 175px;
-  }
+.home-no-image {
+  height: 180px;
+}
 
   .home-section {
     margin-top: 28px;

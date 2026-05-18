@@ -1,0 +1,278 @@
+.edit-listing-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 28px 16px 70px;
+}
+
+.edit-listing-container {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.edit-listing-back {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: #2563eb;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.edit-listing-back:hover {
+  text-decoration: underline;
+}
+
+.edit-listing-hero {
+  background: linear-gradient(135deg, #07111f, #92400e);
+  color: #ffffff;
+  border-radius: 28px;
+  padding: 34px 28px;
+  margin-bottom: 22px;
+  box-shadow: 0 14px 34px rgba(146, 64, 14, 0.22);
+}
+
+.edit-listing-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.edit-listing-hero h1 {
+  margin: 0 0 10px;
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1.05;
+}
+
+.edit-listing-hero p {
+  margin: 0;
+  max-width: 720px;
+  line-height: 1.65;
+  opacity: 0.95;
+}
+
+.edit-listing-state,
+.edit-listing-form,
+.edit-listing-section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.edit-listing-state {
+  border-radius: 24px;
+  padding: 34px 24px;
+  text-align: center;
+}
+
+.edit-listing-state h2 {
+  margin: 0 0 10px;
+  color: #111827;
+}
+
+.edit-listing-state p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.edit-listing-spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #f59e0b;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  animation: editSpin 0.8s linear infinite;
+}
+
+@keyframes editSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.edit-listing-error,
+.edit-listing-success {
+  padding: 14px 16px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  font-weight: 800;
+}
+
+.edit-listing-error {
+  border: 1px solid #ef4444;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.edit-listing-success {
+  border: 1px solid #22c55e;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.edit-listing-form {
+  border-radius: 26px;
+  padding: 22px;
+  display: grid;
+  gap: 18px;
+}
+
+.edit-listing-section {
+  border-radius: 22px;
+  padding: 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.edit-listing-section h2 {
+  margin: 0 0 4px;
+  color: #111827;
+  font-size: 22px;
+}
+
+.edit-listing-form input,
+.edit-listing-form textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #111827;
+}
+
+.edit-listing-form input {
+  min-height: 50px;
+}
+
+.edit-listing-form textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.edit-listing-form input:focus,
+.edit-listing-form textarea:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22);
+}
+
+.edit-listing-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.edit-listing-three-col {
+  display: grid;
+  grid-template-columns: 1fr 120px 140px;
+  gap: 12px;
+}
+
+.edit-listing-upload-card {
+  border: 1px dashed #d1d5db;
+  background: #f9fafb;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.edit-listing-upload-card label {
+  display: block;
+  color: #111827;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.edit-listing-upload-card p {
+  margin: 0 0 12px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.edit-listing-upload-card input[type="file"] {
+  min-height: auto;
+  padding: 10px;
+  background: #ffffff;
+}
+
+.edit-listing-uploading {
+  margin-top: 10px !important;
+  color: #92400e !important;
+  font-weight: 800;
+}
+
+.edit-listing-logo-preview {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin-top: 14px;
+  border: 3px solid #ffffff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+}
+
+.edit-listing-banner-preview {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  display: block;
+  margin-top: 14px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+}
+
+.edit-listing-submit {
+  min-height: 54px;
+  border: none;
+  border-radius: 16px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.edit-listing-submit:hover {
+  background: #1f2937;
+}
+
+.edit-listing-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+@media (max-width: 720px) {
+  .edit-listing-two-col,
+  .edit-listing-three-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .edit-listing-page {
+    padding: 18px 12px 52px;
+  }
+
+  .edit-listing-hero,
+  .edit-listing-form,
+  .edit-listing-section,
+  .edit-listing-state {
+    border-radius: 22px;
+  }
+
+  .edit-listing-hero {
+    padding: 28px 20px;
+  }
+
+  .edit-listing-form {
+    padding: 16px;
+  }
+
+  .edit-listing-section {
+    padding: 16px;
+  }
+}

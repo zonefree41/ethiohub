@@ -1,0 +1,117 @@
+.admin-login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #07111f, #111827 55%, #92400e);
+  padding: 40px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 32px;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.28);
+}
+
+.admin-login-back {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: #2563eb;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.admin-login-back:hover {
+  text-decoration: underline;
+}
+
+.admin-login-header {
+  margin-bottom: 24px;
+}
+
+.admin-login-header p {
+  margin: 0 0 8px;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-login-header h1 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.admin-login-header span {
+  display: block;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.admin-login-error {
+  padding: 13px 14px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  font-weight: 800;
+  background: #fef2f2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+}
+
+.admin-login-form {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-login-form input {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid #d1d5db;
+  border-radius: 13px;
+  padding: 12px 14px;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.admin-login-form input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22);
+}
+
+.admin-login-form button {
+  min-height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.admin-login-form button:hover {
+  background: #fbbf24;
+}
+
+@media (max-width: 560px) {
+  .admin-login-page {
+    padding: 24px 12px;
+    align-items: flex-start;
+  }
+
+  .admin-login-card {
+    padding: 24px 20px;
+    border-radius: 22px;
+  }
+
+  .admin-login-header h1 {
+    font-size: 34px;
+  }
+}

@@ -276,15 +276,14 @@ export default function OwnerDashboard() {
                           Edit Listing
                         </a>
 
-                        {listing.status === "approved" &&
-                          !listing.isFeatured && (
-                            <a
-                              href={`/pricing?listingId=${listing._id}`}
-                              className="owner-upgrade-btn"
-                            >
-                              Upgrade to Featured
-                            </a>
-                          )}
+                        {listing.status === "approved" && !listing.stripeSubscriptionId && (
+  <a
+    href={`/pricing?listingId=${listing._id}`}
+    className="owner-upgrade-btn"
+  >
+    {listing.isFeatured ? "Start Paid Subscription" : "Upgrade to Featured"}
+  </a>
+)}
 
                         {listing.isFeatured && listing.stripeCustomerId && (
                           <button

@@ -1,17 +1,23 @@
 import React from "react";
 import { apiPost } from "../../api/http.js";
+import "./AdminLogin.css";
 
 export default function AdminLogin() {
   const [email, setEmail] = React.useState("admin@example.com");
   const [password, setPassword] = React.useState("ChangeMe123!");
   const [error, setError] = React.useState("");
 
+  React.useEffect(() => {
+    document.title = "Admin Login | HubEthio";
+  }, []);
+
   async function login(e) {
     e.preventDefault();
     setError("");
 
     try {
-      const data = await apiPost("/api/auth/login", { email, password });
+      const data = await apiPost("/api/admin/login", { email, password });
+
       localStorage.setItem("adminToken", data.token);
       window.location.href = "/admin";
     } catch (err) {
@@ -20,17 +26,40 @@ export default function AdminLogin() {
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: "40px auto", padding: 16 }}>
-      <a href="/">← Back Home</a>
-      <h1>Admin Login</h1>
+    <main className="admin-login-page">
+      <section className="admin-login-card">
+        <a href="/" className="admin-login-back">
+          ← Back Home
+        </a>
 
-      {error && <div style={{ border: "1px solid red", padding: 10, marginBottom: 10 }}>Error: {error}</div>}
+        <div className="admin-login-header">
+          <p>HubEthio Admin</p>
+          <h1>Admin Login</h1>
+          <span>Manage listings, approvals, featured businesses, and platform content.</span>
+        </div>
 
-      <form onSubmit={login} style={{ display: "grid", gap: 10 }}>
-        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Admin email" required />
-        <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" type="password" required />
-        <button type="submit" style={{ padding: 12 }}>Login</button>
-      </form>
-    </div>
+        {error && <div className="admin-login-error">Error: {error}</div>}
+
+        <form onSubmit={login} className="admin-login-form">
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Admin email"
+            type="email"
+            required
+          />
+
+          <input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            type="password"
+            required
+          />
+
+          <button type="submit">Login</button>
+        </form>
+      </section>
+    </main>
   );
 }
