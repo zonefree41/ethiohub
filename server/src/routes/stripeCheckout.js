@@ -46,4 +46,28 @@ router.post("/create-checkout-session", async (req, res) => {
   }
 });
 
+router.post("/create-portal-session", async (req, res) => {
+  try {
+    const { stripeCustomerId } = req.body;
+
+    if (!stripeCustomerId) {
+      return res.status(400).json({
+        message: "Stripe customer ID is required",
+      });
+    }
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: stripeCustomerId,
+      return_url: `${CLIENT_ORIGIN}/owner/dashboard`,
+    });
+
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error("❌ Stripe portal failed:", err.message);
+    res.status(500).json({
+      message: "Failed to create billing portal session",
+    });
+  }
+});
+
 export default router;
