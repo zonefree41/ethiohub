@@ -40,41 +40,81 @@ router.post("/register", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    await sendEmail({
-  to: user.email,
-  subject: "Welcome to HubEthio",
-  html: `
-    <h1>Welcome to HubEthio</h1>
+    try {
+  await sendEmail({
+    to: user.email,
+    subject: "Welcome to HubEthio",
+    html: `
+  <div style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+    <div style="max-width:640px;margin:0 auto;padding:28px 16px;">
+      <div style="background:linear-gradient(135deg,#07111f,#92400e);border-radius:24px 24px 0 0;padding:34px 28px;text-align:center;color:#ffffff;">
+        <div style="width:64px;height:64px;border-radius:50%;border:2px solid #f59e0b;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;">
+          HE
+        </div>
 
-    <p>Hello ${user.name},</p>
+        <h1 style="margin:0;font-size:32px;line-height:1.15;">
+          Welcome to HubEthio 🇪🇹
+        </h1>
 
-    <p>
-      Your business owner account has been successfully created.
-    </p>
+        <p style="margin:12px 0 0;font-size:16px;line-height:1.6;color:#f9fafb;">
+          Connecting Ethiopian businesses and communities.
+        </p>
+      </div>
 
-    <p>
-      You can now:
-    </p>
+      <div style="background:#ffffff;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 24px 24px;padding:30px 28px;">
+        <p style="margin:0 0 16px;font-size:16px;line-height:1.7;">
+          Hello <strong>${user.name}</strong>,
+        </p>
 
-    <ul>
-      <li>Submit business listings</li>
-      <li>Manage your listings</li>
-      <li>Edit your business profile</li>
-      <li>Upgrade to featured listings</li>
-    </ul>
+        <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#374151;">
+          Your business owner account has been successfully created. You can now manage your business listing and connect with the Ethiopian community across the DMV area and beyond.
+        </p>
 
-    <p>
-      Thank you for supporting the Ethiopian community through HubEthio.
-    </p>
+        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:18px;padding:18px;margin:22px 0;">
+          <h2 style="margin:0 0 12px;font-size:20px;color:#92400e;">
+            What you can do next
+          </h2>
 
-    <p>
-      Visit:
-      <a href="https://www.hubethio.com">
-        www.hubethio.com
-      </a>
-    </p>
-  `,
-});
+          <ul style="margin:0;padding-left:20px;color:#374151;font-size:15px;line-height:1.8;">
+            <li>Submit a business listing</li>
+            <li>Edit and update your business information</li>
+            <li>Upload your logo and banner image</li>
+            <li>Upgrade to Featured placement</li>
+            <li>Manage your subscription anytime</li>
+          </ul>
+        </div>
+
+        <div style="text-align:center;margin:28px 0;">
+          <a href="https://www.hubethio.com/owner/dashboard"
+            style="display:inline-block;background:#f59e0b;color:#111827;text-decoration:none;font-weight:900;padding:14px 22px;border-radius:14px;font-size:16px;">
+            Go to Owner Dashboard
+          </a>
+        </div>
+
+        <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#4b5563;">
+          Thank you for supporting Ethiopian businesses and helping grow our community platform.
+        </p>
+
+        <p style="margin:0;font-size:15px;line-height:1.7;color:#4b5563;">
+          — The HubEthio Team
+        </p>
+
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0;" />
+
+        <p style="margin:0;text-align:center;font-size:13px;line-height:1.6;color:#6b7280;">
+          HubEthio<br />
+          <a href="https://www.hubethio.com" style="color:#2563eb;text-decoration:none;font-weight:700;">
+            www.hubethio.com
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+`,
+  });
+} catch (emailErr) {
+  console.error("⚠️ Welcome email failed:", emailErr.message);
+}
 
     res.status(201).json({
       token,
