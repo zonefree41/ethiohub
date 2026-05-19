@@ -34,7 +34,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://www.instagram.com/hubethio"
+                href="https://www.instagram.com/officialhubethio/"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
