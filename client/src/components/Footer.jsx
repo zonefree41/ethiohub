@@ -43,7 +43,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://www.youtube.com/@hubethio"
+                href="https://www.youtube.com/@HubEthio"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="YouTube"
