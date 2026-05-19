@@ -3,8 +3,8 @@ import { apiPost } from "../../api/http.js";
 import "./AdminLogin.css";
 
 export default function AdminLogin() {
-  const [email, setEmail] = React.useState("admin@example.com");
-  const [password, setPassword] = React.useState("ChangeMe123!");
+  const [email, setEmail] = React.useState("");
+const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");
 
   React.useEffect(() => {
