@@ -872,3 +872,17 @@
     min-height: auto;
   }
 }
+
+.home-suggestions button {
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+
+.home-suggestions button:hover {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+.home-suggestions {
+  background: #ffffff;
+}

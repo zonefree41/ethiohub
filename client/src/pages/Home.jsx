@@ -12,6 +12,7 @@ export default function Home() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
 
   const keywordSuggestions = [
     "tax",
@@ -82,16 +83,17 @@ export default function Home() {
   }, []);
 
   function goSearch(e) {
-    e.preventDefault();
+  e.preventDefault();
+  setShowSuggestions(false);
 
-    const url =
-      `/category/${categorySlug || "all"}` +
-      `?search=${encodeURIComponent(search)}` +
-      `&city=${encodeURIComponent(city)}` +
-      `&state=${encodeURIComponent(state)}`;
+  const url =
+    `/category/${categorySlug || "all"}` +
+    `?search=${encodeURIComponent(search)}` +
+    `&city=${encodeURIComponent(city)}` +
+    `&state=${encodeURIComponent(state)}`;
 
-    window.location.href = url;
-  }
+  window.location.href = url;
+}
 
   return (
     <main className="home-page">
@@ -146,19 +148,31 @@ export default function Home() {
           <form onSubmit={goSearch} className="home-search-box">
             <div className="home-input-wrap">
               <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search: tax, lawyer, mechanic..."
-                className="home-input"
-              />
+  value={search}
+  onChange={(e) => {
+    setSearch(e.target.value);
+    setShowSuggestions(true);
+  }}
+  onFocus={() => {
+    if (search.trim()) setShowSuggestions(true);
+  }}
+  onBlur={() => {
+    setTimeout(() => setShowSuggestions(false), 150);
+  }}
+  placeholder="Search: tax, lawyer, mechanic..."
+  className="home-input"
+/>
 
-              {suggestions.length > 0 && (
+              {showSuggestions && suggestions.length > 0 && (
                 <div className="home-suggestions">
                   {suggestions.map((s) => (
                     <button
                       key={s}
                       type="button"
-                      onClick={() => setSearch(s)}
+                      onClick={() => {
+  setSearch(s);
+  setShowSuggestions(false);
+}}
                     >
                       {s}
                     </button>

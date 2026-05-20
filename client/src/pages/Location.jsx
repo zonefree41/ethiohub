@@ -138,6 +138,16 @@ export default function Location() {
     return matchesCategory && matchesSearch;
   });
 
+  const sortedListings = [...filteredListings].sort((a, b) => {
+  if (a.isFeatured && !b.isFeatured) return -1;
+  if (!a.isFeatured && b.isFeatured) return 1;
+  if (a.isVerified && !b.isVerified) return -1;
+  if (!a.isVerified && b.isVerified) return 1;
+  return a.title.localeCompare(b.title);
+});
+
+const featuredCount = listings.filter((listing) => listing.isFeatured).length;
+
   return (
     <main className="location-page">
       <div className="location-container">
@@ -185,9 +195,18 @@ export default function Location() {
                   {category.icon} {category.name_en}
                 </option>
               ))}
-            </select>
+              </select>
           </div>
         </section>
+        <section className="location-seo-card">
+  <h2>Find trusted Ethiopian services in {location.city}</h2>
+
+  <p>
+    HubEthio helps the Ethiopian community discover local restaurants,
+    professionals, tax services, auto repair, churches, salons, and more in{" "}
+    {location.city}, {location.state}.
+  </p>
+</section>
 
         {loading && (
           <section className="location-state-card">
@@ -228,13 +247,14 @@ export default function Location() {
                 {filteredListings.length !== 1 ? "es" : ""} in {location.city}
               </h2>
               <p>
-                Browse Ethiopian businesses and services in {location.city},{" "}
-                {location.state}.
-              </p>
+  {featuredCount > 0
+    ? `${featuredCount} featured business${featuredCount !== 1 ? "es" : ""} available in this area.`
+    : `Browse trusted Ethiopian services in ${location.city}, ${location.state}.`}
+</p>
             </div>
 
             <div className="location-grid">
-              {filteredListings.map((listing) => {
+              {sortedListings.map((listing) => {
                 const phone = listing.phone || "";
                 const whatsapp = String(
                   listing.whatsapp || listing.phone || ""

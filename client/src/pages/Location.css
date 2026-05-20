@@ -373,3 +373,36 @@
     width: 100%;
   }
 }
+
+.location-seo-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  padding: 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.location-seo-card h2 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 26px;
+}
+
+.location-seo-card p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.location-filter-card select {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+  appearance: auto;
+  -webkit-appearance: auto;
+}
+
+.location-filter-card select option {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
