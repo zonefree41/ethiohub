@@ -2,6 +2,23 @@ import React from "react";
 import { apiGet, apiPost } from "../api/http.js";
 import "./Category.css";
 
+function getGoogleMapsUrl(listing) {
+  const address = [
+    listing.address,
+    listing.city,
+    listing.state,
+    listing.zip,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  const query = address || listing.title || "";
+
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    query
+  )}`;
+}
+
 function getParam(name) {
   const url = new URL(window.location.href);
   return url.searchParams.get(name) || "";
@@ -186,6 +203,20 @@ export default function Category() {
       Call
     </a>
   )}
+
+  <a
+  href={getGoogleMapsUrl(listing)}
+  target="_blank"
+  rel="noreferrer"
+  className="category-action-btn"
+  onClick={() =>
+    apiPost(`/api/track/${listing._id}`, {
+      type: "directions",
+    })
+  }
+>
+  Directions
+</a>
 
   {whatsapp && (
     <a

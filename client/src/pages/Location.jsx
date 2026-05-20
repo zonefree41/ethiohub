@@ -2,6 +2,18 @@ import React from "react";
 import { apiGet } from "../api/http.js";
 import "./Location.css";
 
+function getGoogleMapsUrl(listing) {
+  const address = [listing.address, listing.city, listing.state, listing.zip]
+    .filter(Boolean)
+    .join(", ");
+
+  const query = address || listing.title || "";
+
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    query
+  )}`;
+}
+
 const LOCATIONS = {
   "silver-spring-md": {
     city: "Silver Spring",
@@ -316,6 +328,14 @@ const featuredCount = listings.filter((listing) => listing.isFeatured).length;
                             WhatsApp
                           </a>
                         )}
+
+                        <a
+  href={getGoogleMapsUrl(listing)}
+  target="_blank"
+  rel="noreferrer"
+>
+  Directions
+</a>
 
                         <a href={`/listing/${listing._id}`}>View Details</a>
                       </div>
