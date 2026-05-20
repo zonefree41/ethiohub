@@ -231,6 +231,11 @@ export default function AdminDashboard() {
               const address = [item.address, item.city, item.state, item.zip]
                 .filter(Boolean)
                 .join(", ");
+                const totalClicks =
+  (item.clicks?.call || 0) +
+  (item.clicks?.whatsapp || 0) +
+  (item.clicks?.website || 0) +
+  (item.clicks?.directions || 0);
 
               return (
                 <article key={item._id} className="admin-listing-card">
@@ -306,12 +311,12 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="admin-listing-clicks">
-                      <strong>Clicks:</strong>
-                      <span>📞 {item.clicks?.call || 0}</span>
-                      <span>💬 {item.clicks?.whatsapp || 0}</span>
-                      <span>🌐 {item.clicks?.website || 0}</span>
-                      <span>📍 {item.clicks?.directions || 0}</span>
-                    </div>
+  <strong>Total Clicks: {totalClicks}</strong>
+  <span>📞 Calls: {item.clicks?.call || 0}</span>
+  <span>💬 WhatsApp: {item.clicks?.whatsapp || 0}</span>
+  <span>🌐 Website: {item.clicks?.website || 0}</span>
+  <span>📍 Directions: {item.clicks?.directions || 0}</span>
+</div>
 
                     <div className="admin-listing-actions">
                       {item.status !== "approved" && (

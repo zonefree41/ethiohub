@@ -261,6 +261,21 @@ export default function OwnerDashboard() {
                         </p>
                       </div>
 
+                      <div className="owner-listing-clicks">
+  <strong>
+    Total Clicks:{" "}
+    {(listing.clicks?.call || 0) +
+      (listing.clicks?.whatsapp || 0) +
+      (listing.clicks?.website || 0) +
+      (listing.clicks?.directions || 0)}
+  </strong>
+
+  <span>📞 Calls: {listing.clicks?.call || 0}</span>
+  <span>💬 WhatsApp: {listing.clicks?.whatsapp || 0}</span>
+  <span>🌐 Website: {listing.clicks?.website || 0}</span>
+  <span>📍 Directions: {listing.clicks?.directions || 0}</span>
+</div>
+
                       <div className="owner-listing-actions">
                         {listing.status === "approved" ? (
                           <a href={`/listing/${listing._id}`}>
