@@ -17,6 +17,7 @@ import ownerListingRoutes from "./routes/ownerListings.js";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import stripeCheckoutRoutes from "./routes/stripeCheckout.js";
+import claimRoutes from "./routes/claimRoutes.js";
 
 const app = express();
 
@@ -108,6 +109,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/owner/auth", authLimiter, ownerAuthRoutes);
 app.use("/api/owner/listings", ownerListingRoutes);
 app.use("/api/stripe", stripeCheckoutRoutes);
+app.use("/api/claims", claimRoutes);
 /*
 |--------------------------------------------------------------------------
 | Start Server

@@ -21,6 +21,16 @@ export default function Listing() {
     comment: "",
   });
 
+  const [claimForm, setClaimForm] = React.useState({
+    ownerName: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const [claimMessage, setClaimMessage] = React.useState("");
+  const [claimError, setClaimError] = React.useState("");
+
   React.useEffect(() => {
     let alive = true;
 
@@ -55,7 +65,6 @@ export default function Listing() {
   async function loadReviews() {
     try {
       const data = await apiGet(`/api/reviews/${id}`);
-
       setReviews(data.reviews || []);
       setAverageRating(data.averageRating || 0);
       setTotalReviews(data.totalReviews || 0);
@@ -69,11 +78,9 @@ export default function Listing() {
   }, [id]);
 
   React.useEffect(() => {
-    if (listing?.title) {
-      document.title = `${listing.title} | HubEthio`;
-    } else {
-      document.title = "Business | HubEthio";
-    }
+    document.title = listing?.title
+      ? `${listing.title} | HubEthio`
+      : "Business | HubEthio";
   }, [listing]);
 
   function updateReviewForm(e) {
@@ -107,6 +114,35 @@ export default function Listing() {
       await loadReviews();
     } catch (err) {
       setReviewError(err.message || "Failed to submit review");
+    }
+  }
+
+  async function submitClaim(e) {
+    e.preventDefault();
+
+    setClaimMessage("");
+    setClaimError("");
+
+    try {
+      await apiPost("/api/claims", {
+        listingId: listing._id,
+        businessName: listing.title,
+        ownerName: claimForm.ownerName,
+        email: claimForm.email,
+        phone: claimForm.phone,
+        message: claimForm.message,
+      });
+
+      setClaimMessage("✅ Claim request submitted successfully.");
+
+      setClaimForm({
+        ownerName: "",
+        email: "",
+        phone: "",
+        message: "",
+      });
+    } catch (err) {
+      setClaimError(err.message || "Failed to submit claim request.");
     }
   }
 
@@ -149,10 +185,7 @@ export default function Listing() {
   }
 
   const phone = listing.phone || "";
-  const whatsapp = String(listing.whatsapp || listing.phone || "").replace(
-    /\D/g,
-    ""
-  );
+  const whatsapp = String(listing.whatsapp || listing.phone || "").replace(/\D/g, "");
 
   const address = [listing.address, listing.city, listing.state, listing.zip]
     .filter(Boolean)
@@ -175,11 +208,7 @@ export default function Listing() {
 
         <section className="listing-card">
           {listing.imageUrl ? (
-            <img
-              src={listing.imageUrl}
-              alt={listing.title}
-              className="listing-banner"
-            />
+            <img src={listing.imageUrl} alt={listing.title} className="listing-banner" />
           ) : (
             <div className="listing-banner-placeholder">No banner image</div>
           )}
@@ -233,9 +262,7 @@ export default function Listing() {
               {phone && (
                 <a
                   href={`tel:${phone}`}
-                  onClick={() =>
-                    apiPost(`/api/track/${listing._id}`, { type: "call" })
-                  }
+                  onClick={() => apiPost(`/api/track/${listing._id}`, { type: "call" })}
                 >
                   Call
                 </a>
@@ -260,9 +287,7 @@ export default function Listing() {
                   target="_blank"
                   rel="noreferrer"
                   onClick={() =>
-                    apiPost(`/api/track/${listing._id}`, {
-                      type: "directions",
-                    })
+                    apiPost(`/api/track/${listing._id}`, { type: "directions" })
                   }
                 >
                   Directions
@@ -281,6 +306,63 @@ export default function Listing() {
                   Website
                 </a>
               )}
+            </div>
+
+            <div className="listing-claim-section">
+              <h2>Own this business?</h2>
+              <p className="listing-claim-text">
+                Claim this listing to manage and update your business information on HubEthio.
+              </p>
+
+              {claimMessage && (
+                <div className="listing-review-success">{claimMessage}</div>
+              )}
+
+              {claimError && (
+                <div className="listing-review-error">{claimError}</div>
+              )}
+
+              <form onSubmit={submitClaim} className="listing-review-form">
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  value={claimForm.ownerName}
+                  onChange={(e) =>
+                    setClaimForm({ ...claimForm, ownerName: e.target.value })
+                  }
+                  required
+                />
+
+                <input
+                  type="email"
+                  placeholder="Business Email"
+                  value={claimForm.email}
+                  onChange={(e) =>
+                    setClaimForm({ ...claimForm, email: e.target.value })
+                  }
+                  required
+                />
+
+                <input
+                  type="text"
+                  placeholder="Phone Number"
+                  value={claimForm.phone}
+                  onChange={(e) =>
+                    setClaimForm({ ...claimForm, phone: e.target.value })
+                  }
+                />
+
+                <textarea
+                  rows="4"
+                  placeholder="Tell us why you own this business..."
+                  value={claimForm.message}
+                  onChange={(e) =>
+                    setClaimForm({ ...claimForm, message: e.target.value })
+                  }
+                />
+
+                <button type="submit">Claim Business</button>
+              </form>
             </div>
 
             <div className="listing-description">

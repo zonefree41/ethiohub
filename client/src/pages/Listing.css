@@ -476,3 +476,22 @@
     transform: rotate(360deg);
   }
 }
+
+.listing-claim-section {
+  margin: 32px 0;
+  padding: 24px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.listing-claim-section h2 {
+  margin: 0 0 8px;
+  color: #0f172a;
+}
+
+.listing-claim-text {
+  margin: 0 0 20px;
+  color: #475569;
+  line-height: 1.6;
+}
