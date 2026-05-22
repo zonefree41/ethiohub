@@ -1,5 +1,5 @@
 import React from "react";
-import { apiGet, apiPatch, apiPost, apiDelete } from "../../api/http.js";
+import { apiGet, apiPatch, apiDelete } from "../../api/http.js";
 import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
@@ -7,9 +7,11 @@ export default function AdminDashboard() {
 
   const [status, setStatus] = React.useState("pending");
   const [items, setItems] = React.useState([]);
+  const [claims, setClaims] = React.useState([]);
   const [error, setError] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [claimsLoading, setClaimsLoading] = React.useState(false);
   const [adminSearch, setAdminSearch] = React.useState("");
 
   React.useEffect(() => {
@@ -34,6 +36,18 @@ export default function AdminDashboard() {
     }
   }
 
+  async function loadClaims() {
+    try {
+      setClaimsLoading(true);
+      const data = await apiGet("/api/claims/admin", token);
+      setClaims(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to load claims:", err);
+    } finally {
+      setClaimsLoading(false);
+    }
+  }
+
   React.useEffect(() => {
     if (!token) {
       window.location.href = "/admin/login";
@@ -41,6 +55,7 @@ export default function AdminDashboard() {
     }
 
     load(status);
+    loadClaims();
   }, [status]);
 
   async function updateListing(id, patch) {
@@ -54,6 +69,20 @@ export default function AdminDashboard() {
       await load();
     } catch (err) {
       setError(err.message || "Update failed");
+    }
+  }
+
+  async function updateClaim(id, claimStatus) {
+    try {
+      setMessage("");
+      setError("");
+
+      await apiPatch(`/api/claims/admin/${id}`, { status: claimStatus }, token);
+
+      setMessage(`✅ Claim ${claimStatus} successfully`);
+      await loadClaims();
+    } catch (err) {
+      setError(err.message || "Failed to update claim");
     }
   }
 
@@ -89,10 +118,6 @@ export default function AdminDashboard() {
     }
   }
 
-  function payFeatured(id) {
-  window.location.href = `/pricing?listingId=${id}`;
-}
-
   function logout() {
     localStorage.removeItem("adminToken");
     window.location.href = "/admin/login";
@@ -115,6 +140,7 @@ export default function AdminDashboard() {
   const approvedCount = items.filter((item) => item.status === "approved").length;
   const featuredCount = items.filter((item) => item.isFeatured).length;
   const verifiedCount = items.filter((item) => item.isVerified).length;
+  const pendingClaimsCount = claims.filter((claim) => claim.status === "pending").length;
 
   return (
     <main className="admin-dashboard-page">
@@ -134,7 +160,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="admin-dashboard-actions-top">
-            <button type="button" onClick={() => load()}>
+            <button type="button" onClick={() => { load(); loadClaims(); }}>
               Refresh
             </button>
             <button type="button" onClick={logout}>
@@ -163,6 +189,109 @@ export default function AdminDashboard() {
             <strong>{verifiedCount}</strong>
             <span>Verified</span>
           </div>
+
+          <div>
+            <strong>{pendingClaimsCount}</strong>
+            <span>Pending Claims</span>
+          </div>
+        </section>
+
+        {message && <div className="admin-dashboard-success">{message}</div>}
+        {error && <div className="admin-dashboard-error">Error: {error}</div>}
+
+        <section className="admin-claims-section">
+          <div className="admin-dashboard-section-header">
+            <div>
+              <h2>Business Claim Requests</h2>
+              <p>Review ownership requests submitted by business owners.</p>
+            </div>
+          </div>
+
+          {claimsLoading && <p>Loading claim requests...</p>}
+
+          {!claimsLoading && claims.length === 0 && (
+            <div className="admin-dashboard-state">
+              <h2>No claim requests</h2>
+              <p>No business owners have submitted claim requests yet.</p>
+            </div>
+          )}
+
+          {!claimsLoading && claims.length > 0 && (
+            <section className="admin-claims-grid">
+              {claims.map((claim) => (
+                <article key={claim._id} className="admin-claim-card">
+                  <h3>{claim.businessName}</h3>
+
+                  <p>
+                    <strong>Status:</strong> {claim.status}
+                  </p>
+
+                  <p>
+                    <strong>Owner Name:</strong> {claim.ownerName}
+                  </p>
+
+                  <p>
+                    <strong>Email:</strong> {claim.email}
+                  </p>
+
+                  <p>
+                    <strong>Phone:</strong> {claim.phone || "N/A"}
+                  </p>
+
+                  <p>
+                    <strong>Message:</strong> {claim.message || "N/A"}
+                  </p>
+
+                  <p>
+                    <strong>Listing:</strong>{" "}
+                    {claim.listingId?._id ? (
+                      <a
+                        href={`/listing/${claim.listingId._id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        View Listing
+                      </a>
+                    ) : (
+                      "N/A"
+                    )}
+                  </p>
+
+                  <div className="admin-listing-actions">
+                    {claim.status !== "approved" && (
+                      <button
+                        type="button"
+                        className="admin-btn-approve"
+                        onClick={() => updateClaim(claim._id, "approved")}
+                      >
+                        Approve Claim
+                      </button>
+                    )}
+
+                    {claim.status !== "rejected" && (
+                      <button
+                        type="button"
+                        className="admin-btn-reject"
+                        onClick={() => updateClaim(claim._id, "rejected")}
+                      >
+                        Reject Claim
+                      </button>
+                    )}
+
+                    {claim.status !== "pending" && (
+                      <button
+                        type="button"
+                        className="admin-btn-neutral"
+                        onClick={() => updateClaim(claim._id, "pending")}
+                      >
+                        Move to Pending
+                      </button>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </section>
+          )}
         </section>
 
         <section className="admin-dashboard-tabs">
@@ -189,10 +318,6 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        {message && <div className="admin-dashboard-success">{message}</div>}
-
-        {error && <div className="admin-dashboard-error">Error: {error}</div>}
-
         {loading && (
           <div className="admin-dashboard-state">
             <div className="admin-dashboard-spinner"></div>
@@ -218,24 +343,18 @@ export default function AdminDashboard() {
           </section>
         )}
 
-        {!loading && items.length > 0 && filteredItems.length === 0 && (
-          <div className="admin-dashboard-state">
-            <h2>No matching listings found</h2>
-            <p>Try a different search term.</p>
-          </div>
-        )}
-
         {!loading && filteredItems.length > 0 && (
           <section className="admin-dashboard-grid">
             {filteredItems.map((item) => {
               const address = [item.address, item.city, item.state, item.zip]
                 .filter(Boolean)
                 .join(", ");
-                const totalClicks =
-  (item.clicks?.call || 0) +
-  (item.clicks?.whatsapp || 0) +
-  (item.clicks?.website || 0) +
-  (item.clicks?.directions || 0);
+
+              const totalClicks =
+                (item.clicks?.call || 0) +
+                (item.clicks?.whatsapp || 0) +
+                (item.clicks?.website || 0) +
+                (item.clicks?.directions || 0);
 
               return (
                 <article key={item._id} className="admin-listing-card">
@@ -270,31 +389,18 @@ export default function AdminDashboard() {
 
                         <div className="admin-listing-badges">
                           <span>{item.status || "pending"}</span>
-
                           {item.isFeatured && <span>⭐ Featured</span>}
-
                           {item.isVerified && <span>✅ Verified</span>}
                         </div>
                       </div>
                     </div>
 
                     <div className="admin-listing-details">
-                      <p>
-                        <strong>Category:</strong>{" "}
-                        {item.categoryId?.name_en || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Phone:</strong> {item.phone || "N/A"}
-                      </p>
-                      <p>
-                        <strong>WhatsApp:</strong> {item.whatsapp || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Website:</strong> {item.website || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Location:</strong> {address || "N/A"}
-                      </p>
+                      <p><strong>Category:</strong> {item.categoryId?.name_en || "N/A"}</p>
+                      <p><strong>Phone:</strong> {item.phone || "N/A"}</p>
+                      <p><strong>WhatsApp:</strong> {item.whatsapp || "N/A"}</p>
+                      <p><strong>Website:</strong> {item.website || "N/A"}</p>
+                      <p><strong>Location:</strong> {address || "N/A"}</p>
                       <p>
                         <strong>Description:</strong>{" "}
                         {item.description_en
@@ -311,12 +417,12 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="admin-listing-clicks">
-  <strong>Total Clicks: {totalClicks}</strong>
-  <span>📞 Calls: {item.clicks?.call || 0}</span>
-  <span>💬 WhatsApp: {item.clicks?.whatsapp || 0}</span>
-  <span>🌐 Website: {item.clicks?.website || 0}</span>
-  <span>📍 Directions: {item.clicks?.directions || 0}</span>
-</div>
+                      <strong>Total Clicks: {totalClicks}</strong>
+                      <span>📞 Calls: {item.clicks?.call || 0}</span>
+                      <span>💬 WhatsApp: {item.clicks?.whatsapp || 0}</span>
+                      <span>🌐 Website: {item.clicks?.website || 0}</span>
+                      <span>📍 Directions: {item.clicks?.directions || 0}</span>
+                    </div>
 
                     <div className="admin-listing-actions">
                       {item.status !== "approved" && (
@@ -362,9 +468,7 @@ export default function AdminDashboard() {
                           })
                         }
                       >
-                        {item.isFeatured
-                          ? "Remove Featured"
-                          : "Make Featured ⭐"}
+                        {item.isFeatured ? "Remove Featured" : "Make Featured ⭐"}
                       </button>
 
                       <button
@@ -376,9 +480,7 @@ export default function AdminDashboard() {
                           })
                         }
                       >
-                        {item.isVerified
-                          ? "Remove Verified"
-                          : "Make Verified ✅"}
+                        {item.isVerified ? "Remove Verified" : "Make Verified ✅"}
                       </button>
 
                       <button
