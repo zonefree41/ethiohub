@@ -1,5 +1,5 @@
 import React from "react";
-import { apiGet } from "../api/http.js";
+import { apiGet, apiPost } from "../api/http.js";
 import "./Home.css";
 
 export default function Home() {
@@ -13,6 +13,22 @@ export default function Home() {
   const [error, setError] = React.useState("");
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
+
+  const [businessRequestForm, setBusinessRequestForm] = React.useState({
+    businessName: "",
+    category: "",
+    city: "",
+    state: "",
+    phone: "",
+    website: "",
+    suggestedByName: "",
+    suggestedByContact: "",
+    message: "",
+  });
+
+  const [businessRequestMessage, setBusinessRequestMessage] =
+    React.useState("");
+  const [businessRequestError, setBusinessRequestError] = React.useState("");
 
   const keywordSuggestions = [
     "tax",
@@ -83,17 +99,46 @@ export default function Home() {
   }, []);
 
   function goSearch(e) {
-  e.preventDefault();
-  setShowSuggestions(false);
+    e.preventDefault();
+    setShowSuggestions(false);
 
-  const url =
-    `/category/${categorySlug || "all"}` +
-    `?search=${encodeURIComponent(search)}` +
-    `&city=${encodeURIComponent(city)}` +
-    `&state=${encodeURIComponent(state)}`;
+    const url =
+      `/category/${categorySlug || "all"}` +
+      `?search=${encodeURIComponent(search)}` +
+      `&city=${encodeURIComponent(city)}` +
+      `&state=${encodeURIComponent(state)}`;
 
-  window.location.href = url;
-}
+    window.location.href = url;
+  }
+
+  async function submitBusinessRequest(e) {
+    e.preventDefault();
+
+    setBusinessRequestMessage("");
+    setBusinessRequestError("");
+
+    try {
+      await apiPost("/api/business-requests", businessRequestForm);
+
+      setBusinessRequestMessage("✅ Business request submitted successfully.");
+
+      setBusinessRequestForm({
+        businessName: "",
+        category: "",
+        city: "",
+        state: "",
+        phone: "",
+        website: "",
+        suggestedByName: "",
+        suggestedByContact: "",
+        message: "",
+      });
+    } catch (err) {
+      setBusinessRequestError(
+        err.message || "Failed to submit business request."
+      );
+    }
+  }
 
   return (
     <main className="home-page">
@@ -148,20 +193,20 @@ export default function Home() {
           <form onSubmit={goSearch} className="home-search-box">
             <div className="home-input-wrap">
               <input
-  value={search}
-  onChange={(e) => {
-    setSearch(e.target.value);
-    setShowSuggestions(true);
-  }}
-  onFocus={() => {
-    if (search.trim()) setShowSuggestions(true);
-  }}
-  onBlur={() => {
-    setTimeout(() => setShowSuggestions(false), 150);
-  }}
-  placeholder="Search: tax, lawyer, mechanic..."
-  className="home-input"
-/>
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => {
+                  if (search.trim()) setShowSuggestions(true);
+                }}
+                onBlur={() => {
+                  setTimeout(() => setShowSuggestions(false), 150);
+                }}
+                placeholder="Search: tax, lawyer, mechanic..."
+                className="home-input"
+              />
 
               {showSuggestions && suggestions.length > 0 && (
                 <div className="home-suggestions">
@@ -170,9 +215,9 @@ export default function Home() {
                       key={s}
                       type="button"
                       onClick={() => {
-  setSearch(s);
-  setShowSuggestions(false);
-}}
+                        setSearch(s);
+                        setShowSuggestions(false);
+                      }}
                     >
                       {s}
                     </button>
@@ -317,59 +362,59 @@ export default function Home() {
         )}
 
         <section className="home-locations-section">
-  <div className="home-section-heading">
-    <div>
-      <p className="home-section-kicker">Browse by city</p>
-      <h2>Popular Ethiopian community locations</h2>
-    </div>
+          <div className="home-section-heading">
+            <div>
+              <p className="home-section-kicker">Browse by city</p>
+              <h2>Popular Ethiopian community locations</h2>
+            </div>
 
-    <a href="/category/all" className="home-section-link">
-      View all services →
-    </a>
-  </div>
+            <a href="/category/all" className="home-section-link">
+              View all services →
+            </a>
+          </div>
 
-  <div className="home-location-grid">
-    <a href="/location/silver-spring-md" className="home-location-card">
-      <span>📍</span>
-      <div>
-        <h3>Silver Spring, MD</h3>
-        <p>Restaurants, tax help, legal services, mechanics, and more.</p>
-      </div>
-    </a>
+          <div className="home-location-grid">
+            <a href="/location/silver-spring-md" className="home-location-card">
+              <span>📍</span>
+              <div>
+                <h3>Silver Spring, MD</h3>
+                <p>Restaurants, tax help, legal services, mechanics, and more.</p>
+              </div>
+            </a>
 
-    <a href="/location/alexandria-va" className="home-location-card">
-      <span>📍</span>
-      <div>
-        <h3>Alexandria, VA</h3>
-        <p>Find Ethiopian businesses and trusted local professionals.</p>
-      </div>
-    </a>
+            <a href="/location/alexandria-va" className="home-location-card">
+              <span>📍</span>
+              <div>
+                <h3>Alexandria, VA</h3>
+                <p>Find Ethiopian businesses and trusted local professionals.</p>
+              </div>
+            </a>
 
-    <a href="/location/washington-dc" className="home-location-card">
-      <span>📍</span>
-      <div>
-        <h3>Washington, DC</h3>
-        <p>Discover Ethiopian services and community businesses in DC.</p>
-      </div>
-    </a>
+            <a href="/location/washington-dc" className="home-location-card">
+              <span>📍</span>
+              <div>
+                <h3>Washington, DC</h3>
+                <p>Discover Ethiopian services and community businesses in DC.</p>
+              </div>
+            </a>
 
-    <a href="/location/falls-church-va" className="home-location-card">
-      <span>📍</span>
-      <div>
-        <h3>Falls Church, VA</h3>
-        <p>Browse Ethiopian restaurants, auto services, salons, and more.</p>
-      </div>
-    </a>
+            <a href="/location/falls-church-va" className="home-location-card">
+              <span>📍</span>
+              <div>
+                <h3>Falls Church, VA</h3>
+                <p>Browse Ethiopian restaurants, auto services, salons, and more.</p>
+              </div>
+            </a>
 
-    <a href="/location/arlington-va" className="home-location-card">
-      <span>📍</span>
-      <div>
-        <h3>Arlington, VA</h3>
-        <p>Find Ethiopian-owned businesses and community services nearby.</p>
-      </div>
-    </a>
-  </div>
-</section>
+            <a href="/location/arlington-va" className="home-location-card">
+              <span>📍</span>
+              <div>
+                <h3>Arlington, VA</h3>
+                <p>Find Ethiopian-owned businesses and community services nearby.</p>
+              </div>
+            </a>
+          </div>
+        </section>
 
         {!loading && !error && (
           <section className="home-section">
@@ -407,6 +452,138 @@ export default function Home() {
             )}
           </section>
         )}
+
+        <section className="request-business-section">
+          <div className="request-business-card">
+            <h2>Know an Ethiopian business we should add?</h2>
+            <p>
+              Help HubEthio grow by suggesting restaurants, tax services,
+              lawyers, mechanics, grocery stores, churches, and more.
+            </p>
+
+            {businessRequestMessage && (
+              <div className="request-business-success">
+                {businessRequestMessage}
+              </div>
+            )}
+
+            {businessRequestError && (
+              <div className="request-business-error">
+                {businessRequestError}
+              </div>
+            )}
+
+            <form
+              onSubmit={submitBusinessRequest}
+              className="request-business-form"
+            >
+              <input
+                placeholder="Business Name *"
+                value={businessRequestForm.businessName}
+                onChange={(e) =>
+                  setBusinessRequestForm({
+                    ...businessRequestForm,
+                    businessName: e.target.value,
+                  })
+                }
+                required
+              />
+
+              <input
+                placeholder="Category"
+                value={businessRequestForm.category}
+                onChange={(e) =>
+                  setBusinessRequestForm({
+                    ...businessRequestForm,
+                    category: e.target.value,
+                  })
+                }
+              />
+
+              <div className="request-business-row">
+                <input
+                  placeholder="City"
+                  value={businessRequestForm.city}
+                  onChange={(e) =>
+                    setBusinessRequestForm({
+                      ...businessRequestForm,
+                      city: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  placeholder="State"
+                  value={businessRequestForm.state}
+                  onChange={(e) =>
+                    setBusinessRequestForm({
+                      ...businessRequestForm,
+                      state: e.target.value.toUpperCase(),
+                    })
+                  }
+                />
+              </div>
+
+              <input
+                placeholder="Business Phone"
+                value={businessRequestForm.phone}
+                onChange={(e) =>
+                  setBusinessRequestForm({
+                    ...businessRequestForm,
+                    phone: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                placeholder="Business Website"
+                value={businessRequestForm.website}
+                onChange={(e) =>
+                  setBusinessRequestForm({
+                    ...businessRequestForm,
+                    website: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                placeholder="Your Name"
+                value={businessRequestForm.suggestedByName}
+                onChange={(e) =>
+                  setBusinessRequestForm({
+                    ...businessRequestForm,
+                    suggestedByName: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                placeholder="Your Email or Phone"
+                value={businessRequestForm.suggestedByContact}
+                onChange={(e) =>
+                  setBusinessRequestForm({
+                    ...businessRequestForm,
+                    suggestedByContact: e.target.value,
+                  })
+                }
+              />
+
+              <textarea
+                rows="4"
+                placeholder="Any extra details?"
+                value={businessRequestForm.message}
+                onChange={(e) =>
+                  setBusinessRequestForm({
+                    ...businessRequestForm,
+                    message: e.target.value,
+                  })
+                }
+              />
+
+              <button type="submit">Request Business</button>
+            </form>
+          </div>
+        </section>
       </div>
     </main>
   );
