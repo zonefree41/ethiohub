@@ -13,6 +13,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = React.useState(false);
   const [claimsLoading, setClaimsLoading] = React.useState(false);
   const [adminSearch, setAdminSearch] = React.useState("");
+  const [businessRequests, setBusinessRequests] = React.useState([]);
 
   React.useEffect(() => {
     document.title = "Admin Dashboard | HubEthio";
@@ -48,6 +49,16 @@ export default function AdminDashboard() {
     }
   }
 
+  async function loadBusinessRequests() {
+  try {
+    const data = await apiGet("/api/business-requests/admin", token);
+
+    setBusinessRequests(Array.isArray(data) ? data : []);
+  } catch (err) {
+    console.error("Failed to load business requests:", err);
+  }
+}
+
   React.useEffect(() => {
     if (!token) {
       window.location.href = "/admin/login";
@@ -56,6 +67,7 @@ export default function AdminDashboard() {
 
     load(status);
     loadClaims();
+    loadBusinessRequests();
   }, [status]);
 
   async function updateListing(id, patch) {
@@ -85,6 +97,22 @@ export default function AdminDashboard() {
       setError(err.message || "Failed to update claim");
     }
   }
+
+  async function updateBusinessRequest(id, status) {
+  try {
+    await apiPatch(
+      `/api/business-requests/admin/${id}`,
+      { status },
+      token
+    );
+
+    setMessage(`✅ Business request marked as ${status}`);
+
+    await loadBusinessRequests();
+  } catch (err) {
+    setError(err.message || "Failed to update business request");
+  }
+}
 
   async function rejectListing(id) {
     const confirmed = window.confirm(
@@ -215,6 +243,104 @@ export default function AdminDashboard() {
               <p>No business owners have submitted claim requests yet.</p>
             </div>
           )}
+
+          <section className="admin-claims-section">
+  <div className="admin-dashboard-section-header">
+    <div>
+      <h2>Business Requests</h2>
+      <p>Businesses suggested by the community.</p>
+    </div>
+  </div>
+
+  {businessRequests.length === 0 ? (
+    <div className="admin-dashboard-state">
+      <h2>No business requests yet</h2>
+    </div>
+  ) : (
+    <section className="admin-claims-grid">
+      {businessRequests.map((request) => (
+        <article key={request._id} className="admin-claim-card">
+          <h3>{request.businessName}</h3>
+
+          <p>
+            <strong>Status:</strong> {request.status}
+          </p>
+
+          <p>
+            <strong>Category:</strong> {request.category || "N/A"}
+          </p>
+
+          <p>
+            <strong>Location:</strong>{" "}
+            {[request.city, request.state]
+              .filter(Boolean)
+              .join(", ") || "N/A"}
+          </p>
+
+          <p>
+            <strong>Phone:</strong> {request.phone || "N/A"}
+          </p>
+
+          <p>
+            <strong>Website:</strong> {request.website || "N/A"}
+          </p>
+
+          <p>
+            <strong>Suggested By:</strong>{" "}
+            {request.suggestedByName || "Anonymous"}
+          </p>
+
+          <p>
+            <strong>Contact:</strong>{" "}
+            {request.suggestedByContact || "N/A"}
+          </p>
+
+          <p>
+            <strong>Message:</strong> {request.message || "N/A"}
+          </p>
+
+          <div className="admin-listing-actions">
+            {request.status !== "added" && (
+              <button
+                type="button"
+                className="admin-btn-approve"
+                onClick={() =>
+                  updateBusinessRequest(request._id, "added")
+                }
+              >
+                Mark Added
+              </button>
+            )}
+
+            {request.status !== "rejected" && (
+              <button
+                type="button"
+                className="admin-btn-reject"
+                onClick={() =>
+                  updateBusinessRequest(request._id, "rejected")
+                }
+              >
+                Reject
+              </button>
+            )}
+
+            {request.status !== "pending" && (
+              <button
+                type="button"
+                className="admin-btn-neutral"
+                onClick={() =>
+                  updateBusinessRequest(request._id, "pending")
+                }
+              >
+                Move to Pending
+              </button>
+            )}
+          </div>
+        </article>
+      ))}
+    </section>
+  )}
+</section>
 
           {!claimsLoading && claims.length > 0 && (
             <section className="admin-claims-grid">
