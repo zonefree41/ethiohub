@@ -495,3 +495,39 @@
   color: #475569;
   line-height: 1.6;
 }
+
+.listing-save-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.listing-save-btn:hover {
+  background: #fee2e2;
+}
+
+.listing-save-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.listing-save-btn:hover {
+  background: #fee2e2;
+}
+
+.listing-top-links {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}

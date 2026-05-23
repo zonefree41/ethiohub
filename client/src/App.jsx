@@ -20,6 +20,7 @@ import DeleteData from "./pages/DeleteData.jsx";
 import Footer from "./components/Footer.jsx";
 import Pricing from "./pages/Pricing.jsx";
 import Location from "./pages/Location.jsx";
+import Saved from "./pages/Saved.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -65,6 +66,7 @@ if (path.startsWith("/privacy")) return <><Privacy /><Footer /></>;
 if (path.startsWith("/terms")) return <><Terms /><Footer /></>;
 if (path.startsWith("/contact")) return <><Contact /><Footer /></>;
 if (path.startsWith("/delete-data")) return <><DeleteData /><Footer /></>;
+if (path.startsWith("/saved")) return <><Saved /><Footer /></>;
 
 return <><Home /><Footer /></>;
 }

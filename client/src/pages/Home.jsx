@@ -13,6 +13,7 @@ export default function Home() {
   const [error, setError] = React.useState("");
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [recentListings, setRecentListings] = React.useState([]);
 
   const [businessRequestForm, setBusinessRequestForm] = React.useState({
     businessName: "",
@@ -98,6 +99,50 @@ export default function Home() {
     };
   }, []);
 
+  React.useEffect(() => {
+  async function loadRecentListings() {
+    try {
+      const recentIds = JSON.parse(
+        localStorage.getItem("hubethioRecentlyViewed") || "[]"
+      );
+
+      if (recentIds.length === 0) {
+        setRecentListings([]);
+        return;
+      }
+
+      const results = await Promise.all(
+        recentIds.map((listingId) =>
+          apiGet(`/api/listings/${listingId}`).catch(() => null)
+        )
+      );
+
+      setRecentListings(results.filter(Boolean));
+    } catch (err) {
+      console.error("Failed to load recent listings:", err);
+    }
+  }
+
+  loadRecentListings();
+}, []);
+
+function removeRecentListing(id) {
+  const recentIds = JSON.parse(
+    localStorage.getItem("hubethioRecentlyViewed") || "[]"
+  );
+
+  const updated = recentIds.filter((itemId) => itemId !== id);
+
+  localStorage.setItem(
+    "hubethioRecentlyViewed",
+    JSON.stringify(updated)
+  );
+
+  setRecentListings((prev) =>
+    prev.filter((item) => item._id !== id)
+  );
+}
+
   function goSearch(e) {
     e.preventDefault();
     setShowSuggestions(false);
@@ -170,6 +215,7 @@ export default function Home() {
             <a href="/category/all">Categories</a>
             <a href="/location/silver-spring-md">Silver Spring</a>
             <a href="/pricing">Pricing</a>
+            <a href="/saved">Saved ❤️</a>
             <a href="/submit">Submit Business</a>
             <a href="/contact">Contact</a>
             <a href="/owner/login" className="home-nav-login">
@@ -360,6 +406,63 @@ export default function Home() {
             )}
           </section>
         )}
+
+        {recentListings.length > 0 && (
+  <section className="home-section">
+    <h2>🕒 Recently Viewed</h2>
+
+    <p className="home-section-text">
+      Businesses you recently viewed.
+    </p>
+
+    <div className="home-grid">
+      {recentListings.map((listing) => (
+        <a
+          key={listing._id}
+          href={`/listing/${listing._id}`}
+          className="home-card-link"
+        >
+          <article className="home-card">
+            {listing.imageUrl ? (
+              <img
+                src={listing.imageUrl}
+                alt={listing.title}
+                className="home-card-banner"
+              />
+            ) : (
+              <div className="home-no-image">No image</div>
+            )}
+
+            <div className="home-card-body">
+              <h3>{listing.title}</h3>
+
+              <p>
+                {listing.categoryId?.name_en || "Business"}
+              </p>
+
+              <p>
+                {[listing.city, listing.state]
+                  .filter(Boolean)
+                  .join(", ")}
+              </p>
+
+              <button
+  type="button"
+  className="recent-remove-btn"
+  onClick={(e) => {
+    e.preventDefault();
+    removeRecentListing(listing._id);
+  }}
+>
+  Remove ✕
+</button>
+            </div>
+          </article>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
 
         <section className="home-locations-section">
           <div className="home-section-heading">

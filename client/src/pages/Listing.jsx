@@ -14,6 +14,7 @@ export default function Listing() {
   const [totalReviews, setTotalReviews] = React.useState(0);
   const [reviewMessage, setReviewMessage] = React.useState("");
   const [reviewError, setReviewError] = React.useState("");
+  const [isSaved, setIsSaved] = React.useState(false);
 
   const [reviewForm, setReviewForm] = React.useState({
     name: "",
@@ -83,11 +84,62 @@ export default function Listing() {
       : "Business | HubEthio";
   }, [listing]);
 
+  React.useEffect(() => {
+  if (!listing?._id) return;
+
+  const viewed = JSON.parse(
+    localStorage.getItem("hubethioRecentlyViewed") || "[]"
+  );
+
+  const filtered = viewed.filter((itemId) => itemId !== listing._id);
+
+  const updated = [listing._id, ...filtered].slice(0, 12);
+
+  localStorage.setItem(
+    "hubethioRecentlyViewed",
+    JSON.stringify(updated)
+  );
+}, [listing]);
+
+  React.useEffect(() => {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("hubethioFavorites") || "[]"
+      );
+      setIsSaved(saved.includes(id));
+    } catch {
+      setIsSaved(false);
+    }
+  }, [id]);
+
   function updateReviewForm(e) {
     setReviewForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
+  }
+
+  function toggleFavorite() {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("hubethioFavorites") || "[]"
+      );
+
+      let updated;
+
+      if (saved.includes(id)) {
+        updated = saved.filter((itemId) => itemId !== id);
+        setIsSaved(false);
+      } else {
+        updated = [...saved, id];
+        setIsSaved(true);
+      }
+
+      localStorage.setItem("hubethioFavorites", JSON.stringify(updated));
+    } catch {
+      localStorage.setItem("hubethioFavorites", JSON.stringify([id]));
+      setIsSaved(true);
+    }
   }
 
   async function submitReview(e) {
@@ -185,7 +237,10 @@ export default function Listing() {
   }
 
   const phone = listing.phone || "";
-  const whatsapp = String(listing.whatsapp || listing.phone || "").replace(/\D/g, "");
+  const whatsapp = String(listing.whatsapp || listing.phone || "").replace(
+    /\D/g,
+    ""
+  );
 
   const address = [listing.address, listing.city, listing.state, listing.zip]
     .filter(Boolean)
@@ -201,14 +256,23 @@ export default function Listing() {
 
   return (
     <main className="listing-page">
-      <div className="listing-container">
-        <a href="/" className="listing-back">
-          ← Back Home
-        </a>
+      <div className="listing-top-links">
+  <a href="/" className="listing-back">
+    ← Back Home
+  </a>
+
+  <a href="/saved" className="listing-back">
+    Saved ❤️
+  </a>
+</div>
 
         <section className="listing-card">
           {listing.imageUrl ? (
-            <img src={listing.imageUrl} alt={listing.title} className="listing-banner" />
+            <img
+              src={listing.imageUrl}
+              alt={listing.title}
+              className="listing-banner"
+            />
           ) : (
             <div className="listing-banner-placeholder">No banner image</div>
           )}
@@ -259,10 +323,20 @@ export default function Listing() {
             </div>
 
             <div className="listing-actions">
+              <button
+                type="button"
+                className="listing-save-btn"
+                onClick={toggleFavorite}
+              >
+                {isSaved ? "Saved ❤️" : "Save Business 🤍"}
+              </button>
+
               {phone && (
                 <a
                   href={`tel:${phone}`}
-                  onClick={() => apiPost(`/api/track/${listing._id}`, { type: "call" })}
+                  onClick={() =>
+                    apiPost(`/api/track/${listing._id}`, { type: "call" })
+                  }
                 >
                   Call
                 </a>
@@ -287,7 +361,9 @@ export default function Listing() {
                   target="_blank"
                   rel="noreferrer"
                   onClick={() =>
-                    apiPost(`/api/track/${listing._id}`, { type: "directions" })
+                    apiPost(`/api/track/${listing._id}`, {
+                      type: "directions",
+                    })
                   }
                 >
                   Directions
@@ -311,7 +387,8 @@ export default function Listing() {
             <div className="listing-claim-section">
               <h2>Own this business?</h2>
               <p className="listing-claim-text">
-                Claim this listing to manage and update your business information on HubEthio.
+                Claim this listing to manage and update your business
+                information on HubEthio.
               </p>
 
               {claimMessage && (
@@ -469,7 +546,6 @@ export default function Listing() {
             </div>
           </div>
         </section>
-      </div>
     </main>
   );
 }
