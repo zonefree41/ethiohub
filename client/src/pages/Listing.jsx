@@ -329,30 +329,24 @@ export default function Listing() {
             </div>
 
             <div className="listing-info">
-              <p>
-                <b>Category:</b> {listing.categoryId?.name_en || "N/A"}
-              </p>
-
-              {listing.businessHours && (
   <p>
-    <strong>Hours:</strong> {listing.businessHours}
+    <b>Category:</b> {listing.categoryId?.name_en || "N/A"}
   </p>
-)}
 
-              <p>
-                <b>Location:</b> {address || "N/A"}
-              </p>
+  {listing.businessHours && (
+    <p>
+      <b>Hours:</b> {listing.businessHours}
+    </p>
+  )}
 
-              <p>
-                <b>Phone:</b> {phone || "N/A"}
-              </p>
-            </div>
-
-            {listing.businessHours && (
   <p>
-    <b>Hours:</b> {listing.businessHours}
+    <b>Location:</b> {address || "N/A"}
   </p>
-)}
+
+  <p>
+    <b>Phone:</b> {phone || "N/A"}
+  </p>
+</div>
 
             <div className="listing-actions">
               <button
