@@ -26,6 +26,11 @@ const ListingSchema = new mongoose.Schema(
       required: true,
     },
 
+    businessHours: {
+  type: String,
+  trim: true,
+},
+
     ownerId: {
   type: mongoose.Schema.Types.ObjectId,
   ref: "User",

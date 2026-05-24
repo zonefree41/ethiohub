@@ -166,6 +166,7 @@ router.post("/track/:id", async (req, res) => {
 
 // Submit a new listing — creates pending listing
 router.post("/submissions", async (req, res) => {
+  console.log("SUBMISSION BODY:", req.body);
   try {
     const {
       title,
@@ -173,6 +174,7 @@ router.post("/submissions", async (req, res) => {
       description_am = "",
       categoryId,
       phone,
+      businessHours,
       whatsapp = "",
       website = "",
       address = "",
@@ -190,22 +192,27 @@ router.post("/submissions", async (req, res) => {
 
     const ownerId = getOptionalOwnerId(req);
 
+    console.log("BUSINESS HOURS RECEIVED:", businessHours);
+
     const listing = await Listing.create({
-  title: req.body.title,
-  categoryId: req.body.categoryId,
+  title,
+  categoryId,
   ownerId,
-  phone: req.body.phone,
-  whatsapp: req.body.whatsapp || "",
-  website: req.body.website || "",
-  address: req.body.address || "",
-  city: req.body.city,
-  state: req.body.state,
-  zip: req.body.zip || "",
-  description_en: req.body.description_en || "",
-  description_am: req.body.description_am || "",
+  phone,
+  businessHours: businessHours || "",
+  whatsapp,
+  website,
+  address,
+  city,
+  state,
+  zip,
+  description_en,
+  description_am,
   logoUrl: req.body.logoUrl || "",
   imageUrl: req.body.imageUrl || "",
-  submittedBy: req.body.submittedBy || {},
+  languages,
+  tags,
+  submittedBy,
   status: "pending",
 });
 
