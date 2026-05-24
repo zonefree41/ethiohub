@@ -8,7 +8,7 @@ const emptyForm = {
   phone: "",
   whatsapp: "",
   website: "",
-  address: "",
+  address: "", 
   city: "",
   state: "",
   zip: "",
@@ -18,6 +18,7 @@ const emptyForm = {
   submittedByContact: "",
   logoUrl: "",
   imageUrl: "",
+  businessHours: "",
 };
 
 export default function Submit() {
@@ -103,11 +104,14 @@ export default function Submit() {
     try {
       const ownerToken = localStorage.getItem("ownerToken");
 
+      alert("Business hours sending: " + form.businessHours);
+
       await apiPost(
         "/api/submissions",
         {
           title: form.title,
           categoryId: form.categoryId,
+          businessHours: form.businessHours,
           phone: form.phone,
           whatsapp: form.whatsapp,
           website: form.website,
@@ -166,6 +170,13 @@ export default function Submit() {
               placeholder="Business / Service Name *"
               required
             />
+
+               <textarea
+      name="businessHours"
+      value={form.businessHours}
+      onChange={update}
+      placeholder="Business Hours: Mon–Fri 9AM–5PM, Sat 10AM–3PM"
+    />
 
             <select
               name="categoryId"

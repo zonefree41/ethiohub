@@ -531,3 +531,17 @@
   margin-bottom: 18px;
   flex-wrap: wrap;
 }
+
+.listing-share-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: #e0f2fe;
+  color: #075985;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.listing-share-btn:hover {
+  background: #bae6fd;
+}

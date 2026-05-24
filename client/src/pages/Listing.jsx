@@ -254,6 +254,26 @@ export default function Listing() {
     ? listing.website
     : `https://${listing.website}`;
 
+    async function shareBusiness() {
+  const shareUrl = window.location.href;
+  const shareText = `Check out ${listing.title} on HubEthio`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: listing.title,
+        text: shareText,
+        url: shareUrl,
+      });
+    } else {
+      await navigator.clipboard.writeText(shareUrl);
+      alert("Business link copied!");
+    }
+  } catch (err) {
+    console.error("Share failed:", err);
+  }
+}
+
   return (
     <main className="listing-page">
       <div className="listing-top-links">
@@ -313,6 +333,12 @@ export default function Listing() {
                 <b>Category:</b> {listing.categoryId?.name_en || "N/A"}
               </p>
 
+              {listing.businessHours && (
+  <p>
+    <strong>Hours:</strong> {listing.businessHours}
+  </p>
+)}
+
               <p>
                 <b>Location:</b> {address || "N/A"}
               </p>
@@ -322,6 +348,12 @@ export default function Listing() {
               </p>
             </div>
 
+            {listing.businessHours && (
+  <p>
+    <b>Hours:</b> {listing.businessHours}
+  </p>
+)}
+
             <div className="listing-actions">
               <button
                 type="button"
@@ -330,6 +362,14 @@ export default function Listing() {
               >
                 {isSaved ? "Saved ❤️" : "Save Business 🤍"}
               </button>
+
+              <button
+  type="button"
+  className="listing-share-btn"
+  onClick={shareBusiness}
+>
+  Share 🔗
+</button>
 
               {phone && (
                 <a
