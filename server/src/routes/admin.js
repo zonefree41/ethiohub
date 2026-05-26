@@ -34,10 +34,41 @@ router.get("/submissions", requireAdmin, async (req, res) => {
 
 // Approve / reject / edit
 router.patch("/listings/:id", requireAdmin, async (req, res) => {
-  const patch = req.body || {};
-  const updated = await Listing.findByIdAndUpdate(req.params.id, patch, { new: true }).populate("categoryId");
-  if (!updated) return res.status(404).json({ message: "Not found" });
-  res.json(updated);
+  try {
+    const patch = req.body || {};
+
+    const existing = await Listing.findById(req.params.id);
+
+    if (!existing) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    const isBeingApproved =
+      patch.status === "approved" && existing.status !== "approved";
+
+    if (isBeingApproved && !existing.trialStartedAt && !existing.hasUsedTrial) {
+      const now = new Date();
+      const trialEndsAt = new Date(
+        now.getTime() + 3 * 24 * 60 * 60 * 1000
+      );
+
+      patch.paymentStatus = "trial";
+      patch.isFeatured = true;
+      patch.isVerified = true;
+      patch.trialStartedAt = now;
+      patch.trialEndsAt = trialEndsAt;
+      patch.hasUsedTrial = true;
+    }
+
+    const updated = await Listing.findByIdAndUpdate(req.params.id, patch, {
+      new: true,
+    }).populate("categoryId");
+
+    res.json(updated);
+  } catch (err) {
+    console.error("Admin listing update failed:", err);
+    res.status(500).json({ message: "Failed to update listing" });
+  }
 });
 
 // Delete

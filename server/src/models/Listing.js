@@ -69,21 +69,41 @@ imageUrl: { type: String, default: "" },
     isVerified: { type: Boolean, default: false },
 
     paymentStatus: {
-      type: String,
-      enum: ["none", "unpaid", "active", "canceled", "failed"],
-      default: "none",
-    },
+  type: String,
+  enum: ["none", "trial", "unpaid", "active", "canceled", "failed"],
+  default: "none",
+},
+
+trialStartedAt: {
+  type: Date,
+  default: null,
+},
+
+trialEndsAt: {
+  type: Date,
+  default: null,
+},
+
+hasUsedTrial: {
+  type: Boolean,
+  default: false,
+},
 
     stripeSessionId: { type: String, default: "" },
     stripeCustomerId: { type: String, default: "" },
     stripeSubscriptionId: { type: String, default: "" },
 
     clicks: {
-      call: { type: Number, default: 0 },
-      whatsapp: { type: Number, default: 0 },
-      website: { type: Number, default: 0 },
-      directions: { type: Number, default: 0 },
-    },
+  views: { type: Number, default: 0 },
+
+  call: { type: Number, default: 0 },
+  whatsapp: { type: Number, default: 0 },
+  website: { type: Number, default: 0 },
+  directions: { type: Number, default: 0 },
+},
+
+trialStartedAt: { type: Date, default: null },
+trialEndsAt: { type: Date, default: null },
 
     submittedBy: {
       name: { type: String, default: "" },

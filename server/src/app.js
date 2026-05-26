@@ -112,6 +112,7 @@ app.use("/api/owner/listings", ownerListingRoutes);
 app.use("/api/stripe", stripeCheckoutRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
+import { expireTrials } from "./utils/expireTrials.js";
 /*
 |--------------------------------------------------------------------------
 | Start Server
@@ -121,6 +122,12 @@ const port = process.env.PORT || 5000;
 
 try {
   await connectDB(process.env.MONGO_URI);
+
+  await expireTrials();
+
+setInterval(() => {
+  expireTrials();
+}, 60 * 60 * 1000);
 
   app.listen(port, () => {
     console.log(`✅ API running on http://localhost:${port}`);

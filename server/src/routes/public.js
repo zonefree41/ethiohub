@@ -206,6 +206,10 @@ router.get("/listings/:id", async (req, res) => {
       return res.status(404).json({ message: "Not found" });
     }
 
+    await Listing.findByIdAndUpdate(listing._id, {
+  $inc: { "clicks.views": 1 },
+});
+
     res.json(listing);
   } catch (err) {
     res.status(500).json({ message: "Failed to load listing" });
