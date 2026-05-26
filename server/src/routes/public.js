@@ -161,6 +161,38 @@ router.get("/listings", async (req, res) => {
   }
 });
 
+// Related listings by category
+router.get("/listings/:id/related", async (req, res) => {
+  try {
+    const current = await Listing.findOne({
+      _id: req.params.id,
+      status: "approved",
+    });
+
+    if (!current) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+
+    const related = await Listing.find({
+      _id: { $ne: current._id },
+      status: "approved",
+      categoryId: current.categoryId,
+    })
+      .populate("categoryId")
+      .sort({
+        isFeatured: -1,
+        isVerified: -1,
+        createdAt: -1,
+      })
+      .limit(4);
+
+    res.json(related);
+  } catch (err) {
+    console.error("Related listings failed:", err);
+    res.status(500).json({ message: "Failed to load related listings" });
+  }
+});
+
 // Listing details
 router.get("/listings/:id", async (req, res) => {
   try {
