@@ -16,7 +16,7 @@ router.get("/categories", async (_req, res) => {
   }
 });
 
-// Nearby / similar listings
+// Nearby listings
 router.get("/listings/:id/nearby", async (req, res) => {
   try {
     const current = await Listing.findOne({
@@ -46,6 +46,38 @@ router.get("/listings/:id/nearby", async (req, res) => {
   } catch (err) {
     console.error("Nearby listings failed:", err);
     res.status(500).json({ message: "Failed to load nearby listings" });
+  }
+});
+
+// Related listings by category
+router.get("/listings/:id/related", async (req, res) => {
+  try {
+    const current = await Listing.findOne({
+      _id: req.params.id,
+      status: "approved",
+    });
+
+    if (!current) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+
+    const related = await Listing.find({
+      _id: { $ne: current._id },
+      status: "approved",
+      categoryId: current.categoryId,
+    })
+      .populate("categoryId")
+      .sort({
+        isFeatured: -1,
+        isVerified: -1,
+        createdAt: -1,
+      })
+      .limit(4);
+
+    res.json(related);
+  } catch (err) {
+    console.error("Related listings failed:", err);
+    res.status(500).json({ message: "Failed to load related listings" });
   }
 });
 
@@ -80,6 +112,7 @@ router.get("/listings", async (req, res) => {
     }
 
     const q = search.trim();
+
     const sort = {
       isFeatured: -1,
       isVerified: -1,
@@ -161,47 +194,17 @@ router.get("/listings", async (req, res) => {
   }
 });
 
-// Related listings by category
-router.get("/listings/:id/related", async (req, res) => {
-  try {
-    const current = await Listing.findOne({
-      _id: req.params.id,
-      status: "approved",
-    });
-
-    if (!current) {
-      return res.status(404).json({ message: "Listing not found" });
-    }
-
-    const related = await Listing.find({
-      _id: { $ne: current._id },
-      status: "approved",
-      categoryId: current.categoryId,
-    })
-      .populate("categoryId")
-      .sort({
-        isFeatured: -1,
-        isVerified: -1,
-        createdAt: -1,
-      })
-      .limit(4);
-
-    res.json(related);
-  } catch (err) {
-    console.error("Related listings failed:", err);
-    res.status(500).json({ message: "Failed to load related listings" });
-  }
-});
-
 // Listing details
 router.get("/listings/:id", async (req, res) => {
   try {
     const listing = await Listing.findOne({
       _id: req.params.id,
-      status: "approved"
+      status: "approved",
     }).populate("categoryId");
 
-    if (!listing) return res.status(404).json({ message: "Not found" });
+    if (!listing) {
+      return res.status(404).json({ message: "Not found" });
+    }
 
     res.json(listing);
   } catch (err) {
@@ -215,12 +218,13 @@ router.post("/track/:id", async (req, res) => {
     const { type } = req.body;
 
     const valid = ["call", "whatsapp", "website", "directions"];
+
     if (!valid.includes(type)) {
       return res.status(400).json({ message: "Invalid type" });
     }
 
     await Listing.findByIdAndUpdate(req.params.id, {
-      $inc: { [`clicks.${type}`]: 1 }
+      $inc: { [`clicks.${type}`]: 1 },
     });
 
     res.json({ ok: true });
@@ -232,6 +236,7 @@ router.post("/track/:id", async (req, res) => {
 // Submit a new listing — creates pending listing
 router.post("/submissions", async (req, res) => {
   console.log("SUBMISSION BODY:", req.body);
+
   try {
     const {
       title,
@@ -248,7 +253,7 @@ router.post("/submissions", async (req, res) => {
       zip = "",
       languages = ["en", "am"],
       tags = [],
-      submittedBy = {}
+      submittedBy = {},
     } = req.body || {};
 
     if (!title || !categoryId || !phone || !city || !state) {
@@ -257,35 +262,34 @@ router.post("/submissions", async (req, res) => {
 
     const ownerId = getOptionalOwnerId(req);
 
-    console.log("BUSINESS HOURS RECEIVED:", businessHours);
-
     const listing = await Listing.create({
-  title,
-  categoryId,
-  ownerId,
-  phone,
-  businessHours: businessHours || "",
-  whatsapp,
-  website,
-  address,
-  city,
-  state,
-  zip,
-  description_en,
-  description_am,
-  logoUrl: req.body.logoUrl || "",
-  imageUrl: req.body.imageUrl || "",
-  languages,
-  tags,
-  submittedBy,
-  status: "pending",
-});
+      title,
+      categoryId,
+      ownerId,
+      phone,
+      businessHours: businessHours || "",
+      whatsapp,
+      website,
+      address,
+      city,
+      state,
+      zip,
+      description_en,
+      description_am,
+      logoUrl: req.body.logoUrl || "",
+      imageUrl: req.body.imageUrl || "",
+      languages,
+      tags,
+      submittedBy,
+      status: "pending",
+    });
 
     res.status(201).json({
       message: "Submitted for approval",
-      id: listing._id
+      id: listing._id,
     });
   } catch (err) {
+    console.error("Submit listing failed:", err);
     res.status(500).json({ message: "Failed to submit listing" });
   }
 });
