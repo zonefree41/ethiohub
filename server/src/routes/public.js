@@ -16,6 +16,39 @@ router.get("/categories", async (_req, res) => {
   }
 });
 
+// Nearby / similar listings
+router.get("/listings/:id/nearby", async (req, res) => {
+  try {
+    const current = await Listing.findOne({
+      _id: req.params.id,
+      status: "approved",
+    });
+
+    if (!current) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+
+    const nearby = await Listing.find({
+      _id: { $ne: current._id },
+      status: "approved",
+      city: new RegExp(`^${escapeRegex(current.city)}$`, "i"),
+      state: new RegExp(`^${escapeRegex(current.state)}$`, "i"),
+    })
+      .populate("categoryId")
+      .sort({
+        isFeatured: -1,
+        isVerified: -1,
+        createdAt: -1,
+      })
+      .limit(4);
+
+    res.json(nearby);
+  } catch (err) {
+    console.error("Nearby listings failed:", err);
+    res.status(500).json({ message: "Failed to load nearby listings" });
+  }
+});
+
 // Listings search — approved only
 router.get("/listings", async (req, res) => {
   try {
