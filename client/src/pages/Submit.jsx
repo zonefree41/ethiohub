@@ -237,12 +237,18 @@ export default function Submit() {
               />
 
               <input
-                name="state"
-                value={form.state}
-                onChange={update}
-                placeholder="State * ex: VA"
-                required
-              />
+  type="text"
+  placeholder="State * ex: VA"
+  value={form.state}
+  maxLength={2}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      state: e.target.value.toUpperCase(),
+    })
+  }
+  required
+/>
 
               <input
                 name="zip"

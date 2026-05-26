@@ -278,28 +278,83 @@ export default function Listing() {
           </div>
         )}
 
-        <div>
-          <h3>{item.title}</h3>
-          <p>{item.categoryId?.name_en || "Business"}</p>
-          <p>
-            {item.city}, {item.state}
-          </p>
-        </div>
+        <div className="listing-nearby-content">
+  <h3>{item.title}</h3>
+
+  <div className="listing-mini-badges">
+    {item.isFeatured && (
+      <span className="mini-featured-badge">
+        ⭐ Featured
+      </span>
+    )}
+
+    {item.isVerified && (
+      <span className="mini-verified-badge">
+        ✅ Verified
+      </span>
+    )}
+  </div>
+
+  <p>{item.categoryId?.name_en || "Business"}</p>
+
+  <p>
+    {item.city}, {item.state}
+  </p>
+</div>
       </a>
     );
   }
 
   if (loading) {
-    return (
-      <main className="listing-page">
-        <div className="listing-state-card">
-          <div className="spinner"></div>
-          <h2>Loading business...</h2>
-          <p>Please wait while we open this listing.</p>
+  return (
+    <main className="listing-page">
+      <section className="listing-card listing-skeleton-card">
+        <div className="skeleton skeleton-banner"></div>
+
+        <div className="listing-content">
+          <div className="listing-header">
+            <div className="skeleton skeleton-logo"></div>
+
+            <div className="listing-title-wrap">
+              <div className="skeleton skeleton-title"></div>
+              <div className="skeleton skeleton-badges"></div>
+            </div>
+          </div>
+
+          <div className="listing-info">
+            <div className="skeleton skeleton-line"></div>
+            <div className="skeleton skeleton-line"></div>
+            <div className="skeleton skeleton-line short"></div>
+          </div>
+
+          <div className="listing-actions">
+            <div className="skeleton skeleton-button"></div>
+            <div className="skeleton skeleton-button"></div>
+            <div className="skeleton skeleton-button"></div>
+          </div>
+
+          <div className="listing-nearby">
+            <div className="skeleton skeleton-section-title"></div>
+
+            <div className="listing-nearby-grid">
+              {[1, 2].map((item) => (
+                <div key={item} className="listing-nearby-card skeleton-business-card">
+                  <div className="skeleton skeleton-card-image"></div>
+
+                  <div className="skeleton-card-content">
+                    <div className="skeleton skeleton-card-title"></div>
+                    <div className="skeleton skeleton-card-text"></div>
+                    <div className="skeleton skeleton-card-text short"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </main>
-    );
-  }
+      </section>
+    </main>
+  );
+}
 
   if (error) {
     return (

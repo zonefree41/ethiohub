@@ -71,6 +71,16 @@ export default function OwnerDashboard() {
     window.location.href = "/";
   }
 
+  function formatDate(value) {
+  if (!value) return "N/A";
+
+  return new Date(value).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
   function getStatusClass(status) {
     if (status === "approved") return "owner-status-approved";
     if (status === "rejected") return "owner-status-rejected";
@@ -225,13 +235,13 @@ export default function OwnerDashboard() {
                               {listing.status || "pending"}
                             </span>
 
-                            {listing.isFeatured && (
+                            {listing.paymentStatus === "active" && listing.isFeatured && (
                               <span className="owner-featured-badge">
                                 ⭐ Featured Active
                               </span>
                             )}
 
-                            {listing.isVerified && (
+                            {listing.paymentStatus === "active" && listing.isVerified && (
                               <span className="owner-verified-badge">
                                 ✅ Verified
                               </span>
@@ -247,13 +257,31 @@ export default function OwnerDashboard() {
                         </p>
 
                         <p>
-                          <strong>Subscription:</strong>{" "}
-                          {listing.stripeSubscriptionId
-                            ? "Active Stripe subscription"
-                            : listing.isFeatured
-                            ? "Featured manually or missing Stripe subscription"
-                            : "Not featured"}
-                        </p>
+  <strong>Plan:</strong>{" "}
+  {listing.paymentStatus === "trial"
+    ? "Free Featured Trial Active"
+    : listing.paymentStatus === "active" && listing.isFeatured
+    ? "Featured Monthly Plan Active"
+    : "Basic Free Listing"}
+</p>
+
+{listing.paymentStatus === "trial" && (
+  <p className="owner-trial-end">
+    <strong>Trial Ends:</strong> {formatDate(listing.trialEndsAt)}
+  </p>
+)}
+
+{listing.paymentStatus !== "active" &&
+ listing.paymentStatus !== "trial" && (
+  <div className="owner-upgrade-notice">
+    <h3>Upgrade to Featured</h3>
+    <p>
+      This listing is currently on the free/basic plan. Upgrade to Featured to
+      get premium visibility, a Featured badge, and higher placement in search,
+      nearby, and related businesses.
+    </p>
+  </div>
+)}
 
                         <p>
                           <strong>Payment Status:</strong>{" "}
@@ -291,12 +319,14 @@ export default function OwnerDashboard() {
                           Edit Listing
                         </a>
 
-                        {listing.status === "approved" && !listing.stripeSubscriptionId && (
+                        {listing.status === "approved" &&
+ listing.paymentStatus !== "active" &&
+ listing.paymentStatus !== "trial" && (
   <a
     href={`/pricing?listingId=${listing._id}`}
     className="owner-upgrade-btn"
   >
-    {listing.isFeatured ? "Start Paid Subscription" : "Upgrade to Featured"}
+    Upgrade to Featured
   </a>
 )}
 
