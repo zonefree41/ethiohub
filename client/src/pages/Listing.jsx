@@ -18,6 +18,7 @@ export default function Listing() {
   const [reviewError, setReviewError] = React.useState("");
   const [isSaved, setIsSaved] = React.useState(false);
   const [nearbyListings, setNearbyListings] = React.useState([]);
+  const [relatedListings, setRelatedListings] = React.useState([]);
 
   const [reviewForm, setReviewForm] = React.useState({
     name: "",
@@ -114,28 +115,32 @@ setNearbyListings(Array.isArray(data) ? data : []);
   }, [listing]);
 
   React.useEffect(() => {
-    if (!listing?._id) return;
+  if (!isValidListingId) return;
 
-    const viewed = JSON.parse(
-      localStorage.getItem("hubethioRecentlyViewed") || "[]"
-    );
-
-    const filtered = viewed.filter((itemId) => itemId !== listing._id);
-    const updated = [listing._id, ...filtered].slice(0, 12);
-
-    localStorage.setItem("hubethioRecentlyViewed", JSON.stringify(updated));
-  }, [listing]);
-
-  React.useEffect(() => {
+  async function loadRelatedListings() {
     try {
-      const saved = JSON.parse(
-        localStorage.getItem("hubethioFavorites") || "[]"
-      );
-      setIsSaved(saved.includes(id));
-    } catch {
-      setIsSaved(false);
+      console.log("🔥 RELATED FETCH STARTED:", `/api/listings/${id}/related`);
+
+      const data = await apiGet(`/api/listings/${id}/related`);
+
+      console.log("🔥 RELATED RAW DATA:", data);
+      console.log("🔥 IS ARRAY?", Array.isArray(data));
+
+      const relatedArray = Array.isArray(data)
+        ? data
+        : data?.relatedListings || data?.related || data?.listings || data?.data || [];
+
+      console.log("🔥 RELATED FINAL ARRAY:", relatedArray);
+
+      setRelatedListings(relatedArray);
+    } catch (err) {
+      console.error("❌ Failed to load related listings:", err);
+      setRelatedListings([]);
     }
-  }, [id]);
+  }
+
+  loadRelatedListings();
+}, [id, isValidListingId]);
 
   function updateReviewForm(e) {
     setReviewForm((prev) => ({
@@ -445,6 +450,7 @@ setNearbyListings(Array.isArray(data) ? data : []);
           </div>
 
           <p>Nearby count: {nearbyListings.length}</p>
+          <p>Related count: {relatedListings.length}</p>
 
           {nearbyListings.length > 0 && (
             <div className="listing-nearby">
@@ -473,6 +479,30 @@ setNearbyListings(Array.isArray(data) ? data : []);
               </div>
             </div>
           )}
+
+          {relatedListings.length > 0 && (
+  <div className="listing-nearby">
+    <h2>Related Businesses</h2>
+
+    <div className="listing-nearby-grid">
+      {relatedListings.map((item) => (
+        <a
+          key={item._id}
+          href={`/listing/${item._id}`}
+          className="listing-nearby-card"
+        >
+          {item.imageUrl && <img src={item.imageUrl} alt={item.title} />}
+
+          <div>
+            <h3>{item.title}</h3>
+            <p>{item.categoryId?.name_en || "Business"}</p>
+            <p>{item.city}, {item.state}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+)}
 
           <div className="listing-claim-section">
             <h2>Own this business?</h2>
