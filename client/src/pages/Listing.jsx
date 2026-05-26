@@ -94,7 +94,11 @@ export default function Listing() {
     async function loadNearbyListings() {
       try {
         const data = await apiGet(`/api/listings/${id}/nearby`);
-        setNearbyListings(Array.isArray(data) ? data : []);
+
+console.log("NEARBY API URL:", `/api/listings/${id}/nearby`);
+console.log("NEARBY API DATA:", data);
+
+setNearbyListings(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to load nearby listings:", err);
       }
@@ -439,6 +443,8 @@ export default function Listing() {
               </a>
             )}
           </div>
+
+          <p>Nearby count: {nearbyListings.length}</p>
 
           {nearbyListings.length > 0 && (
             <div className="listing-nearby">
