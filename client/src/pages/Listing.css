@@ -545,3 +545,38 @@
 .listing-share-btn:hover {
   background: #bae6fd;
 }
+
+.listing-nearby {
+  margin-top: 32px;
+}
+
+.listing-nearby-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.listing-nearby-card {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  text-decoration: none;
+  color: inherit;
+}
+
+.listing-nearby-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.listing-nearby-card h3 {
+  margin: 0 0 6px;
+}
+
+.listing-nearby-card p {
+  margin: 4px 0;
+}
