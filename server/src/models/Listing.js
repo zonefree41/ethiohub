@@ -107,9 +107,6 @@ hasUsedTrial: {
   directions: { type: Number, default: 0 },
 },
 
-trialStartedAt: { type: Date, default: null },
-trialEndsAt: { type: Date, default: null },
-
     submittedBy: {
       name: { type: String, default: "" },
       contact: { type: String, default: "" },
