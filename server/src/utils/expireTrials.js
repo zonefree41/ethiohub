@@ -1,4 +1,5 @@
 import Listing from "../models/Listing.js";
+import { sendTrialReminderEmails } from "../jobs/sendTrialReminderEmails.js";
 
 export async function expireTrials() {
   try {
@@ -19,6 +20,7 @@ export async function expireTrials() {
     );
 
     console.log(`✅ Expired trials checked. Updated: ${result.modifiedCount}`);
+    await sendTrialReminderEmails();
   } catch (err) {
     console.error("❌ Failed to expire trials:", err);
   }

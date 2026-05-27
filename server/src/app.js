@@ -113,6 +113,7 @@ app.use("/api/stripe", stripeCheckoutRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
 import { expireTrials } from "./utils/expireTrials.js";
+import { sendTrialReminderEmails } from "./jobs/sendTrialReminderEmails.js";
 /*
 |--------------------------------------------------------------------------
 | Start Server
