@@ -289,6 +289,13 @@ export default function OwnerDashboard() {
                         </p>
                       </div>
 
+                      {listing.subscriptionCancelAt && (
+  <p className="owner-cancel-date">
+    <strong>Subscription Cancels:</strong>{" "}
+    {formatDate(listing.subscriptionCancelAt)}
+  </p>
+)}
+
                       <div className="owner-listing-clicks">
   <strong>
     Total Clicks:{" "}
