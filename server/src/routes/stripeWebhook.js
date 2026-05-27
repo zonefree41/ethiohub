@@ -50,6 +50,7 @@ router.post("/", async (req, res) => {
       if (listingId) {
         await Listing.findByIdAndUpdate(listingId, {
           isFeatured: true,
+          isVerified: true,
           paymentStatus: "active",
           stripeSessionId: session.id,
           stripeCustomerId: session.customer || "",
@@ -66,6 +67,7 @@ router.post("/", async (req, res) => {
 
       await setListingPaymentStatus(subscriptionId, {
         isFeatured: true,
+        isVerified: true,
         paymentStatus: "active",
       });
     }
@@ -87,6 +89,7 @@ router.post("/", async (req, res) => {
       if (subscription.status === "active" || subscription.status === "trialing") {
         await setListingPaymentStatus(subscriptionId, {
           isFeatured: true,
+          isVerified: true,
           paymentStatus: "active",
         });
       }
@@ -97,16 +100,18 @@ router.post("/", async (req, res) => {
         subscription.status === "incomplete_expired"
       ) {
         await setListingPaymentStatus(subscriptionId, {
-          isFeatured: false,
-          paymentStatus: "failed",
-        });
+  isFeatured: false,
+  isVerified: false,
+  paymentStatus: "failed",
+});
       }
 
       if (subscription.status === "canceled") {
         await setListingPaymentStatus(subscriptionId, {
-          isFeatured: false,
-          paymentStatus: "canceled",
-        });
+  isFeatured: false,
+  isVerified: false,
+  paymentStatus: "canceled",
+});
       }
     }
 

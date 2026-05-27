@@ -7,8 +7,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "https://www.hubethio.com";
 
 const PRICES = {
-  monthly: process.env.STRIPE_FEATURED_MONTHLY_PRICE_ID,
-  yearly: process.env.STRIPE_FEATURED_YEARLY_PRICE_ID,
+  monthly: process.env.STRIPE_MONTHLY_PRICE_ID,
+  yearly: process.env.STRIPE_YEARLY_PRICE_ID,
 };
 
 router.post("/create-checkout-session", async (req, res) => {
