@@ -93,6 +93,11 @@ hasUsedTrial: {
     stripeCustomerId: { type: String, default: "" },
     stripeSubscriptionId: { type: String, default: "" },
 
+    subscriptionCancelAt: {
+  type: Date,
+  default: null,
+},
+
     clicks: {
   views: { type: Number, default: 0 },
 

@@ -86,12 +86,17 @@ router.post("/", async (req, res) => {
       const subscription = event.data.object;
       const subscriptionId = subscription.id;
 
+      const cancelAt = subscription.cancel_at
+  ? new Date(subscription.cancel_at * 1000)
+  : null;
+
       if (subscription.status === "active" || subscription.status === "trialing") {
         await setListingPaymentStatus(subscriptionId, {
-          isFeatured: true,
-          isVerified: true,
-          paymentStatus: "active",
-        });
+  isFeatured: true,
+  isVerified: true,
+  paymentStatus: "active",
+  subscriptionCancelAt: cancelAt,
+});
       }
 
       if (

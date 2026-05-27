@@ -13,15 +13,21 @@ const PRICES = {
 
 router.post("/create-checkout-session", async (req, res) => {
   try {
-    const { listingId, plan } = req.body;
+    const { listingId, plan = "monthly" } = req.body || {};
 
     if (!listingId) {
       return res.status(400).json({ message: "Listing ID is required" });
     }
 
-    if (!plan || !PRICES[plan]) {
-      return res.status(400).json({ message: "Invalid subscription plan" });
-    }
+    if (!["monthly", "yearly"].includes(plan)) {
+  return res.status(400).json({ message: "Invalid subscription plan" });
+}
+
+if (!PRICES[plan]) {
+  return res.status(500).json({
+    message: `Missing Stripe price ID for ${plan}`,
+  });
+}
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
