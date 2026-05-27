@@ -282,13 +282,15 @@ export default function Listing() {
   <h3>{item.title}</h3>
 
   <div className="listing-mini-badges">
-    {item.isFeatured && (
+    {(item.paymentStatus === "active" || item.paymentStatus === "trial") &&
+  item.isFeatured && (
       <span className="mini-featured-badge">
         ⭐ Featured
       </span>
     )}
 
-    {item.isVerified && (
+    {(item.paymentStatus === "active" || item.paymentStatus === "trial") &&
+  item.isVerified && (
       <span className="mini-verified-badge">
         ✅ Verified
       </span>
@@ -442,8 +444,11 @@ export default function Listing() {
               <h1>{listing.title}</h1>
 
               <div className="listing-badges">
-                {listing.isFeatured && <span>⭐ Featured</span>}
-                {listing.isVerified && <span>✅ Verified</span>}
+                {(listing.paymentStatus === "active" || listing.paymentStatus === "trial") &&
+  listing.isFeatured && <span>⭐ Featured</span>}
+
+{(listing.paymentStatus === "active" || listing.paymentStatus === "trial") &&
+  listing.isVerified && <span>✅ Verified</span>}
 
                 {totalReviews > 0 && (
                   <span>
