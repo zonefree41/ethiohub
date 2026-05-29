@@ -20,6 +20,10 @@ import stripeCheckoutRoutes from "./routes/stripeCheckout.js";
 import claimRoutes from "./routes/claimRoutes.js";
 import businessRequestRoutes from "./routes/businessRequestRoutes.js";
 import { startMonthlyPerformanceCron } from "./jobs/monthlyPerformanceCron.js";
+import { expireTrials } from "./utils/expireTrials.js";
+import { sendTrialReminderEmails } from "./jobs/sendTrialReminderEmails.js";
+import { startDailyJobs } from "./jobs/dailyJobs.js";
+import sitemapRoutes from "./routes/sitemap.js";
 
 const app = express();
 
@@ -115,9 +119,7 @@ app.use("/api/owner/listings", ownerListingRoutes);
 app.use("/api/stripe", stripeCheckoutRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
-import { expireTrials } from "./utils/expireTrials.js";
-import { sendTrialReminderEmails } from "./jobs/sendTrialReminderEmails.js";
-import { startDailyJobs } from "./jobs/dailyJobs.js";
+app.use("/", sitemapRoutes);
 /*
 |--------------------------------------------------------------------------
 | Start Server
