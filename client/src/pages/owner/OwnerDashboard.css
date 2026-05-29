@@ -518,3 +518,22 @@
   color: #92400e;
   font-weight: 600;
 }
+
+.owner-subscription-card {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.owner-subscription-card h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.owner-subscription-card p {
+  margin: 8px 0;
+  color: #334155;
+}

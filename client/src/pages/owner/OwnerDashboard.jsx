@@ -256,45 +256,61 @@ export default function OwnerDashboard() {
                           {listing.categoryId?.name_en || "N/A"}
                         </p>
 
-                        <p>
-  <strong>Plan:</strong>{" "}
-  {listing.paymentStatus === "trial"
-    ? "Free Featured Trial Active"
-    : listing.paymentStatus === "active" && listing.isFeatured
-    ? "Featured Monthly Plan Active"
-    : "Basic Free Listing"}
-</p>
+                        <div className="owner-subscription-card">
+  <h3>Subscription Status</h3>
 
-{listing.paymentStatus === "trial" && (
-  <p className="owner-trial-end">
-    <strong>Trial Ends:</strong> {formatDate(listing.trialEndsAt)}
+  <p>
+    <strong>Plan:</strong>{" "}
+    {listing.paymentStatus === "trial"
+      ? "Free Featured Trial"
+      : listing.paymentStatus === "active" && listing.isFeatured
+      ? "Featured Monthly Plan"
+      : "Free Basic Listing"}
   </p>
-)}
 
-{listing.paymentStatus !== "active" &&
- listing.paymentStatus !== "trial" && (
-  <div className="owner-upgrade-notice">
-    <h3>Upgrade to Featured</h3>
+  <p>
+    <strong>Status:</strong>{" "}
+    {listing.paymentStatus === "trial"
+      ? "Trial Active"
+      : listing.paymentStatus === "active"
+      ? "Active"
+      : listing.paymentStatus || "Not Subscribed"}
+  </p>
+
+  {listing.paymentStatus === "trial" && (
     <p>
-      This listing is currently on the free/basic plan. Upgrade to Featured to
-      get premium visibility, a Featured badge, and higher placement in search,
-      nearby, and related businesses.
+      <strong>Trial Ends:</strong> {formatDate(listing.trialEndsAt)}
     </p>
-  </div>
-)}
+  )}
 
-                        <p>
-                          <strong>Payment Status:</strong>{" "}
-                          {listing.paymentStatus || "N/A"}
-                        </p>
-                      </div>
+  {listing.subscriptionCancelAt && (
+    <p>
+      <strong>Subscription Cancels:</strong>{" "}
+      {formatDate(listing.subscriptionCancelAt)}
+    </p>
+  )}
 
-                      {listing.subscriptionCancelAt && (
-  <p className="owner-cancel-date">
-    <strong>Subscription Cancels:</strong>{" "}
-    {formatDate(listing.subscriptionCancelAt)}
+  <p>
+    <strong>Featured:</strong> {listing.isFeatured ? "Yes" : "No"}
   </p>
-)}
+
+  <p>
+    <strong>Verified:</strong> {listing.isVerified ? "Yes" : "No"}
+  </p>
+
+  {listing.paymentStatus !== "active" &&
+    listing.paymentStatus !== "trial" && (
+      <div className="owner-upgrade-notice">
+        <h3>Upgrade to Featured</h3>
+        <p>
+          Upgrade to Featured to get premium visibility, a Featured badge,
+          Verified badge, and higher placement in search, nearby, and related
+          businesses.
+        </p>
+      </div>
+    )}
+</div>
+                      </div>
 
                       <div className="owner-listing-clicks">
   <strong>
