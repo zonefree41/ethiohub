@@ -114,6 +114,7 @@ app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
 import { expireTrials } from "./utils/expireTrials.js";
 import { sendTrialReminderEmails } from "./jobs/sendTrialReminderEmails.js";
+import { startDailyJobs } from "./jobs/dailyJobs.js";
 /*
 |--------------------------------------------------------------------------
 | Start Server
@@ -126,9 +127,9 @@ try {
 
   await expireTrials();
 
-setInterval(() => {
-  expireTrials();
-}, 60 * 60 * 1000);
+  setInterval(async () => {
+    await expireTrials();
+  }, 60 * 60 * 1000);
 
   app.listen(port, () => {
     console.log(`✅ API running on http://localhost:${port}`);
