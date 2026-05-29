@@ -1,6 +1,7 @@
 import React from "react";
 import { apiGet, apiPost } from "../api/http";
 import "./Listing.css";
+import { trackEvent } from "../utils/analytics.js";
 
 export default function Listing() {
   const pathParts = window.location.pathname.split("/").filter(Boolean);
@@ -500,9 +501,17 @@ export default function Listing() {
             {phone && (
               <a
                 href={`tel:${phone}`}
-                onClick={() =>
-                  apiPost(`/api/track/${listing._id}`, { type: "call" })
-                }
+                onClick={() => {
+  apiPost(`/api/track/${listing._id}`, { type: "call" });
+
+  trackEvent("call_click", {
+    listing_id: listing._id,
+    listing_title: listing.title,
+    category: listing.categoryId?.name_en || "Business",
+    city: listing.city || "",
+    state: listing.state || "",
+  });
+}}               
               >
                 Call
               </a>
@@ -513,37 +522,61 @@ export default function Listing() {
                 href={`https://wa.me/${whatsapp}`}
                 target="_blank"
                 rel="noreferrer"
-                onClick={() =>
-                  apiPost(`/api/track/${listing._id}`, { type: "whatsapp" })
-                }
+                onClick={() => {
+  apiPost(`/api/track/${listing._id}`, { type: "whatsapp" });
+
+  trackEvent("whatsapp_click", {
+    listing_id: listing._id,
+    listing_title: listing.title,
+    category: listing.categoryId?.name_en || "Business",
+    city: listing.city || "",
+    state: listing.state || "",
+  });
+}}
               >
                 WhatsApp
               </a>
             )}
 
-            {address && (
-              <a
-                href={directionsUrl}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() =>
-                  apiPost(`/api/track/${listing._id}`, {
-                    type: "directions",
-                  })
-                }
-              >
-                Directions
-              </a>
-            )}
+  {address && (
+    <a
+      href={directionsUrl}
+      target="_blank"
+      rel="noreferrer"
+      onClick={() => {
+        apiPost(`/api/track/${listing._id}`, {
+          type: "directions",
+        });
+
+        trackEvent("directions_click", {
+          listing_id: listing._id,
+          listing_title: listing.title,
+          category: listing.categoryId?.name_en || "Business",
+          city: listing.city || "",
+          state: listing.state || "",
+        });
+      }}
+    >
+      Directions
+    </a>
+  )}
 
             {listing.website && (
               <a
                 href={websiteUrl}
                 target="_blank"
                 rel="noreferrer"
-                onClick={() =>
-                  apiPost(`/api/track/${listing._id}`, { type: "website" })
-                }
+                onClick={() => {
+  apiPost(`/api/track/${listing._id}`, { type: "website" });
+
+  trackEvent("website_click", {
+    listing_id: listing._id,
+    listing_title: listing.title,
+    category: listing.categoryId?.name_en || "Business",
+    city: listing.city || "",
+    state: listing.state || "",
+  });
+}}
               >
                 Website
               </a>

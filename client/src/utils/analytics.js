@@ -14,3 +14,7 @@ export function trackPageView(path) {
     page: path,
   });
 }
+
+export function trackEvent(eventName, params = {}) {
+  ReactGA.event(eventName, params);
+}
