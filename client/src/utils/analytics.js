@@ -16,5 +16,14 @@ export function trackPageView(path) {
 }
 
 export function trackEvent(eventName, params = {}) {
-  ReactGA.event(eventName, params);
+  const id = import.meta.env.VITE_GA_MEASUREMENT_ID;
+
+  if (!id) return;
+
+  ReactGA.event(eventName, {
+    ...params,
+    transport_type: "beacon",
+  });
+
+  console.log("GA event:", eventName, params);
 }

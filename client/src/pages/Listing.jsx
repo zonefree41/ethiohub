@@ -568,6 +568,7 @@ export default function Listing() {
                 rel="noreferrer"
                 onClick={() => {
   apiPost(`/api/track/${listing._id}`, { type: "website" });
+   console.log("Website button clicked");
 
   trackEvent("website_click", {
     listing_id: listing._id,
