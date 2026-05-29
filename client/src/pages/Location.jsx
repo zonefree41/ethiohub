@@ -65,12 +65,6 @@ export default function Location() {
   const [error, setError] = React.useState("");
 
   React.useEffect(() => {
-    document.title = location
-      ? `${location.title} | HubEthio`
-      : "Location | HubEthio";
-  }, [location]);
-
-  React.useEffect(() => {
     let alive = true;
 
     async function loadLocation() {

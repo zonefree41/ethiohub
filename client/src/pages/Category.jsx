@@ -102,10 +102,6 @@ const seoDescription =
     ? "Find trusted Ethiopian businesses, auto repair, restaurants, salons, tax services, and community services near you on HubEthio."
     : `Find trusted Ethiopian ${title.toLowerCase()} near you. Browse businesses, contact owners, get directions, and discover Ethiopian community services on HubEthio.`;
 
-  React.useEffect(() => {
-    document.title = `${title} | HubEthio`;
-  }, [title]);
-
   return (
   <>
     <Helmet>
