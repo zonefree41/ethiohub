@@ -21,6 +21,7 @@ import Footer from "./components/Footer.jsx";
 import Pricing from "./pages/Pricing.jsx";
 import Location from "./pages/Location.jsx";
 import Saved from "./pages/Saved.jsx";
+import { trackPageView } from "./utils/analytics.js";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -41,6 +42,10 @@ function usePath() {
 
 export default function App() {
   const path = usePath();
+  
+  React.useEffect(() => {
+  trackPageView(path);
+}, [path]);
 
   if (path.startsWith("/admin/login")) return <AdminLogin />;
   if (path.startsWith("/admin")) return <AdminDashboard />;
