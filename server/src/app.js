@@ -22,6 +22,8 @@ import businessRequestRoutes from "./routes/businessRequestRoutes.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(helmet());
 
 const generalLimiter = rateLimit({
