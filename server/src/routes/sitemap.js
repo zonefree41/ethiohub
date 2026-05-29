@@ -6,74 +6,61 @@ const router = express.Router();
 
 const SITE_URL = "https://www.hubethio.com";
 
-function xmlUrl(loc, lastmod) {
+function escapeXml(value = "") {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function urlEntry(loc, priority = "0.8", changefreq = "weekly") {
   return `
   <url>
-    <loc>${loc}</loc>
-    ${lastmod ? `<lastmod>${new Date(lastmod).toISOString()}</lastmod>` : ""}
+    <loc>${escapeXml(loc)}</loc>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
   </url>`;
 }
 
-router.get("/sitemap.xml", async (req, res) => {
+router.get("/sitemap.xml", async (_req, res) => {
   try {
-    const listings = await Listing.find({ status: "approved" })
-      .select("_id updatedAt city state")
-      .limit(5000);
-
-    const categories = await Category.find({})
-      .select("slug name_en updatedAt")
-      .limit(500);
-
-    const locations = await Listing.aggregate([
-      { $match: { status: "approved", city: { $ne: "" }, state: { $ne: "" } } },
-      {
-        $group: {
-          _id: {
-            city: "$city",
-            state: "$state",
-          },
-          updatedAt: { $max: "$updatedAt" },
-        },
-      },
-      { $limit: 1000 },
+    const [categories, listings] = await Promise.all([
+      Category.find({}).select("slug updatedAt").lean(),
+      Listing.find({}).select("_id updatedAt").lean(),
     ]);
 
     const staticUrls = [
-      xmlUrl(`${SITE_URL}/`),
-      xmlUrl(`${SITE_URL}/pricing`),
-      xmlUrl(`${SITE_URL}/contact`),
-      xmlUrl(`${SITE_URL}/privacy`),
-      xmlUrl(`${SITE_URL}/terms`),
+      urlEntry(`${SITE_URL}/`, "1.0", "daily"),
+      urlEntry(`${SITE_URL}/submit`, "0.7", "monthly"),
+      urlEntry(`${SITE_URL}/category/all`, "0.8", "weekly"),
+      urlEntry(`${SITE_URL}/location/alexandria-va`, "0.9", "weekly"),
+      urlEntry(`${SITE_URL}/location/silver-spring-md`, "0.9", "weekly"),
+      urlEntry(`${SITE_URL}/location/washington-dc`, "0.9", "weekly"),
+      urlEntry(`${SITE_URL}/location/falls-church-va`, "0.8", "weekly"),
+      urlEntry(`${SITE_URL}/location/arlington-va`, "0.8", "weekly"),
     ];
 
-    const categoryUrls = categories.map((cat) => {
-      const slug =
-        cat.slug ||
-        cat.name_en?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-
-      return xmlUrl(`${SITE_URL}/category/${slug}`, cat.updatedAt);
-    });
+    const categoryUrls = categories
+      .filter((category) => category.slug)
+      .map((category) =>
+        urlEntry(`${SITE_URL}/category/${category.slug}`, "0.8", "weekly")
+      );
 
     const listingUrls = listings.map((listing) =>
-      xmlUrl(`${SITE_URL}/listing/${listing._id}`, listing.updatedAt)
+      urlEntry(`${SITE_URL}/listing/${listing._id}`, "0.9", "weekly")
     );
 
-    const locationUrls = locations.map((item) => {
-      const city = item._id.city.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      const state = item._id.state.toLowerCase();
-
-      return xmlUrl(`${SITE_URL}/location/${city}-${state}`, item.updatedAt);
-    });
-
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticUrls, ...categoryUrls, ...locationUrls, ...listingUrls].join("")}
+${[...staticUrls, ...categoryUrls, ...listingUrls].join("")}
 </urlset>`;
 
     res.header("Content-Type", "application/xml");
-    res.send(xml);
+    res.send(sitemap);
   } catch (err) {
-    console.error("❌ Sitemap generation failed:", err);
+    console.error("Sitemap generation failed:", err);
     res.status(500).send("Sitemap generation failed");
   }
 });
