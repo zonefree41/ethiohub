@@ -19,6 +19,7 @@ import rateLimit from "express-rate-limit";
 import stripeCheckoutRoutes from "./routes/stripeCheckout.js";
 import claimRoutes from "./routes/claimRoutes.js";
 import businessRequestRoutes from "./routes/businessRequestRoutes.js";
+import { startMonthlyPerformanceCron } from "./jobs/monthlyPerformanceCron.js";
 
 const app = express();
 
@@ -128,6 +129,8 @@ try {
   await connectDB(process.env.MONGO_URI);
 
   await expireTrials();
+
+  startMonthlyPerformanceCron();
 
   setInterval(async () => {
     await expireTrials();
