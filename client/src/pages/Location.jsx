@@ -1,6 +1,7 @@
 import React from "react";
 import { apiGet } from "../api/http.js";
 import "./Location.css";
+import { Helmet } from "react-helmet-async";
 
 function getGoogleMapsUrl(listing) {
   const address = [listing.address, listing.city, listing.state, listing.zip]
@@ -160,7 +161,30 @@ export default function Location() {
 
 const featuredCount = listings.filter((listing) => listing.isFeatured).length;
 
+const canonicalUrl = `https://www.hubethio.com/location/${slug}`;
+
+const seoTitle = location
+  ? `${location.title} | HubEthio`
+  : "Location | HubEthio";
+
+const seoDescription = location
+  ? location.description
+  : "Find Ethiopian businesses and community services near you on HubEthio.";
+
   return (
+  <>
+    <Helmet>
+      <title>{seoTitle}</title>
+      <meta name="description" content={seoDescription} />
+      <link rel="canonical" href={canonicalUrl} />
+
+      <meta property="og:title" content={seoTitle} />
+      <meta property="og:description" content={seoDescription} />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="HubEthio" />
+    </Helmet>
+
     <main className="location-page">
       <div className="location-container">
         <a href="/" className="location-back">
@@ -347,6 +371,7 @@ const featuredCount = listings.filter((listing) => listing.isFeatured).length;
           </section>
         )}
       </div>
-    </main>
-  );
+        </main>
+  </>
+);
 }

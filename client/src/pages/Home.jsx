@@ -1,6 +1,7 @@
 import React from "react";
 import { apiGet, apiPost } from "../api/http.js";
 import "./Home.css";
+import { Helmet } from "react-helmet-async";
 
 export default function Home() {
   const [categories, setCategories] = React.useState([]);
@@ -82,6 +83,28 @@ export default function Home() {
         ]);
 
         if (!alive) return;
+
+        <>
+  <Helmet>
+    <title>HubEthio | Ethiopian Businesses & Community Services Near You</title>
+    <meta
+      name="description"
+      content="Find trusted Ethiopian businesses, auto repair, restaurants, beauty salons, tax services, and community services near you on HubEthio."
+    />
+    <link rel="canonical" href="https://www.hubethio.com/" />
+
+    <meta property="og:title" content="HubEthio | Ethiopian Businesses & Community Services Near You" />
+    <meta
+      property="og:description"
+      content="Discover trusted Ethiopian businesses and community services near you."
+    />
+    <meta property="og:url" content="https://www.hubethio.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="HubEthio" />
+  </Helmet>
+
+  {/* existing Home page JSX */}
+</>;
 
         setCategories(categoryData || []);
         setFeaturedListings(Array.isArray(listingData) ? listingData : []);

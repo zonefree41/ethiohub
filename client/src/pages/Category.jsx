@@ -1,6 +1,7 @@
 import React from "react";
 import { apiGet, apiPost } from "../api/http.js";
 import "./Category.css";
+import { Helmet } from "react-helmet-async";
 
 function getGoogleMapsUrl(listing) {
   const address = [
@@ -89,11 +90,36 @@ export default function Category() {
       ? "Search Results"
       : categories.find((c) => c.slug === slug)?.name_en || "Category";
 
+      const canonicalUrl = `https://www.hubethio.com/category/${slug}`;
+
+const seoTitle =
+  slug === "all"
+    ? "Ethiopian Businesses & Services Near You | HubEthio"
+    : `${title} | Ethiopian Services Near You | HubEthio`;
+
+const seoDescription =
+  slug === "all"
+    ? "Find trusted Ethiopian businesses, auto repair, restaurants, salons, tax services, and community services near you on HubEthio."
+    : `Find trusted Ethiopian ${title.toLowerCase()} near you. Browse businesses, contact owners, get directions, and discover Ethiopian community services on HubEthio.`;
+
   React.useEffect(() => {
     document.title = `${title} | HubEthio`;
   }, [title]);
 
   return (
+  <>
+    <Helmet>
+      <title>{seoTitle}</title>
+      <meta name="description" content={seoDescription} />
+      <link rel="canonical" href={canonicalUrl} />
+
+      <meta property="og:title" content={seoTitle} />
+      <meta property="og:description" content={seoDescription} />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="HubEthio" />
+    </Helmet>
+
     <main className="category-page">
       <div className="category-container">
         <a href="/" className="category-back">
@@ -246,5 +272,6 @@ export default function Category() {
         )}
       </div>
     </main>
-  );
+  </>
+);
 }

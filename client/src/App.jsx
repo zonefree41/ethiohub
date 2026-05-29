@@ -56,6 +56,7 @@ if (path.startsWith("/owner/forgot-password")) return <ForgotPassword />;
 if (path.startsWith("/owner/reset-password/")) return <ResetPassword />;
 if (path.startsWith("/owner/listings/edit/")) return <EditListing />;
 if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
+if (path.startsWith("/listing/")) return <Listing />;
 
   if (path.startsWith("/submit")) return <><Submit /><Footer /></>;
 if (path.startsWith("/listing/")) return <><Listing /><Footer /></>;
