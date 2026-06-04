@@ -109,26 +109,6 @@ router.patch("/:id", async (req, res) => {
 
     const updates = {};
 
-    const sensitiveFields = [
-  "title",
-  "address",
-  "city",
-  "state",
-  "zip",
-  "description_en",
-  "description_am",
-];
-
-const hasSensitiveChange = sensitiveFields.some(
-  (field) =>
-    field in updates &&
-    String(updates[field] || "") !== String(listing[field] || "")
-);
-
-if (listing.status !== "approved" || hasSensitiveChange) {
-  updates.status = "pending";
-}
-
     for (const field of allowedFields) {
       if (field in req.body) {
         updates[field] =
@@ -138,15 +118,33 @@ if (listing.status !== "approved" || hasSensitiveChange) {
       }
     }
 
-    // Only send NON-approved listings back to admin review.
-    // Approved listings stay approved when owner edits small details.
-    if (listing.status !== "approved") {
+    const sensitiveFields = [
+      "title",
+      "address",
+      "city",
+      "state",
+      "zip",
+      "description_en",
+      "description_am",
+    ];
+
+    const hasSensitiveChange = sensitiveFields.some((field) => {
+      if (!(field in updates)) return false;
+
+      const oldValue = String(listing[field] || "").trim();
+      const newValue = String(updates[field] || "").trim();
+
+      return oldValue !== newValue;
+    });
+
+    if (listing.status !== "approved" || hasSensitiveChange) {
       updates.status = "pending";
     }
 
     updates.updatedAt = new Date();
 
     console.log("OWNER UPDATES:", updates);
+    console.log("HAS SENSITIVE CHANGE:", hasSensitiveChange);
 
     const updatedListing = await Listing.findOneAndUpdate(
       {
@@ -159,9 +157,9 @@ if (listing.status !== "approved" || hasSensitiveChange) {
 
     res.json({
       message:
-        listing.status === "approved"
-          ? "Listing updated successfully."
-          : "Listing updated and sent for admin review.",
+        hasSensitiveChange || listing.status !== "approved"
+          ? "Listing updated and sent for admin review."
+          : "Listing updated successfully.",
       listing: updatedListing,
     });
   } catch (err) {
