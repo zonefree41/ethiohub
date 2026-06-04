@@ -3,6 +3,7 @@ import { apiGet, apiPatch } from "../../api/http.js";
 import "./EditListing.css";
 
 export default function EditListing() {
+  console.log("✅ EditListing component loaded");
   const token = localStorage.getItem("ownerToken");
   const id = window.location.pathname.split("/").pop();
 
@@ -19,6 +20,7 @@ export default function EditListing() {
     phone: "",
     whatsapp: "",
     website: "",
+    businessHours: "",
     address: "",
     city: "",
     state: "",
@@ -34,11 +36,15 @@ export default function EditListing() {
   }, []);
 
   function update(e) {
-    setForm((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  }
+  const { name, value } = e.target;
+
+  console.log("FIELD CHANGED:", name, value);
+
+  setForm((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+}
 
   async function uploadImage(file, fieldName) {
     if (!file) return;
@@ -109,6 +115,7 @@ export default function EditListing() {
         phone: data.phone || "",
         whatsapp: data.whatsapp || "",
         website: data.website || "",
+        businessHours: data.businessHours || "",
         address: data.address || "",
         city: data.city || "",
         state: data.state || "",
@@ -141,6 +148,8 @@ export default function EditListing() {
       setSaving(true);
       setError("");
       setMessage("");
+
+      console.log("Saving owner listing form:", form);
 
       await apiPatch(`/api/owner/listings/${id}`, form, token);
 
@@ -223,6 +232,13 @@ export default function EditListing() {
                 value={form.website}
                 onChange={update}
               />
+              <textarea
+  name="businessHours"
+  placeholder="Business Hours: Mon–Fri 9AM–5PM, Sat 10AM–3PM"
+  rows="3"
+  value={form.businessHours}
+  onChange={update}
+/>
             </section>
 
             <section className="edit-listing-section">

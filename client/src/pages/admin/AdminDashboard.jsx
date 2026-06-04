@@ -14,6 +14,8 @@ export default function AdminDashboard() {
   const [claimsLoading, setClaimsLoading] = React.useState(false);
   const [adminSearch, setAdminSearch] = React.useState("");
   const [businessRequests, setBusinessRequests] = React.useState([]);
+  const [pendingReviews, setPendingReviews] = React.useState([]);
+const [reviewsLoading, setReviewsLoading] = React.useState(false);
 
   React.useEffect(() => {
     document.title = "Admin Dashboard | HubEthio";
@@ -59,6 +61,49 @@ export default function AdminDashboard() {
   }
 }
 
+async function loadPendingReviews() {
+  try {
+    setReviewsLoading(true);
+    const data = await apiGet("/api/reviews/admin/pending", token);
+    setPendingReviews(Array.isArray(data) ? data : []);
+  } catch (err) {
+    console.error("Failed to load pending reviews:", err);
+  } finally {
+    setReviewsLoading(false);
+  }
+}
+
+async function approveReview(id) {
+  try {
+    setMessage("");
+    setError("");
+
+    await apiPatch(`/api/reviews/admin/${id}/approve`, {}, token);
+
+    setMessage("✅ Review approved successfully");
+    await loadPendingReviews();
+  } catch (err) {
+    setError(err.message || "Failed to approve review");
+  }
+}
+
+async function deleteReview(id) {
+  const confirmed = window.confirm("Delete this review?");
+  if (!confirmed) return;
+
+  try {
+    setMessage("");
+    setError("");
+
+    await apiDelete(`/api/reviews/admin/${id}`, token);
+
+    setMessage("✅ Review deleted successfully");
+    await loadPendingReviews();
+  } catch (err) {
+    setError(err.message || "Failed to delete review");
+  }
+}
+
   React.useEffect(() => {
     if (!token) {
       window.location.href = "/admin/login";
@@ -68,6 +113,7 @@ export default function AdminDashboard() {
     load(status);
     loadClaims();
     loadBusinessRequests();
+loadPendingReviews();
   }, [status]);
 
   async function updateListing(id, patch) {
@@ -226,6 +272,71 @@ export default function AdminDashboard() {
 
         {message && <div className="admin-dashboard-success">{message}</div>}
         {error && <div className="admin-dashboard-error">Error: {error}</div>}
+
+        <section className="admin-claims-section">
+  <div className="admin-dashboard-section-header">
+    <div>
+      <h2>Pending Reviews</h2>
+      <p>Approve or delete customer reviews before they appear publicly.</p>
+    </div>
+  </div>
+
+  {reviewsLoading && <p>Loading pending reviews...</p>}
+
+  {!reviewsLoading && pendingReviews.length === 0 && (
+    <div className="admin-dashboard-state">
+      <h2>No pending reviews</h2>
+      <p>All submitted reviews have been handled.</p>
+    </div>
+  )}
+
+  {!reviewsLoading && pendingReviews.length > 0 && (
+    <section className="admin-claims-grid">
+      {pendingReviews.map((review) => (
+        <article key={review._id} className="admin-claim-card">
+          <h3>{review.listingId?.title || "Unknown Business"}</h3>
+
+          <p>
+            <strong>Reviewer:</strong> {review.name}
+          </p>
+
+          <p>
+            <strong>Rating:</strong> {"⭐".repeat(review.rating)} ({review.rating}/5)
+          </p>
+
+          <p>
+            <strong>Comment:</strong> {review.comment}
+          </p>
+
+          <p>
+            <strong>Location:</strong>{" "}
+            {[review.listingId?.city, review.listingId?.state]
+              .filter(Boolean)
+              .join(", ") || "N/A"}
+          </p>
+
+          <div className="admin-listing-actions">
+            <button
+              type="button"
+              className="admin-btn-approve"
+              onClick={() => approveReview(review._id)}
+            >
+              Approve Review
+            </button>
+
+            <button
+              type="button"
+              className="admin-btn-delete"
+              onClick={() => deleteReview(review._id)}
+            >
+              Delete Review
+            </button>
+          </div>
+        </article>
+      ))}
+    </section>
+  )}
+</section>
 
         <section className="admin-claims-section">
           <div className="admin-dashboard-section-header">

@@ -1,4 +1,8 @@
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API =
+  import.meta.env.VITE_API_URL?.trim() ||
+  "https://ethiohub.onrender.com";
+
+console.log("HubEthio API:", API);
 
 async function handleResponse(res) {
   if (res.ok) return res.json();
@@ -30,12 +34,15 @@ function handleFetchError(err) {
 
 export async function apiGet(path, token) {
   try {
+    console.log("GET:", `${API}${path}`);
+
     const res = await fetch(`${API}${path}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
     return await handleResponse(res);
   } catch (err) {
+    console.error("apiGet failed:", path, err);
     handleFetchError(err);
   }
 }
