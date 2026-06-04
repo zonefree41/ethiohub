@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 
-const reviewSchema = new mongoose.Schema(
+const ReviewSchema = new mongoose.Schema(
   {
     listingId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Listing",
       required: true,
+      index: true,
     },
 
     name: {
@@ -25,17 +26,14 @@ const reviewSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      maxlength: 1000,
     },
 
     approved: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-export default mongoose.model("Review", reviewSchema);
+export default mongoose.model("Review", ReviewSchema);

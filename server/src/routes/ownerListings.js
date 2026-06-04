@@ -78,6 +78,8 @@ router.get("/:id", async (req, res) => {
 
 router.patch("/:id", async (req, res) => {
   try {
+    console.log("OWNER PATCH BODY:", req.body);
+
     const listing = await Listing.findOne({
       _id: req.params.id,
       ownerId: req.owner.id,
@@ -94,6 +96,7 @@ router.patch("/:id", async (req, res) => {
       "phone",
       "whatsapp",
       "website",
+      "businessHours",
       "address",
       "city",
       "state",
@@ -104,22 +107,45 @@ router.patch("/:id", async (req, res) => {
       "imageUrl",
     ];
 
+    const updates = {};
+
     for (const field of allowedFields) {
       if (field in req.body) {
-        listing[field] = req.body[field];
+        updates[field] =
+          typeof req.body[field] === "string"
+            ? req.body[field].trim()
+            : req.body[field];
       }
     }
 
-    listing.status = "pending";
+    // Only send NON-approved listings back to admin review.
+    // Approved listings stay approved when owner edits small details.
+    if (listing.status !== "approved") {
+      updates.status = "pending";
+    }
 
-    await listing.save();
+    updates.updatedAt = new Date();
+
+    console.log("OWNER UPDATES:", updates);
+
+    const updatedListing = await Listing.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        ownerId: req.owner.id,
+      },
+      { $set: updates },
+      { new: true }
+    ).populate("categoryId");
 
     res.json({
-      message: "Listing updated and sent for admin review",
-      listing,
+      message:
+        listing.status === "approved"
+          ? "Listing updated successfully."
+          : "Listing updated and sent for admin review.",
+      listing: updatedListing,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Owner listing update failed:", err);
     res.status(500).json({ message: "Failed to update listing" });
   }
 });

@@ -102,7 +102,12 @@ router.patch("/listings/:id", requireAdmin, async (req, res) => {
       return res.status(404).json({ message: "Not found" });
     }
 
-    if (isBeingApproved) {
+    const shouldSendApprovalEmail =
+  isBeingApproved &&
+  !existing.approvalEmailSentAt &&
+  !existing.hasUsedTrial;
+
+if (shouldSendApprovalEmail) {
       const ownerName = updated.submittedBy?.name || "there";
       const ownerEmail = updated.submittedBy?.contact;
 
@@ -219,6 +224,8 @@ router.patch("/listings/:id", requireAdmin, async (req, res) => {
   </div>
 `,
         });
+         updated.approvalEmailSentAt = new Date();
+  await updated.save();
       }
     }
 

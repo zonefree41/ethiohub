@@ -31,6 +31,11 @@ const ListingSchema = new mongoose.Schema(
   trim: true,
 },
 
+approvalEmailSentAt: {
+  type: Date,
+  default: null,
+},
+
     ownerId: {
   type: mongoose.Schema.Types.ObjectId,
   ref: "User",
