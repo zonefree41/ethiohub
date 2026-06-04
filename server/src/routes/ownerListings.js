@@ -109,6 +109,26 @@ router.patch("/:id", async (req, res) => {
 
     const updates = {};
 
+    const sensitiveFields = [
+  "title",
+  "address",
+  "city",
+  "state",
+  "zip",
+  "description_en",
+  "description_am",
+];
+
+const hasSensitiveChange = sensitiveFields.some(
+  (field) =>
+    field in updates &&
+    String(updates[field] || "") !== String(listing[field] || "")
+);
+
+if (listing.status !== "approved" || hasSensitiveChange) {
+  updates.status = "pending";
+}
+
     for (const field of allowedFields) {
       if (field in req.body) {
         updates[field] =
