@@ -89,6 +89,16 @@ trialEndsAt: {
   default: null,
 },
 
+trialReminderSentAt: {
+  type: Date,
+  default: null,
+},
+
+trialExpiredEmailSentAt: {
+  type: Date,
+  default: null,
+},
+
 hasUsedTrial: {
   type: Boolean,
   default: false,

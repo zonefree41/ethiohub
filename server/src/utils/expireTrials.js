@@ -11,23 +11,27 @@ export async function expireTrials() {
       trialEndsAt: { $lte: now },
     });
 
+    let updatedCount = 0;
+    let emailCount = 0;
+
     for (const listing of expiredListings) {
-      await Listing.findByIdAndUpdate(listing._id, {
-        paymentStatus: "unpaid",
-        isFeatured: false,
-        isVerified: false,
-      });
+      listing.paymentStatus = "unpaid";
+      listing.isFeatured = false;
+      listing.isVerified = false;
 
       const ownerEmail = listing.submittedBy?.contact;
 
-      if (ownerEmail && ownerEmail.includes("@")) {
+      if (
+        !listing.trialExpiredEmailSentAt &&
+        ownerEmail &&
+        ownerEmail.includes("@")
+      ) {
         await sendEmail({
           to: ownerEmail,
           subject: `Your HubEthio Featured Trial Has Ended`,
           html: `
             <div style="background:#f4f7fb;padding:40px 20px;font-family:Arial,sans-serif;">
               <div style="max-width:650px;margin:auto;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;">
-
                 <div style="background:#0f172a;padding:35px 30px;text-align:center;">
                   <h1 style="color:#ffffff;margin:0;font-size:32px;">HubEthio</h1>
                   <p style="color:#cbd5e1;margin-top:10px;">Featured Trial Ended</p>
@@ -83,12 +87,20 @@ export async function expireTrials() {
             </div>
           `,
         });
+
+        listing.trialExpiredEmailSentAt = new Date();
+        emailCount++;
       }
 
-      console.log("✅ Trial expired email sent for:", listing._id);
+      await listing.save();
+      updatedCount++;
+
+      console.log("✅ Trial expired processed for:", listing._id);
     }
 
-    console.log(`✅ Expired trials checked. Updated: ${expiredListings.length}`);
+    console.log(
+      `✅ Expired trials checked. Updated: ${updatedCount}. Emails sent: ${emailCount}`
+    );
 
     await sendTrialReminderEmails();
   } catch (err) {

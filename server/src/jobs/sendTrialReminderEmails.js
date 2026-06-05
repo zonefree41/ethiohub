@@ -5,13 +5,11 @@ export async function sendTrialReminderEmails() {
   try {
     const now = new Date();
 
-    // 24 hours from now
-    const tomorrow = new Date(
-      now.getTime() + 24 * 60 * 60 * 1000
-    );
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
     const listings = await Listing.find({
       paymentStatus: "trial",
+      trialReminderSentAt: null,
       trialEndsAt: {
         $gte: now,
         $lte: tomorrow,
@@ -32,9 +30,7 @@ export async function sendTrialReminderEmails() {
           <div style="font-family: Arial, sans-serif; line-height:1.7; color:#111827;">
             <h2>⏳ Your Featured Trial Ends Soon</h2>
 
-            <p>
-              Hi ${listing.submittedBy?.name || "there"},
-            </p>
+            <p>Hi ${listing.submittedBy?.name || "there"},</p>
 
             <p>
               Your free Featured trial for
@@ -42,9 +38,7 @@ export async function sendTrialReminderEmails() {
               will expire soon.
             </p>
 
-            <p>
-              Upgrade now to continue receiving:
-            </p>
+            <p>Upgrade now to continue receiving:</p>
 
             <ul>
               <li>✅ Featured placement</li>
@@ -84,6 +78,9 @@ export async function sendTrialReminderEmails() {
           </div>
         `,
       });
+
+      listing.trialReminderSentAt = new Date();
+      await listing.save();
 
       console.log("📧 Trial reminder sent:", ownerEmail);
     }
