@@ -16,6 +16,8 @@ export async function sendTrialReminderEmails() {
       },
     });
 
+    console.log(`Found ${listings.length} trial listings`);
+
     for (const listing of listings) {
       const ownerEmail = listing.submittedBy?.contact;
 
