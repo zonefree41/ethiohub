@@ -104,8 +104,6 @@ export default function Submit() {
     try {
       const ownerToken = localStorage.getItem("ownerToken");
 
-      alert("Business hours sending: " + form.businessHours);
-
       await apiPost(
         "/api/submissions",
         {
@@ -143,20 +141,56 @@ export default function Submit() {
   return (
     <main className="submit-page">
       <div className="submit-container">
-        <a href="/" className="submit-back">
-          ← Back Home
-        </a>
+        <a href="/" className="submit-back-btn">
+  ← Back Home
+</a>
 
         <section className="submit-hero">
-          <p className="submit-label">Business Submission</p>
-          <h1>Submit Ethiopian Business / Service</h1>
-          <p>
-            Add your Ethiopian business or community service to HubEthio. After
-            submission, your listing will be reviewed before it appears publicly.
-          </p>
-        </section>
+  <p className="submit-label">Business Submission</p>
+  <h1>Submit Ethiopian Business / Service</h1>
+  <p>
+    Add your Ethiopian business or community service to HubEthio. After
+    submission, your listing will be reviewed before it appears publicly.
+  </p>
+</section>
 
-        {message && <div className="submit-success">{message}</div>}
+<div className="submit-benefits">
+  <div className="submit-benefit">✅ Free Business Listing</div>
+  <div className="submit-benefit">📍 Reach Ethiopian Customers</div>
+  <div className="submit-benefit">📱 Mobile App Coming Soon</div>
+  <div className="submit-benefit">⭐ Featured Listings Available</div>
+</div>
+
+<div className="submit-stats">
+  <div className="submit-stat">
+    <strong>7+</strong>
+    <span>Businesses Listed</span>
+  </div>
+
+  <div className="submit-stat">
+    <strong>10+</strong>
+    <span>Business Owners</span>
+  </div>
+
+  <div className="submit-stat">
+    <strong>30K+</strong>
+    <span>People Reached</span>
+  </div>
+</div>
+
+<div className="submit-trust">
+  <h3>Why List on HubEthio?</h3>
+
+  <ul>
+    <li>✓ Free business listing</li>
+    <li>✓ Reach Ethiopian customers across the USA</li>
+    <li>✓ Google Maps directions included</li>
+    <li>✓ WhatsApp contact support</li>
+    <li>✓ Featured listing upgrades available</li>
+  </ul>
+</div>
+
+{message && <div className="submit-success">{message}</div>}
         {error && <div className="submit-error">Error: {error}</div>}
 
         <form onSubmit={submit} className="submit-form">

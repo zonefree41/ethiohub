@@ -978,3 +978,21 @@
 .recent-remove-btn:hover {
   background: #fecaca;
 }
+
+.home-list-free-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f59e0b;
+  color: #111827;
+  font-weight: 800;
+  padding: 14px 22px;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+}
+
+.home-list-free-btn:hover {
+  background: #d97706;
+  color: #ffffff;
+}

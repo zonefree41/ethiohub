@@ -330,14 +330,14 @@ function removeRecentListing(id) {
           </form>
 
           <div className="home-hero-actions">
-            <a href="/submit" className="home-secondary-btn">
-              Add Your Business
-            </a>
+  <a href="/submit" className="home-list-free-btn">
+    🚀 Own a Business? List It Free
+  </a>
 
-            <a href="/owner/login" className="home-owner-btn">
-              Business Owner Login
-            </a>
-          </div>
+  <a href="/owner/login" className="home-owner-btn">
+    Business Owner Login
+  </a>
+</div>
         </div>
       </section>
 
