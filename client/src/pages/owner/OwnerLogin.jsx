@@ -44,8 +44,8 @@ export default function OwnerLogin() {
     <main className="owner-auth-page">
       <div className="owner-auth-card">
         <a href="/" className="owner-auth-back">
-          ← Back Home
-        </a>
+  ← Back Home
+</a>
 
         <div className="owner-auth-header">
           <p className="owner-auth-label">Business Portal</p>

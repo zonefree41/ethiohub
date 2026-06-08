@@ -921,3 +921,47 @@
   background: #dcfce7;
   color: #166534;
 }
+
+.hubethio-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  background: #f59e0b;
+  color: #ffffff;
+
+  padding: 12px 22px;
+  border-radius: 12px;
+
+  font-weight: 700;
+  text-decoration: none;
+
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25);
+
+  transition: all 0.25s ease;
+
+  margin-right: 12px;
+}
+
+.hubethio-back-btn:hover {
+  background: #d97706;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.listing-saved-btn {
+  background: #111827;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 25px rgba(244, 63, 94, 0.25);
+  transition: all 0.25s ease;
+}
+
+.listing-saved-btn:hover {
+  background: #e11d48;
+  color: #ffffff;
+  transform: translateY(-2px);
+}

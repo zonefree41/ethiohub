@@ -1,0 +1,20 @@
+.owner-auth-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: #f59e0b;
+  color: #ffffff;
+  padding: 12px 22px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25);
+  transition: all 0.25s ease;
+}
+
+.owner-auth-back:hover {
+  background: #d97706;
+  color: #ffffff;
+  transform: translateY(-2px);
+}

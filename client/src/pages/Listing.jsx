@@ -448,13 +448,13 @@ document.title = seoTitle;
 
       <main className="listing-page">
         <div className="listing-top-links">
-          <a href="/" className="listing-back">
-            ← Back Home
-          </a>
+          <a href="/" className="hubethio-back-btn">
+  ← Back Home
+</a>
 
-          <a href="/saved" className="listing-back">
-            Saved ❤️
-          </a>
+          <a href="/saved" className="listing-saved-btn">
+  Saved ❤️
+</a>
         </div>
 
         <section className="listing-card">
