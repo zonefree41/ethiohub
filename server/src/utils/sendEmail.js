@@ -17,7 +17,7 @@ export async function sendEmail({ to, subject, html }) {
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
-
+    
     console.log("📧 Sending email to:", to);
 
     const { data, error } = await resend.emails.send({
