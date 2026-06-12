@@ -238,6 +238,13 @@ function removeRecentListing(id) {
             <a href="/category/all">Categories</a>
             <a href="/location/silver-spring-md">Silver Spring</a>
             <a href="/pricing">Pricing</a>
+            <a
+  href="https://play.google.com/store/apps/details?id=com.hubethio.app"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  📱 Get App
+</a>
             <a href="/saved">Saved ❤️</a>
             <a href="/submit">Submit Business</a>
             <a href="/contact">Contact</a>

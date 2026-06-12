@@ -996,3 +996,21 @@
   background: #d97706;
   color: #ffffff;
 }
+
+.app-download-section {
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  margin: 40px 0;
+}
+
+.playstore-btn {
+  display: inline-block;
+  background: #34a853;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}

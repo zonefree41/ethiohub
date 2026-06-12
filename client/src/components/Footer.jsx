@@ -1,6 +1,9 @@
 import React from "react";
 import "./Footer.css";
 
+const GOOGLE_PLAY_URL =
+  "https://play.google.com/store/apps/details?id=com.hubethio.app";
+
 export default function Footer() {
   return (
     <footer className="site-footer">
@@ -15,48 +18,38 @@ export default function Footer() {
             </p>
 
             <div className="site-footer-social">
-              <a
-                href="https://www.facebook.com/officialhubethio/"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Facebook"
-              >
+              <a href="https://www.facebook.com/officialhubethio/" target="_blank" rel="noreferrer">
                 Facebook
               </a>
-
-              <a
-                href="https://www.tiktok.com/@hubethio"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="TikTok"
-              >
+              <a href="https://www.tiktok.com/@hubethio" target="_blank" rel="noreferrer">
                 TikTok
               </a>
-
-              <a
-                href="https://www.instagram.com/officialhubethio/"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram"
-              >
+              <a href="https://www.instagram.com/officialhubethio/" target="_blank" rel="noreferrer">
                 Instagram
               </a>
-
-              <a
-                href="https://www.youtube.com/@HubEthio"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="YouTube"
-              >
+              <a href="https://www.youtube.com/@HubEthio" target="_blank" rel="noreferrer">
                 YouTube
               </a>
             </div>
           </div>
 
+          <div className="footer-app">
+            <h3>Download HubEthio</h3>
+            <p>Find Ethiopian businesses faster on Android.</p>
+
+            <a
+              href={GOOGLE_PLAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-play-btn"
+            >
+              📱 Download on Google Play
+            </a>
+          </div>
+
           <div className="site-footer-columns">
             <div className="site-footer-column">
               <h3>Popular Cities</h3>
-
               <nav aria-label="Popular cities">
                 <a href="/location/silver-spring-md">Silver Spring</a>
                 <a href="/location/alexandria-va">Alexandria</a>
@@ -68,7 +61,6 @@ export default function Footer() {
 
             <div className="site-footer-column">
               <h3>Business</h3>
-
               <nav aria-label="Business links">
                 <a href="/pricing">Pricing</a>
                 <a href="/submit">Submit Listing</a>
@@ -79,7 +71,6 @@ export default function Footer() {
 
             <div className="site-footer-column">
               <h3>Legal</h3>
-
               <nav aria-label="Legal links">
                 <a href="/privacy">Privacy Policy</a>
                 <a href="/terms">Terms of Service</a>
@@ -90,10 +81,7 @@ export default function Footer() {
         </div>
 
         <div className="site-footer-bottom">
-          <p>
-            © 2026 HubEthio. All rights reserved. Built for the Ethiopian
-            community.
-          </p>
+          <p>© 2026 HubEthio. All rights reserved. Built for the Ethiopian community.</p>
         </div>
       </div>
     </footer>
