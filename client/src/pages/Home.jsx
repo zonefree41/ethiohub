@@ -8,6 +8,7 @@ export default function Home() {
   const [featuredListings, setFeaturedListings] = React.useState([]);
   const [search, setSearch] = React.useState("");
   const [categorySlug, setCategorySlug] = React.useState("all");
+  const [subcategory, setSubcategory] = React.useState("");
   const [city, setCity] = React.useState("");
   const [state, setState] = React.useState("");
   const [loading, setLoading] = React.useState(true);
@@ -51,6 +52,25 @@ export default function Home() {
     "Washington DC",
     "Arlington",
   ];
+
+  const SUBCATEGORIES = {
+  "housing-rentals": [
+    "Apartments",
+    "Basement Rentals",
+    "Rooms for Rent",
+    "Roommate Wanted",
+    "Houses for Rent",
+  ],
+  "travel-airline-services": [
+    "Airline Ticket Agents",
+    "Travel Agencies",
+    "Visa & Passport Help",
+    "Vacation Packages",
+    "Cargo & Shipping to Ethiopia",
+  ],
+};
+
+const availableSubcategories = SUBCATEGORIES[categorySlug] || [];
 
   const suggestions = [
     ...categories.map((c) => c.name_en),
@@ -173,8 +193,9 @@ function removeRecentListing(id) {
     const url =
       `/category/${categorySlug || "all"}` +
       `?search=${encodeURIComponent(search)}` +
-      `&city=${encodeURIComponent(city)}` +
-      `&state=${encodeURIComponent(state)}`;
+`&subcategory=${encodeURIComponent(subcategory)}` +
+`&city=${encodeURIComponent(city)}` +
+`&state=${encodeURIComponent(state)}`;
 
     window.location.href = url;
   }
@@ -304,7 +325,10 @@ function removeRecentListing(id) {
 
             <select
               value={categorySlug}
-              onChange={(e) => setCategorySlug(e.target.value)}
+              onChange={(e) => {
+  setCategorySlug(e.target.value);
+  setSubcategory("");
+}}
               className="home-input"
             >
               <option value="all">All Categories</option>
@@ -314,6 +338,21 @@ function removeRecentListing(id) {
                 </option>
               ))}
             </select>
+
+            {availableSubcategories.length > 0 && (
+  <select
+    value={subcategory}
+    onChange={(e) => setSubcategory(e.target.value)}
+    className="home-input"
+  >
+    <option value="">All Subcategories</option>
+    {availableSubcategories.map((sub) => (
+      <option key={sub} value={sub}>
+        {sub}
+      </option>
+    ))}
+  </select>
+)}
 
             <div className="home-location-row">
               <input
