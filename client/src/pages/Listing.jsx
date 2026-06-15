@@ -301,7 +301,11 @@ export default function Listing() {
               )}
           </div>
 
-          <p>{item.categoryId?.name_en || "Business"}</p>
+          <p>
+  {item.subcategory
+    ? `${item.categoryId?.name_en || "Business"} • ${item.subcategory}`
+    : item.categoryId?.name_en || "Business"}
+</p>
 
           <p>
             {item.city}, {item.state}
@@ -388,6 +392,10 @@ export default function Listing() {
     : "";
 
   const categoryName = listing.categoryId?.name_en || "Business";
+
+  const categoryDisplay = listing.subcategory
+  ? `${categoryName} • ${listing.subcategory}`
+  : categoryName;
 
   const seoTitle = `${listing.title} | Ethiopian ${categoryName} in ${listing.city}, ${listing.state}`;
 
@@ -502,8 +510,8 @@ document.title = seoTitle;
 
             <div className="listing-info">
               <p>
-                <b>Category:</b> {categoryName}
-              </p>
+  <b>Category:</b> {categoryDisplay}
+</p>
 
               {listing.businessHours && (
                 <p>
