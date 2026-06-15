@@ -26,6 +26,12 @@ const ListingSchema = new mongoose.Schema(
       required: true,
     },
 
+    subcategory: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
     businessHours: {
   type: String,
   trim: true,
@@ -135,6 +141,7 @@ ListingSchema.index({
   description_en: "text",
   description_am: "text",
   city: "text",
+  subcategory: "text",
 });
 
 export default mongoose.model("Listing", ListingSchema);
