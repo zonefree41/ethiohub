@@ -2,9 +2,27 @@ import React from "react";
 import { apiGet, apiPost } from "../api/http.js";
 import "./Submit.css";
 
+const SUBCATEGORIES = {
+  "housing-rentals": [
+    "Apartments",
+    "Basement Rentals",
+    "Rooms for Rent",
+    "Roommate Wanted",
+    "Houses for Rent",
+  ],
+  "travel-airline-services": [
+    "Airline Ticket Agents",
+    "Travel Agencies",
+    "Visa & Passport Help",
+    "Vacation Packages",
+    "Cargo & Shipping to Ethiopia",
+  ],
+};
+
 const emptyForm = {
   title: "",
   categoryId: "",
+  subcategory: "",
   phone: "",
   whatsapp: "",
   website: "",
@@ -38,8 +56,18 @@ export default function Submit() {
   }, []);
 
   function update(e) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  }
+  const { name, value } = e.target;
+
+  setForm((prev) => {
+    const next = { ...prev, [name]: value };
+
+    if (name === "categoryId") {
+      next.subcategory = "";
+    }
+
+    return next;
+  });
+}
 
   async function uploadImage(file, fieldName) {
     if (!file) return;
@@ -109,6 +137,7 @@ export default function Submit() {
         {
           title: form.title,
           categoryId: form.categoryId,
+          subcategory: form.subcategory,
           businessHours: form.businessHours,
           phone: form.phone,
           whatsapp: form.whatsapp,
@@ -137,6 +166,12 @@ export default function Submit() {
   }
 
   const isUploading = uploadingLogo || uploadingBanner;
+
+  const selectedCategory = categories.find((c) => c._id === form.categoryId);
+const availableSubcategories =
+  selectedCategory && SUBCATEGORIES[selectedCategory.slug]
+    ? SUBCATEGORIES[selectedCategory.slug]
+    : [];
 
   return (
     <main className="submit-page">
@@ -225,6 +260,22 @@ export default function Submit() {
                 </option>
               ))}
             </select>
+
+            {availableSubcategories.length > 0 && (
+  <select
+    name="subcategory"
+    value={form.subcategory}
+    onChange={update}
+    required
+  >
+    <option value="">Select Subcategory *</option>
+    {availableSubcategories.map((sub) => (
+      <option key={sub} value={sub}>
+        {sub}
+      </option>
+    ))}
+  </select>
+)}
 
             <div className="submit-two-col">
               <input
