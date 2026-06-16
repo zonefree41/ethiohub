@@ -87,6 +87,7 @@ router.get("/listings", async (req, res) => {
     const {
       search = "",
       category = "",
+      subcategory = "",
       city = "",
       state = "",
       featured = "",
@@ -97,6 +98,10 @@ router.get("/listings", async (req, res) => {
     if (category && category !== "all") {
       filter.categoryId = category;
     }
+
+    if (subcategory) {
+  filter.subcategory = subcategory;
+}
 
     if (city) {
       filter.city = new RegExp(`^${escapeRegex(city.trim())}$`, "i");
