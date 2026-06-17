@@ -2,23 +2,6 @@ import React from "react";
 import { apiGet, apiPost } from "../api/http.js";
 import "./Submit.css";
 
-const SUBCATEGORIES = {
-  "housing-rentals": [
-    "Apartments",
-    "Basement Rentals",
-    "Rooms for Rent",
-    "Roommate Wanted",
-    "Houses for Rent",
-  ],
-  "travel-airline-services": [
-    "Airline Ticket Agents",
-    "Travel Agencies",
-    "Visa & Passport Help",
-    "Vacation Packages",
-    "Cargo & Shipping to Ethiopia",
-  ],
-};
-
 const emptyForm = {
   title: "",
   categoryId: "",
@@ -168,10 +151,10 @@ export default function Submit() {
   const isUploading = uploadingLogo || uploadingBanner;
 
   const selectedCategory = categories.find((c) => c._id === form.categoryId);
-const availableSubcategories =
-  selectedCategory && SUBCATEGORIES[selectedCategory.slug]
-    ? SUBCATEGORIES[selectedCategory.slug]
-    : [];
+
+const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
+  ? selectedCategory.subcategories
+  : [];
 
   return (
     <main className="submit-page">
