@@ -194,6 +194,12 @@ const seoDescription =
             "Location not available"}
         </p>
 
+        {listing.subcategory && (
+  <p className="category-subcategory">
+    📍 {listing.subcategory}
+  </p>
+)}
+
         {listing.totalReviews > 0 && (
   <p className="category-rating">
     ⭐ {listing.averageRating || 0} ({listing.totalReviews} review
