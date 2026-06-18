@@ -279,3 +279,28 @@
   font-weight: 700;
   font-size: 14px;
 }
+
+.category-subcategory-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 10px;
+}
+
+.category-subcategory-filters a {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.category-subcategory-filters a:hover,
+.category-subcategory-filters a.active {
+  background: #f59e0b;
+  color: #ffffff;
+  border-color: #f59e0b;
+}

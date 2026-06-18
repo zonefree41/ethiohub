@@ -30,6 +30,7 @@ export default function Category() {
   const search = getParam("search");
   const city = getParam("city");
   const state = getParam("state");
+  const subcategory = getParam("subcategory");
 
   const [categories, setCategories] = React.useState([]);
   const [listings, setListings] = React.useState([]);
@@ -61,7 +62,8 @@ export default function Category() {
         if (search) qs.set("search", search);
         if (city) qs.set("city", city);
         if (state) qs.set("state", state);
-        if (categoryId) qs.set("category", categoryId);
+if (subcategory) qs.set("subcategory", subcategory);
+if (categoryId) qs.set("category", categoryId);
 
         const data = await apiGet(`/api/listings?${qs.toString()}`);
         if (!alive) return;
@@ -85,10 +87,17 @@ export default function Category() {
     };
   }, [slug, search, city, state]);
 
-  const title =
-    slug === "all"
-      ? "Search Results"
-      : categories.find((c) => c.slug === slug)?.name_en || "Category";
+  const selectedCategory =
+  slug === "all" ? null : categories.find((c) => c.slug === slug);
+
+const title =
+  slug === "all"
+    ? "Search Results"
+    : selectedCategory?.name_en || "Category";
+
+const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
+  ? selectedCategory.subcategories
+  : [];
 
       const canonicalUrl = `https://www.hubethio.com/category/${slug}`;
 
@@ -132,6 +141,27 @@ const seoDescription =
               {state && <span>State: {state}</span>}
             </p>
           )}
+
+          {availableSubcategories.length > 0 && (
+  <div className="category-subcategory-filters">
+    <a
+      href={`/category/${slug}`}
+      className={!subcategory ? "active" : ""}
+    >
+      All
+    </a>
+
+    {availableSubcategories.map((sub) => (
+      <a
+        key={sub}
+        href={`/category/${slug}?subcategory=${encodeURIComponent(sub)}`}
+        className={subcategory === sub ? "active" : ""}
+      >
+        {sub}
+      </a>
+    ))}
+  </div>
+)}
         </div>
 
         {loading && (
