@@ -53,25 +53,14 @@ export default function Home() {
     "Arlington",
   ];
 
-  const SUBCATEGORIES = {
-  "housing-rentals": [
-    "Apartments",
-    "Basement Rentals",
-    "Rooms for Rent",
-    "Roommate Wanted",
-    "Houses for Rent",
-  ],
-  "travel-airline-services": [
-    "Airline Ticket Agents",
-    "Travel Agencies",
-    "Visa & Passport Help",
-    "Vacation Packages",
-    "Cargo & Shipping to Ethiopia",
-  ],
-};
+  const selectedCategory =
+  categorySlug === "all"
+    ? null
+    : categories.find((c) => c.slug === categorySlug);
 
-const availableSubcategories = SUBCATEGORIES[categorySlug] || [];
-
+const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
+  ? selectedCategory.subcategories
+  : [];
   const suggestions = [
     ...categories.map((c) => c.name_en),
     ...categories.map((c) => c.name_am),
