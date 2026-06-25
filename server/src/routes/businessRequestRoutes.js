@@ -106,4 +106,29 @@ router.patch("/admin/:id", async (req, res) => {
   }
 });
 
+/**
+ * Admin: Delete business request
+ * DELETE /api/business-requests/admin/:id
+ */
+router.delete("/admin/:id", async (req, res) => {
+  try {
+    const request = await BusinessRequest.findByIdAndDelete(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Business request not found.",
+      });
+    }
+
+    res.json({
+      message: "Business request deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Delete business request error:", error);
+    res.status(500).json({
+      message: "Failed to delete business request.",
+    });
+  }
+});
+
 export default router;
