@@ -160,6 +160,28 @@ loadPendingReviews();
   }
 }
 
+async function deleteBusinessRequest(id, businessName) {
+  const confirmed = window.confirm(
+    `Are you sure you want to permanently delete "${
+      businessName || "this business request"
+    }"? This cannot be undone.`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setMessage("");
+    setError("");
+
+    await apiDelete(`/api/business-requests/admin/${id}`, token);
+
+    setMessage("✅ Business request deleted successfully");
+    await loadBusinessRequests();
+  } catch (err) {
+    setError(err.message || "Failed to delete business request");
+  }
+}
+
   async function rejectListing(id) {
     const confirmed = window.confirm(
       "Are you sure you want to reject this listing?"
@@ -434,6 +456,14 @@ loadPendingReviews();
                 Reject
               </button>
             )}
+
+            <button
+              type="button"
+              className="admin-btn-delete"
+              onClick={() => deleteBusinessRequest(request._id)}
+            >
+              Delete
+            </button>
 
             {request.status !== "pending" && (
               <button
