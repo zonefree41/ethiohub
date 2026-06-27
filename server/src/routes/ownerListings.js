@@ -107,6 +107,7 @@ router.patch("/:id", async (req, res) => {
       "imageUrl",
       "availabilityStatus",
 "availableFrom",
+"propertyImages",
     ];
 
     const updates = {};
@@ -119,6 +120,12 @@ router.patch("/:id", async (req, res) => {
             : req.body[field];
       }
     }
+
+    if ("propertyImages" in updates) {
+  updates.propertyImages = Array.isArray(updates.propertyImages)
+    ? updates.propertyImages.slice(0, 20)
+    : [];
+}
 
     if (
   updates.availabilityStatus &&

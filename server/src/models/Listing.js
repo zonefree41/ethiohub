@@ -57,6 +57,13 @@ availableFrom: {
   type: Date,
 },
 
+propertyImages: [
+  {
+    type: String,
+    trim: true,
+  },
+],
+
     phone: { type: String, required: true, trim: true },
     whatsapp: { type: String, default: "", trim: true },
     website: { type: String, default: "", trim: true },
