@@ -490,6 +490,11 @@ document.title = seoTitle;
                 <h1>{listing.title}</h1>
 
                 <div className="listing-badges">
+                  {listing.availabilityStatus === "rented" ? (
+  <span className="listing-rented-badge">🔴 Rented</span>
+) : (
+  <span className="listing-available-badge">🟢 Available</span>
+)}
                   {(listing.paymentStatus === "active" ||
                     listing.paymentStatus === "trial") &&
                     listing.isFeatured && <span>⭐ Featured</span>}

@@ -240,6 +240,12 @@ const seoDescription =
     </div>
 
     <div className="category-badges">
+{listing.availabilityStatus === "rented" ? (
+    <span className="category-rented-badge">🔴 Rented</span>
+  ) : (
+    <span className="category-available-badge">🟢 Available</span>
+  )}
+
       {listing.isFeatured && <span>⭐ Featured</span>}
       {listing.isVerified && <span>✅ Verified</span>}
     </div>

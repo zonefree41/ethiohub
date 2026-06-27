@@ -29,6 +29,8 @@ export default function EditListing() {
     description_am: "",
     logoUrl: "",
     imageUrl: "",
+availabilityStatus: "available",
+availableFrom: "",
   });
 
   React.useEffect(() => {
@@ -124,6 +126,10 @@ export default function EditListing() {
         description_am: data.description_am || "",
         logoUrl: data.logoUrl || "",
         imageUrl: data.imageUrl || "",
+        availabilityStatus: data.availabilityStatus || "available",
+availableFrom: data.availableFrom
+  ? data.availableFrom.slice(0, 10)
+  : "",
       });
     } catch (err) {
       setError(err.message || "Failed to load listing");
@@ -153,7 +159,9 @@ export default function EditListing() {
 
       await apiPatch(`/api/owner/listings/${id}`, form, token);
 
-      setMessage("✅ Listing updated successfully and sent for admin review.");
+      const result = await apiPatch(`/api/owner/listings/${id}`, form, token);
+
+setMessage(result.message || "✅ Listing updated successfully.");
     } catch (err) {
       setError(err.message || "Failed to update listing");
     } finally {
@@ -239,6 +247,24 @@ export default function EditListing() {
   value={form.businessHours}
   onChange={update}
 />
+
+<div className="edit-listing-two-col">
+  <select
+    name="availabilityStatus"
+    value={form.availabilityStatus}
+    onChange={update}
+  >
+    <option value="available">🟢 Available</option>
+    <option value="rented">🔴 Rented</option>
+  </select>
+
+  <input
+    type="date"
+    name="availableFrom"
+    value={form.availableFrom}
+    onChange={update}
+  />
+</div>
             </section>
 
             <section className="edit-listing-section">
