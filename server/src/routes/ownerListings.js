@@ -105,6 +105,8 @@ router.patch("/:id", async (req, res) => {
       "description_am",
       "logoUrl",
       "imageUrl",
+      "availabilityStatus",
+"availableFrom",
     ];
 
     const updates = {};
@@ -117,6 +119,21 @@ router.patch("/:id", async (req, res) => {
             : req.body[field];
       }
     }
+
+    if (
+  updates.availabilityStatus &&
+  !["available", "rented"].includes(updates.availabilityStatus)
+) {
+  return res.status(400).json({
+    message: "Invalid availability status.",
+  });
+}
+
+if ("availableFrom" in updates) {
+  updates.availableFrom = updates.availableFrom
+    ? new Date(updates.availableFrom)
+    : null;
+}
 
     const sensitiveFields = [
       "title",

@@ -48,6 +48,15 @@ approvalEmailSentAt: {
   default: null,
 },
 
+availabilityStatus: {
+  type: String,
+  enum: ["available", "rented"],
+  default: "available",
+},
+availableFrom: {
+  type: Date,
+},
+
     phone: { type: String, required: true, trim: true },
     whatsapp: { type: String, default: "", trim: true },
     website: { type: String, default: "", trim: true },
