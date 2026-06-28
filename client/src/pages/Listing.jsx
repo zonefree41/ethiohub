@@ -533,6 +533,26 @@ document.title = seoTitle;
               </p>
             </div>
 
+            {Array.isArray(listing.propertyImages) && listing.propertyImages.length > 0 && (
+  <section className="listing-property-gallery">
+    <h3>Property Photos</h3>
+
+    <div className="listing-property-grid">
+      {listing.propertyImages.map((url, index) => (
+        <a
+          key={`${url}-${index}`}
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          className="listing-property-photo"
+        >
+          <img src={url} alt={`Property photo ${index + 1}`} />
+        </a>
+      ))}
+    </div>
+  </section>
+)}
+
             <div className="listing-actions">
               <button type="button" className="listing-save-btn" onClick={toggleFavorite}>
                 {isSaved ? "Saved ❤️" : "Save Business 🤍"}

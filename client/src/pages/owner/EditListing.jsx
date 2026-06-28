@@ -14,6 +14,7 @@ export default function EditListing() {
 
   const [uploadingLogo, setUploadingLogo] = React.useState(false);
   const [uploadingBanner, setUploadingBanner] = React.useState(false);
+  const [uploadingPropertyPhotos, setUploadingPropertyPhotos] = React.useState(false);
 
   const [form, setForm] = React.useState({
     title: "",
@@ -29,6 +30,7 @@ export default function EditListing() {
     description_am: "",
     logoUrl: "",
     imageUrl: "",
+propertyImages: [],
 availabilityStatus: "available",
 availableFrom: "",
   });
@@ -105,6 +107,65 @@ availableFrom: "",
     }
   }
 
+  async function handlePropertyPhotosUpload(e) {
+  const files = Array.from(e.target.files || []);
+
+  if (files.length === 0) return;
+
+  const currentImages = Array.isArray(form.propertyImages)
+    ? form.propertyImages
+    : [];
+
+  if (currentImages.length + files.length > 20) {
+    setError("You can upload up to 20 property photos.");
+    return;
+  }
+
+  setUploadingPropertyPhotos(true);
+  setError("");
+  setMessage("");
+
+  try {
+    const uploadedUrls = [];
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Property photo upload failed");
+      }
+
+      uploadedUrls.push(data.url);
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      propertyImages: [...(prev.propertyImages || []), ...uploadedUrls].slice(0, 20),
+    }));
+  } catch (err) {
+    setError(err.message || "Property photo upload failed");
+  } finally {
+    setUploadingPropertyPhotos(false);
+  }
+}
+
+function removePropertyImage(indexToRemove) {
+  setForm((prev) => ({
+    ...prev,
+    propertyImages: (prev.propertyImages || []).filter(
+      (_, index) => index !== indexToRemove
+    ),
+  }));
+}
+
   async function loadListing() {
     try {
       setLoading(true);
@@ -126,6 +187,7 @@ availableFrom: "",
         description_am: data.description_am || "",
         logoUrl: data.logoUrl || "",
         imageUrl: data.imageUrl || "",
+propertyImages: Array.isArray(data.propertyImages) ? data.propertyImages : [],
         availabilityStatus: data.availabilityStatus || "available",
 availableFrom: data.availableFrom
   ? data.availableFrom.slice(0, 10)
@@ -148,28 +210,26 @@ availableFrom: data.availableFrom
   }, [id]);
 
   async function submit(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setSaving(true);
-      setError("");
-      setMessage("");
+  try {
+    setSaving(true);
+    setError("");
+    setMessage("");
 
-      console.log("Saving owner listing form:", form);
+    console.log("Saving owner listing form:", form);
 
-      await apiPatch(`/api/owner/listings/${id}`, form, token);
+    const result = await apiPatch(`/api/owner/listings/${id}`, form, token);
 
-      const result = await apiPatch(`/api/owner/listings/${id}`, form, token);
-
-setMessage(result.message || "✅ Listing updated successfully.");
-    } catch (err) {
-      setError(err.message || "Failed to update listing");
-    } finally {
-      setSaving(false);
-    }
+    setMessage(result.message || "✅ Listing updated successfully.");
+  } catch (err) {
+    setError(err.message || "Failed to update listing");
+  } finally {
+    setSaving(false);
   }
+}
 
-  const isBusy = uploadingLogo || uploadingBanner || saving;
+  const isBusy = uploadingLogo || uploadingBanner || uploadingPropertyPhotos || saving;
 
   return (
     <main className="edit-listing-page">
@@ -365,6 +425,39 @@ setMessage(result.message || "✅ Listing updated successfully.");
                   />
                 )}
               </div>
+
+              <div className="edit-listing-upload-card">
+  <label>Property Photos</label>
+  <p>
+    Upload up to 20 photos for rentals: living room, kitchen,
+    bedrooms, bathroom, exterior, parking, and more.
+  </p>
+
+  <input
+    type="file"
+    accept="image/*"
+    multiple
+    onChange={handlePropertyPhotosUpload}
+  />
+
+  {uploadingPropertyPhotos && (
+    <p className="edit-listing-uploading">Uploading property photos...</p>
+  )}
+
+  {form.propertyImages?.length > 0 && (
+    <div className="edit-listing-property-grid">
+      {form.propertyImages.map((url, index) => (
+        <div key={`${url}-${index}`} className="edit-listing-property-photo">
+          <img src={url} alt={`Property photo ${index + 1}`} />
+
+          <button type="button" onClick={() => removePropertyImage(index)}>
+            Remove
+          </button>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
             </section>
 
             <button
