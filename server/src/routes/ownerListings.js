@@ -105,6 +105,7 @@ router.patch("/:id", async (req, res) => {
       "description_am",
       "logoUrl",
       "imageUrl",
+      "propertyVideoUrl",
       "availabilityStatus",
 "availableFrom",
 "propertyImages",
