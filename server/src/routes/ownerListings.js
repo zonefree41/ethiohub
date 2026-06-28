@@ -122,6 +122,23 @@ router.patch("/:id", async (req, res) => {
       }
     }
 
+    const blockedPhrases = [
+  "your website is hacked",
+  "hacked",
+  "test@gmail.com",
+];
+
+const spamText = Object.values(updates)
+  .filter((value) => typeof value === "string")
+  .join(" ")
+  .toLowerCase();
+
+if (blockedPhrases.some((phrase) => spamText.includes(phrase))) {
+  return res.status(400).json({
+    message: "Update rejected as spam.",
+  });
+}
+
     if ("propertyImages" in updates) {
   updates.propertyImages = Array.isArray(updates.propertyImages)
     ? updates.propertyImages.slice(0, 20)

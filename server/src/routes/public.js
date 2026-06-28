@@ -266,6 +266,35 @@ router.post("/submissions", async (req, res) => {
       submittedBy = {},
     } = req.body || {};
 
+    const blockedPhrases = [
+  "your website is hacked",
+  "hacked",
+  "test@gmail.com",
+];
+
+const spamText = `
+  ${title || ""}
+  ${description_en || ""}
+  ${description_am || ""}
+  ${subcategory || ""}
+  ${phone || ""}
+  ${businessHours || ""}
+  ${whatsapp || ""}
+  ${website || ""}
+  ${address || ""}
+  ${city || ""}
+  ${state || ""}
+  ${zip || ""}
+  ${submittedBy?.name || ""}
+  ${submittedBy?.contact || ""}
+`.toLowerCase();
+
+if (blockedPhrases.some((phrase) => spamText.includes(phrase))) {
+  return res.status(400).json({
+    message: "Submission rejected as spam.",
+  });
+}
+
     if (!title || !categoryId || !phone || !city || !state) {
       return res.status(400).json({ message: "Missing required fields" });
     }

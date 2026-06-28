@@ -21,6 +21,30 @@ router.post("/", async (req, res) => {
       message,
     } = req.body;
 
+    const blockedPhrases = [
+  "your website is hacked",
+  "hacked",
+  "test@gmail.com",
+];
+
+const spamText = `
+  ${businessName || ""}
+  ${category || ""}
+  ${city || ""}
+  ${state || ""}
+  ${phone || ""}
+  ${website || ""}
+  ${suggestedByName || ""}
+  ${suggestedByContact || ""}
+  ${message || ""}
+`.toLowerCase();
+
+if (blockedPhrases.some((phrase) => spamText.includes(phrase))) {
+  return res.status(400).json({
+    message: "Submission rejected as spam.",
+  });
+}
+
     if (!businessName) {
       return res.status(400).json({
         message: "Business name is required.",
