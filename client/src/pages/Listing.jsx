@@ -553,6 +553,18 @@ document.title = seoTitle;
   </section>
 )}
 
+{listing.propertyVideoUrl && (
+  <section className="listing-property-video">
+    <h3>Property Video</h3>
+
+    <video
+      src={listing.propertyVideoUrl}
+      controls
+      className="listing-property-video-player"
+    />
+  </section>
+)}
+
             <div className="listing-actions">
               <button type="button" className="listing-save-btn" onClick={toggleFavorite}>
                 {isSaved ? "Saved ❤️" : "Save Business 🤍"}

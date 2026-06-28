@@ -1051,3 +1051,22 @@
   border-radius: 14px;
   display: block;
 }
+
+.listing-property-video {
+  margin: 28px 0;
+}
+
+.listing-property-video h3 {
+  margin: 0 0 14px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.listing-property-video-player {
+  width: 100%;
+  max-width: 720px;
+  border-radius: 16px;
+  background: #000;
+  display: block;
+}
