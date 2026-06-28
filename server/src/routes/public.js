@@ -3,6 +3,7 @@ import Category from "../models/Category.js";
 import Listing from "../models/Listing.js";
 import Review from "../models/Review.js";
 import jwt from "jsonwebtoken";
+import { checkSpamSubmission } from "../utils/spamProtection.js";
 
 const router = express.Router();
 
@@ -266,32 +267,25 @@ router.post("/submissions", async (req, res) => {
       submittedBy = {},
     } = req.body || {};
 
-    const blockedPhrases = [
-  "your website is hacked",
-  "hacked",
-  "test@gmail.com",
-];
+    const spamError = checkSpamSubmission({
+  title,
+  description_en,
+  description_am,
+  subcategory,
+  phone,
+  businessHours,
+  whatsapp,
+  website,
+  address,
+  city,
+  state,
+  zip,
+  submittedBy,
+});
 
-const spamText = `
-  ${title || ""}
-  ${description_en || ""}
-  ${description_am || ""}
-  ${subcategory || ""}
-  ${phone || ""}
-  ${businessHours || ""}
-  ${whatsapp || ""}
-  ${website || ""}
-  ${address || ""}
-  ${city || ""}
-  ${state || ""}
-  ${zip || ""}
-  ${submittedBy?.name || ""}
-  ${submittedBy?.contact || ""}
-`.toLowerCase();
-
-if (blockedPhrases.some((phrase) => spamText.includes(phrase))) {
+if (spamError) {
   return res.status(400).json({
-    message: "Submission rejected as spam.",
+    message: spamError,
   });
 }
 
