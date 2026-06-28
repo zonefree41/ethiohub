@@ -307,3 +307,26 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+.edit-listing-video-preview {
+  margin-top: 16px;
+}
+
+.edit-listing-video-preview video {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 16px;
+  display: block;
+  background: #000;
+}
+
+.edit-listing-video-preview button {
+  margin-top: 12px;
+  border: 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 800;
+  cursor: pointer;
+}

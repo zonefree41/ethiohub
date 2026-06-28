@@ -15,6 +15,7 @@ export default function EditListing() {
   const [uploadingLogo, setUploadingLogo] = React.useState(false);
   const [uploadingBanner, setUploadingBanner] = React.useState(false);
   const [uploadingPropertyPhotos, setUploadingPropertyPhotos] = React.useState(false);
+  const [uploadingPropertyVideo, setUploadingPropertyVideo] = React.useState(false);
 
   const [form, setForm] = React.useState({
     title: "",
@@ -30,6 +31,7 @@ export default function EditListing() {
     description_am: "",
     logoUrl: "",
     imageUrl: "",
+    propertyVideoUrl: "",
 propertyImages: [],
 availabilityStatus: "available",
 availableFrom: "",
@@ -47,6 +49,52 @@ availableFrom: "",
   setForm((prev) => ({
     ...prev,
     [name]: value,
+  }));
+}
+
+async function handlePropertyVideoUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  if (file.type !== "video/mp4") {
+    setError("Only MP4 video files are allowed.");
+    return;
+  }
+
+  setUploadingPropertyVideo(true);
+  setError("");
+  setMessage("");
+
+  try {
+    const formData = new FormData();
+    formData.append("video", file);
+
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/video`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Video upload failed");
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      propertyVideoUrl: data.url,
+    }));
+  } catch (err) {
+    setError(err.message || "Video upload failed");
+  } finally {
+    setUploadingPropertyVideo(false);
+  }
+}
+
+function removePropertyVideo() {
+  setForm((prev) => ({
+    ...prev,
+    propertyVideoUrl: "",
   }));
 }
 
@@ -187,6 +235,7 @@ function removePropertyImage(indexToRemove) {
         description_am: data.description_am || "",
         logoUrl: data.logoUrl || "",
         imageUrl: data.imageUrl || "",
+        propertyVideoUrl: data.propertyVideoUrl || "",
 propertyImages: Array.isArray(data.propertyImages) ? data.propertyImages : [],
         availabilityStatus: data.availabilityStatus || "available",
 availableFrom: data.availableFrom
@@ -229,7 +278,12 @@ availableFrom: data.availableFrom
   }
 }
 
-  const isBusy = uploadingLogo || uploadingBanner || uploadingPropertyPhotos || saving;
+  const isBusy =
+  uploadingLogo ||
+  uploadingBanner ||
+  uploadingPropertyPhotos ||
+  uploadingPropertyVideo ||
+  saving;
 
   return (
     <main className="edit-listing-page">
@@ -459,6 +513,31 @@ availableFrom: data.availableFrom
   )}
 </div>
             </section>
+
+            <div className="edit-listing-upload-card">
+  <label>Property Video</label>
+  <p>Upload one MP4 walkthrough video. Recommended length: 60–90 seconds.</p>
+
+  <input
+    type="file"
+    accept="video/mp4"
+    onChange={handlePropertyVideoUpload}
+  />
+
+  {uploadingPropertyVideo && (
+    <p className="edit-listing-uploading">Uploading property video...</p>
+  )}
+
+  {form.propertyVideoUrl && (
+    <div className="edit-listing-video-preview">
+      <video src={form.propertyVideoUrl} controls />
+
+      <button type="button" onClick={removePropertyVideo}>
+        Remove Video
+      </button>
+    </div>
+  )}
+</div>
 
             <button
               type="submit"
