@@ -422,6 +422,11 @@ function hasRentalDetails(item) {
 
   const categoryName = listing.categoryId?.name_en || "Business";
 
+  const isHousingListing =
+  categoryName.toLowerCase().includes("housing") ||
+  listing.subcategory?.toLowerCase().includes("rental") ||
+  listing.subcategory?.toLowerCase().includes("room");
+
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
   : categoryName;
@@ -562,7 +567,7 @@ document.title = seoTitle;
               </p>
             </div>
 
-            {hasRentalDetails(listing) && (
+            {isHousingListing && hasRentalDetails(listing) && (
   <section className="listing-rental-details">
     <h3>🏠 Rental Details</h3>
 

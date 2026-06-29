@@ -19,6 +19,7 @@ export default function EditListing() {
 
   const [form, setForm] = React.useState({
     title: "",
+    subcategory: "",
     phone: "",
     whatsapp: "",
     website: "",
@@ -243,6 +244,7 @@ function removePropertyImage(indexToRemove) {
 
       setForm({
         title: data.title || "",
+        subcategory: data.subcategory || "",
         phone: data.phone || "",
         whatsapp: data.whatsapp || "",
         website: data.website || "",
@@ -315,6 +317,14 @@ furnished: Boolean(data.furnished),
   uploadingPropertyPhotos ||
   uploadingPropertyVideo ||
   saving;
+
+  const isHousingListing = [
+  "Apartments",
+  "Houses",
+  "Basement Rentals",
+  "Rooms",
+  "Roommates",
+].includes(form.subcategory);
 
   return (
     <main className="edit-listing-page">
@@ -412,6 +422,7 @@ furnished: Boolean(data.furnished),
 </div>
             </section>
 
+{isHousingListing && (
             <section className="edit-listing-section">
   <h2>Rental Information</h2>
 
@@ -515,6 +526,7 @@ furnished: Boolean(data.furnished),
     </label>
   </div>
 </section>
+)}
 
             <section className="edit-listing-section">
               <h2>Location</h2>
