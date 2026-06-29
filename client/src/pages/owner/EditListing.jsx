@@ -35,6 +35,17 @@ export default function EditListing() {
 propertyImages: [],
 availabilityStatus: "available",
 availableFrom: "",
+
+monthlyRent: "",
+bedrooms: "",
+bathrooms: "",
+squareFeet: "",
+securityDeposit: "",
+leaseTerm: "",
+parking: false,
+petsAllowed: false,
+utilitiesIncluded: false,
+furnished: false,
   });
 
   React.useEffect(() => {
@@ -49,6 +60,15 @@ availableFrom: "",
   setForm((prev) => ({
     ...prev,
     [name]: value,
+  }));
+}
+
+function updateCheckbox(e) {
+  const { name, checked } = e.target;
+
+  setForm((prev) => ({
+    ...prev,
+    [name]: checked,
   }));
 }
 
@@ -241,6 +261,17 @@ propertyImages: Array.isArray(data.propertyImages) ? data.propertyImages : [],
 availableFrom: data.availableFrom
   ? data.availableFrom.slice(0, 10)
   : "",
+
+  monthlyRent: data.monthlyRent ?? "",
+bedrooms: data.bedrooms ?? "",
+bathrooms: data.bathrooms ?? "",
+squareFeet: data.squareFeet ?? "",
+securityDeposit: data.securityDeposit ?? "",
+leaseTerm: data.leaseTerm || "",
+parking: Boolean(data.parking),
+petsAllowed: Boolean(data.petsAllowed),
+utilitiesIncluded: Boolean(data.utilitiesIncluded),
+furnished: Boolean(data.furnished),
       });
     } catch (err) {
       setError(err.message || "Failed to load listing");
@@ -380,6 +411,110 @@ availableFrom: data.availableFrom
   />
 </div>
             </section>
+
+            <section className="edit-listing-section">
+  <h2>Rental Information</h2>
+
+  <div className="edit-listing-two-col">
+    <input
+      type="number"
+      name="monthlyRent"
+      placeholder="Monthly Rent"
+      value={form.monthlyRent}
+      onChange={update}
+      min="0"
+    />
+
+    <input
+      type="number"
+      name="securityDeposit"
+      placeholder="Security Deposit"
+      value={form.securityDeposit}
+      onChange={update}
+      min="0"
+    />
+  </div>
+
+  <div className="edit-listing-three-col">
+    <input
+      type="number"
+      name="bedrooms"
+      placeholder="Bedrooms"
+      value={form.bedrooms}
+      onChange={update}
+      min="0"
+    />
+
+    <input
+      type="number"
+      name="bathrooms"
+      placeholder="Bathrooms"
+      value={form.bathrooms}
+      onChange={update}
+      min="0"
+      step="0.5"
+    />
+
+    <input
+      type="number"
+      name="squareFeet"
+      placeholder="Square Feet"
+      value={form.squareFeet}
+      onChange={update}
+      min="0"
+    />
+  </div>
+
+  <select name="leaseTerm" value={form.leaseTerm} onChange={update}>
+    <option value="">Select Lease Term</option>
+    <option value="Month-to-Month">Month-to-Month</option>
+    <option value="6 Months">6 Months</option>
+    <option value="12 Months">12 Months</option>
+    <option value="Flexible">Flexible</option>
+  </select>
+
+  <div className="edit-listing-checkboxes">
+    <label>
+      <input
+        type="checkbox"
+        name="parking"
+        checked={form.parking}
+        onChange={updateCheckbox}
+      />
+      Parking
+    </label>
+
+    <label>
+      <input
+        type="checkbox"
+        name="petsAllowed"
+        checked={form.petsAllowed}
+        onChange={updateCheckbox}
+      />
+      Pets Allowed
+    </label>
+
+    <label>
+      <input
+        type="checkbox"
+        name="utilitiesIncluded"
+        checked={form.utilitiesIncluded}
+        onChange={updateCheckbox}
+      />
+      Utilities Included
+    </label>
+
+    <label>
+      <input
+        type="checkbox"
+        name="furnished"
+        checked={form.furnished}
+        onChange={updateCheckbox}
+      />
+      Furnished
+    </label>
+  </div>
+</section>
 
             <section className="edit-listing-section">
               <h2>Location</h2>

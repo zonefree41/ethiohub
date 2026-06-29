@@ -249,23 +249,34 @@ router.post("/submissions", async (req, res) => {
 
   try {
     const {
-      title,
-      description_en = "",
-      description_am = "",
-      categoryId,
-      subcategory = "",
-      phone,
-      businessHours,
-      whatsapp = "",
-      website = "",
-      address = "",
-      city,
-      state,
-      zip = "",
-      languages = ["en", "am"],
-      tags = [],
-      submittedBy = {},
-    } = req.body || {};
+  title,
+  description_en = "",
+  description_am = "",
+  categoryId,
+  subcategory = "",
+  phone,
+  businessHours,
+  whatsapp = "",
+  website = "",
+  address = "",
+  city,
+  state,
+  zip = "",
+  languages = ["en", "am"],
+  tags = [],
+  submittedBy = {},
+
+  monthlyRent = null,
+  bedrooms = null,
+  bathrooms = null,
+  squareFeet = null,
+  securityDeposit = null,
+  leaseTerm = "",
+  parking = false,
+  petsAllowed = false,
+  utilitiesIncluded = false,
+  furnished = false,
+} = req.body || {};
 
     const spamError = checkSpamSubmission({
   title,
@@ -293,6 +304,49 @@ if (spamError) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    const numberFields = {
+  monthlyRent,
+  bedrooms,
+  bathrooms,
+  squareFeet,
+  securityDeposit,
+};
+
+const cleanedNumbers = {};
+
+for (const [field, value] of Object.entries(numberFields)) {
+  cleanedNumbers[field] =
+    value === "" || value === null || value === undefined
+      ? null
+      : Number(value);
+
+  if (
+    cleanedNumbers[field] !== null &&
+    Number.isNaN(cleanedNumbers[field])
+  ) {
+    return res.status(400).json({
+      message: `Invalid number for ${field}.`,
+    });
+  }
+}
+
+const cleanedBooleans = {
+  parking: parking === true || parking === "true",
+  petsAllowed: petsAllowed === true || petsAllowed === "true",
+  utilitiesIncluded:
+    utilitiesIncluded === true || utilitiesIncluded === "true",
+  furnished: furnished === true || furnished === "true",
+};
+
+if (
+  leaseTerm &&
+  !["Month-to-Month", "6 Months", "12 Months", "Flexible"].includes(leaseTerm)
+) {
+  return res.status(400).json({
+    message: "Invalid lease term.",
+  });
+}
+
     const ownerId = getOptionalOwnerId(req);
 
     const listing = await Listing.create({
@@ -315,6 +369,17 @@ if (spamError) {
       languages,
       tags,
       submittedBy,
+
+      monthlyRent: cleanedNumbers.monthlyRent,
+bedrooms: cleanedNumbers.bedrooms,
+bathrooms: cleanedNumbers.bathrooms,
+squareFeet: cleanedNumbers.squareFeet,
+securityDeposit: cleanedNumbers.securityDeposit,
+leaseTerm,
+parking: cleanedBooleans.parking,
+petsAllowed: cleanedBooleans.petsAllowed,
+utilitiesIncluded: cleanedBooleans.utilitiesIncluded,
+furnished: cleanedBooleans.furnished,
       status: "pending",
     });
 

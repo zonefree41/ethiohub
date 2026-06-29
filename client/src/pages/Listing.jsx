@@ -275,6 +275,35 @@ export default function Listing() {
     });
   }
 
+  function formatMoney(value) {
+  if (value === null || value === undefined || value === "") return "";
+
+  const number = Number(value);
+
+  if (Number.isNaN(number)) return "";
+
+  return number.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
+}
+
+function hasRentalDetails(item) {
+  return Boolean(
+    item?.monthlyRent ||
+      item?.bedrooms ||
+      item?.bathrooms ||
+      item?.squareFeet ||
+      item?.securityDeposit ||
+      item?.leaseTerm ||
+      item?.parking ||
+      item?.petsAllowed ||
+      item?.utilitiesIncluded ||
+      item?.furnished
+  );
+}
+
   function renderBusinessCard(item) {
     return (
       <a key={item._id} href={`/listing/${item._id}`} className="listing-nearby-card">
@@ -532,6 +561,106 @@ document.title = seoTitle;
                 <b>Phone:</b> {phone || "N/A"}
               </p>
             </div>
+
+            {hasRentalDetails(listing) && (
+  <section className="listing-rental-details">
+    <h3>🏠 Rental Details</h3>
+
+    <div className="listing-rental-grid">
+      {listing.monthlyRent && (
+        <div className="listing-rental-item">
+          <span>💲</span>
+          <div>
+            <strong>Rent</strong>
+            <p>{formatMoney(listing.monthlyRent)}/month</p>
+          </div>
+        </div>
+      )}
+
+      {listing.bedrooms !== null && listing.bedrooms !== undefined && (
+        <div className="listing-rental-item">
+          <span>🛏️</span>
+          <div>
+            <strong>Bedrooms</strong>
+            <p>{listing.bedrooms}</p>
+          </div>
+        </div>
+      )}
+
+      {listing.bathrooms !== null && listing.bathrooms !== undefined && (
+        <div className="listing-rental-item">
+          <span>🛁</span>
+          <div>
+            <strong>Bathrooms</strong>
+            <p>{listing.bathrooms}</p>
+          </div>
+        </div>
+      )}
+
+      {listing.squareFeet && (
+        <div className="listing-rental-item">
+          <span>📐</span>
+          <div>
+            <strong>Size</strong>
+            <p>{Number(listing.squareFeet).toLocaleString()} sq ft</p>
+          </div>
+        </div>
+      )}
+
+      <div className="listing-rental-item">
+        <span>🚗</span>
+        <div>
+          <strong>Parking</strong>
+          <p>{listing.parking ? "Available" : "Not listed"}</p>
+        </div>
+      </div>
+
+      <div className="listing-rental-item">
+        <span>🐶</span>
+        <div>
+          <strong>Pets</strong>
+          <p>{listing.petsAllowed ? "Allowed" : "Not listed"}</p>
+        </div>
+      </div>
+
+      <div className="listing-rental-item">
+        <span>💡</span>
+        <div>
+          <strong>Utilities</strong>
+          <p>{listing.utilitiesIncluded ? "Included" : "Not listed"}</p>
+        </div>
+      </div>
+
+      <div className="listing-rental-item">
+        <span>🛋️</span>
+        <div>
+          <strong>Furnished</strong>
+          <p>{listing.furnished ? "Yes" : "No"}</p>
+        </div>
+      </div>
+
+      {listing.leaseTerm && (
+        <div className="listing-rental-item">
+          <span>📅</span>
+          <div>
+            <strong>Lease</strong>
+            <p>{listing.leaseTerm}</p>
+          </div>
+        </div>
+      )}
+
+      {listing.securityDeposit && (
+        <div className="listing-rental-item">
+          <span>💵</span>
+          <div>
+            <strong>Security Deposit</strong>
+            <p>{formatMoney(listing.securityDeposit)}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+)}
 
             {Array.isArray(listing.propertyImages) && listing.propertyImages.length > 0 && (
   <section className="listing-property-gallery">

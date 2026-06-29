@@ -57,6 +57,57 @@ availableFrom: {
   type: Date,
 },
 
+monthlyRent: {
+  type: Number,
+  default: null,
+},
+
+bedrooms: {
+  type: Number,
+  default: null,
+},
+
+bathrooms: {
+  type: Number,
+  default: null,
+},
+
+squareFeet: {
+  type: Number,
+  default: null,
+},
+
+securityDeposit: {
+  type: Number,
+  default: null,
+},
+
+leaseTerm: {
+  type: String,
+  enum: ["Month-to-Month", "6 Months", "12 Months", "Flexible", ""],
+  default: "",
+},
+
+parking: {
+  type: Boolean,
+  default: false,
+},
+
+petsAllowed: {
+  type: Boolean,
+  default: false,
+},
+
+utilitiesIncluded: {
+  type: Boolean,
+  default: false,
+},
+
+furnished: {
+  type: Boolean,
+  default: false,
+},
+
 propertyImages: [
   {
     type: String,

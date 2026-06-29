@@ -330,3 +330,35 @@
   font-weight: 800;
   cursor: pointer;
 }
+
+.edit-listing-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.edit-listing-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #111827 !important;
+  font-size: 16px;
+}
+
+.edit-listing-checkboxes input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  margin: 0;
+  accent-color: #0f7a3b;
+}
+
+.edit-listing-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 24px;
+  margin-top: 20px;
+}

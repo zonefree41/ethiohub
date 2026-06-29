@@ -109,6 +109,17 @@ router.patch("/:id", async (req, res) => {
       "availabilityStatus",
 "availableFrom",
 "propertyImages",
+
+"monthlyRent",
+"bedrooms",
+"bathrooms",
+"squareFeet",
+"securityDeposit",
+"leaseTerm",
+"parking",
+"petsAllowed",
+"utilitiesIncluded",
+"furnished",
     ];
 
     const updates = {};
@@ -158,6 +169,54 @@ if ("availableFrom" in updates) {
   updates.availableFrom = updates.availableFrom
     ? new Date(updates.availableFrom)
     : null;
+}
+
+const numberFields = [
+  "monthlyRent",
+  "bedrooms",
+  "bathrooms",
+  "squareFeet",
+  "securityDeposit",
+];
+
+for (const field of numberFields) {
+  if (field in updates) {
+    updates[field] =
+      updates[field] === "" || updates[field] === null
+        ? null
+        : Number(updates[field]);
+
+    if (updates[field] !== null && Number.isNaN(updates[field])) {
+      return res.status(400).json({
+        message: `Invalid number for ${field}.`,
+      });
+    }
+  }
+}
+
+const booleanFields = [
+  "parking",
+  "petsAllowed",
+  "utilitiesIncluded",
+  "furnished",
+];
+
+for (const field of booleanFields) {
+  if (field in updates) {
+    updates[field] =
+      updates[field] === true || updates[field] === "true";
+  }
+}
+
+if (
+  "leaseTerm" in updates &&
+  !["", "Month-to-Month", "6 Months", "12 Months", "Flexible"].includes(
+    updates.leaseTerm
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid lease term.",
+  });
 }
 
     const sensitiveFields = [
