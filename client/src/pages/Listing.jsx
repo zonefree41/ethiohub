@@ -24,6 +24,7 @@ export default function Listing() {
   const [isSaved, setIsSaved] = React.useState(false);
   const [nearbyListings, setNearbyListings] = React.useState([]);
   const [relatedListings, setRelatedListings] = React.useState([]);
+  const [activePhotoIndex, setActivePhotoIndex] = React.useState(0);
 
   const [reviewForm, setReviewForm] = React.useState({
     name: "",
@@ -157,6 +158,22 @@ export default function Listing() {
       [e.target.name]: e.target.value,
     }));
   }
+
+  function nextPhoto() {
+  if (!Array.isArray(listing?.propertyImages)) return;
+
+  setActivePhotoIndex((prev) =>
+    prev === listing.propertyImages.length - 1 ? 0 : prev + 1
+  );
+}
+
+function prevPhoto() {
+  if (!Array.isArray(listing?.propertyImages)) return;
+
+  setActivePhotoIndex((prev) =>
+    prev === 0 ? listing.propertyImages.length - 1 : prev - 1
+  );
+}
 
   function toggleFavorite() {
     try {
@@ -422,10 +439,16 @@ function hasRentalDetails(item) {
 
   const categoryName = listing.categoryId?.name_en || "Business";
 
+
   const isHousingListing =
-  categoryName.toLowerCase().includes("housing") ||
-  listing.subcategory?.toLowerCase().includes("rental") ||
-  listing.subcategory?.toLowerCase().includes("room");
+  categoryName === "Housing & Rentals" ||
+  [
+    "Apartments",
+    "Houses",
+    "Basement Rentals",
+    "Rooms",
+    "Roommates",
+  ].includes(listing.subcategory);
 
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
@@ -667,25 +690,41 @@ document.title = seoTitle;
   </section>
 )}
 
-            {Array.isArray(listing.propertyImages) && listing.propertyImages.length > 0 && (
-  <section className="listing-property-gallery">
-    <h3>Property Photos</h3>
+            {isHousingListing &&
+  Array.isArray(listing.propertyImages) &&
+  listing.propertyImages.length > 0 && (
+    <section className="listing-property-gallery">
+      <h3>Property Photos</h3>
 
-    <div className="listing-property-grid">
-      {listing.propertyImages.map((url, index) => (
-        <a
-          key={`${url}-${index}`}
-          href={url}
-          target="_blank"
-          rel="noreferrer"
-          className="listing-property-photo"
-        >
-          <img src={url} alt={`Property photo ${index + 1}`} />
-        </a>
-      ))}
-    </div>
-  </section>
-)}
+      <div className="listing-photo-slider">
+        <button type="button" onClick={prevPhoto}>
+          ←
+        </button>
+
+        <img
+          src={listing.propertyImages[activePhotoIndex]}
+          alt={`Property photo ${activePhotoIndex + 1}`}
+        />
+
+        <button type="button" onClick={nextPhoto}>
+          →
+        </button>
+      </div>
+
+      <div className="listing-photo-thumbnails">
+        {listing.propertyImages.map((url, index) => (
+          <button
+            type="button"
+            key={`${url}-${index}`}
+            onClick={() => setActivePhotoIndex(index)}
+            className={activePhotoIndex === index ? "active" : ""}
+          >
+            <img src={url} alt={`Thumbnail ${index + 1}`} />
+          </button>
+        ))}
+      </div>
+    </section>
+  )}
 
 {listing.propertyVideoUrl && (
   <section className="listing-property-video">

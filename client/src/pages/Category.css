@@ -316,3 +316,48 @@
   color: #991b1b;
   border: 1px solid #fca5a5;
 }
+
+.category-housing-details {
+  margin-top: 10px;
+  display: grid;
+  gap: 4px;
+}
+
+.category-housing-details p {
+  margin: 0;
+  color: #374151;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.category-housing-rent {
+  color: #047857 !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+}
+
+.category-description {
+  margin-top: 14px;
+  color: #374151;
+  line-height: 1.55;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.category-housing-bedbath {
+  white-space: nowrap;
+}
+
+.category-property-thumb {
+  width: 90px;
+  height: 90px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}

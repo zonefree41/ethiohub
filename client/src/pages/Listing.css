@@ -1125,3 +1125,71 @@
     grid-template-columns: 1fr;
   }
 }
+
+.listing-photo-slider {
+  position: relative;
+  margin-top: 16px;
+}
+
+.listing-photo-slider img {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+}
+
+.listing-photo-slider button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 54px;
+  height: 54px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(17,24,39,.78);
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+  transition: 0.25s;
+  z-index: 5;
+}
+
+.listing-photo-slider button:hover {
+  background: rgba(17,24,39,.95);
+}
+
+.listing-photo-slider button:first-child {
+  left: 20px;
+}
+
+.listing-photo-slider button:last-child {
+  right: 20px;
+}
+
+.listing-photo-thumbnails {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-top: 12px;
+  padding-bottom: 4px;
+}
+
+.listing-photo-thumbnails button {
+  border: 2px solid transparent;
+  padding: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.listing-photo-thumbnails button.active {
+  border-color: #0f7a3b;
+}
+
+.listing-photo-thumbnails img {
+  width: 84px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 10px;
+}

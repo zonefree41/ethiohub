@@ -25,6 +25,30 @@ function getParam(name) {
   return url.searchParams.get(name) || "";
 }
 
+function formatMoney(value) {
+  if (value === null || value === undefined || value === "") return "";
+
+  const number = Number(value);
+
+  if (Number.isNaN(number)) return "";
+
+  return number.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
+}
+
+function isHousingListing(listing) {
+  return [
+    "Apartments",
+    "Houses",
+    "Basement Rentals",
+    "Rooms",
+    "Roommates",
+  ].includes(listing.subcategory);
+}
+
 export default function Category() {
   const slug = window.location.pathname.split("/").pop();
   const search = getParam("search");
@@ -204,17 +228,23 @@ const seoDescription =
                 <article key={listing._id} className="category-card">
   <div className="category-card-top">
     <div className="category-card-identity">
-      {listing.logoUrl ? (
-        <img
-          src={listing.logoUrl}
-          alt={`${listing.title} logo`}
-          className="category-card-logo"
-        />
-      ) : (
-        <div className="category-card-logo-placeholder">
-          {listing.title?.charAt(0)?.toUpperCase() || "B"}
-        </div>
-      )}
+      {isHousingListing(listing) && listing.propertyImages?.length ? (
+  <img
+    src={listing.propertyImages[0]}
+    alt={listing.title}
+    className="category-property-thumb"
+  />
+) : listing.logoUrl ? (
+  <img
+    src={listing.logoUrl}
+    alt={`${listing.title} logo`}
+    className="category-card-logo"
+  />
+) : (
+  <div className="category-card-logo-placeholder">
+    {listing.title?.charAt(0)?.toUpperCase() || "B"}
+  </div>
+)}
 
       <div>
         <h2>{listing.title}</h2>
@@ -224,9 +254,9 @@ const seoDescription =
             "Location not available"}
         </p>
 
-        {listing.subcategory && (
+        {isHousingListing(listing) && listing.subcategory && (
   <p className="category-subcategory">
-    📍 {listing.subcategory}
+    🏠 {listing.subcategory}
   </p>
 )}
 
@@ -239,12 +269,41 @@ const seoDescription =
       </div>
     </div>
 
+    {isHousingListing(listing) && (
+  <div className="category-housing-details">
+    {listing.monthlyRent && (
+      <p className="category-housing-rent">
+        💲 {formatMoney(listing.monthlyRent)}/month
+      </p>
+    )}
+
+    {(listing.bedrooms || listing.bathrooms) && (
+  <p className="category-housing-bedbath">
+    {listing.bedrooms ? `🛏️ ${listing.bedrooms} Bed` : ""}
+    {listing.bedrooms && listing.bathrooms ? " • " : ""}
+    {listing.bathrooms ? `🛁 ${listing.bathrooms} Bath` : ""}
+  </p>
+)}
+
+    {listing.squareFeet && (
+      <p>📐 {Number(listing.squareFeet).toLocaleString()} sq ft</p>
+    )}
+
+    <p>
+      {listing.availabilityStatus === "rented"
+        ? "🔴 Rented"
+        : "🟢 Available"}
+    </p>
+  </div>
+)}
+
     <div className="category-badges">
-{listing.availabilityStatus === "rented" ? (
+{isHousingListing(listing) &&
+  (listing.availabilityStatus === "rented" ? (
     <span className="category-rented-badge">🔴 Rented</span>
   ) : (
     <span className="category-available-badge">🟢 Available</span>
-  )}
+  ))}
 
       {listing.isFeatured && <span>⭐ Featured</span>}
       {listing.isVerified && <span>✅ Verified</span>}
@@ -252,8 +311,11 @@ const seoDescription =
   </div>
 
                   <p className="category-description">
-                    {listing.description_en || "No description available."}
-                  </p>
+  {listing.description_en
+    ? listing.description_en.slice(0, 160) +
+      (listing.description_en.length > 160 ? "..." : "")
+    : "No description available."}
+</p>
 
                   <div className="category-actions">
   {phone && (
