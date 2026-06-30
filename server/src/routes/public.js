@@ -86,13 +86,23 @@ router.get("/listings/:id/related", async (req, res) => {
 router.get("/listings", async (req, res) => {
   try {
     const {
-      search = "",
-      category = "",
-      subcategory = "",
-      city = "",
-      state = "",
-      featured = "",
-    } = req.query;
+  search = "",
+  category = "",
+  subcategory = "",
+  city = "",
+  state = "",
+  featured = "",
+  minRent = "",
+  maxRent = "",
+  bedrooms = "",
+  bathrooms = "",
+  availableOnly = "",
+  petsAllowed = "",
+  parking = "",
+  utilitiesIncluded = "",
+  furnished = "",
+  sortBy = "",
+} = req.query;
 
     const filter = { status: "approved" };
 
@@ -117,13 +127,85 @@ router.get("/listings", async (req, res) => {
       filter.isFeatured = true;
     }
 
+    if (minRent) {
+  filter.monthlyRent = {
+    ...(filter.monthlyRent || {}),
+    $gte: Number(minRent),
+  };
+}
+
+if (maxRent) {
+  filter.monthlyRent = {
+    ...(filter.monthlyRent || {}),
+    $lte: Number(maxRent),
+  };
+}
+
+if (bedrooms) {
+  filter.bedrooms = { $gte: Number(bedrooms) };
+}
+
+if (bathrooms) {
+  filter.bathrooms = { $gte: Number(bathrooms) };
+}
+
+if (availableOnly === "true") {
+  filter.availabilityStatus = "available";
+}
+
+if (petsAllowed === "true") {
+  filter.petsAllowed = true;
+}
+
+if (parking === "true") {
+  filter.parking = true;
+}
+
+if (utilitiesIncluded === "true") {
+  filter.utilitiesIncluded = true;
+}
+
+if (furnished === "true") {
+  filter.furnished = true;
+}
+
     const q = search.trim();
 
-    const sort = {
-      isFeatured: -1,
-      isVerified: -1,
-      createdAt: -1,
-    };
+    let sort = {
+  isFeatured: -1,
+  isVerified: -1,
+  createdAt: -1,
+};
+
+if (sortBy === "priceLow") {
+  sort = {
+    monthlyRent: 1,
+    isFeatured: -1,
+    createdAt: -1,
+  };
+}
+
+if (sortBy === "priceHigh") {
+  sort = {
+    monthlyRent: -1,
+    isFeatured: -1,
+    createdAt: -1,
+  };
+}
+
+if (sortBy === "newest") {
+  sort = {
+    createdAt: -1,
+  };
+}
+
+if (sortBy === "featured") {
+  sort = {
+    isFeatured: -1,
+    isVerified: -1,
+    createdAt: -1,
+  };
+}
 
     let listings;
 
