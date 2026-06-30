@@ -361,3 +361,152 @@
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
+
+.housing-filter-bar,
+.category-housing-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0 26px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.housing-filter-bar input,
+.housing-filter-bar select,
+.category-housing-filters input,
+.category-housing-filters select {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #111827;
+  font-weight: 700;
+}
+
+.housing-filter-bar button,
+.category-housing-filters button {
+  min-height: 44px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.housing-filter-bar button:hover,
+.category-housing-filters button:hover {
+  background: #1f2937;
+}
+
+@media (max-width: 720px) {
+  .housing-filter-bar,
+  .category-housing-filters {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+.category-housing-filters label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: #111827 !important;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.category-housing-filters input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  accent-color: #0f7a3b;
+}
+
+.category-page .category-housing-filters label,
+.category-page .housing-filter-bar label {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.category-page .category-housing-filters label *,
+.category-page .housing-filter-bar label * {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+.housing-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+}
+
+.housing-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827 !important;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.housing-checkboxes input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #0f7a3b;
+}
+
+/* Housing Filter Checkboxes */
+.housing-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  margin-top: 14px;
+}
+
+.housing-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827 !important;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.housing-checkboxes input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #0f7a3b;
+  cursor: pointer;
+}
+
+.housing-filter-main-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.housing-filter-main-row input,
+.housing-filter-main-row select {
+  min-height: 48px;
+}
+
+.housing-filter-main-row button {
+  min-height: 48px;
+}

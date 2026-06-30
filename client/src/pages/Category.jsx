@@ -56,6 +56,17 @@ export default function Category() {
   const state = getParam("state");
   const subcategory = getParam("subcategory");
 
+  const minRent = getParam("minRent");
+const maxRent = getParam("maxRent");
+const bedrooms = getParam("bedrooms");
+const bathrooms = getParam("bathrooms");
+const availableOnly = getParam("availableOnly");
+const petsAllowed = getParam("petsAllowed");
+const parking = getParam("parking");
+const utilitiesIncluded = getParam("utilitiesIncluded");
+const furnished = getParam("furnished");
+const sortBy = getParam("sortBy");
+
   const [categories, setCategories] = React.useState([]);
   const [listings, setListings] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
@@ -89,6 +100,17 @@ export default function Category() {
 if (subcategory) qs.set("subcategory", subcategory);
 if (categoryId) qs.set("category", categoryId);
 
+if (minRent) qs.set("minRent", minRent);
+if (maxRent) qs.set("maxRent", maxRent);
+if (bedrooms) qs.set("bedrooms", bedrooms);
+if (bathrooms) qs.set("bathrooms", bathrooms);
+if (availableOnly) qs.set("availableOnly", availableOnly);
+if (petsAllowed) qs.set("petsAllowed", petsAllowed);
+if (parking) qs.set("parking", parking);
+if (utilitiesIncluded) qs.set("utilitiesIncluded", utilitiesIncluded);
+if (furnished) qs.set("furnished", furnished);
+if (sortBy) qs.set("sortBy", sortBy);
+
         const data = await apiGet(`/api/listings?${qs.toString()}`);
         if (!alive) return;
 
@@ -109,7 +131,23 @@ if (categoryId) qs.set("category", categoryId);
     return () => {
       alive = false;
     };
-  }, [slug, search, city, state]);
+  }, [
+  slug,
+  search,
+  city,
+  state,
+  subcategory,
+  minRent,
+  maxRent,
+  bedrooms,
+  bathrooms,
+  availableOnly,
+  petsAllowed,
+  parking,
+  utilitiesIncluded,
+  furnished,
+  sortBy,
+]);
 
   const selectedCategory =
   slug === "all" ? null : categories.find((c) => c.slug === slug);
@@ -122,6 +160,38 @@ const title =
 const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
   ? selectedCategory.subcategories
   : [];
+
+  const isHousingCategory =
+  selectedCategory?.name_en === "Housing & Rentals" ||
+  [
+    "Apartments",
+    "Houses",
+    "Basement Rentals",
+    "Rooms",
+    "Roommates",
+  ].includes(subcategory);
+
+  function applyHousingFilters(e) {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const qs = new URLSearchParams();
+
+    if (search) qs.set("search", search);
+    if (city) qs.set("city", city);
+    if (state) qs.set("state", state);
+    if (subcategory) qs.set("subcategory", subcategory);
+
+    for (const [key, value] of formData.entries()) {
+      if (value === "on") {
+        qs.set(key, "true");
+      } else if (value) {
+        qs.set(key, value);
+      }
+    }
+
+    window.location.href = `/category/${slug}?${qs.toString()}`;
+  }
 
       const canonicalUrl = `https://www.hubethio.com/category/${slug}`;
 
@@ -186,7 +256,93 @@ const seoDescription =
     ))}
   </div>
 )}
-        </div>
+
+{isHousingCategory && (
+  <form className="housing-filter-bar" onSubmit={applyHousingFilters}>
+    <div className="housing-filter-main-row">
+      <input
+        type="number"
+        name="minRent"
+        placeholder="Min Rent"
+        defaultValue={minRent}
+      />
+
+      <input
+        type="number"
+        name="maxRent"
+        placeholder="Max Rent"
+        defaultValue={maxRent}
+      />
+
+      <select name="bedrooms" defaultValue={bedrooms}>
+        <option value="">Bedrooms</option>
+        <option value="1">1+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+        <option value="4">4+</option>
+      </select>
+
+      <select name="bathrooms" defaultValue={bathrooms}>
+        <option value="">Bathrooms</option>
+        <option value="1">1+</option>
+        <option value="1.5">1.5+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+      </select>
+
+      <button type="submit">🔍 Search</button>
+    </div>
+
+    <div className="housing-checkboxes">
+      <label>
+        <input
+          type="checkbox"
+          name="availableOnly"
+          defaultChecked={availableOnly === "true"}
+        />
+        Available Only
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="parking"
+          defaultChecked={parking === "true"}
+        />
+        Parking
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="petsAllowed"
+          defaultChecked={petsAllowed === "true"}
+        />
+        Pets Allowed
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="utilitiesIncluded"
+          defaultChecked={utilitiesIncluded === "true"}
+        />
+        Utilities Included
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="furnished"
+          defaultChecked={furnished === "true"}
+        />
+        Furnished
+      </label>
+    </div>
+  </form>
+)}
+
+  </div>
 
         {loading && (
           <div className="category-state-card">
@@ -218,13 +374,13 @@ const seoDescription =
 
         {!loading && !error && listings.length > 0 && (
           <div className="category-grid">
-            {listings.map((listing) => {
-              const phone = listing.phone || "";
-              const whatsapp = String(
-                listing.whatsapp || listing.phone || ""
-              ).replace(/\D/g, "");
+  {listings.map((listing) => {
+    const phone = listing.phone || "";
+    const whatsapp = String(
+      listing.whatsapp || listing.phone || ""
+    ).replace(/\D/g, "");
 
-              return (
+    return (
                 <article key={listing._id} className="category-card">
   <div className="category-card-top">
     <div className="category-card-identity">
