@@ -25,6 +25,18 @@ function getParam(name) {
   return url.searchParams.get(name) || "";
 }
 
+function getSubcategoryValue(label) {
+  const map = {
+    "Apartments for Rent": "Apartments",
+    "Rooms for Rent": "Rooms",
+    "Basement Rentals": "Basement Rentals",
+    "Houses for Rent": "Houses",
+    "Roommates Wanted": "Roommates",
+  };
+
+  return map[label] || label;
+}
+
 function formatMoney(value) {
   if (value === null || value === undefined || value === "") return "";
 
@@ -245,15 +257,19 @@ const seoDescription =
       All
     </a>
 
-    {availableSubcategories.map((sub) => (
-      <a
-        key={sub}
-        href={`/category/${slug}?subcategory=${encodeURIComponent(sub)}`}
-        className={subcategory === sub ? "active" : ""}
-      >
-        {sub}
-      </a>
-    ))}
+    {availableSubcategories.map((sub) => {
+  const value = getSubcategoryValue(sub);
+
+  return (
+    <a
+      key={sub}
+      href={`/category/${slug}?subcategory=${encodeURIComponent(value)}`}
+      className={subcategory === value ? "active" : ""}
+    >
+      {sub}
+    </a>
+  );
+})}
   </div>
 )}
 
@@ -289,6 +305,14 @@ const seoDescription =
         <option value="2">2+</option>
         <option value="3">3+</option>
       </select>
+
+      <select name="sortBy" defaultValue={sortBy}>
+  <option value="">Sort By</option>
+  <option value="featured">⭐ Featured</option>
+  <option value="newest">🆕 Newest</option>
+  <option value="priceLow">💲 Price: Low → High</option>
+  <option value="priceHigh">💰 Price: High → Low</option>
+</select>
 
       <button type="submit">🔍 Search</button>
     </div>
