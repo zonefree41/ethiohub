@@ -20,6 +20,20 @@ const emptyForm = {
   logoUrl: "",
   imageUrl: "",
   businessHours: "",
+  monthlyRent: "",
+bedrooms: "",
+bathrooms: "",
+squareFeet: "",
+securityDeposit: "",
+leaseTerm: "",
+parking: false,
+petsAllowed: false,
+utilitiesIncluded: false,
+furnished: false,
+availabilityStatus: "available",
+availableFrom: "",
+propertyImages: [],
+propertyVideoUrl: "",
 };
 
 export default function Submit() {
@@ -28,6 +42,8 @@ export default function Submit() {
   const [error, setError] = React.useState("");
   const [uploadingLogo, setUploadingLogo] = React.useState(false);
   const [uploadingBanner, setUploadingBanner] = React.useState(false);
+  const [uploadingPropertyPhotos, setUploadingPropertyPhotos] = React.useState(false);
+  const [uploadingPropertyVideo, setUploadingPropertyVideo] = React.useState(false);
   const [form, setForm] = React.useState(emptyForm);
 
   React.useEffect(() => {
@@ -50,6 +66,15 @@ export default function Submit() {
 
     return next;
   });
+}
+
+function updateCheckbox(e) {
+  const { name, checked } = e.target;
+
+  setForm((prev) => ({
+    ...prev,
+    [name]: checked,
+  }));
 }
 
   async function uploadImage(file, fieldName) {
@@ -107,6 +132,111 @@ export default function Submit() {
     }
   }
 
+  async function handlePropertyPhotosUpload(e) {
+  const files = Array.from(e.target.files || []);
+  if (files.length === 0) return;
+
+  const currentPhotos = Array.isArray(form.propertyImages)
+    ? form.propertyImages
+    : [];
+
+  const remainingSlots = 10 - currentPhotos.length;
+  const filesToUpload = files.slice(0, remainingSlots);
+
+  if (filesToUpload.length === 0) {
+    setError("You can upload up to 10 property photos.");
+    return;
+  }
+
+  setUploadingPropertyPhotos(true);
+  setError("");
+
+  try {
+    const uploadedUrls = [];
+
+    for (const file of filesToUpload) {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Property photo upload failed");
+      }
+
+      uploadedUrls.push(data.url);
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      propertyImages: [...(prev.propertyImages || []), ...uploadedUrls].slice(0, 10),
+    }));
+  } catch (err) {
+    setError(err.message || "Property photo upload failed");
+  } finally {
+    setUploadingPropertyPhotos(false);
+  }
+}
+
+function removePropertyPhoto(indexToRemove) {
+  setForm((prev) => ({
+    ...prev,
+    propertyImages: (prev.propertyImages || []).filter(
+      (_url, index) => index !== indexToRemove
+    ),
+  }));
+}
+
+async function handlePropertyVideoUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  if (file.type !== "video/mp4") {
+    setError("Only MP4 video files are allowed.");
+    return;
+  }
+
+  setUploadingPropertyVideo(true);
+  setError("");
+
+  try {
+    const formData = new FormData();
+    formData.append("video", file);
+
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/video`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Video upload failed");
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      propertyVideoUrl: data.url,
+    }));
+  } catch (err) {
+    setError(err.message || "Video upload failed");
+  } finally {
+    setUploadingPropertyVideo(false);
+  }
+}
+
+function removePropertyVideo() {
+  setForm((prev) => ({
+    ...prev,
+    propertyVideoUrl: "",
+  }));
+}
+
   async function submit(e) {
     e.preventDefault();
     setMessage("");
@@ -133,6 +263,20 @@ export default function Submit() {
           description_am: form.description_am,
           logoUrl: form.logoUrl,
           imageUrl: form.imageUrl,
+          monthlyRent: form.monthlyRent,
+bedrooms: form.bedrooms,
+bathrooms: form.bathrooms,
+squareFeet: form.squareFeet,
+securityDeposit: form.securityDeposit,
+leaseTerm: form.leaseTerm,
+parking: form.parking,
+petsAllowed: form.petsAllowed,
+utilitiesIncluded: form.utilitiesIncluded,
+furnished: form.furnished,
+availabilityStatus: form.availabilityStatus,
+availableFrom: form.availableFrom,
+propertyImages: form.propertyImages,
+propertyVideoUrl: form.propertyVideoUrl,
           submittedBy: {
             name: form.submittedByName,
             contact: form.submittedByContact,
@@ -148,13 +292,19 @@ export default function Submit() {
     }
   }
 
-  const isUploading = uploadingLogo || uploadingBanner;
+  const isUploading =
+  uploadingLogo ||
+  uploadingBanner ||
+  uploadingPropertyPhotos ||
+  uploadingPropertyVideo;
 
   const selectedCategory = categories.find((c) => c._id === form.categoryId);
 
 const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
   ? selectedCategory.subcategories
   : [];
+
+  const isHousingCategory = selectedCategory?.name_en === "Housing & Rentals";
 
   return (
     <main className="submit-page">
@@ -258,6 +408,125 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
       </option>
     ))}
   </select>
+)}
+
+{isHousingCategory && (
+  <section className="submit-section">
+    <h2>Rental Information</h2>
+
+    <div className="submit-two-col">
+      <input
+        type="number"
+        name="monthlyRent"
+        value={form.monthlyRent}
+        onChange={update}
+        placeholder="Monthly Rent"
+      />
+
+      <input
+        type="number"
+        name="securityDeposit"
+        value={form.securityDeposit}
+        onChange={update}
+        placeholder="Security Deposit"
+      />
+    </div>
+
+    <div className="submit-three-col">
+      <input
+        type="number"
+        name="bedrooms"
+        value={form.bedrooms}
+        onChange={update}
+        placeholder="Bedrooms"
+      />
+
+      <input
+        type="number"
+        name="bathrooms"
+        value={form.bathrooms}
+        onChange={update}
+        placeholder="Bathrooms"
+        step="0.5"
+      />
+
+      <input
+        type="number"
+        name="squareFeet"
+        value={form.squareFeet}
+        onChange={update}
+        placeholder="Square Feet"
+      />
+    </div>
+
+    <select name="leaseTerm" value={form.leaseTerm} onChange={update}>
+      <option value="">Lease Term</option>
+      <option value="Month-to-Month">Month-to-Month</option>
+      <option value="6 Months">6 Months</option>
+      <option value="12 Months">12 Months</option>
+      <option value="Flexible">Flexible</option>
+    </select>
+
+    <div className="submit-two-col">
+      <select
+        name="availabilityStatus"
+        value={form.availabilityStatus}
+        onChange={update}
+      >
+        <option value="available">🟢 Available</option>
+        <option value="rented">🔴 Rented</option>
+      </select>
+
+      <input
+        type="date"
+        name="availableFrom"
+        value={form.availableFrom}
+        onChange={update}
+      />
+    </div>
+
+    <div className="submit-checkboxes">
+      <label>
+        <input
+          type="checkbox"
+          name="parking"
+          checked={form.parking}
+          onChange={updateCheckbox}
+        />
+        Parking
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="petsAllowed"
+          checked={form.petsAllowed}
+          onChange={updateCheckbox}
+        />
+        Pets Allowed
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="utilitiesIncluded"
+          checked={form.utilitiesIncluded}
+          onChange={updateCheckbox}
+        />
+        Utilities Included
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="furnished"
+          checked={form.furnished}
+          onChange={updateCheckbox}
+        />
+        Furnished
+      </label>
+    </div>
+  </section>
 )}
 
             <div className="submit-two-col">
@@ -365,6 +634,69 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
                 />
               )}
             </div>
+
+              {isHousingCategory && (
+  <div className="submit-upload-card">
+    <label>Property Photos</label>
+    <p>
+      Upload up to 10 rental photos: bedroom, kitchen, bathroom, living room,
+      exterior, parking, and more.
+    </p>
+
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      onChange={handlePropertyPhotosUpload}
+    />
+
+    {uploadingPropertyPhotos && (
+      <p className="submit-uploading">Uploading property photos...</p>
+    )}
+
+    {form.propertyImages?.length > 0 && (
+      <div className="submit-property-grid">
+        {form.propertyImages.map((url, index) => (
+          <div key={`${url}-${index}`} className="submit-property-photo">
+            <img src={url} alt={`Property photo ${index + 1}`} />
+
+            <button type="button" onClick={() => removePropertyPhoto(index)}>
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+{isHousingCategory && (
+  <div className="submit-upload-card">
+    <label>Property Video</label>
+    <p>Upload one MP4 walkthrough video. Recommended length: 60–90 seconds.</p>
+
+    <input
+      type="file"
+      accept="video/mp4"
+      onChange={handlePropertyVideoUpload}
+    />
+
+    {uploadingPropertyVideo && (
+      <p className="submit-uploading">Uploading property video...</p>
+    )}
+
+    {form.propertyVideoUrl && (
+      <div className="submit-video-preview">
+        <video src={form.propertyVideoUrl} controls />
+
+        <button type="button" onClick={removePropertyVideo}>
+          Remove Video
+        </button>
+      </div>
+    )}
+  </div>
+)}
+
           </section>
 
           <section className="submit-section">
