@@ -62,7 +62,18 @@ function isHousingListing(listing) {
 }
 
 function isTransportationListing(listing) {
-  return listing.categoryId?.name_en === "Transportation";
+  return (
+    listing.categoryId?.name_en === "Transportation" ||
+    listing.categoryId?.slug === "transportation" ||
+    [
+      "Airport Transportation",
+      "Ethiopian Movers",
+      "Furniture Delivery",
+      "Package Delivery",
+      "Cargo & Freight",
+      "Charter & Group Transportation",
+    ].includes(listing.subcategory)
+  );
 }
 
 export default function Category() {
