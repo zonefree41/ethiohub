@@ -842,7 +842,7 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
               )}
             </div>
 
-              {isHousingCategory && (
+              {(isHousingCategory || isTransportationCategory) && (
   <div className="submit-upload-card">
     <label>
   {isHousingCategory ? "Property Photos" : "Vehicle Photos"}
@@ -881,10 +881,15 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
   </div>
 )}
 
-{isHousingCategory && (
+{(isHousingCategory || isTransportationCategory) && (
   <div className="submit-upload-card">
-    <label>Property Video</label>
-    <p>Upload one MP4 walkthrough video. Recommended length: 60–90 seconds.</p>
+    <label>{isHousingCategory ? "Property Video" : "Vehicle Video"}</label>
+
+<p>
+  {isHousingCategory
+    ? "Upload one MP4 walkthrough video. Recommended length: 60–90 seconds."
+    : "Upload one MP4 vehicle video: exterior, interior, cargo space, passenger seating, and equipment."}
+</p>
 
     <input
       type="file"
