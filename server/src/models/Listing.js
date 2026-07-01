@@ -121,6 +121,44 @@ propertyVideoUrl: {
   trim: true,
 },
 
+transportVehicleTypes: {
+  type: [String],
+  default: [],
+},
+
+transportServiceArea: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
+transportAvailable24_7: {
+  type: Boolean,
+  default: false,
+},
+
+transportAirportService: {
+  type: Boolean,
+  default: false,
+},
+
+transportSameDayService: {
+  type: Boolean,
+  default: false,
+},
+
+transportLocalLongDistance: {
+  type: String,
+  enum: ["Local", "Long Distance", "Both", ""],
+  default: "",
+},
+
+transportMaxLoad: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
     phone: { type: String, required: true, trim: true },
     whatsapp: { type: String, default: "", trim: true },
     website: { type: String, default: "", trim: true },

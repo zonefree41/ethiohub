@@ -34,6 +34,14 @@ availabilityStatus: "available",
 availableFrom: "",
 propertyImages: [],
 propertyVideoUrl: "",
+
+transportVehicleTypes: [],
+transportServiceArea: "",
+transportAvailable24_7: false,
+transportAirportService: false,
+transportSameDayService: false,
+transportLocalLongDistance: "",
+transportMaxLoad: "",
 };
 
 export default function Submit() {
@@ -276,6 +284,15 @@ furnished: form.furnished,
 availabilityStatus: form.availabilityStatus,
 availableFrom: form.availableFrom,
 propertyImages: form.propertyImages,
+
+transportVehicleTypes: form.transportVehicleTypes,
+transportServiceArea: form.transportServiceArea,
+transportAvailable24_7: form.transportAvailable24_7,
+transportAirportService: form.transportAirportService,
+transportSameDayService: form.transportSameDayService,
+transportLocalLongDistance: form.transportLocalLongDistance,
+transportMaxLoad: form.transportMaxLoad,
+
 propertyVideoUrl: form.propertyVideoUrl,
           submittedBy: {
             name: form.submittedByName,
@@ -305,6 +322,9 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
   : [];
 
   const isHousingCategory = selectedCategory?.name_en === "Housing & Rentals";
+
+  const isTransportationCategory =
+  selectedCategory?.name_en === "Transportation";
 
   return (
     <main className="submit-page">
@@ -524,6 +544,193 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
           onChange={updateCheckbox}
         />
         Furnished
+      </label>
+    </div>
+  </section>
+)}
+
+{isTransportationCategory && (
+  <section className="submit-section">
+    <h2>Transportation Information</h2>
+
+    <div className="submit-two-col">
+      <input
+        name="transportServiceArea"
+        value={form.transportServiceArea}
+        onChange={update}
+        placeholder="Service Area (e.g. DMV, Northern VA, Maryland)"
+      />
+
+      <input
+        name="transportMaxLoad"
+        value={form.transportMaxLoad}
+        onChange={update}
+        placeholder="Vehicle Capacity (e.g. 26-ft Truck, 3 Tons)"
+      />
+    </div>
+
+    <h3 className="submit-subtitle">Vehicle Types</h3>
+
+<div className="submit-checkboxes">
+
+  <label>
+    <input
+      type="checkbox"
+      checked={form.transportVehicleTypes.includes("Sedan")}
+      onChange={(e) =>
+        setForm((prev) => ({
+          ...prev,
+          transportVehicleTypes: e.target.checked
+            ? [...prev.transportVehicleTypes, "Sedan"]
+            : prev.transportVehicleTypes.filter(
+                (v) => v !== "Sedan"
+              ),
+        }))
+      }
+    />
+    Sedan
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      checked={form.transportVehicleTypes.includes("SUV")}
+      onChange={(e) =>
+        setForm((prev) => ({
+          ...prev,
+          transportVehicleTypes: e.target.checked
+            ? [...prev.transportVehicleTypes, "SUV"]
+            : prev.transportVehicleTypes.filter(
+                (v) => v !== "SUV"
+              ),
+        }))
+      }
+    />
+    SUV
+  </label>
+
+  <label>
+  <input
+    type="checkbox"
+    checked={form.transportVehicleTypes.includes("Passenger Van")}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVehicleTypes: e.target.checked
+          ? [...prev.transportVehicleTypes, "Passenger Van"]
+          : prev.transportVehicleTypes.filter((v) => v !== "Passenger Van"),
+      }))
+    }
+  />
+  Passenger Van
+</label>
+
+<label>
+  <input
+    type="checkbox"
+    checked={form.transportVehicleTypes.includes("Cargo Van")}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVehicleTypes: e.target.checked
+          ? [...prev.transportVehicleTypes, "Cargo Van"]
+          : prev.transportVehicleTypes.filter((v) => v !== "Cargo Van"),
+      }))
+    }
+  />
+  Cargo Van
+</label>
+
+<label>
+  <input
+    type="checkbox"
+    checked={form.transportVehicleTypes.includes("Sprinter Van")}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVehicleTypes: e.target.checked
+          ? [...prev.transportVehicleTypes, "Sprinter Van"]
+          : prev.transportVehicleTypes.filter((v) => v !== "Sprinter Van"),
+      }))
+    }
+  />
+  Sprinter Van
+</label>
+
+<label>
+  <input
+    type="checkbox"
+    checked={form.transportVehicleTypes.includes("Box Truck")}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVehicleTypes: e.target.checked
+          ? [...prev.transportVehicleTypes, "Box Truck"]
+          : prev.transportVehicleTypes.filter((v) => v !== "Box Truck"),
+      }))
+    }
+  />
+  Box Truck
+</label>
+
+<label>
+  <input
+    type="checkbox"
+    checked={form.transportVehicleTypes.includes("Pickup Truck")}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVehicleTypes: e.target.checked
+          ? [...prev.transportVehicleTypes, "Pickup Truck"]
+          : prev.transportVehicleTypes.filter((v) => v !== "Pickup Truck"),
+      }))
+    }
+  />
+  Pickup Truck
+</label>
+
+</div>
+
+    <select
+      name="transportLocalLongDistance"
+      value={form.transportLocalLongDistance}
+      onChange={update}
+    >
+      <option value="">Service Type</option>
+      <option value="Local">Local</option>
+      <option value="Long Distance">Long Distance</option>
+      <option value="Both">Both</option>
+    </select>
+
+    <div className="submit-checkboxes">
+      <label>
+        <input
+          type="checkbox"
+          name="transportAvailable24_7"
+          checked={form.transportAvailable24_7}
+          onChange={updateCheckbox}
+        />
+        24/7 Service
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="transportAirportService"
+          checked={form.transportAirportService}
+          onChange={updateCheckbox}
+        />
+        Airport Service
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="transportSameDayService"
+          checked={form.transportSameDayService}
+          onChange={updateCheckbox}
+        />
+        Same-Day Service
       </label>
     </div>
   </section>

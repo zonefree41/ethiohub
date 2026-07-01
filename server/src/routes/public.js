@@ -358,6 +358,17 @@ router.post("/submissions", async (req, res) => {
   petsAllowed = false,
   utilitiesIncluded = false,
   furnished = false,
+  
+  propertyImages = [],
+propertyVideoUrl = "",
+
+transportVehicleTypes = [],
+transportServiceArea = "",
+transportAvailable24_7 = false,
+transportAirportService = false,
+transportSameDayService = false,
+transportLocalLongDistance = "",
+transportMaxLoad = "",
 } = req.body || {};
 
     const spamError = checkSpamSubmission({
@@ -462,7 +473,26 @@ parking: cleanedBooleans.parking,
 petsAllowed: cleanedBooleans.petsAllowed,
 utilitiesIncluded: cleanedBooleans.utilitiesIncluded,
 furnished: cleanedBooleans.furnished,
-      status: "pending",
+
+propertyImages: Array.isArray(propertyImages)
+  ? propertyImages.slice(0, 20)
+  : [],
+propertyVideoUrl,
+
+transportVehicleTypes: Array.isArray(transportVehicleTypes)
+  ? transportVehicleTypes
+  : [],
+transportServiceArea,
+transportAvailable24_7:
+  transportAvailable24_7 === true || transportAvailable24_7 === "true",
+transportAirportService:
+  transportAirportService === true || transportAirportService === "true",
+transportSameDayService:
+  transportSameDayService === true || transportSameDayService === "true",
+transportLocalLongDistance,
+transportMaxLoad,
+
+status: "pending",
     });
 
     res.status(201).json({

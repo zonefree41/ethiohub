@@ -120,6 +120,14 @@ router.patch("/:id", async (req, res) => {
 "petsAllowed",
 "utilitiesIncluded",
 "furnished",
+
+"transportVehicleTypes",
+"transportServiceArea",
+"transportAvailable24_7",
+"transportAirportService",
+"transportSameDayService",
+"transportLocalLongDistance",
+"transportMaxLoad",
     ];
 
     const updates = {};
@@ -199,6 +207,13 @@ const booleanFields = [
   "petsAllowed",
   "utilitiesIncluded",
   "furnished",
+   "parking",
+  "petsAllowed",
+  "utilitiesIncluded",
+  "furnished",
+  "transportAvailable24_7",
+  "transportAirportService",
+  "transportSameDayService",
 ];
 
 for (const field of booleanFields) {
@@ -217,6 +232,21 @@ if (
   return res.status(400).json({
     message: "Invalid lease term.",
   });
+}
+
+if (
+  "transportLocalLongDistance" in updates &&
+  !["", "Local", "Long Distance", "Both"].includes(updates.transportLocalLongDistance)
+) {
+  return res.status(400).json({
+    message: "Invalid transportation distance option.",
+  });
+}
+
+if ("transportVehicleTypes" in updates) {
+  updates.transportVehicleTypes = Array.isArray(updates.transportVehicleTypes)
+    ? updates.transportVehicleTypes
+    : [];
 }
 
     const sensitiveFields = [
