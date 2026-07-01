@@ -61,6 +61,10 @@ function isHousingListing(listing) {
   ].includes(listing.subcategory);
 }
 
+function isTransportationListing(listing) {
+  return listing.categoryId?.name_en === "Transportation";
+}
+
 export default function Category() {
   const slug = window.location.pathname.split("/").pop();
   const search = getParam("search");
@@ -456,6 +460,32 @@ const seoDescription =
         💲 {formatMoney(listing.monthlyRent)}/month
       </p>
     )}
+
+    {isTransportationListing(listing) && (
+  <div className="category-transport-details">
+    {listing.transportVehicleTypes?.length > 0 && (
+      <p>🚚 {listing.transportVehicleTypes.join(" • ")}</p>
+    )}
+
+    {listing.transportServiceArea && (
+      <p>📍 Service Area: {listing.transportServiceArea}</p>
+    )}
+
+    {listing.transportLocalLongDistance && (
+      <p>🛣️ {listing.transportLocalLongDistance}</p>
+    )}
+
+    {listing.transportMaxLoad && (
+      <p>📦 Capacity: {listing.transportMaxLoad}</p>
+    )}
+
+    <div className="category-transport-badges">
+      {listing.transportAvailable24_7 && <span>🕒 24/7</span>}
+      {listing.transportAirportService && <span>✈️ Airport</span>}
+      {listing.transportSameDayService && <span>⚡ Same-Day</span>}
+    </div>
+  </div>
+)}
 
     {(listing.bedrooms || listing.bathrooms) && (
   <p className="category-housing-bedbath">

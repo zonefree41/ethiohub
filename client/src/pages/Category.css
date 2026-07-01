@@ -510,3 +510,33 @@
 .housing-filter-main-row button {
   min-height: 48px;
 }
+
+.category-transport-details {
+  margin-top: 10px;
+  display: grid;
+  gap: 5px;
+}
+
+.category-transport-details p {
+  margin: 0;
+  color: #374151;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.category-transport-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.category-transport-badges span {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-weight: 800;
+}
