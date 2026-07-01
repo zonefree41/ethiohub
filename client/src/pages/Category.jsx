@@ -263,7 +263,7 @@ const seoDescription =
             </p>
           )}
 
-          {availableSubcategories.length > 0 && (
+        {availableSubcategories.length > 0 && (
   <div className="category-subcategory-filters">
     <a
       href={`/category/${slug}`}
@@ -288,7 +288,7 @@ const seoDescription =
   </div>
 )}
 
-{isHousingCategory && (
+          {isHousingCategory && (
   <form className="housing-filter-bar" onSubmit={applyHousingFilters}>
     <div className="housing-filter-main-row">
       <input
@@ -423,7 +423,8 @@ const seoDescription =
                 <article key={listing._id} className="category-card">
   <div className="category-card-top">
     <div className="category-card-identity">
-      {isHousingListing(listing) && listing.propertyImages?.length ? (
+      <div className="category-badges">
+  {isHousingListing(listing) && listing.propertyImages?.[0] ? (
   <img
     src={listing.propertyImages[0]}
     alt={listing.title}
@@ -440,6 +441,7 @@ const seoDescription =
     {listing.title?.charAt(0)?.toUpperCase() || "B"}
   </div>
 )}
+      </div>
 
       <div>
         <h2>{listing.title}</h2>
@@ -464,7 +466,7 @@ const seoDescription =
       </div>
     </div>
 
-    {isHousingListing(listing) && (
+    <div className="category-badges">
   <div className="category-housing-details">
     {listing.monthlyRent && (
       <p className="category-housing-rent">
@@ -472,7 +474,7 @@ const seoDescription =
       </p>
     )}
 
-    {isTransportationListing(listing) && (
+{isTransportationListing(listing) && (
   <div className="category-transport-details">
     {listing.transportVehicleTypes?.length > 0 && (
       <p>🚚 {listing.transportVehicleTypes.join(" • ")}</p>
@@ -498,7 +500,7 @@ const seoDescription =
   </div>
 )}
 
-    {(listing.bedrooms || listing.bathrooms) && (
+{(listing.bedrooms || listing.bathrooms) && (
   <p className="category-housing-bedbath">
     {listing.bedrooms ? `🛏️ ${listing.bedrooms} Bed` : ""}
     {listing.bedrooms && listing.bathrooms ? " • " : ""}
@@ -516,7 +518,7 @@ const seoDescription =
         : "🟢 Available"}
     </p>
   </div>
-)}
+)
 
     <div className="category-badges">
 {isHousingListing(listing) &&
@@ -586,6 +588,7 @@ const seoDescription =
     View Details
   </a>
 </div>
+                  </div>
                 </article>
               );
             })}
@@ -594,5 +597,5 @@ const seoDescription =
       </div>
     </main>
   </>
-);
+  );
 }

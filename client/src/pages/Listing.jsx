@@ -439,6 +439,18 @@ function hasRentalDetails(item) {
 
   const categoryName = listing.categoryId?.name_en || "Business";
 
+  const isTransportationListing =
+  listing.categoryId?.name_en === "Transportation" ||
+  listing.categoryId?.slug === "transportation" ||
+  [
+    "Airport Transportation",
+    "Ethiopian Movers",
+    "Furniture Delivery",
+    "Package Delivery",
+    "Cargo & Freight",
+    "Charter & Group Transportation",
+  ].includes(listing.subcategory);
+
 
   const isHousingListing =
   categoryName === "Housing & Rentals" ||
@@ -686,6 +698,78 @@ document.title = seoTitle;
           </div>
         </div>
       )}
+    </div>
+  </section>
+)}
+
+{isTransportationListing && (
+  <section className="listing-rental-card">
+    <h2>🚚 Transportation Details</h2>
+
+    <div className="listing-rental-grid">
+      {listing.transportVehicleTypes?.length > 0 && (
+        <div className="listing-rental-item">
+          <span>🚚</span>
+          <div>
+            <strong>Vehicle Types</strong>
+            <p>{listing.transportVehicleTypes.join(" • ")}</p>
+          </div>
+        </div>
+      )}
+
+      {listing.transportServiceArea && (
+        <div className="listing-rental-item">
+          <span>📍</span>
+          <div>
+            <strong>Service Area</strong>
+            <p>{listing.transportServiceArea}</p>
+          </div>
+        </div>
+      )}
+
+      {listing.transportLocalLongDistance && (
+        <div className="listing-rental-item">
+          <span>🛣️</span>
+          <div>
+            <strong>Service Type</strong>
+            <p>{listing.transportLocalLongDistance}</p>
+          </div>
+        </div>
+      )}
+
+      {listing.transportMaxLoad && (
+        <div className="listing-rental-item">
+          <span>📦</span>
+          <div>
+            <strong>Capacity</strong>
+            <p>{listing.transportMaxLoad}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="listing-rental-item">
+        <span>🕒</span>
+        <div>
+          <strong>24/7 Service</strong>
+          <p>{listing.transportAvailable24_7 ? "Available" : "Not listed"}</p>
+        </div>
+      </div>
+
+      <div className="listing-rental-item">
+        <span>✈️</span>
+        <div>
+          <strong>Airport Service</strong>
+          <p>{listing.transportAirportService ? "Available" : "Not listed"}</p>
+        </div>
+      </div>
+
+      <div className="listing-rental-item">
+        <span>⚡</span>
+        <div>
+          <strong>Same-Day Service</strong>
+          <p>{listing.transportSameDayService ? "Available" : "Not listed"}</p>
+        </div>
+      </div>
     </div>
   </section>
 )}
