@@ -844,11 +844,15 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
 
               {isHousingCategory && (
   <div className="submit-upload-card">
-    <label>Property Photos</label>
-    <p>
-      Upload up to 10 rental photos: bedroom, kitchen, bathroom, living room,
-      exterior, parking, and more.
-    </p>
+    <label>
+  {isHousingCategory ? "Property Photos" : "Vehicle Photos"}
+</label>
+
+<p>
+  {isHousingCategory
+    ? "Upload up to 10 rental photos: bedroom, kitchen, bathroom, living room, exterior, parking, and more."
+    : "Upload up to 10 vehicle photos: front, rear, interior, cargo area, passenger seating, equipment, and more."}
+</p>
 
     <input
       type="file"
