@@ -65,57 +65,38 @@ router.get("/submissions", requireAdmin, async (req, res) => {
   }
 });
 
-router.patch("/listings/:id", async (req, res) => {
-  try {
-    const allowedFields = [
-      "title",
-      "description_en",
-      "description_am",
-      "phone",
-      "whatsapp",
-      "website",
-      "address",
-      "city",
-      "state",
-      "zip",
-      "businessHours",
-      "logoUrl",
-      "imageUrl",
-      "categoryId",
-      "subcategory",
-    ];
-
-    const updates = {};
-
-    allowedFields.forEach((field) => {
-      if (field in req.body) {
-        updates[field] = req.body[field];
-      }
-    });
-
-    updates.updatedAt = new Date();
-
-    const listing = await Listing.findByIdAndUpdate(
-      req.params.id,
-      updates,
-      { new: true }
-    ).populate("categoryId");
-
-    if (!listing) {
-      return res.status(404).json({ message: "Listing not found" });
-    }
-
-    res.json(listing);
-  } catch (err) {
-    console.error("Admin update listing failed:", err);
-    res.status(500).json({ message: "Failed to update listing" });
-  }
-});
 
 // Approve / reject / edit listing
 router.patch("/listings/:id", requireAdmin, async (req, res) => {
   try {
-    const patch = req.body || {};
+    const allowedFields = [
+  "title",
+  "description_en",
+  "description_am",
+  "phone",
+  "whatsapp",
+  "website",
+  "address",
+  "city",
+  "state",
+  "zip",
+  "businessHours",
+  "logoUrl",
+  "imageUrl",
+  "categoryId",
+  "subcategory",
+  "status",
+  "isFeatured",
+  "isVerified",
+];
+
+const patch = {};
+
+allowedFields.forEach((field) => {
+  if (field in req.body) {
+    patch[field] = req.body[field];
+  }
+});
 
     const existing = await Listing.findById(req.params.id);
 
