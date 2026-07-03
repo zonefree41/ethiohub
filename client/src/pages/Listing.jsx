@@ -742,7 +742,11 @@ document.title = seoTitle;
           <span>📦</span>
           <div>
             <strong>Capacity</strong>
-            <p>{listing.transportMaxLoad}</p>
+            <p>
+  {listing.transportMaxLoad
+    ? `${listing.transportMaxLoad} Capacity`
+    : "Not specified"}
+</p>
           </div>
         </div>
       )}
@@ -751,7 +755,9 @@ document.title = seoTitle;
         <span>🕒</span>
         <div>
           <strong>24/7 Service</strong>
-          <p>{listing.transportAvailable24_7 ? "Available" : "Not listed"}</p>
+          <p className={listing.transportAvailable24_7 ? "service-yes" : "service-no"}>
+  {listing.transportAvailable24_7 ? "🟢 Available" : "🔴 Not Available"}
+</p>
         </div>
       </div>
 
@@ -759,7 +765,9 @@ document.title = seoTitle;
         <span>✈️</span>
         <div>
           <strong>Airport Service</strong>
-          <p>{listing.transportAirportService ? "Available" : "Not listed"}</p>
+          <p className={listing.transportAirportService ? "service-yes" : "service-no"}>
+  {listing.transportAirportService ? "🟢 Available" : "🔴 Not Available"}
+</p>
         </div>
       </div>
 
@@ -767,18 +775,20 @@ document.title = seoTitle;
         <span>⚡</span>
         <div>
           <strong>Same-Day Service</strong>
-          <p>{listing.transportSameDayService ? "Available" : "Not listed"}</p>
+          <p className={listing.transportSameDayService ? "service-yes" : "service-no"}>
+  {listing.transportSameDayService ? "🟢 Available" : "🔴 Not Available"}
+</p>
         </div>
       </div>
     </div>
   </section>
 )}
 
-            {isHousingListing &&
+            {(isHousingListing || isTransportationListing) &&
   Array.isArray(listing.propertyImages) &&
   listing.propertyImages.length > 0 && (
     <section className="listing-property-gallery">
-      <h3>Property Photos</h3>
+      <h3>{isHousingListing ? "Property Photos" : "Vehicle Photos"}</h3>
 
       <div className="listing-photo-slider">
         <button type="button" onClick={prevPhoto}>
@@ -787,7 +797,7 @@ document.title = seoTitle;
 
         <img
           src={listing.propertyImages[activePhotoIndex]}
-          alt={`Property photo ${activePhotoIndex + 1}`}
+          alt={`${isHousingListing ? "Property" : "Vehicle"} photo ${activePhotoIndex + 1}`}
         />
 
         <button type="button" onClick={nextPhoto}>

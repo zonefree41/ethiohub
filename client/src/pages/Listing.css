@@ -1193,3 +1193,13 @@
   object-fit: cover;
   border-radius: 10px;
 }
+
+.service-yes {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.service-no {
+  color: #dc2626;
+  font-weight: 700;
+}
