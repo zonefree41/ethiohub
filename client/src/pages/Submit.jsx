@@ -553,6 +553,23 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
   <section className="submit-section">
     <h2>Transportation Information</h2>
 
+    <div className="submit-transport-banner">
+  <h3>🚚 Join HubEthio Transport</h3>
+
+  <p>
+    Promote your transportation business to customers looking for
+    airport transportation, movers, cargo, furniture delivery,
+    and charter services across the DMV.
+  </p>
+
+  <ul>
+    <li>✅ Upload vehicle photos & videos</li>
+    <li>✅ Show your service area</li>
+    <li>✅ Receive customer calls directly</li>
+    <li>✅ Get featured across HubEthio</li>
+  </ul>
+</div>
+
     <div className="submit-two-col">
       <input
         name="transportServiceArea"
@@ -571,122 +588,122 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
 
     <h3 className="submit-subtitle">Vehicle Types</h3>
 
-<div className="submit-checkboxes">
+<div className="submit-vehicle-grid">
 
   <label>
     <input
       type="checkbox"
-      checked={form.transportVehicleTypes.includes("Sedan")}
+      checked={form.transportVehicleTypes.includes("🚗 Sedan")}
       onChange={(e) =>
         setForm((prev) => ({
           ...prev,
           transportVehicleTypes: e.target.checked
-            ? [...prev.transportVehicleTypes, "Sedan"]
+            ? [...prev.transportVehicleTypes, "🚗 Sedan"]
             : prev.transportVehicleTypes.filter(
-                (v) => v !== "Sedan"
+                (v) => v !== "🚗 Sedan"
               ),
         }))
       }
     />
-    Sedan
+    🚗 Sedan
   </label>
 
   <label>
     <input
       type="checkbox"
-      checked={form.transportVehicleTypes.includes("SUV")}
+      checked={form.transportVehicleTypes.includes("🚙 SUV")}
       onChange={(e) =>
         setForm((prev) => ({
           ...prev,
           transportVehicleTypes: e.target.checked
-            ? [...prev.transportVehicleTypes, "SUV"]
+            ? [...prev.transportVehicleTypes, "🚙 SUV"]
             : prev.transportVehicleTypes.filter(
-                (v) => v !== "SUV"
+                (v) => v !== "🚙 SUV"
               ),
         }))
       }
     />
-    SUV
+    🚙 SUV
   </label>
 
   <label>
   <input
     type="checkbox"
-    checked={form.transportVehicleTypes.includes("Passenger Van")}
+    checked={form.transportVehicleTypes.includes("🚌 Passenger Van")}
     onChange={(e) =>
       setForm((prev) => ({
         ...prev,
         transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "Passenger Van"]
-          : prev.transportVehicleTypes.filter((v) => v !== "Passenger Van"),
+          ? [...prev.transportVehicleTypes, "🚌 Passenger Van"]
+          : prev.transportVehicleTypes.filter((v) => v !== "🚌 Passenger Van"),
       }))
     }
   />
-  Passenger Van
+  🚌 Passenger Van
 </label>
 
 <label>
   <input
     type="checkbox"
-    checked={form.transportVehicleTypes.includes("Cargo Van")}
+    checked={form.transportVehicleTypes.includes("🚛 Cargo Van")}
     onChange={(e) =>
       setForm((prev) => ({
         ...prev,
         transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "Cargo Van"]
-          : prev.transportVehicleTypes.filter((v) => v !== "Cargo Van"),
+          ? [...prev.transportVehicleTypes, "🚛 Cargo Van"]
+          : prev.transportVehicleTypes.filter((v) => v !== "🚛 Cargo Van"),
       }))
     }
   />
-  Cargo Van
+  🚛 Cargo Van
 </label>
 
 <label>
   <input
     type="checkbox"
-    checked={form.transportVehicleTypes.includes("Sprinter Van")}
+    checked={form.transportVehicleTypes.includes("🚐 Sprinter Van")}
     onChange={(e) =>
       setForm((prev) => ({
         ...prev,
         transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "Sprinter Van"]
-          : prev.transportVehicleTypes.filter((v) => v !== "Sprinter Van"),
+          ? [...prev.transportVehicleTypes, "🚐 Sprinter Van"]
+          : prev.transportVehicleTypes.filter((v) => v !== "🚐 Sprinter Van"),
       }))
     }
   />
-  Sprinter Van
+  🚐 Sprinter Van
 </label>
 
 <label>
   <input
     type="checkbox"
-    checked={form.transportVehicleTypes.includes("Box Truck")}
+    checked={form.transportVehicleTypes.includes("📦 Box Truck")}
     onChange={(e) =>
       setForm((prev) => ({
         ...prev,
         transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "Box Truck"]
-          : prev.transportVehicleTypes.filter((v) => v !== "Box Truck"),
+          ? [...prev.transportVehicleTypes, "📦 Box Truck"]
+          : prev.transportVehicleTypes.filter((v) => v !== "📦 Box Truck"),
       }))
     }
   />
-  Box Truck
+  📦 Box Truck
 </label>
 
 <label>
   <input
     type="checkbox"
-    checked={form.transportVehicleTypes.includes("Pickup Truck")}
+    checked={form.transportVehicleTypes.includes("🛻 Pickup Truck")}
     onChange={(e) =>
       setForm((prev) => ({
         ...prev,
         transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "Pickup Truck"]
-          : prev.transportVehicleTypes.filter((v) => v !== "Pickup Truck"),
+          ? [...prev.transportVehicleTypes, "🛻 Pickup Truck"]
+          : prev.transportVehicleTypes.filter((v) => v !== "🛻 Pickup Truck"),
       }))
     }
   />
-  Pickup Truck
+  🛻 Pickup Truck
 </label>
 
 </div>
