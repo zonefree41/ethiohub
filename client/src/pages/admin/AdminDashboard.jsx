@@ -18,6 +18,7 @@ export default function AdminDashboard() {
 const [reviewsLoading, setReviewsLoading] = React.useState(false);
 const [editingListing, setEditingListing] = React.useState(null);
 
+
   React.useEffect(() => {
     document.title = "Admin Dashboard | HubEthio";
   }, []);
@@ -221,6 +222,10 @@ async function deleteBusinessRequest(id, businessName) {
   }
 
   const uploadToCloudinary = async (file) => {
+  console.log("Cloud name:", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
+  console.log("Upload preset:", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+  console.log("Selected file:", file);
+
   if (!file) return "";
 
   const formData = new FormData();
@@ -236,6 +241,8 @@ async function deleteBusinessRequest(id, businessName) {
   );
 
   const data = await res.json();
+
+  console.log("Cloudinary response:", data);
 
   if (!res.ok) {
     throw new Error(data.error?.message || "Cloudinary upload failed");
@@ -360,16 +367,28 @@ async function deleteBusinessRequest(id, businessName) {
   type="file"
   accept="image/*"
   onChange={async (e) => {
-    const file = e.target.files[0];
+  try {
+    const file = e.target.files?.[0];
     if (!file) return;
+
+    setMessage("Uploading logo...");
+    setError("");
 
     const url = await uploadToCloudinary(file);
 
-    setEditingListing({
-      ...editingListing,
+    console.log("Logo uploaded URL:", url);
+
+    setEditingListing((prev) => ({
+      ...prev,
       logoUrl: url,
-    });
-  }}
+    }));
+
+    setMessage("✅ Logo uploaded. Now click Save Changes.");
+  } catch (err) {
+    console.error("Logo upload failed:", err);
+    setError(err.message || "Logo upload failed");
+  }
+}}
 />
 
 <label>Banner Image</label>
@@ -386,15 +405,16 @@ async function deleteBusinessRequest(id, businessName) {
   type="file"
   accept="image/*"
   onChange={async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
     try {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
       setMessage("Uploading banner...");
+      setError("");
 
       const url = await uploadToCloudinary(file);
 
-      console.log("Uploaded banner URL:", url);
+      console.log("Banner uploaded URL:", url);
 
       setEditingListing((prev) => ({
         ...prev,
@@ -403,18 +423,11 @@ async function deleteBusinessRequest(id, businessName) {
 
       setMessage("✅ Banner uploaded. Now click Save Changes.");
     } catch (err) {
+      console.error("Banner upload failed:", err);
       setError(err.message || "Banner upload failed");
     }
   }}
 />
-
-    <input
-      value={editingListing.imageUrl || ""}
-      onChange={(e) =>
-        setEditingListing({ ...editingListing, imageUrl: e.target.value })
-      }
-      placeholder="Banner Image URL"
-    />
 
     <textarea
       value={editingListing.description_en || ""}
@@ -433,6 +446,10 @@ async function deleteBusinessRequest(id, businessName) {
         type="button"
         className="admin-btn-approve"
         onClick={async () => {
+          console.log("Saving listing payload:", {
+  logoUrl: editingListing.logoUrl,
+  imageUrl: editingListing.imageUrl,
+});
           await updateListing(editingListing._id, {
             title: editingListing.title,
             phone: editingListing.phone,
