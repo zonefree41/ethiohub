@@ -16,6 +16,7 @@ export default function AdminDashboard() {
   const [businessRequests, setBusinessRequests] = React.useState([]);
   const [pendingReviews, setPendingReviews] = React.useState([]);
 const [reviewsLoading, setReviewsLoading] = React.useState(false);
+const [editingListing, setEditingListing] = React.useState(null);
 
   React.useEffect(() => {
     document.title = "Admin Dashboard | HubEthio";
@@ -219,6 +220,30 @@ async function deleteBusinessRequest(id, businessName) {
     window.location.href = "/admin/login";
   }
 
+  const uploadToCloudinary = async (file) => {
+  if (!file) return "";
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error?.message || "Cloudinary upload failed");
+  }
+
+  return data.secure_url;
+};
+
   const filteredItems = items.filter((item) => {
     const query = adminSearch.trim().toLowerCase();
 
@@ -294,6 +319,145 @@ async function deleteBusinessRequest(id, businessName) {
 
         {message && <div className="admin-dashboard-success">{message}</div>}
         {error && <div className="admin-dashboard-error">Error: {error}</div>}
+
+        {editingListing && (
+  <section className="admin-edit-panel">
+    <h2>Edit Listing</h2>
+
+    <input
+      value={editingListing.title || ""}
+      onChange={(e) =>
+        setEditingListing({ ...editingListing, title: e.target.value })
+      }
+      placeholder="Business name"
+    />
+
+    <input
+      value={editingListing.phone || ""}
+      onChange={(e) =>
+        setEditingListing({ ...editingListing, phone: e.target.value })
+      }
+      placeholder="Phone"
+    />
+
+    <label>Logo</label>
+
+{editingListing.logoUrl && (
+  <img
+    src={editingListing.logoUrl}
+    alt="Logo"
+    style={{
+      width: "80px",
+      height: "80px",
+      objectFit: "cover",
+      borderRadius: "8px",
+      marginBottom: "8px",
+    }}
+  />
+)}
+
+<input
+  type="file"
+  accept="image/*"
+  onChange={async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const url = await uploadToCloudinary(file);
+
+    setEditingListing({
+      ...editingListing,
+      logoUrl: url,
+    });
+  }}
+/>
+
+<label>Banner Image</label>
+
+{editingListing.imageUrl && (
+  <img
+    src={editingListing.imageUrl}
+    alt="Banner"
+    className="admin-edit-preview-banner"
+  />
+)}
+
+<input
+  type="file"
+  accept="image/*"
+  onChange={async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setMessage("Uploading banner...");
+
+      const url = await uploadToCloudinary(file);
+
+      console.log("Uploaded banner URL:", url);
+
+      setEditingListing((prev) => ({
+        ...prev,
+        imageUrl: url,
+      }));
+
+      setMessage("✅ Banner uploaded. Now click Save Changes.");
+    } catch (err) {
+      setError(err.message || "Banner upload failed");
+    }
+  }}
+/>
+
+    <input
+      value={editingListing.imageUrl || ""}
+      onChange={(e) =>
+        setEditingListing({ ...editingListing, imageUrl: e.target.value })
+      }
+      placeholder="Banner Image URL"
+    />
+
+    <textarea
+      value={editingListing.description_en || ""}
+      onChange={(e) =>
+        setEditingListing({
+          ...editingListing,
+          description_en: e.target.value,
+        })
+      }
+      placeholder="Description"
+      rows="4"
+    />
+
+    <div className="admin-edit-actions">
+      <button
+        type="button"
+        className="admin-btn-approve"
+        onClick={async () => {
+          await updateListing(editingListing._id, {
+            title: editingListing.title,
+            phone: editingListing.phone,
+            website: editingListing.website,
+            logoUrl: editingListing.logoUrl,
+            imageUrl: editingListing.imageUrl,
+            description_en: editingListing.description_en,
+          });
+
+          setEditingListing(null);
+        }}
+      >
+        Save Changes
+      </button>
+
+      <button
+        type="button"
+        className="admin-btn-neutral"
+        onClick={() => setEditingListing(null)}
+      >
+        Cancel
+      </button>
+    </div>
+  </section>
+)}
 
         <section className="admin-claims-section">
   <div className="admin-dashboard-section-header">
@@ -749,6 +913,22 @@ async function deleteBusinessRequest(id, businessName) {
                       >
                         {item.isVerified ? "Remove Verified" : "Make Verified ✅"}
                       </button>
+
+                      <button
+  type="button"
+  className="admin-btn-neutral"
+  onClick={() => {
+    setEditingListing(item);
+
+    setTimeout(() => {
+      document
+        .querySelector(".admin-edit-panel")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  }}
+>
+  Edit Listing
+</button>
 
                       <button
                         type="button"
