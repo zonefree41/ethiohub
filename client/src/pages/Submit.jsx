@@ -589,123 +589,33 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
     <h3 className="submit-subtitle">Vehicle Types</h3>
 
 <div className="submit-vehicle-grid">
-
-  <label>
-    <input
-      type="checkbox"
-      checked={form.transportVehicleTypes.includes("🚗 Sedan")}
-      onChange={(e) =>
-        setForm((prev) => ({
-          ...prev,
-          transportVehicleTypes: e.target.checked
-            ? [...prev.transportVehicleTypes, "🚗 Sedan"]
-            : prev.transportVehicleTypes.filter(
-                (v) => v !== "🚗 Sedan"
-              ),
-        }))
-      }
-    />
-    🚗 Sedan
-  </label>
-
-  <label>
-    <input
-      type="checkbox"
-      checked={form.transportVehicleTypes.includes("🚙 SUV")}
-      onChange={(e) =>
-        setForm((prev) => ({
-          ...prev,
-          transportVehicleTypes: e.target.checked
-            ? [...prev.transportVehicleTypes, "🚙 SUV"]
-            : prev.transportVehicleTypes.filter(
-                (v) => v !== "🚙 SUV"
-              ),
-        }))
-      }
-    />
-    🚙 SUV
-  </label>
-
-  <label>
-  <input
-    type="checkbox"
-    checked={form.transportVehicleTypes.includes("🚌 Passenger Van")}
-    onChange={(e) =>
-      setForm((prev) => ({
-        ...prev,
-        transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "🚌 Passenger Van"]
-          : prev.transportVehicleTypes.filter((v) => v !== "🚌 Passenger Van"),
-      }))
-    }
-  />
-  🚌 Passenger Van
-</label>
-
-<label>
-  <input
-    type="checkbox"
-    checked={form.transportVehicleTypes.includes("🚛 Cargo Van")}
-    onChange={(e) =>
-      setForm((prev) => ({
-        ...prev,
-        transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "🚛 Cargo Van"]
-          : prev.transportVehicleTypes.filter((v) => v !== "🚛 Cargo Van"),
-      }))
-    }
-  />
-  🚛 Cargo Van
-</label>
-
-<label>
-  <input
-    type="checkbox"
-    checked={form.transportVehicleTypes.includes("🚐 Sprinter Van")}
-    onChange={(e) =>
-      setForm((prev) => ({
-        ...prev,
-        transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "🚐 Sprinter Van"]
-          : prev.transportVehicleTypes.filter((v) => v !== "🚐 Sprinter Van"),
-      }))
-    }
-  />
-  🚐 Sprinter Van
-</label>
-
-<label>
-  <input
-    type="checkbox"
-    checked={form.transportVehicleTypes.includes("📦 Box Truck")}
-    onChange={(e) =>
-      setForm((prev) => ({
-        ...prev,
-        transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "📦 Box Truck"]
-          : prev.transportVehicleTypes.filter((v) => v !== "📦 Box Truck"),
-      }))
-    }
-  />
-  📦 Box Truck
-</label>
-
-<label>
-  <input
-    type="checkbox"
-    checked={form.transportVehicleTypes.includes("🛻 Pickup Truck")}
-    onChange={(e) =>
-      setForm((prev) => ({
-        ...prev,
-        transportVehicleTypes: e.target.checked
-          ? [...prev.transportVehicleTypes, "🛻 Pickup Truck"]
-          : prev.transportVehicleTypes.filter((v) => v !== "🛻 Pickup Truck"),
-      }))
-    }
-  />
-  🛻 Pickup Truck
-</label>
-
+  {[
+    { value: "Sedan", label: "🚗 Sedan" },
+    { value: "SUV", label: "🚙 SUV" },
+    { value: "Passenger Van", label: "🚌 Passenger Van" },
+    { value: "Cargo Van", label: "🚛 Cargo Van" },
+    { value: "Sprinter Van", label: "🚐 Sprinter Van" },
+    { value: "Box Truck", label: "📦 Box Truck" },
+    { value: "Pickup Truck", label: "🛻 Pickup Truck" },
+  ].map((vehicle) => (
+    <label key={vehicle.value}>
+      <input
+        type="checkbox"
+        checked={form.transportVehicleTypes.includes(vehicle.value)}
+        onChange={(e) =>
+          setForm((prev) => ({
+            ...prev,
+            transportVehicleTypes: e.target.checked
+              ? [...prev.transportVehicleTypes, vehicle.value]
+              : prev.transportVehicleTypes.filter(
+                  (v) => v !== vehicle.value
+                ),
+          }))
+        }
+      />
+      {vehicle.label}
+    </label>
+  ))}
 </div>
 
     <select
