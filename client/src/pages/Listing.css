@@ -26,20 +26,19 @@
 }
 
 .listing-banner,
+.listing-hero-banner,
+.listing-banner-img,
 .listing-banner-placeholder {
   width: 100%;
-  height: 330px;
+  height: 420px;
 }
 
-.listing-banner {
-  object-fit: cover;
-  display: block;
-}.listing-hero-banner,
+.listing-banner,
+.listing-hero-banner,
 .listing-banner-img {
-  width: 100%;
-  height: 360px;
-  object-fit: contain;
-  object-position: center;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
   background: #ffffff;
 }
 
@@ -164,10 +163,6 @@
     padding: 14px 12px 40px;
   }
 
-  .listing-banner,
-  .listing-banner-placeholder {
-    height: 220px;
-  }
 
   .listing-content {
     padding: 0 16px 22px;
@@ -327,9 +322,12 @@
   }
 
   .listing-banner,
-  .listing-banner-placeholder {
-    height: 210px;
-  }
+.listing-hero-banner,
+.listing-banner-img,
+.listing-banner-placeholder {
+  height: 220px;
+  object-position: center top;
+}
 
   .listing-content {
     padding: 0 14px 22px;
