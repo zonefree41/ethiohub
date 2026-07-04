@@ -478,10 +478,10 @@ const seoDescription =
     {listing.categoryId?.name_en === "Beauty & Wellness" && (
   <div className="category-beauty-details">
     {listing.beautyStartingPrice && (
-      <p>
-        💵 <strong>Starting at {listing.beautyStartingPrice}</strong>
-      </p>
-    )}
+  <p>
+    💵 <strong>Starting at ${listing.beautyStartingPrice}</strong>
+  </p>
+)}
 
     {listing.beautyServices?.length > 0 && (
       <p>💄 {listing.beautyServices.slice(0, 3).join(" • ")}</p>
