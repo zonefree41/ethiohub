@@ -221,36 +221,39 @@ async function deleteBusinessRequest(id, businessName) {
     window.location.href = "/admin/login";
   }
 
-  const uploadToCloudinary = async (file) => {
-  console.log("Cloud name:", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
-  console.log("Upload preset:", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
-  console.log("Selected file:", file);
+  async function uploadImage(file, fieldName) {
+  if (!file) return;
 
-  if (!file) return "";
+  console.log("Uploading file:", file);
+  console.log("Upload URL:", `${import.meta.env.VITE_API_URL}/api/upload`);
 
   const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+  formData.append("image", file);
 
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
-    {
-      method: "POST",
-      body: formData,
-    }
-  );
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+    method: "POST",
+    body: formData,
+  });
 
   const data = await res.json();
 
-  console.log("Cloudinary response:", data);
+  console.log("Upload response:", data);
 
   if (!res.ok) {
-    throw new Error(data.error?.message || "Cloudinary upload failed");
+    throw new Error(data.message || "Image upload failed");
   }
 
-  return data.secure_url;
-};
+  setEditingListing((prev) => {
+    const next = {
+      ...prev,
+      [fieldName]: data.url,
+    };
 
+    console.log("Updated editingListing:", next);
+
+    return next;
+  });
+}
   const filteredItems = items.filter((item) => {
     const query = adminSearch.trim().toLowerCase();
 
@@ -374,14 +377,7 @@ async function deleteBusinessRequest(id, businessName) {
     setMessage("Uploading logo...");
     setError("");
 
-    const url = await uploadToCloudinary(file);
-
-    console.log("Logo uploaded URL:", url);
-
-    setEditingListing((prev) => ({
-      ...prev,
-      logoUrl: url,
-    }));
+    await uploadImage(file, "logoUrl");
 
     setMessage("✅ Logo uploaded. Now click Save Changes.");
   } catch (err) {
@@ -412,14 +408,7 @@ async function deleteBusinessRequest(id, businessName) {
       setMessage("Uploading banner...");
       setError("");
 
-      const url = await uploadToCloudinary(file);
-
-      console.log("Banner uploaded URL:", url);
-
-      setEditingListing((prev) => ({
-        ...prev,
-        imageUrl: url,
-      }));
+      await uploadImage(file, "imageUrl");
 
       setMessage("✅ Banner uploaded. Now click Save Changes.");
     } catch (err) {

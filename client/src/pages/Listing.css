@@ -34,6 +34,13 @@
 .listing-banner {
   object-fit: cover;
   display: block;
+}.listing-hero-banner,
+.listing-banner-img {
+  width: 100%;
+  height: 360px;
+  object-fit: contain;
+  object-position: center;
+  background: #ffffff;
 }
 
 .listing-banner-placeholder {
