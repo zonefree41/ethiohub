@@ -474,6 +474,20 @@ petsAllowed: cleanedBooleans.petsAllowed,
 utilitiesIncluded: cleanedBooleans.utilitiesIncluded,
 furnished: cleanedBooleans.furnished,
 
+beautyServices: req.body.beautyServices || [],
+beautyWalkInsWelcome: req.body.beautyWalkInsWelcome || false,
+beautyAppointmentRequired: req.body.beautyAppointmentRequired || false,
+beautySameDayAppointment: req.body.beautySameDayAppointment || false,
+beautyWeekendAvailability: req.body.beautyWeekendAvailability || false,
+beautyServes: req.body.beautyServes || [],
+beautyStartingPrice: req.body.beautyStartingPrice || "",
+beautyLanguages: req.body.beautyLanguages || [],
+beautyInstagram: req.body.beautyInstagram || "",
+beautyFacebook: req.body.beautyFacebook || "",
+beautyTikTok: req.body.beautyTikTok || "",
+beautyPhotos: req.body.beautyPhotos || [],
+beautyVideoUrl: req.body.beautyVideoUrl || "",
+
 propertyImages: Array.isArray(propertyImages)
   ? propertyImages.slice(0, 20)
   : [],

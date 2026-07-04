@@ -159,6 +159,72 @@ transportMaxLoad: {
   trim: true,
 },
 
+// Beauty & Wellness fields
+beautyServices: {
+  type: [String],
+  default: [],
+},
+
+beautyWalkInsWelcome: {
+  type: Boolean,
+  default: false,
+},
+
+beautyAppointmentRequired: {
+  type: Boolean,
+  default: false,
+},
+
+beautySameDayAppointment: {
+  type: Boolean,
+  default: false,
+},
+
+beautyWeekendAvailability: {
+  type: Boolean,
+  default: false,
+},
+
+beautyServes: {
+  type: [String],
+  default: [],
+},
+
+beautyStartingPrice: {
+  type: String,
+  default: "",
+},
+
+beautyLanguages: {
+  type: [String],
+  default: [],
+},
+
+beautyInstagram: {
+  type: String,
+  default: "",
+},
+
+beautyFacebook: {
+  type: String,
+  default: "",
+},
+
+beautyTikTok: {
+  type: String,
+  default: "",
+},
+
+beautyPhotos: {
+  type: [String],
+  default: [],
+},
+
+beautyVideoUrl: {
+  type: String,
+  default: "",
+},
+
     phone: { type: String, required: true, trim: true },
     whatsapp: { type: String, default: "", trim: true },
     website: { type: String, default: "", trim: true },
