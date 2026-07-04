@@ -42,6 +42,20 @@ transportAirportService: false,
 transportSameDayService: false,
 transportLocalLongDistance: "",
 transportMaxLoad: "",
+
+beautyServices: [],
+beautyWalkInsWelcome: false,
+beautyAppointmentRequired: false,
+beautySameDayAppointment: false,
+beautyWeekendAvailability: false,
+beautyServes: [],
+beautyStartingPrice: "",
+beautyLanguages: [],
+beautyInstagram: "",
+beautyFacebook: "",
+beautyTikTok: "",
+beautyPhotos: [],
+beautyVideoUrl: "",
 };
 
 export default function Submit() {
@@ -325,6 +339,9 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
 
   const isTransportationCategory =
   selectedCategory?.name_en === "Transportation";
+
+  const isBeautyCategory =
+  selectedCategory?.name_en === "Beauty & Wellness";
 
   return (
     <main className="submit-page">
@@ -659,6 +676,139 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
         />
         Same-Day Service
       </label>
+    </div>
+  </section>
+)}
+
+{isBeautyCategory && (
+  <section className="submit-section">
+    <h2>Beauty & Wellness Information</h2>
+
+    <div className="submit-transport-banner">
+      <h3>💄 Join HubEthio Beauty & Wellness</h3>
+
+      <p>
+        Promote your salon, barber shop, makeup, spa, massage, skincare,
+        wellness, or beauty service to Ethiopian customers near you.
+      </p>
+
+      <ul>
+        <li>✅ Show your beauty services</li>
+        <li>✅ Let customers know if walk-ins are welcome</li>
+        <li>✅ Add appointment and weekend availability</li>
+        <li>✅ Upload salon or service photos</li>
+      </ul>
+    </div>
+
+    <h3 className="submit-subtitle">Services Offered</h3>
+
+    <div className="submit-vehicle-grid">
+      {[
+        "Hair Styling",
+        "Hair Braiding",
+        "Haircut",
+        "Makeup",
+        "Nails",
+        "Spa",
+        "Massage",
+        "Skincare",
+        "Waxing",
+        "Eyelashes",
+        "Eyebrows",
+        "Cosmetic Tattoo",
+        "Wellness Coaching",
+      ].map((service) => (
+        <label key={service}>
+          <input
+            type="checkbox"
+            checked={form.beautyServices.includes(service)}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                beautyServices: e.target.checked
+                  ? [...prev.beautyServices, service]
+                  : prev.beautyServices.filter((s) => s !== service),
+              }))
+            }
+          />
+          {service}
+        </label>
+      ))}
+    </div>
+
+    <h3 className="submit-subtitle">Availability</h3>
+
+    <div className="submit-checkboxes">
+      <label>
+        <input
+          type="checkbox"
+          name="beautyWalkInsWelcome"
+          checked={form.beautyWalkInsWelcome}
+          onChange={updateCheckbox}
+        />
+        Walk-ins Welcome
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="beautyAppointmentRequired"
+          checked={form.beautyAppointmentRequired}
+          onChange={updateCheckbox}
+        />
+        Appointment Required
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="beautySameDayAppointment"
+          checked={form.beautySameDayAppointment}
+          onChange={updateCheckbox}
+        />
+        Same-Day Appointment
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="beautyWeekendAvailability"
+          checked={form.beautyWeekendAvailability}
+          onChange={updateCheckbox}
+        />
+        Weekend Availability
+      </label>
+    </div>
+
+    <h3 className="submit-subtitle">Pricing</h3>
+
+    <input
+      name="beautyStartingPrice"
+      value={form.beautyStartingPrice}
+      onChange={update}
+      placeholder="Starting Price (Example: $25)"
+    />
+
+    <h3 className="submit-subtitle">Customers</h3>
+
+    <div className="submit-checkboxes">
+      {["Women", "Men", "Kids", "Unisex"].map((customer) => (
+        <label key={customer}>
+          <input
+            type="checkbox"
+            checked={form.beautyServes.includes(customer)}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                beautyServes: e.target.checked
+                  ? [...prev.beautyServes, customer]
+                  : prev.beautyServes.filter((c) => c !== customer),
+              }))
+            }
+          />
+          {customer}
+        </label>
+      ))}
     </div>
   </section>
 )}
