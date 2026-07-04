@@ -474,6 +474,25 @@ const seoDescription =
       </p>
     )}
 
+
+    {listing.categoryId?.name_en === "Beauty & Wellness" && (
+  <div className="category-beauty-details">
+    {listing.beautyStartingPrice && (
+      <p>
+        💵 <strong>Starting at {listing.beautyStartingPrice}</strong>
+      </p>
+    )}
+
+    {listing.beautyServices?.length > 0 && (
+      <p>💄 {listing.beautyServices.slice(0, 3).join(" • ")}</p>
+    )}
+
+    {listing.beautyServes?.length > 0 && (
+      <p>👥 Serves: {listing.beautyServes.join(", ")}</p>
+    )}
+  </div>
+)}
+
 {isTransportationListing(listing) && (
   <div className="category-transport-details">
     {listing.transportVehicleTypes?.length > 0 && (
@@ -512,16 +531,21 @@ const seoDescription =
       <p>📐 {Number(listing.squareFeet).toLocaleString()} sq ft</p>
     )}
 
-    <p>
-      {listing.availabilityStatus === "rented"
-        ? "🔴 Rented"
-        : "🟢 Available"}
-    </p>
+    {isHousingListing(listing) && (
+  <p>
+    {listing.availabilityStatus === "rented"
+      ? "🔴 Rented"
+      : "🟢 Available"}
+  </p>
+)}
   </div>
-)
 
     <div className="category-badges">
-{isHousingListing(listing) &&
+  {!isHousingListing(listing) && (
+    <span className="category-available-badge">🟢 Available</span>
+  )}
+
+  {isHousingListing(listing) &&
   (listing.availabilityStatus === "rented" ? (
     <span className="category-rented-badge">🔴 Rented</span>
   ) : (

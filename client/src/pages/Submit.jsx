@@ -42,20 +42,13 @@ transportAirportService: false,
 transportSameDayService: false,
 transportLocalLongDistance: "",
 transportMaxLoad: "",
-
 beautyServices: [],
 beautyWalkInsWelcome: false,
 beautyAppointmentRequired: false,
 beautySameDayAppointment: false,
 beautyWeekendAvailability: false,
-beautyServes: [],
 beautyStartingPrice: "",
-beautyLanguages: [],
-beautyInstagram: "",
-beautyFacebook: "",
-beautyTikTok: "",
-beautyPhotos: [],
-beautyVideoUrl: "",
+beautyServes: [],
 };
 
 export default function Submit() {
@@ -299,6 +292,7 @@ availabilityStatus: form.availabilityStatus,
 availableFrom: form.availableFrom,
 propertyImages: form.propertyImages,
 
+
 transportVehicleTypes: form.transportVehicleTypes,
 transportServiceArea: form.transportServiceArea,
 transportAvailable24_7: form.transportAvailable24_7,
@@ -306,6 +300,21 @@ transportAirportService: form.transportAirportService,
 transportSameDayService: form.transportSameDayService,
 transportLocalLongDistance: form.transportLocalLongDistance,
 transportMaxLoad: form.transportMaxLoad,
+
+// Beauty & Wellness
+beautyServices: form.beautyServices,
+beautyWalkInsWelcome: form.beautyWalkInsWelcome,
+beautyAppointmentRequired: form.beautyAppointmentRequired,
+beautySameDayAppointment: form.beautySameDayAppointment,
+beautyWeekendAvailability: form.beautyWeekendAvailability,
+beautyServes: form.beautyServes,
+beautyStartingPrice: form.beautyStartingPrice,
+beautyLanguages: form.beautyLanguages,
+beautyInstagram: form.beautyInstagram,
+beautyFacebook: form.beautyFacebook,
+beautyTikTok: form.beautyTikTok,
+beautyPhotos: form.beautyPhotos,
+beautyVideoUrl: form.beautyVideoUrl,
 
 propertyVideoUrl: form.propertyVideoUrl,
           submittedBy: {
@@ -726,7 +735,7 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
         <label key={service}>
           <input
             type="checkbox"
-            checked={form.beautyServices.includes(service)}
+            checked={(form.beautyServices || []).includes(service)}
             onChange={(e) =>
               setForm((prev) => ({
                 ...prev,
@@ -801,7 +810,7 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
         <label key={customer}>
           <input
             type="checkbox"
-            checked={form.beautyServes.includes(customer)}
+            checked={(form.beautyServes || []).includes(customer)}
             onChange={(e) =>
               setForm((prev) => ({
                 ...prev,

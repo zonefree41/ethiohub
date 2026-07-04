@@ -540,3 +540,21 @@
   font-size: 13px;
   font-weight: 800;
 }
+
+.category-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.category-beauty-details {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.category-beauty-details p {
+  margin: 0;
+  line-height: 1.45;
+}
