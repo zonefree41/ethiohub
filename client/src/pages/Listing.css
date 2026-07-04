@@ -164,10 +164,12 @@
   }
 
   .listing-banner,
-  .listing-banner-placeholder {
-    height: 220px;
-  }
-
+.listing-hero-banner,
+.listing-banner-img,
+.listing-banner-placeholder {
+  height: 220px;
+  object-position: center;
+}
 
   .listing-content {
     padding: 0 16px 22px;
@@ -1212,4 +1214,33 @@
 .service-no {
   color: #dc2626;
   font-weight: 700;
+}
+
+/* Final banner fix: desktop shows full flyer/banner */
+@media (min-width: 641px) {
+  .listing-banner,
+  .listing-hero-banner,
+  .listing-banner-img,
+  .listing-banner-placeholder {
+    height: 535px;
+  }
+
+  .listing-banner,
+  .listing-hero-banner,
+  .listing-banner-img {
+    object-fit: cover;
+    object-position: center;
+    background: #ffffff;
+  }
+}
+
+/* Mobile keeps current good look */
+@media (max-width: 640px) {
+  .listing-banner,
+  .listing-hero-banner,
+  .listing-banner-img {
+    height: 220px;
+    object-fit: cover;
+    object-position: center;
+  }
 }
