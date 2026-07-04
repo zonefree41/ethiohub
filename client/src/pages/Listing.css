@@ -30,14 +30,14 @@
 .listing-banner-img,
 .listing-banner-placeholder {
   width: 100%;
-  height: 420px;
+  height: clamp(260px, 28vw, 420px);
 }
 
 .listing-banner,
 .listing-hero-banner,
 .listing-banner-img {
   object-fit: cover;
-  object-position: center top;
+  object-position: center;
   display: block;
   background: #ffffff;
 }
@@ -161,6 +161,11 @@
 @media (max-width: 640px) {
   .listing-page {
     padding: 14px 12px 40px;
+  }
+
+  .listing-banner,
+  .listing-banner-placeholder {
+    height: 220px;
   }
 
 
