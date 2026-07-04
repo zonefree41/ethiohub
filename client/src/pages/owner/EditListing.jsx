@@ -47,6 +47,9 @@ parking: false,
 petsAllowed: false,
 utilitiesIncluded: false,
 furnished: false,
+beautyServices: [],
+beautyStartingPrice: "",
+beautyServes: [],
   });
 
   React.useEffect(() => {
@@ -274,6 +277,10 @@ parking: Boolean(data.parking),
 petsAllowed: Boolean(data.petsAllowed),
 utilitiesIncluded: Boolean(data.utilitiesIncluded),
 furnished: Boolean(data.furnished),
+
+beautyServices: Array.isArray(data.beautyServices) ? data.beautyServices : [],
+beautyStartingPrice: data.beautyStartingPrice || "",
+beautyServes: Array.isArray(data.beautyServes) ? data.beautyServes : [],
       });
     } catch (err) {
       setError(err.message || "Failed to load listing");
@@ -527,6 +534,71 @@ furnished: Boolean(data.furnished),
   </div>
 </section>
 )}
+
+<section className="edit-listing-section">
+  <h2>Beauty & Wellness Information</h2>
+
+  <input
+    name="beautyStartingPrice"
+    placeholder="Starting Price (Example: 18)"
+    value={form.beautyStartingPrice}
+    onChange={update}
+  />
+
+  <h3>Services Offered</h3>
+
+  <div className="edit-listing-checkboxes">
+    {[
+      "Hair Care",
+      "Hair Growth Products",
+      "Natural Beauty Products",
+      "Organic Skincare",
+      "Beauty Products",
+      "Makeup",
+      "Nails",
+      "Skincare",
+      "Wellness Coaching",
+    ].map((service) => (
+      <label key={service}>
+        <input
+          type="checkbox"
+          checked={(form.beautyServices || []).includes(service)}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              beautyServices: e.target.checked
+                ? [...(prev.beautyServices || []), service]
+                : (prev.beautyServices || []).filter((s) => s !== service),
+            }))
+          }
+        />
+        {service}
+      </label>
+    ))}
+  </div>
+
+  <h3>Customers</h3>
+
+  <div className="edit-listing-checkboxes">
+    {["Women", "Men", "Kids", "Unisex"].map((customer) => (
+      <label key={customer}>
+        <input
+          type="checkbox"
+          checked={(form.beautyServes || []).includes(customer)}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              beautyServes: e.target.checked
+                ? [...(prev.beautyServes || []), customer]
+                : (prev.beautyServes || []).filter((c) => c !== customer),
+            }))
+          }
+        />
+        {customer}
+      </label>
+    ))}
+  </div>
+</section>
 
             <section className="edit-listing-section">
               <h2>Location</h2>
