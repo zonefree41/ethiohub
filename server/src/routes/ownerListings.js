@@ -128,6 +128,10 @@ router.patch("/:id", async (req, res) => {
 "transportSameDayService",
 "transportLocalLongDistance",
 "transportMaxLoad",
+
+"beautyServices",
+"beautyStartingPrice",
+"beautyServes",
     ];
 
     const updates = {};
@@ -246,6 +250,18 @@ if (
 if ("transportVehicleTypes" in updates) {
   updates.transportVehicleTypes = Array.isArray(updates.transportVehicleTypes)
     ? updates.transportVehicleTypes
+    : [];
+}
+
+if ("beautyServices" in updates) {
+  updates.beautyServices = Array.isArray(updates.beautyServices)
+    ? updates.beautyServices
+    : [];
+}
+
+if ("beautyServes" in updates) {
+  updates.beautyServes = Array.isArray(updates.beautyServes)
+    ? updates.beautyServes
     : [];
 }
 
