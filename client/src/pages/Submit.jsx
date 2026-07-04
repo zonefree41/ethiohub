@@ -704,20 +704,25 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
 
     <div className="submit-vehicle-grid">
       {[
-        "Hair Styling",
-        "Hair Braiding",
-        "Haircut",
-        "Makeup",
-        "Nails",
-        "Spa",
-        "Massage",
-        "Skincare",
-        "Waxing",
-        "Eyelashes",
-        "Eyebrows",
-        "Cosmetic Tattoo",
-        "Wellness Coaching",
-      ].map((service) => (
+  "Hair Styling",
+  "Hair Braiding",
+  "Haircut",
+  "Hair Care",
+  "Hair Growth Products",
+  "Natural Beauty Products",
+  "Organic Skincare",
+  "Beauty Products",
+  "Makeup",
+  "Nails",
+  "Spa",
+  "Massage",
+  "Skincare",
+  "Waxing",
+  "Eyelashes",
+  "Eyebrows",
+  "Cosmetic Tattoo",
+  "Wellness Coaching",
+].map((service) => (
         <label key={service}>
           <input
             type="checkbox"
