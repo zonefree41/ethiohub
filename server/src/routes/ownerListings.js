@@ -110,6 +110,9 @@ router.patch("/:id", async (req, res) => {
 "availableFrom",
 "propertyImages",
 
+"beautyPhotos",
+"beautyVideoUrl",
+
 "monthlyRent",
 "bedrooms",
 "bathrooms",
@@ -165,6 +168,12 @@ if (blockedPhrases.some((phrase) => spamText.includes(phrase))) {
     if ("propertyImages" in updates) {
   updates.propertyImages = Array.isArray(updates.propertyImages)
     ? updates.propertyImages.slice(0, 20)
+    : [];
+}
+
+if ("beautyPhotos" in updates) {
+  updates.beautyPhotos = Array.isArray(updates.beautyPhotos)
+    ? updates.beautyPhotos.slice(0, 20)
     : [];
 }
 
