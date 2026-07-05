@@ -820,6 +820,27 @@ document.title = seoTitle;
     </section>
   )}
 
+  {Array.isArray(listing.beautyPhotos) &&
+  listing.beautyPhotos.length > 0 && (
+    <section className="listing-property-gallery">
+      <h3>Beauty Gallery</h3>
+
+      <div className="listing-property-grid">
+        {listing.beautyPhotos.map((url, index) => (
+          <a
+            key={`${url}-${index}`}
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            className="listing-property-photo"
+          >
+            <img src={url} alt={`Beauty photo ${index + 1}`} />
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
 {listing.propertyVideoUrl && (
   <section className="listing-property-video">
     <h3>Property Video</h3>

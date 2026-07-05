@@ -17,6 +17,9 @@ export default function EditListing() {
   const [uploadingPropertyPhotos, setUploadingPropertyPhotos] = React.useState(false);
   const [uploadingPropertyVideo, setUploadingPropertyVideo] = React.useState(false);
 
+  const [uploadingBeautyPhotos, setUploadingBeautyPhotos] = React.useState(false);
+const [uploadingBeautyVideo, setUploadingBeautyVideo] = React.useState(false);
+
   const [form, setForm] = React.useState({
     title: "",
     subcategory: "",
@@ -34,6 +37,8 @@ export default function EditListing() {
     imageUrl: "",
     propertyVideoUrl: "",
 propertyImages: [],
+beautyPhotos: [],
+beautyVideoUrl: "",
 availabilityStatus: "available",
 availableFrom: "",
 
@@ -238,6 +243,71 @@ function removePropertyImage(indexToRemove) {
   }));
 }
 
+async function handleBeautyPhotosUpload(e) {
+  const files = Array.from(e.target.files || []);
+
+  if (files.length === 0) return;
+
+  const currentImages = Array.isArray(form.beautyPhotos)
+    ? form.beautyPhotos
+    : [];
+
+  if (currentImages.length + files.length > 20) {
+    setError("You can upload up to 20 beauty photos.");
+    return;
+  }
+
+  setUploadingBeautyPhotos(true);
+  setError("");
+  setMessage("");
+
+  try {
+    const uploadedUrls = [];
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Beauty photo upload failed");
+      }
+
+      uploadedUrls.push(data.url);
+    }
+
+    setForm((prev) => {
+      const next = {
+        ...prev,
+        beautyPhotos: [...(prev.beautyPhotos || []), ...uploadedUrls].slice(0, 20),
+      };
+
+      console.log("UPDATED BEAUTY PHOTOS:", next.beautyPhotos);
+
+      return next;
+    });
+  } catch (err) {
+    setError(err.message || "Beauty photo upload failed");
+  } finally {
+    setUploadingBeautyPhotos(false);
+  }
+}
+
+function removeBeautyPhoto(indexToRemove) {
+  setForm((prev) => ({
+    ...prev,
+    beautyPhotos: (prev.beautyPhotos || []).filter(
+      (_, index) => index !== indexToRemove
+    ),
+  }));
+}
+
   async function loadListing() {
     try {
       setLoading(true);
@@ -262,6 +332,8 @@ function removePropertyImage(indexToRemove) {
         imageUrl: data.imageUrl || "",
         propertyVideoUrl: data.propertyVideoUrl || "",
 propertyImages: Array.isArray(data.propertyImages) ? data.propertyImages : [],
+beautyPhotos: Array.isArray(data.beautyPhotos) ? data.beautyPhotos : [],
+beautyVideoUrl: data.beautyVideoUrl || "",
         availabilityStatus: data.availabilityStatus || "available",
 availableFrom: data.availableFrom
   ? data.availableFrom.slice(0, 10)
@@ -323,6 +395,8 @@ beautyServes: Array.isArray(data.beautyServes) ? data.beautyServes : [],
   uploadingBanner ||
   uploadingPropertyPhotos ||
   uploadingPropertyVideo ||
+  uploadingBeautyPhotos ||
+  uploadingBeautyVideo ||
   saving;
 
   const isHousingListing = [
@@ -332,6 +406,25 @@ beautyServes: Array.isArray(data.beautyServes) ? data.beautyServes : [],
   "Rooms",
   "Roommates",
 ].includes(form.subcategory);
+
+const isBeautyListing =
+  form.subcategory &&
+  [
+    "Beauty Salons",
+    "Barbershops",
+    "Hair Stylists",
+    "Makeup Artists",
+    "Nail Technicians",
+    "Spa",
+    "Massage",
+    "Skincare",
+    "Waxing",
+    "Eyelash Services",
+    "Eyebrows",
+    "Cosmetic Tattoo",
+    "Wellness Coaching",
+    "Holistic Health",
+  ].includes(form.subcategory);
 
   return (
     <main className="edit-listing-page">
@@ -699,6 +792,51 @@ beautyServes: Array.isArray(data.beautyServes) ? data.beautyServes : [],
                 )}
               </div>
 
+              {isBeautyListing && (
+  <div className="edit-listing-upload-card">
+    <label>Beauty Gallery</label>
+
+    <p>
+      Upload up to 20 beauty photos including products, salon, services,
+      before & after results, and branding.
+    </p>
+
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      onChange={handleBeautyPhotosUpload}
+    />
+
+    {uploadingBeautyPhotos && (
+      <p className="edit-listing-uploading">
+        Uploading beauty photos...
+      </p>
+    )}
+
+    {form.beautyPhotos?.length > 0 && (
+      <div className="edit-listing-property-grid">
+        {form.beautyPhotos.map((url, index) => (
+          <div
+            key={`${url}-${index}`}
+            className="edit-listing-property-photo"
+          >
+            <img src={url} alt={`Beauty ${index + 1}`} />
+
+            <button
+              type="button"
+              onClick={() => removeBeautyPhoto(index)}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+{isHousingListing && (
               <div className="edit-listing-upload-card">
   <label>Property Photos</label>
   <p>
@@ -731,41 +869,45 @@ beautyServes: Array.isArray(data.beautyServes) ? data.beautyServes : [],
     </div>
   )}
 </div>
+)}
+
             </section>
 
-            <div className="edit-listing-upload-card">
-  <label>Property Video</label>
-  <p>Upload one MP4 walkthrough video. Recommended length: 60–90 seconds.</p>
+  {isHousingListing && (
+    <div className="edit-listing-upload-card">
+      <label>Property Video</label>
+      <p>Upload one MP4 walkthrough video. Recommended length: 60–90 seconds.</p>
 
-  <input
-    type="file"
-    accept="video/mp4"
-    onChange={handlePropertyVideoUpload}
-  />
+      <input
+        type="file"
+        accept="video/mp4"
+        onChange={handlePropertyVideoUpload}
+      />
 
-  {uploadingPropertyVideo && (
-    <p className="edit-listing-uploading">Uploading property video...</p>
-  )}
+      {uploadingPropertyVideo && (
+        <p className="edit-listing-uploading">Uploading property video...</p>
+      )}
 
-  {form.propertyVideoUrl && (
-    <div className="edit-listing-video-preview">
-      <video src={form.propertyVideoUrl} controls />
+      {form.propertyVideoUrl && (
+        <div className="edit-listing-video-preview">
+          <video src={form.propertyVideoUrl} controls />
 
-      <button type="button" onClick={removePropertyVideo}>
-        Remove Video
-      </button>
+          <button type="button" onClick={removePropertyVideo}>
+            Remove Video
+          </button>
+        </div>
+      )}
     </div>
   )}
-</div>
 
-            <button
-              type="submit"
-              disabled={isBusy}
-              className="edit-listing-submit"
-            >
-              {isBusy ? "Saving..." : "Save Changes"}
-            </button>
-          </form>
+  <button
+    type="submit"
+    disabled={isBusy}
+    className="edit-listing-submit"
+  >
+    {isBusy ? "Saving..." : "Save Changes"}
+  </button>
+</form>
         )}
       </div>
     </main>
