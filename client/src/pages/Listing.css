@@ -1244,3 +1244,194 @@
     object-position: center;
   }
 }
+
+.listing-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.listing-lightbox img {
+  max-width: 92vw;
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.listing-lightbox-close {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listing-lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.listing-lightbox-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  font-size: 34px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listing-lightbox-arrow:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.listing-lightbox-arrow.left {
+  left: 22px;
+}
+
+.listing-lightbox-arrow.right {
+  right: 22px;
+}
+
+.listing-lightbox-count {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.16);
+  padding: 7px 14px;
+  border-radius: 999px;
+}
+
+@media (max-width: 600px) {
+  .listing-lightbox {
+    padding: 12px;
+  }
+
+  .listing-lightbox img {
+    max-width: 95vw;
+    max-height: 78vh;
+  }
+
+  .listing-lightbox-close {
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+    font-size: 24px;
+  }
+
+  .listing-lightbox-arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 28px;
+  }
+
+  .listing-lightbox-arrow.left {
+    left: 10px;
+  }
+
+  .listing-lightbox-arrow.right {
+    right: 10px;
+  }
+
+  .listing-lightbox-count {
+    bottom: 14px;
+    font-size: 13px;
+  }
+}
+
+/* =========================
+   Beauty Social Links
+========================= */
+
+.listing-beauty-socials {
+  margin-top: 32px;
+}
+
+.listing-beauty-socials h3 {
+  margin-bottom: 16px;
+}
+
+.listing-beauty-social-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.listing-beauty-social-buttons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #fff;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.listing-beauty-social-buttons a:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* Instagram */
+.listing-beauty-social-buttons a[href*="instagram"] {
+  background: linear-gradient(
+    45deg,
+    #405de6,
+    #5851db,
+    #833ab4,
+    #c13584,
+    #e1306c,
+    #fd1d1d,
+    #f77737,
+    #fcaf45
+  );
+}
+
+/* Facebook */
+.listing-beauty-social-buttons a[href*="facebook"] {
+  background: #1877f2;
+}
+
+/* TikTok */
+.listing-beauty-social-buttons a[href*="tiktok"] {
+  background: #000;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .listing-beauty-social-buttons {
+    flex-direction: column;
+  }
+
+  .listing-beauty-social-buttons a {
+    width: 100%;
+  }
+}

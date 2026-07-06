@@ -39,6 +39,11 @@ const [uploadingBeautyVideo, setUploadingBeautyVideo] = React.useState(false);
 propertyImages: [],
 beautyPhotos: [],
 beautyVideoUrl: "",
+
+beautyInstagram: "",
+beautyFacebook: "",
+beautyTikTok: "",
+
 availabilityStatus: "available",
 availableFrom: "",
 
@@ -118,6 +123,52 @@ async function handlePropertyVideoUpload(e) {
   } finally {
     setUploadingPropertyVideo(false);
   }
+}
+
+async function handleBeautyVideoUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  if (file.type !== "video/mp4") {
+    setError("Only MP4 video files are allowed.");
+    return;
+  }
+
+  setUploadingBeautyVideo(true);
+  setError("");
+  setMessage("");
+
+  try {
+    const formData = new FormData();
+    formData.append("video", file);
+
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/video`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Beauty video upload failed");
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      beautyVideoUrl: data.url,
+    }));
+  } catch (err) {
+    setError(err.message || "Beauty video upload failed");
+  } finally {
+    setUploadingBeautyVideo(false);
+  }
+}
+
+function removeBeautyVideo() {
+  setForm((prev) => ({
+    ...prev,
+    beautyVideoUrl: "",
+  }));
 }
 
 function removePropertyVideo() {
@@ -334,7 +385,12 @@ function removeBeautyPhoto(indexToRemove) {
 propertyImages: Array.isArray(data.propertyImages) ? data.propertyImages : [],
 beautyPhotos: Array.isArray(data.beautyPhotos) ? data.beautyPhotos : [],
 beautyVideoUrl: data.beautyVideoUrl || "",
-        availabilityStatus: data.availabilityStatus || "available",
+
+beautyInstagram: data.beautyInstagram || "",
+beautyFacebook: data.beautyFacebook || "",
+beautyTikTok: data.beautyTikTok || "",
+
+availabilityStatus: data.availabilityStatus || "available",
 availableFrom: data.availableFrom
   ? data.availableFrom.slice(0, 10)
   : "",
@@ -628,6 +684,7 @@ const isBeautyListing =
 </section>
 )}
 
+{isBeautyListing && (
 <section className="edit-listing-section">
   <h2>Beauty & Wellness Information</h2>
 
@@ -639,6 +696,29 @@ const isBeautyListing =
   />
 
   <h3>Services Offered</h3>
+
+  <div className="edit-listing-three-col">
+  <input
+    name="beautyInstagram"
+    placeholder="Instagram URL"
+    value={form.beautyInstagram || ""}
+    onChange={update}
+  />
+
+  <input
+    name="beautyFacebook"
+    placeholder="Facebook URL"
+    value={form.beautyFacebook || ""}
+    onChange={update}
+  />
+
+  <input
+    name="beautyTikTok"
+    placeholder="TikTok URL"
+    value={form.beautyTikTok || ""}
+    onChange={update}
+  />
+</div>
 
   <div className="edit-listing-checkboxes">
     {[
@@ -692,7 +772,7 @@ const isBeautyListing =
     ))}
   </div>
 </section>
-
+)}
             <section className="edit-listing-section">
               <h2>Location</h2>
 
@@ -831,6 +911,44 @@ const isBeautyListing =
             </button>
           </div>
         ))}
+      </div>
+    )}
+  </div>
+)}
+
+{isBeautyListing && (
+  <div className="edit-listing-upload-card">
+    <label>Beauty Video</label>
+
+    <p>
+      Upload one MP4 beauty video. Recommended length: 30–90 seconds.
+    </p>
+
+    <input
+      type="file"
+      accept="video/mp4"
+      onChange={handleBeautyVideoUpload}
+    />
+
+    {uploadingBeautyVideo && (
+      <p className="edit-listing-uploading">
+        Uploading beauty video...
+      </p>
+    )}
+
+    {form.beautyVideoUrl && (
+      <div className="edit-listing-video-preview">
+        <video
+          src={form.beautyVideoUrl}
+          controls
+        />
+
+        <button
+          type="button"
+          onClick={removeBeautyVideo}
+        >
+          Remove Video
+        </button>
       </div>
     )}
   </div>

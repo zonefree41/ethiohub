@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { apiGet, apiPost } from "../api/http";
 import { trackEvent } from "../utils/analytics.js";
 import "./Listing.css";
+import { useEffect, useState } from "react";
 
 console.log("Listing component loaded");
 
@@ -25,6 +26,10 @@ export default function Listing() {
   const [nearbyListings, setNearbyListings] = React.useState([]);
   const [relatedListings, setRelatedListings] = React.useState([]);
   const [activePhotoIndex, setActivePhotoIndex] = React.useState(0);
+
+  const [lightboxImages, setLightboxImages] = React.useState([]);
+const [lightboxIndex, setLightboxIndex] = React.useState(0);
+const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
 
   const [reviewForm, setReviewForm] = React.useState({
     name: "",
@@ -83,6 +88,54 @@ export default function Listing() {
       console.error("Failed to load reviews:", err);
     }
   }
+
+  useEffect(() => {
+  if (!isLightboxOpen) return;
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape") {
+      closeLightbox();
+    }
+
+    if (e.key === "ArrowRight") {
+      nextLightboxPhoto();
+    }
+
+    if (e.key === "ArrowLeft") {
+      prevLightboxPhoto();
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [isLightboxOpen, lightboxIndex, lightboxImages]);
+
+  function openLightbox(images, index = 0) {
+  setLightboxImages(images || []);
+  setLightboxIndex(index);
+  setIsLightboxOpen(true);
+}
+
+function closeLightbox() {
+  setIsLightboxOpen(false);
+}
+
+function nextLightboxPhoto() {
+  setLightboxIndex((prev) =>
+    lightboxImages.length ? (prev + 1) % lightboxImages.length : 0
+  );
+}
+
+function prevLightboxPhoto() {
+  setLightboxIndex((prev) =>
+    lightboxImages.length
+      ? (prev - 1 + lightboxImages.length) % lightboxImages.length
+      : 0
+  );
+}
 
   React.useEffect(() => {
     if (!isValidListingId) return;
@@ -795,10 +848,18 @@ document.title = seoTitle;
           ←
         </button>
 
-        <img
-          src={listing.propertyImages[activePhotoIndex]}
-          alt={`${isHousingListing ? "Property" : "Vehicle"} photo ${activePhotoIndex + 1}`}
-        />
+        <button
+  type="button"
+  className="listing-property-photo"
+  onClick={() => openLightbox(listing.propertyImages, activePhotoIndex)}
+>
+  <img
+    src={listing.propertyImages[activePhotoIndex]}
+    alt={`${isHousingListing ? "Property" : "Vehicle"} photo ${
+      activePhotoIndex + 1
+    }`}
+  />
+</button>
 
         <button type="button" onClick={nextPhoto}>
           →
@@ -808,13 +869,16 @@ document.title = seoTitle;
       <div className="listing-photo-thumbnails">
         {listing.propertyImages.map((url, index) => (
           <button
-            type="button"
-            key={`${url}-${index}`}
-            onClick={() => setActivePhotoIndex(index)}
-            className={activePhotoIndex === index ? "active" : ""}
-          >
-            <img src={url} alt={`Thumbnail ${index + 1}`} />
-          </button>
+  type="button"
+  key={`${url}-${index}`}
+  onClick={() => {
+    setActivePhotoIndex(index);
+    openLightbox(listing.propertyImages, index);
+  }}
+  className={activePhotoIndex === index ? "active" : ""}
+>
+  <img src={url} alt={`Thumbnail ${index + 1}`} />
+</button>
         ))}
       </div>
     </section>
@@ -827,15 +891,14 @@ document.title = seoTitle;
 
       <div className="listing-property-grid">
         {listing.beautyPhotos.map((url, index) => (
-          <a
-            key={`${url}-${index}`}
-            href={url}
-            target="_blank"
-            rel="noreferrer"
-            className="listing-property-photo"
-          >
-            <img src={url} alt={`Beauty photo ${index + 1}`} />
-          </a>
+          <button
+  type="button"
+  key={`${url}-${index}`}
+  className="listing-property-photo"
+  onClick={() => openLightbox(listing.beautyPhotos, index)}
+>
+  <img src={url} alt={`Beauty photo ${index + 1}`} />
+</button>
         ))}
       </div>
     </section>
@@ -847,6 +910,46 @@ document.title = seoTitle;
 
     <video
       src={listing.propertyVideoUrl}
+      controls
+      className="listing-property-video-player"
+    />
+  </section>
+)}
+
+{(listing.beautyInstagram ||
+  listing.beautyFacebook ||
+  listing.beautyTikTok) && (
+  <section className="listing-beauty-socials">
+    <h3>Follow Us</h3>
+
+    <div className="listing-beauty-social-buttons">
+      {listing.beautyInstagram && (
+        <a href={listing.beautyInstagram} target="_blank" rel="noreferrer">
+          📷 Instagram
+        </a>
+      )}
+
+      {listing.beautyFacebook && (
+        <a href={listing.beautyFacebook} target="_blank" rel="noreferrer">
+          👍 Facebook
+        </a>
+      )}
+
+      {listing.beautyTikTok && (
+        <a href={listing.beautyTikTok} target="_blank" rel="noreferrer">
+          🎵 TikTok
+        </a>
+      )}
+    </div>
+  </section>
+)}
+
+{listing.beautyVideoUrl && (
+  <section className="listing-property-video">
+    <h3>Beauty Video</h3>
+
+    <video
+      src={listing.beautyVideoUrl}
       controls
       className="listing-property-video-player"
     />
@@ -1072,6 +1175,50 @@ document.title = seoTitle;
             </div>
           </div>
         </section>
+        {isLightboxOpen && lightboxImages.length > 0 && (
+  <div className="listing-lightbox" onClick={closeLightbox}>
+    <button
+      type="button"
+      className="listing-lightbox-close"
+      onClick={closeLightbox}
+    >
+      ×
+    </button>
+
+    <button
+      type="button"
+      className="listing-lightbox-arrow left"
+      onClick={(e) => {
+        e.stopPropagation();
+        prevLightboxPhoto();
+      }}
+    >
+      ‹
+    </button>
+
+    <img
+      src={lightboxImages[lightboxIndex]}
+      alt={`Gallery photo ${lightboxIndex + 1}`}
+      onClick={(e) => e.stopPropagation()}
+       draggable="false"
+    />
+
+    <button
+      type="button"
+      className="listing-lightbox-arrow right"
+      onClick={(e) => {
+        e.stopPropagation();
+        nextLightboxPhoto();
+      }}
+    >
+      ›
+    </button>
+
+    <div className="listing-lightbox-count">
+      {lightboxIndex + 1} / {lightboxImages.length}
+    </div>
+  </div>
+)}
       </main>
     </>
   );
