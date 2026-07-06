@@ -1448,3 +1448,36 @@
   font-weight: 800 !important;
   margin: 0 0 18px 0 !important;
 }
+
+/* =========================
+   Beauty Booking Button
+========================= */
+
+.listing-beauty-booking {
+  margin: 28px 0;
+}
+
+.listing-book-appointment-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  border-radius: 12px;
+  background: #16a34a;
+  color: #fff;
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 700;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.listing-book-appointment-btn:hover {
+  background: #15803d;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .listing-book-appointment-btn {
+    width: 100%;
+  }
+}

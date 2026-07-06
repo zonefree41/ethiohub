@@ -43,6 +43,7 @@ beautyVideoUrl: "",
 beautyInstagram: "",
 beautyFacebook: "",
 beautyTikTok: "",
+beautyBookingUrl: "",
 
 availabilityStatus: "available",
 availableFrom: "",
@@ -389,6 +390,7 @@ beautyVideoUrl: data.beautyVideoUrl || "",
 beautyInstagram: data.beautyInstagram || "",
 beautyFacebook: data.beautyFacebook || "",
 beautyTikTok: data.beautyTikTok || "",
+beautyBookingUrl: data.beautyBookingUrl || "",
 
 availabilityStatus: data.availabilityStatus || "available",
 availableFrom: data.availableFrom
@@ -719,6 +721,13 @@ const isBeautyListing =
     onChange={update}
   />
 </div>
+
+<input
+  name="beautyBookingUrl"
+  placeholder="Booking URL (Calendly, Square, Fresha, Vagaro, etc.)"
+  value={form.beautyBookingUrl || ""}
+  onChange={update}
+/>
 
   <div className="edit-listing-checkboxes">
     {[

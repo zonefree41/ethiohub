@@ -931,6 +931,19 @@ document.title = seoTitle;
   </section>
 )}
 
+{listing.beautyBookingUrl && (
+  <section className="listing-beauty-booking">
+    <a
+      href={listing.beautyBookingUrl}
+      target="_blank"
+      rel="noreferrer"
+      className="listing-book-appointment-btn"
+    >
+      📅 Book Appointment
+    </a>
+  </section>
+)}
+
 {(listing.beautyInstagram ||
   listing.beautyFacebook ||
   listing.beautyTikTok) && (
