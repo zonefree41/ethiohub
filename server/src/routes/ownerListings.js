@@ -112,6 +112,9 @@ router.patch("/:id", async (req, res) => {
 
 "beautyPhotos",
 "beautyVideoUrl",
+"beautyInstagram",
+"beautyFacebook",
+"beautyTikTok",
 
 "monthlyRent",
 "bedrooms",
