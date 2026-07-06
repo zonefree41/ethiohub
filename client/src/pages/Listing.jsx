@@ -462,6 +462,7 @@ function hasRentalDetails(item) {
   }
 
   if (!listing) {
+    console.log("PUBLIC LISTING:", listing);
     return (
       <main className="listing-page">
         <div className="listing-state-card">
@@ -916,11 +917,25 @@ document.title = seoTitle;
   </section>
 )}
 
+
+
+{listing.beautyVideoUrl && (
+  <section className="listing-property-video">
+    <h3>Beauty Video</h3>
+
+    <video
+      src={listing.beautyVideoUrl}
+      controls
+      className="listing-property-video-player"
+    />
+  </section>
+)}
+
 {(listing.beautyInstagram ||
   listing.beautyFacebook ||
   listing.beautyTikTok) && (
   <section className="listing-beauty-socials">
-    <h3>Follow Us</h3>
+    <h3 className="listing-beauty-social-title">Follow Us</h3>
 
     <div className="listing-beauty-social-buttons">
       {listing.beautyInstagram && (
@@ -944,17 +959,6 @@ document.title = seoTitle;
   </section>
 )}
 
-{listing.beautyVideoUrl && (
-  <section className="listing-property-video">
-    <h3>Beauty Video</h3>
-
-    <video
-      src={listing.beautyVideoUrl}
-      controls
-      className="listing-property-video-player"
-    />
-  </section>
-)}
 
             <div className="listing-actions">
               <button type="button" className="listing-save-btn" onClick={toggleFavorite}>
