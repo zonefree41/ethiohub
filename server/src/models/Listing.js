@@ -215,6 +215,12 @@ beautyTikTok: {
   default: "",
 },
 
+beautyBookingUrl: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
 beautyPhotos: {
   type: [String],
   default: [],
@@ -236,6 +242,7 @@ beautyLanguages: [String],
 beautyInstagram: String,
 beautyFacebook: String,
 beautyTikTok: String,
+beautyBookingUrl: String,
 beautyPhotos: [String],
 beautyVideoUrl: String,
 

@@ -115,6 +115,7 @@ router.patch("/:id", async (req, res) => {
 "beautyInstagram",
 "beautyFacebook",
 "beautyTikTok",
+"beautyBookingUrl",
 
 "monthlyRent",
 "bedrooms",
