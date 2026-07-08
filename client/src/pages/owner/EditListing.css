@@ -362,3 +362,8 @@
   gap: 14px 24px;
   margin-top: 20px;
 }
+
+.before-after-remove-btn {
+  display: inline-block;
+  margin-bottom: 14px;
+}

@@ -44,6 +44,7 @@ beautyInstagram: "",
 beautyFacebook: "",
 beautyTikTok: "",
 beautyBookingUrl: "",
+beautyBeforeAfter: [],
 
 availabilityStatus: "available",
 availableFrom: "",
@@ -351,6 +352,54 @@ async function handleBeautyPhotosUpload(e) {
   }
 }
 
+async function uploadSingleImage(file) {
+  if (!file) return "";
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Image upload failed");
+  }
+
+  return data.url;
+}
+
+async function handleBeforeAfterImageUpload(e, index, fieldName) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setError("");
+  setMessage("");
+
+  try {
+    const url = await uploadSingleImage(file);
+
+    setForm((prev) => {
+      const updated = [...(prev.beautyBeforeAfter || [])];
+
+      updated[index] = {
+        ...updated[index],
+        [fieldName]: url,
+      };
+
+      return {
+        ...prev,
+        beautyBeforeAfter: updated,
+      };
+    });
+  } catch (err) {
+    setError(err.message || "Before/After image upload failed");
+  }
+}
+
 function removeBeautyPhoto(indexToRemove) {
   setForm((prev) => ({
     ...prev,
@@ -391,6 +440,9 @@ beautyInstagram: data.beautyInstagram || "",
 beautyFacebook: data.beautyFacebook || "",
 beautyTikTok: data.beautyTikTok || "",
 beautyBookingUrl: data.beautyBookingUrl || "",
+beautyBeforeAfter: Array.isArray(data.beautyBeforeAfter)
+  ? data.beautyBeforeAfter
+  : [],
 
 availabilityStatus: data.availabilityStatus || "available",
 availableFrom: data.availableFrom
@@ -438,7 +490,9 @@ beautyServes: Array.isArray(data.beautyServes) ? data.beautyServes : [],
 
     console.log("Saving owner listing form:", form);
 
-    const result = await apiPatch(`/api/owner/listings/${id}`, form, token);
+alert(JSON.stringify(form.beautyBeforeAfter, null, 2));
+
+const result = await apiPatch(`/api/owner/listings/${id}`, form, token);
 
     setMessage(result.message || "✅ Listing updated successfully.");
   } catch (err) {
@@ -863,10 +917,12 @@ const isBeautyListing =
                 <p>Recommended: wide image, like 1200x600.</p>
 
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleBannerUpload}
-                />
+  type="file"
+  accept="image/*"
+  onChange={(e) =>
+    handleBeforeAfterImageUpload(e, index, "beforeUrl")
+  }
+/>
 
                 {uploadingBanner && (
                   <p className="edit-listing-uploading">Uploading banner...</p>
@@ -891,17 +947,118 @@ const isBeautyListing =
     </p>
 
     <input
-      type="file"
-      accept="image/*"
-      multiple
-      onChange={handleBeautyPhotosUpload}
-    />
+  type="file"
+  accept="image/*"
+  onChange={(e) =>
+    handleBeforeAfterImageUpload(e, index, "afterUrl")
+  }
+/>
 
     {uploadingBeautyPhotos && (
       <p className="edit-listing-uploading">
         Uploading beauty photos...
       </p>
     )}
+
+    <h3 className="text-lg font-semibold mt-8 mb-3">
+  Before & After Gallery
+</h3>
+
+{(form.beautyBeforeAfter || []).map((item, index) => (
+  <div
+    key={index}
+    className="border rounded-lg p-4 mb-4 bg-gray-50"
+  >
+    <input
+      className="input mb-2"
+      placeholder="Title (Example: Hair Growth - 3 Months)"
+      value={item.title || ""}
+      onChange={(e) => {
+        const updated = [...form.beautyBeforeAfter];
+        updated[index].title = e.target.value;
+        setForm({ ...form, beautyBeforeAfter: updated });
+      }}
+    />
+
+    <input
+      className="input mb-2"
+      placeholder="Before Image URL"
+      value={item.beforeUrl || ""}
+      onChange={(e) => {
+        const updated = [...form.beautyBeforeAfter];
+        updated[index].beforeUrl = e.target.value;
+        setForm({ ...form, beautyBeforeAfter: updated });
+      }}
+    />
+
+    <input
+      className="input mb-4"
+      placeholder="After Image URL"
+      value={item.afterUrl || ""}
+      onChange={(e) => {
+        const updated = [...form.beautyBeforeAfter];
+        updated[index].afterUrl = e.target.value;
+        setForm({ ...form, beautyBeforeAfter: updated });
+      }}
+    />
+
+    <label className="font-medium text-sm mt-2 block">
+  Before Photo
+</label>
+
+<input
+  type="file"
+  accept="image/*"
+  onChange={(e) =>
+    handleBeforeAfterImageUpload(e, index, "beforeUrl")
+  }
+/>
+
+<label className="font-medium text-sm mt-3 block">
+  After Photo
+</label>
+
+<input
+  type="file"
+  accept="image/*"
+  onChange={(e) =>
+    handleBeforeAfterImageUpload(e, index, "afterUrl")
+  }
+/>
+
+    <button
+      type="button"
+      className="before-after-remove-btn"
+      onClick={() => {
+        const updated = [...form.beautyBeforeAfter];
+        updated.splice(index, 1);
+        setForm({ ...form, beautyBeforeAfter: updated });
+      }}
+    >
+      Remove
+    </button>
+  </div>
+))}
+
+<button
+  type="button"
+  className="btn btn-secondary"
+  onClick={() =>
+    setForm({
+      ...form,
+      beautyBeforeAfter: [
+        ...(form.beautyBeforeAfter || []),
+        {
+          title: "",
+          beforeUrl: "",
+          afterUrl: "",
+        },
+      ],
+    })
+  }
+>
+  + Add Before & After
+</button>
 
     {form.beautyPhotos?.length > 0 && (
       <div className="edit-listing-property-grid">
