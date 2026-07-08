@@ -231,6 +231,26 @@ beautyVideoUrl: {
   default: "",
 },
 
+beautyBeforeAfter: {
+  type: [
+    {
+      title: {
+        type: String,
+        default: "",
+      },
+      beforeUrl: {
+        type: String,
+        default: "",
+      },
+      afterUrl: {
+        type: String,
+        default: "",
+      },
+    },
+  ],
+  default: [],
+},
+
 beautyServices: [String],
 beautyWalkInsWelcome: Boolean,
 beautyAppointmentRequired: Boolean,
@@ -245,6 +265,14 @@ beautyTikTok: String,
 beautyBookingUrl: String,
 beautyPhotos: [String],
 beautyVideoUrl: String,
+
+beautyBeforeAfter: [
+  {
+    title: String,
+    beforeUrl: String,
+    afterUrl: String,
+  },
+],
 
     phone: { type: String, required: true, trim: true },
     whatsapp: { type: String, default: "", trim: true },
