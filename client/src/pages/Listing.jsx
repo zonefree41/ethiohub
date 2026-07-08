@@ -884,8 +884,7 @@ document.title = seoTitle;
       </div>
     </section>
   )}
-
-  {Array.isArray(listing.beautyPhotos) &&
+{Array.isArray(listing.beautyPhotos) &&
   listing.beautyPhotos.length > 0 && (
     <section className="listing-property-gallery">
       <h3>Beauty Gallery</h3>
@@ -904,6 +903,57 @@ document.title = seoTitle;
       </div>
     </section>
   )}
+
+  {Array.isArray(listing.beautyBeforeAfter) &&
+  listing.beautyBeforeAfter.length > 0 && (
+    <section className="listing-before-after">
+      <h3>Before & After Results</h3>
+
+      <div className="listing-before-after-grid">
+        {listing.beautyBeforeAfter.map((item, index) => (
+          <div className="listing-before-after-card" key={index}>
+            {item.title && <h4>{item.title}</h4>}
+
+            <div className="listing-before-after-images">
+              {item.beforeUrl && (
+                <div>
+                  <span>Before</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openLightbox(
+                        [item.beforeUrl, item.afterUrl].filter(Boolean),
+                        0
+                      )
+                    }
+                  >
+                    <img src={item.beforeUrl} alt="Before result" />
+                  </button>
+                </div>
+              )}
+
+              {item.afterUrl && (
+                <div>
+                  <span>After</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openLightbox(
+                        [item.beforeUrl, item.afterUrl].filter(Boolean),
+                        item.beforeUrl ? 1 : 0
+                      )
+                    }
+                  >
+                    <img src={item.afterUrl} alt="After result" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+)}
 
 {listing.propertyVideoUrl && (
   <section className="listing-property-video">
