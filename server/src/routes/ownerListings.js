@@ -113,6 +113,7 @@ router.patch("/:id", async (req, res) => {
 "beautyPhotos",
 "beautyVideoUrl",
 "beautyBeforeAfter",
+"promotions",
 "beautyInstagram",
 "beautyFacebook",
 "beautyTikTok",
@@ -185,6 +186,12 @@ if ("beautyPhotos" in updates) {
 if ("beautyBeforeAfter" in updates) {
   updates.beautyBeforeAfter = Array.isArray(updates.beautyBeforeAfter)
     ? updates.beautyBeforeAfter.slice(0, 10)
+    : [];
+}
+
+if ("promotions" in updates) {
+  updates.promotions = Array.isArray(updates.promotions)
+    ? updates.promotions.slice(0, 10)
     : [];
 }
 

@@ -232,6 +232,41 @@ beautyVideoUrl: {
 },
 
 beautyBeforeAfter: {
+  promotions: {
+  type: [
+    {
+      title: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+      discountType: {
+        type: String,
+        enum: ["percent", "fixed", "free", "custom", ""],
+        default: "",
+      },
+      discountValue: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+      validUntil: {
+        type: Date,
+        default: null,
+      },
+      isActive: {
+        type: Boolean,
+        default: true,
+      },
+    },
+  ],
+  default: [],
+},
   type: [
     {
       title: {
