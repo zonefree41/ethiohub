@@ -1481,3 +1481,77 @@
     width: 100%;
   }
 }
+
+.listing-before-after {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.listing-before-after h3 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #07152f;
+}
+
+.listing-before-after-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.listing-before-after-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.listing-before-after-card h4 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  color: #07152f;
+}
+
+.listing-before-after-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.listing-before-after-images div {
+  position: relative;
+}
+
+.listing-before-after-images span {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-weight: 800;
+  color: #07152f;
+}
+
+.listing-before-after-images button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  width: 100%;
+}
+
+.listing-before-after-images img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 4px solid #111827;
+}
+
+@media (max-width: 700px) {
+  .listing-before-after-images {
+    grid-template-columns: 1fr;
+  }
+
+  .listing-before-after-images img {
+    height: 240px;
+  }
+}
