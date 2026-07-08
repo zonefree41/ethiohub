@@ -367,3 +367,29 @@
   display: inline-block;
   margin-bottom: 14px;
 }
+
+.edit-listing-photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.edit-listing-photo-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #07152f;
+  color: white;
+}
+
+.edit-listing-photo-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.edit-listing-photo-actions button:last-child {
+  background: #dc2626;
+}

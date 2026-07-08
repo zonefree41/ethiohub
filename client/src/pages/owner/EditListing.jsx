@@ -45,6 +45,7 @@ beautyFacebook: "",
 beautyTikTok: "",
 beautyBookingUrl: "",
 beautyBeforeAfter: [],
+promotions: [],
 
 availabilityStatus: "available",
 availableFrom: "",
@@ -409,6 +410,26 @@ function removeBeautyPhoto(indexToRemove) {
   }));
 }
 
+function moveBeautyPhoto(index, direction) {
+  setForm((prev) => {
+    const photos = [...(prev.beautyPhotos || [])];
+    const newIndex = index + direction;
+
+    if (newIndex < 0 || newIndex >= photos.length) {
+      return prev;
+    }
+
+    const temp = photos[index];
+    photos[index] = photos[newIndex];
+    photos[newIndex] = temp;
+
+    return {
+      ...prev,
+      beautyPhotos: photos,
+    };
+  });
+}
+
   async function loadListing() {
     try {
       setLoading(true);
@@ -443,6 +464,7 @@ beautyBookingUrl: data.beautyBookingUrl || "",
 beautyBeforeAfter: Array.isArray(data.beautyBeforeAfter)
   ? data.beautyBeforeAfter
   : [],
+  promotions: Array.isArray(data.promotions) ? data.promotions : [],
 
 availabilityStatus: data.availabilityStatus || "available",
 availableFrom: data.availableFrom
@@ -835,6 +857,89 @@ const isBeautyListing =
   </div>
 </section>
 )}
+
+<section className="edit-listing-section">
+  <h2>Coupons & Promotions</h2>
+
+  {(form.promotions || []).map((promo, index) => (
+    <div key={index} className="edit-listing-promo-card">
+      <input
+        placeholder="Offer Title (Example: 20% Off Hair Oil)"
+        value={promo.title || ""}
+        onChange={(e) => {
+          const updated = [...form.promotions];
+          updated[index].title = e.target.value;
+          setForm({ ...form, promotions: updated });
+        }}
+      />
+
+      <textarea
+        placeholder="Offer Description"
+        rows="3"
+        value={promo.description || ""}
+        onChange={(e) => {
+          const updated = [...form.promotions];
+          updated[index].description = e.target.value;
+          setForm({ ...form, promotions: updated });
+        }}
+      />
+
+      <input
+        type="date"
+        value={promo.validUntil ? promo.validUntil.slice(0, 10) : ""}
+        onChange={(e) => {
+          const updated = [...form.promotions];
+          updated[index].validUntil = e.target.value;
+          setForm({ ...form, promotions: updated });
+        }}
+      />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={promo.isActive !== false}
+          onChange={(e) => {
+            const updated = [...form.promotions];
+            updated[index].isActive = e.target.checked;
+            setForm({ ...form, promotions: updated });
+          }}
+        />
+        Active
+      </label>
+
+      <button
+        type="button"
+        onClick={() => {
+          const updated = [...form.promotions];
+          updated.splice(index, 1);
+          setForm({ ...form, promotions: updated });
+        }}
+      >
+        Remove Offer
+      </button>
+    </div>
+  ))}
+
+  <button
+    type="button"
+    onClick={() =>
+      setForm({
+        ...form,
+        promotions: [
+          ...(form.promotions || []),
+          {
+            title: "",
+            description: "",
+            validUntil: "",
+            isActive: true,
+          },
+        ],
+      })
+    }
+  >
+    + Add Promotion
+  </button>
+</section>
             <section className="edit-listing-section">
               <h2>Location</h2>
 
@@ -1068,12 +1173,30 @@ const isBeautyListing =
           >
             <img src={url} alt={`Beauty ${index + 1}`} />
 
-            <button
-              type="button"
-              onClick={() => removeBeautyPhoto(index)}
-            >
-              Remove
-            </button>
+            <div className="edit-listing-photo-actions">
+  <button
+    type="button"
+    onClick={() => moveBeautyPhoto(index, -1)}
+    disabled={index === 0}
+  >
+    ← Move Left
+  </button>
+
+  <button
+    type="button"
+    onClick={() => moveBeautyPhoto(index, 1)}
+    disabled={index === form.beautyPhotos.length - 1}
+  >
+    Move Right →
+  </button>
+
+  <button
+    type="button"
+    onClick={() => removeBeautyPhoto(index)}
+  >
+    Remove
+  </button>
+</div>
           </div>
         ))}
       </div>
