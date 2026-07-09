@@ -232,7 +232,26 @@ beautyVideoUrl: {
 },
 
 beautyBeforeAfter: {
-  promotions: {
+  type: [
+    {
+      title: {
+        type: String,
+        default: "",
+      },
+      beforeUrl: {
+        type: String,
+        default: "",
+      },
+      afterUrl: {
+        type: String,
+        default: "",
+      },
+    },
+  ],
+  default: [],
+},
+
+promotions: {
   type: [
     {
       title: {
@@ -262,24 +281,6 @@ beautyBeforeAfter: {
       isActive: {
         type: Boolean,
         default: true,
-      },
-    },
-  ],
-  default: [],
-},
-  type: [
-    {
-      title: {
-        type: String,
-        default: "",
-      },
-      beforeUrl: {
-        type: String,
-        default: "",
-      },
-      afterUrl: {
-        type: String,
-        default: "",
       },
     },
   ],
