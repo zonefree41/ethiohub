@@ -509,8 +509,10 @@ beautyServes: Array.isArray(data.beautyServes) ? data.beautyServes : [],
     setSaving(true);
     setError("");
     setMessage("");
-    
-const result = await apiPatch(`/api/owner/listings/${id}`, form, token);
+
+    console.log("Saving owner listing form:", form);
+
+    const result = await apiPatch(`/api/owner/listings/${id}`, form, token);
 
     setMessage(result.message || "✅ Listing updated successfully.");
   } catch (err) {
