@@ -981,6 +981,32 @@ document.title = seoTitle;
   </section>
 )}
 
+{Array.isArray(listing.promotions) &&
+  listing.promotions.filter((promo) => promo.isActive !== false).length > 0 && (
+    <section className="listing-promotions">
+      <h3>🎉 Current Offers</h3>
+
+      <div className="listing-promotions-grid">
+        {listing.promotions
+          .filter((promo) => promo.isActive !== false)
+          .map((promo, index) => (
+            <div className="listing-promo-card" key={index}>
+              <strong>{promo.title}</strong>
+
+              {promo.description && <p>{promo.description}</p>}
+
+              {promo.validUntil && (
+                <small>
+                  Valid until{" "}
+                  {new Date(promo.validUntil).toLocaleDateString()}
+                </small>
+              )}
+            </div>
+          ))}
+      </div>
+    </section>
+)}
+
 {listing.beautyBookingUrl && (
   <section className="listing-beauty-booking">
     <a
