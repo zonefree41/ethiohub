@@ -510,8 +510,6 @@ beautyServes: Array.isArray(data.beautyServes) ? data.beautyServes : [],
     setError("");
     setMessage("");
 
-    console.log("Saving owner listing form:", form);
-
 alert(JSON.stringify(form.promotions, null, 2));
 const result = await apiPatch(`/api/owner/listings/${id}`, form, token);
 
