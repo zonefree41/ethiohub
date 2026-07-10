@@ -111,7 +111,7 @@ allowedFields.forEach((field) => {
       const now = new Date();
 
       const trialEndsAt = new Date(
-        now.getTime() + 3 * 24 * 60 * 60 * 1000
+        now.getTime() + 60 * 24 * 60 * 60 * 1000
       );
 
       patch.paymentStatus = "trial";
@@ -132,8 +132,7 @@ allowedFields.forEach((field) => {
 
     const shouldSendApprovalEmail =
   isBeingApproved &&
-  !existing.approvalEmailSentAt &&
-  !existing.hasUsedTrial;
+  !existing.approvalEmailSentAt;
 
 if (shouldSendApprovalEmail) {
       const ownerName = updated.submittedBy?.name || "there";
@@ -207,9 +206,11 @@ if (shouldSendApprovalEmail) {
         </div>
 
         <p style="font-size:16px;">
-          You can now manage your listing, view analytics,
-          and track customer activity directly from your owner dashboard.
-        </p>
+  Your business is now live on HubEthio.
+  To update your listing, upload photos, create promotions,
+  add business hours, and manage your business profile,
+  simply claim your business using the button below.
+</p>
 
         <!-- BUTTON -->
         <div style="text-align:center;margin:40px 0;">
@@ -226,7 +227,7 @@ if (shouldSendApprovalEmail) {
               font-weight:bold;
             "
           >
-            Open Owner Dashboard
+            Claim & Manage My Business
           </a>
         </div>
 

@@ -339,6 +339,21 @@ trialReminderSentAt: {
   default: null,
 },
 
+trial14DayReminderSentAt: {
+  type: Date,
+  default: null,
+},
+
+trial7DayReminderSentAt: {
+  type: Date,
+  default: null,
+},
+
+trial1DayReminderSentAt: {
+  type: Date,
+  default: null,
+},
+
 trialExpiredEmailSentAt: {
   type: Date,
   default: null,

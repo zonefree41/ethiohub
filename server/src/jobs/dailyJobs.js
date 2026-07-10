@@ -1,14 +1,22 @@
 import cron from "node-cron";
 import { expireTrials } from "../utils/expireTrials.js";
+import { sendTrialReminderEmails } from "./sendTrialReminderEmails.js";
 
 export function startDailyJobs() {
-  // Runs every day at 9:00 AM server time
   cron.schedule("0 9 * * *", async () => {
     console.log("⏰ Running daily HubEthio jobs...");
 
-    await expireTrials();
+    try {
+      // Send reminder emails first
+      await sendTrialReminderEmails();
 
-    console.log("✅ Daily HubEthio jobs finished.");
+      // Then expire any trials that have ended
+      await expireTrials();
+
+      console.log("✅ Daily HubEthio jobs finished.");
+    } catch (err) {
+      console.error("❌ Daily HubEthio jobs failed:", err);
+    }
   });
 
   console.log("✅ Daily cron jobs scheduled.");
