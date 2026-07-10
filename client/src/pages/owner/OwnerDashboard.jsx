@@ -289,14 +289,38 @@ function getTrialDaysLeft(value) {
       : listing.paymentStatus || "Not Subscribed"}
   </p>
 
-  {listing.paymentStatus === "trial" && (
+ {listing.paymentStatus === "trial" && (
   <>
     <p>
       <strong>Trial Ends:</strong> {formatDate(listing.trialEndsAt)}
     </p>
 
-    <div className="owner-trial-countdown">
-      🎉 {getTrialDaysLeft(listing.trialEndsAt)} days remaining in your Premium Trial
+    <div className="owner-trial-banner">
+      <div className="owner-trial-header">
+        🎉 Premium Trial Active
+      </div>
+
+      <div className="owner-trial-days">
+        {getTrialDaysLeft(listing.trialEndsAt)} Days Remaining
+      </div>
+
+      <p className="owner-trial-text">
+        You're currently enjoying all Premium features at no cost.
+      </p>
+
+      <div className="owner-trial-benefits">
+        <span>⭐ Featured Placement</span>
+        <span>✅ Verified Business</span>
+        <span>📈 Premium Analytics</span>
+        <span>🚀 Higher Search Ranking</span>
+      </div>
+
+      <a
+        href={`/pricing?listingId=${listing._id}`}
+        className="owner-trial-upgrade-btn"
+      >
+        Upgrade Before Trial Ends
+      </a>
     </div>
   </>
 )}
@@ -316,33 +340,93 @@ function getTrialDaysLeft(value) {
     <strong>Verified:</strong> {listing.isVerified ? "Yes" : "No"}
   </p>
 
-  {listing.paymentStatus !== "active" &&
-    listing.paymentStatus !== "trial" && (
-      <div className="owner-upgrade-notice">
-        <h3>Upgrade to Featured</h3>
-        <p>
-          Upgrade to Featured to get premium visibility, a Featured badge,
-          Verified badge, and higher placement in search, nearby, and related
-          businesses.
-        </p>
+  {listing.status === "approved" &&
+  listing.paymentStatus !== "active" &&
+  listing.paymentStatus !== "trial" && (
+    <div className="owner-premium-card">
+      <div className="owner-premium-card-header">
+        <div className="owner-premium-icon">🚀</div>
+
+        <div>
+          <p className="owner-premium-label">HubEthio Premium</p>
+          <h3>Grow Your Business Visibility</h3>
+        </div>
       </div>
-    )}
+
+      <p className="owner-premium-description">
+        Upgrade your listing to reach more customers and stand out across
+        HubEthio.
+      </p>
+
+      <div className="owner-premium-benefits">
+        <span>✓ Featured placement</span>
+        <span>✓ Verified business badge</span>
+        <span>✓ Higher search visibility</span>
+        <span>✓ Premium performance analytics</span>
+      </div>
+
+      <a
+        href={`/pricing?listingId=${listing._id}`}
+        className="owner-premium-upgrade-btn"
+      >
+        Upgrade Now
+      </a>
+
+      <p className="owner-premium-note">
+        Your basic business listing will remain visible even without Premium.
+      </p>
+    </div>
+  )}
 </div>
                       </div>
 
-                      <div className="owner-listing-clicks">
-  <strong>
-    Total Clicks:{" "}
-    {(listing.clicks?.call || 0) +
-      (listing.clicks?.whatsapp || 0) +
-      (listing.clicks?.website || 0) +
-      (listing.clicks?.directions || 0)}
-  </strong>
+                      <div className="owner-performance-section">
+  <h3>📊 Business Performance</h3>
 
-  <span>📞 Calls: {listing.clicks?.call || 0}</span>
-  <span>💬 WhatsApp: {listing.clicks?.whatsapp || 0}</span>
-  <span>🌐 Website: {listing.clicks?.website || 0}</span>
-  <span>📍 Directions: {listing.clicks?.directions || 0}</span>
+  <div className="owner-performance-grid">
+
+    <div className="owner-stat-card">
+      <div className="owner-stat-icon">👁️</div>
+      <div className="owner-stat-number">{listing.clicks?.views || 0}</div>
+      <div className="owner-stat-label">Views</div>
+    </div>
+
+    <div className="owner-stat-card">
+      <div className="owner-stat-icon">📞</div>
+      <div className="owner-stat-number">{listing.clicks?.call || 0}</div>
+      <div className="owner-stat-label">Calls</div>
+    </div>
+
+    <div className="owner-stat-card">
+      <div className="owner-stat-icon">💬</div>
+      <div className="owner-stat-number">{listing.clicks?.whatsapp || 0}</div>
+      <div className="owner-stat-label">WhatsApp</div>
+    </div>
+
+    <div className="owner-stat-card">
+      <div className="owner-stat-icon">🌐</div>
+      <div className="owner-stat-number">{listing.clicks?.website || 0}</div>
+      <div className="owner-stat-label">Website</div>
+    </div>
+
+    <div className="owner-stat-card">
+      <div className="owner-stat-icon">📍</div>
+      <div className="owner-stat-number">{listing.clicks?.directions || 0}</div>
+      <div className="owner-stat-label">Directions</div>
+    </div>
+
+  </div>
+
+  <div className="owner-total-actions">
+    Total Customer Actions:
+    <strong>
+      {" "}
+      {(listing.clicks?.call || 0) +
+        (listing.clicks?.whatsapp || 0) +
+        (listing.clicks?.website || 0) +
+        (listing.clicks?.directions || 0)}
+    </strong>
+  </div>
 </div>
 
                       <div className="owner-listing-actions">
@@ -359,17 +443,6 @@ function getTrialDaysLeft(value) {
                         <a href={`/owner/listings/edit/${listing._id}`}>
                           Edit Listing
                         </a>
-
-                        {listing.status === "approved" &&
- listing.paymentStatus !== "active" &&
- listing.paymentStatus !== "trial" && (
-  <a
-    href={`/pricing?listingId=${listing._id}`}
-    className="owner-upgrade-btn"
-  >
-    Upgrade to Featured
-  </a>
-)}
 
                         {listing.isFeatured && listing.stripeCustomerId && (
                           <button
