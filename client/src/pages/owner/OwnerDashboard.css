@@ -537,3 +537,13 @@
   margin: 8px 0;
   color: #334155;
 }
+
+.owner-trial-countdown {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  border: 1px solid #86efac;
+  color: #065f46;
+  font-weight: 800;
+}

@@ -81,6 +81,18 @@ export default function OwnerDashboard() {
   });
 }
 
+function getTrialDaysLeft(value) {
+  if (!value) return null;
+
+  const end = new Date(value);
+  const now = new Date();
+
+  const diffMs = end.getTime() - now.getTime();
+  const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  return days > 0 ? days : 0;
+}
+
   function getStatusClass(status) {
     if (status === "approved") return "owner-status-approved";
     if (status === "rejected") return "owner-status-rejected";
@@ -278,10 +290,16 @@ export default function OwnerDashboard() {
   </p>
 
   {listing.paymentStatus === "trial" && (
+  <>
     <p>
       <strong>Trial Ends:</strong> {formatDate(listing.trialEndsAt)}
     </p>
-  )}
+
+    <div className="owner-trial-countdown">
+      🎉 {getTrialDaysLeft(listing.trialEndsAt)} days remaining in your Premium Trial
+    </div>
+  </>
+)}
 
   {listing.subscriptionCancelAt && (
     <p>
@@ -363,13 +381,6 @@ export default function OwnerDashboard() {
                             Manage Subscription
                           </button>
                         )}
-
-                        <button
-                          type="button"
-                          onClick={() => claimListing(listing._id)}
-                        >
-                          Claim Listing
-                        </button>
                       </div>
                     </div>
                   </article>
