@@ -133,10 +133,7 @@ try {
   await expireTrials();
 
   startMonthlyPerformanceCron();
-
-  setInterval(async () => {
-    await expireTrials();
-  }, 60 * 60 * 1000);
+  startDailyJobs();
 
   app.listen(port, () => {
     console.log(`✅ API running on http://localhost:${port}`);
