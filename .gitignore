@@ -8,3 +8,36 @@ server/node_modules/
 dist
 build
 android/app/build
+server/.env
+server/.env.production.backup
+server/.env.save
+.DS_Store
+server/.DS_Store
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local IDE files
+.idea/
+**/.idea/
+*.code-workspace
+
+# Local server files
+server/.env
+server/.env.production.backup
+server/.env.save
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local IDE files
+.idea/
+**/.idea/
+*.code-workspace
+
+# Local server files
+server/.env
+server/.env.production.backup
+server/.env.save
