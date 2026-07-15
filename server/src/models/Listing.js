@@ -159,6 +159,11 @@ transportMaxLoad: {
   trim: true,
 },
 
+transportLiftgateAvailable: {
+  type: Boolean,
+  default: false,
+},
+
 // Beauty & Wellness fields
 beautyServices: {
   type: [String],

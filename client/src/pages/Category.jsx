@@ -70,7 +70,7 @@ function isTransportationListing(listing) {
       "Ethiopian Movers",
       "Furniture Delivery",
       "Package Delivery",
-      "Cargo & Freight",
+      "Cargo & Freight (Sprinter Van)",
       "Charter & Group Transportation",
     ].includes(listing.subcategory)
   );

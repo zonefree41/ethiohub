@@ -20,7 +20,7 @@ await db.collection("categories").updateOne(
         "Ethiopian Movers",
         "Furniture Delivery",
         "Package Delivery",
-        "Cargo & Freight",
+        "Cargo & Freight (Sprinter Van)",
         "Charter & Group Transportation",
       ],
     },

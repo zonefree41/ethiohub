@@ -369,6 +369,7 @@ transportAirportService = false,
 transportSameDayService = false,
 transportLocalLongDistance = "",
 transportMaxLoad = "",
+transportLiftgateAvailable = false,
 } = req.body || {};
 
     const spamError = checkSpamSubmission({
@@ -505,7 +506,9 @@ transportSameDayService:
   transportSameDayService === true || transportSameDayService === "true",
 transportLocalLongDistance,
 transportMaxLoad,
-
+transportLiftgateAvailable:
+  transportLiftgateAvailable === true ||
+  transportLiftgateAvailable === "true",
 status: "pending",
     });
 

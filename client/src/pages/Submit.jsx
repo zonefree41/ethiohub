@@ -42,6 +42,7 @@ transportAirportService: false,
 transportSameDayService: false,
 transportLocalLongDistance: "",
 transportMaxLoad: "",
+transportLiftgateAvailable: false,
 beautyServices: [],
 beautyWalkInsWelcome: false,
 beautyAppointmentRequired: false,
@@ -300,6 +301,7 @@ transportAirportService: form.transportAirportService,
 transportSameDayService: form.transportSameDayService,
 transportLocalLongDistance: form.transportLocalLongDistance,
 transportMaxLoad: form.transportMaxLoad,
+transportLiftgateAvailable: form.transportLiftgateAvailable,
 
 // Beauty & Wellness
 beautyServices: form.beautyServices,
@@ -685,6 +687,18 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
         />
         Same-Day Service
       </label>
+
+      {form.subcategory === "Cargo & Freight (Sprinter Van)" && (
+  <label>
+    <input
+      type="checkbox"
+      name="transportLiftgateAvailable"
+      checked={form.transportLiftgateAvailable}
+      onChange={updateCheckbox}
+    />
+    Liftgate Available
+  </label>
+)}
     </div>
   </section>
 )}
