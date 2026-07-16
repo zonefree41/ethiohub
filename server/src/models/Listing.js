@@ -183,6 +183,46 @@ transportPalletCapacity: {
   trim: true,
 },
 
+transportResidentialDelivery: {
+  type: Boolean,
+  default: false,
+},
+
+transportCommercialDelivery: {
+  type: Boolean,
+  default: false,
+},
+
+transportWarehousePickup: {
+  type: Boolean,
+  default: false,
+},
+
+transportWarehouseDelivery: {
+  type: Boolean,
+  default: false,
+},
+
+transportDockHighDelivery: {
+  type: Boolean,
+  default: false,
+},
+
+transportInsideDelivery: {
+  type: Boolean,
+  default: false,
+},
+
+transportWhiteGloveService: {
+  type: Boolean,
+  default: false,
+},
+
+transportRefrigeratedTransport: {
+  type: Boolean,
+  default: false,
+},
+
 transportLiftgateAvailable: {
   type: Boolean,
   default: false,

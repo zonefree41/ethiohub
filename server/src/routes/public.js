@@ -373,6 +373,14 @@ transportCargoLength = "",
 transportCargoWidth = "",
 transportCargoHeight = "",
 transportPalletCapacity = "",
+transportResidentialDelivery = false,
+transportCommercialDelivery = false,
+transportWarehousePickup = false,
+transportWarehouseDelivery = false,
+transportDockHighDelivery = false,
+transportInsideDelivery = false,
+transportWhiteGloveService = false,
+transportRefrigeratedTransport = false,
 transportLiftgateAvailable = false,
 } = req.body || {};
 
@@ -514,6 +522,30 @@ transportCargoLength,
 transportCargoWidth,
 transportCargoHeight,
 transportPalletCapacity,
+transportResidentialDelivery:
+  transportResidentialDelivery === true ||
+  transportResidentialDelivery === "true",
+  transportCommercialDelivery:
+  transportCommercialDelivery === true ||
+  transportCommercialDelivery === "true",
+  transportWarehousePickup:
+  transportWarehousePickup === true ||
+  transportWarehousePickup === "true",
+  transportWarehouseDelivery:
+  transportWarehouseDelivery === true ||
+  transportWarehouseDelivery === "true",
+  transportDockHighDelivery:
+  transportDockHighDelivery === true ||
+  transportDockHighDelivery === "true",
+  transportInsideDelivery:
+  transportInsideDelivery === true ||
+  transportInsideDelivery === "true",
+  transportWhiteGloveService:
+  transportWhiteGloveService === true ||
+  transportWhiteGloveService === "true",
+  transportRefrigeratedTransport:
+  transportRefrigeratedTransport === true ||
+  transportRefrigeratedTransport === "true",
 transportLiftgateAvailable:
   transportLiftgateAvailable === true ||
   transportLiftgateAvailable === "true",

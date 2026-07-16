@@ -46,6 +46,14 @@ transportCargoLength: "",
 transportCargoWidth: "",
 transportCargoHeight: "",
 transportPalletCapacity: "",
+transportResidentialDelivery: false,
+transportCommercialDelivery: false,
+transportWarehousePickup: false,
+transportWarehouseDelivery: false,
+transportDockHighDelivery: false,
+transportInsideDelivery: false,
+transportWhiteGloveService: false,
+transportRefrigeratedTransport: false,
 transportLiftgateAvailable: false,
 beautyServices: [],
 beautyWalkInsWelcome: false,
@@ -309,6 +317,14 @@ transportCargoLength: form.transportCargoLength,
 transportCargoWidth: form.transportCargoWidth,
 transportCargoHeight: form.transportCargoHeight,
 transportPalletCapacity: form.transportPalletCapacity,
+transportResidentialDelivery: form.transportResidentialDelivery,
+transportCommercialDelivery: form.transportCommercialDelivery,
+transportWarehousePickup: form.transportWarehousePickup,
+transportWarehouseDelivery: form.transportWarehouseDelivery,
+transportDockHighDelivery: form.transportDockHighDelivery,
+transportInsideDelivery: form.transportInsideDelivery,
+transportWhiteGloveService: form.transportWhiteGloveService,
+transportRefrigeratedTransport: form.transportRefrigeratedTransport,
 transportLiftgateAvailable: form.transportLiftgateAvailable,
 
 // Beauty & Wellness
@@ -706,48 +722,134 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
     </select>
 
     <div className="submit-checkboxes">
-      <label>
-        <input
-          type="checkbox"
-          name="transportAvailable24_7"
-          checked={form.transportAvailable24_7}
-          onChange={updateCheckbox}
-        />
-        24/7 Service
-      </label>
-
-      <label>
-        <input
-          type="checkbox"
-          name="transportAirportService"
-          checked={form.transportAirportService}
-          onChange={updateCheckbox}
-        />
-        Airport Service
-      </label>
-
-      <label>
-        <input
-          type="checkbox"
-          name="transportSameDayService"
-          checked={form.transportSameDayService}
-          onChange={updateCheckbox}
-        />
-        Same-Day Service
-      </label>
-
-      {form.subcategory === "Cargo & Freight (Sprinter Van)" && (
   <label>
     <input
       type="checkbox"
-      name="transportLiftgateAvailable"
-      checked={form.transportLiftgateAvailable}
+      name="transportAvailable24_7"
+      checked={form.transportAvailable24_7}
       onChange={updateCheckbox}
     />
-    Liftgate Available
+    24/7 Service
   </label>
-)}
+
+  <label>
+    <input
+      type="checkbox"
+      name="transportAirportService"
+      checked={form.transportAirportService}
+      onChange={updateCheckbox}
+    />
+    Airport Service
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      name="transportSameDayService"
+      checked={form.transportSameDayService}
+      onChange={updateCheckbox}
+    />
+    Same-Day Service
+  </label>
+</div>
+
+{form.subcategory === "Cargo & Freight (Sprinter Van)" && (
+  <>
+    <h3 className="submit-subtitle">🚚 Delivery Services</h3>
+
+    <div className="submit-checkboxes">
+      <label>
+        <input
+          type="checkbox"
+          name="transportLiftgateAvailable"
+          checked={form.transportLiftgateAvailable}
+          onChange={updateCheckbox}
+        />
+        Liftgate Available
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="transportResidentialDelivery"
+          checked={form.transportResidentialDelivery}
+          onChange={updateCheckbox}
+        />
+        Residential Delivery
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="transportCommercialDelivery"
+          checked={form.transportCommercialDelivery}
+          onChange={updateCheckbox}
+        />
+        Commercial Delivery
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="transportWarehousePickup"
+          checked={form.transportWarehousePickup}
+          onChange={updateCheckbox}
+        />
+        Warehouse Pickup
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="transportWarehouseDelivery"
+          checked={form.transportWarehouseDelivery}
+          onChange={updateCheckbox}
+        />
+        Warehouse Delivery
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          name="transportDockHighDelivery"
+          checked={form.transportDockHighDelivery}
+          onChange={updateCheckbox}
+        />
+        Dock High Delivery
+      </label>
+
+      <label>
+  <input
+    type="checkbox"
+    name="transportInsideDelivery"
+    checked={form.transportInsideDelivery}
+    onChange={updateCheckbox}
+  />
+  Inside Delivery
+</label>
+
+<label>
+  <input
+    type="checkbox"
+    name="transportWhiteGloveService"
+    checked={form.transportWhiteGloveService}
+    onChange={updateCheckbox}
+  />
+  White Glove Service
+</label>
+
+<label>
+  <input
+    type="checkbox"
+    name="transportRefrigeratedTransport"
+    checked={form.transportRefrigeratedTransport}
+    onChange={updateCheckbox}
+  />
+  Refrigerated Transport
+</label>
     </div>
+  </>
+)}
   </section>
 )}
 

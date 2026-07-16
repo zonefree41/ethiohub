@@ -805,6 +805,46 @@ document.title = seoTitle;
         </div>
       )}
 
+      {listing.transportCargoLength && (
+  <div className="listing-rental-item">
+    <span>📏</span>
+    <div>
+      <strong>Cargo Length</strong>
+      <p>{listing.transportCargoLength} ft</p>
+    </div>
+  </div>
+)}
+
+{listing.transportCargoWidth && (
+  <div className="listing-rental-item">
+    <span>↔️</span>
+    <div>
+      <strong>Cargo Width</strong>
+      <p>{listing.transportCargoWidth} ft</p>
+    </div>
+  </div>
+)}
+
+{listing.transportCargoHeight && (
+  <div className="listing-rental-item">
+    <span>↕️</span>
+    <div>
+      <strong>Cargo Height</strong>
+      <p>{listing.transportCargoHeight} ft</p>
+    </div>
+  </div>
+)}
+
+{listing.transportPalletCapacity && (
+  <div className="listing-rental-item">
+    <span>🧱</span>
+    <div>
+      <strong>Pallet Capacity</strong>
+      <p>{listing.transportPalletCapacity}</p>
+    </div>
+  </div>
+)}
+
       <div className="listing-rental-item">
         <span>🕒</span>
         <div>
@@ -834,6 +874,88 @@ document.title = seoTitle;
 </p>
         </div>
       </div>
+    </div>
+  </section>
+)}
+
+{listing.subcategory === "Cargo & Freight (Sprinter Van)" &&
+  (
+    listing.transportLiftgateAvailable ||
+    listing.transportResidentialDelivery ||
+    listing.transportCommercialDelivery ||
+    listing.transportWarehousePickup ||
+    listing.transportWarehouseDelivery ||
+    listing.transportDockHighDelivery ||
+    listing.transportInsideDelivery ||
+    listing.transportWhiteGloveService ||
+    listing.transportRefrigeratedTransport
+  ) && (
+  <section className="listing-rental-card">
+    <h2>🚚 Delivery Services</h2>
+
+    <div className="listing-rental-grid">
+      {listing.transportLiftgateAvailable && (
+        <div className="listing-rental-item">
+          <span>✅</span>
+          <div>Liftgate Available</div>
+        </div>
+      )}
+
+      {listing.transportResidentialDelivery && (
+        <div className="listing-rental-item">
+          <span>✅</span>
+          <div>Residential Delivery</div>
+        </div>
+      )}
+
+      {listing.transportCommercialDelivery && (
+        <div className="listing-rental-item">
+          <span>✅</span>
+          <div>Commercial Delivery</div>
+        </div>
+      )}
+
+      {listing.transportWarehousePickup && (
+        <div className="listing-rental-item">
+          <span>✅</span>
+          <div>Warehouse Pickup</div>
+        </div>
+      )}
+
+      {listing.transportWarehouseDelivery && (
+        <div className="listing-rental-item">
+          <span>✅</span>
+          <div>Warehouse Delivery</div>
+        </div>
+      )}
+
+      {listing.transportDockHighDelivery && (
+        <div className="listing-rental-item">
+          <span>✅</span>
+          <div>Dock High Delivery</div>
+        </div>
+      )}
+
+      {listing.transportInsideDelivery && (
+        <div className="listing-rental-item">
+          <span>✅</span>
+          <div>Inside Delivery</div>
+        </div>
+      )}
+
+      {listing.transportWhiteGloveService && (
+        <div className="listing-rental-item">
+          <span>✅</span>
+          <div>White Glove Service</div>
+        </div>
+      )}
+
+      {listing.transportRefrigeratedTransport && (
+        <div className="listing-rental-item">
+          <span>✅</span>
+          <div>Refrigerated Transport</div>
+        </div>
+      )}
     </div>
   </section>
 )}
