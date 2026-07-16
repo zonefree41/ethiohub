@@ -159,6 +159,30 @@ transportMaxLoad: {
   trim: true,
 },
 
+transportCargoLength: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
+transportCargoWidth: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
+transportCargoHeight: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
+transportPalletCapacity: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
 transportLiftgateAvailable: {
   type: Boolean,
   default: false,

@@ -137,6 +137,10 @@ router.patch("/:id", async (req, res) => {
 "transportSameDayService",
 "transportLocalLongDistance",
 "transportMaxLoad",
+"transportCargoLength",
+"transportCargoWidth",
+"transportCargoHeight",
+"transportPalletCapacity",
 "transportLiftgateAvailable",
 
 "beautyServices",

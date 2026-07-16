@@ -369,6 +369,10 @@ transportAirportService = false,
 transportSameDayService = false,
 transportLocalLongDistance = "",
 transportMaxLoad = "",
+transportCargoLength = "",
+transportCargoWidth = "",
+transportCargoHeight = "",
+transportPalletCapacity = "",
 transportLiftgateAvailable = false,
 } = req.body || {};
 
@@ -506,6 +510,10 @@ transportSameDayService:
   transportSameDayService === true || transportSameDayService === "true",
 transportLocalLongDistance,
 transportMaxLoad,
+transportCargoLength,
+transportCargoWidth,
+transportCargoHeight,
+transportPalletCapacity,
 transportLiftgateAvailable:
   transportLiftgateAvailable === true ||
   transportLiftgateAvailable === "true",

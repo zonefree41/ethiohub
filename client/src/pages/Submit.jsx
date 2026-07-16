@@ -42,6 +42,10 @@ transportAirportService: false,
 transportSameDayService: false,
 transportLocalLongDistance: "",
 transportMaxLoad: "",
+transportCargoLength: "",
+transportCargoWidth: "",
+transportCargoHeight: "",
+transportPalletCapacity: "",
 transportLiftgateAvailable: false,
 beautyServices: [],
 beautyWalkInsWelcome: false,
@@ -301,6 +305,10 @@ transportAirportService: form.transportAirportService,
 transportSameDayService: form.transportSameDayService,
 transportLocalLongDistance: form.transportLocalLongDistance,
 transportMaxLoad: form.transportMaxLoad,
+transportCargoLength: form.transportCargoLength,
+transportCargoWidth: form.transportCargoWidth,
+transportCargoHeight: form.transportCargoHeight,
+transportPalletCapacity: form.transportPalletCapacity,
 transportLiftgateAvailable: form.transportLiftgateAvailable,
 
 // Beauty & Wellness
@@ -610,8 +618,48 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
         name="transportMaxLoad"
         value={form.transportMaxLoad}
         onChange={update}
-        placeholder="Vehicle Capacity (e.g. 26-ft Truck, 3 Tons)"
+        placeholder={
+  form.subcategory === "Cargo & Freight (Sprinter Van)"
+    ? "Maximum Payload (lbs), e.g. 3,500"
+    : "Vehicle Capacity (e.g. 26-ft Truck, 3 Tons)"
+        }
       />
+
+      {form.subcategory === "Cargo & Freight (Sprinter Van)" && (
+  <input
+    name="transportCargoLength"
+    value={form.transportCargoLength}
+    onChange={update}
+    placeholder="Cargo Length (ft), e.g. 12"
+  />
+)}
+
+{form.subcategory === "Cargo & Freight (Sprinter Van)" && (
+  <input
+    name="transportCargoWidth"
+    value={form.transportCargoWidth}
+    onChange={update}
+    placeholder="Cargo Width (ft), e.g. 5.8"
+  />
+)}
+
+{form.subcategory === "Cargo & Freight (Sprinter Van)" && (
+  <input
+    name="transportCargoHeight"
+    value={form.transportCargoHeight}
+    onChange={update}
+    placeholder="Cargo Height (ft), e.g. 6.5"
+  />
+)}
+
+{form.subcategory === "Cargo & Freight (Sprinter Van)" && (
+  <input
+    name="transportPalletCapacity"
+    value={form.transportPalletCapacity}
+    onChange={update}
+    placeholder="Pallet Capacity, e.g. 3 standard pallets"
+  />
+)}
     </div>
 
     <h3 className="submit-subtitle">Vehicle Types</h3>
