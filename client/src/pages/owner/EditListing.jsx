@@ -1288,6 +1288,74 @@ const isBeautyListing =
     )}
   </div>
 </div>
+
+<hr />
+
+<h3>Vehicle Information</h3>
+
+<div className="edit-listing-two-col">
+  <input
+    name="vehicleMake"
+    placeholder="Vehicle Make (Example: Ford)"
+    value={form.transportVerification.vehicleMake}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          vehicleMake: e.target.value,
+        },
+      }))
+    }
+  />
+
+  <input
+    name="vehicleModel"
+    placeholder="Vehicle Model (Example: Transit 350)"
+    value={form.transportVerification.vehicleModel}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          vehicleModel: e.target.value,
+        },
+      }))
+    }
+  />
+</div>
+
+<div className="edit-listing-two-col">
+  <input
+    name="vehicleYear"
+    placeholder="Vehicle Year"
+    value={form.transportVerification.vehicleYear}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          vehicleYear: e.target.value,
+        },
+      }))
+    }
+  />
+
+  <input
+    name="vehicleLicensePlate"
+    placeholder="License Plate"
+    value={form.transportVerification.vehicleLicensePlate}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          vehicleLicensePlate: e.target.value,
+        },
+      }))
+    }
+  />
+</div>
   </section>
 )}
 
