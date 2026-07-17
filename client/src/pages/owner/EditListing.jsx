@@ -80,6 +80,40 @@ transportDockHighDelivery: false,
 transportInsideDelivery: false,
 transportWhiteGloveService: false,
 transportRefrigeratedTransport: false,
+transportVerification: {
+  driverFullName: "",
+  driverLicenseNumber: "",
+  driverLicenseState: "",
+  driverLicenseExpirationDate: "",
+  driverLicenseFrontUrl: "",
+  driverLicenseBackUrl: "",
+
+  vehicleVin: "",
+  vehicleMake: "",
+  vehicleModel: "",
+  vehicleYear: "",
+  vehicleLicensePlate: "",
+  vehicleRegistrationExpirationDate: "",
+  vehicleRegistrationUrl: "",
+
+  insuranceCompany: "",
+  insurancePolicyNumber: "",
+  insuranceCoverageType: "",
+  insuranceExpirationDate: "",
+  insuranceDocumentUrl: "",
+
+  commercialDeliveryCovered: false,
+
+  hasCargoInsurance: false,
+  cargoCoverageAmount: "",
+  cargoInsuranceDocumentUrl: "",
+
+  usdotNumber: "",
+  usdotStatus: "unsure",
+
+  mcNumber: "",
+  mcStatus: "not_required",
+},
 beautyServices: [],
 beautyStartingPrice: "",
 beautyServes: [],
@@ -527,6 +561,66 @@ transportDockHighDelivery: Boolean(data.transportDockHighDelivery),
 transportInsideDelivery: Boolean(data.transportInsideDelivery),
 transportWhiteGloveService: Boolean(data.transportWhiteGloveService),
 transportRefrigeratedTransport: Boolean(data.transportRefrigeratedTransport),
+transportVerification: {
+  driverFullName: data.transportVerification?.driverFullName || "",
+  driverLicenseNumber:
+    data.transportVerification?.driverLicenseNumber || "",
+  driverLicenseState:
+    data.transportVerification?.driverLicenseState || "",
+  driverLicenseExpirationDate:
+    data.transportVerification?.driverLicenseExpirationDate
+      ? data.transportVerification.driverLicenseExpirationDate.slice(0, 10)
+      : "",
+  driverLicenseFrontUrl:
+    data.transportVerification?.driverLicenseFrontUrl || "",
+  driverLicenseBackUrl:
+    data.transportVerification?.driverLicenseBackUrl || "",
+
+  vehicleVin: data.transportVerification?.vehicleVin || "",
+  vehicleMake: data.transportVerification?.vehicleMake || "",
+  vehicleModel: data.transportVerification?.vehicleModel || "",
+  vehicleYear: data.transportVerification?.vehicleYear || "",
+  vehicleLicensePlate:
+    data.transportVerification?.vehicleLicensePlate || "",
+  vehicleRegistrationExpirationDate:
+    data.transportVerification?.vehicleRegistrationExpirationDate
+      ? data.transportVerification.vehicleRegistrationExpirationDate.slice(0, 10)
+      : "",
+  vehicleRegistrationUrl:
+    data.transportVerification?.vehicleRegistrationUrl || "",
+
+  insuranceCompany:
+    data.transportVerification?.insuranceCompany || "",
+  insurancePolicyNumber:
+    data.transportVerification?.insurancePolicyNumber || "",
+  insuranceCoverageType:
+    data.transportVerification?.insuranceCoverageType || "",
+  insuranceExpirationDate:
+    data.transportVerification?.insuranceExpirationDate
+      ? data.transportVerification.insuranceExpirationDate.slice(0, 10)
+      : "",
+  insuranceDocumentUrl:
+    data.transportVerification?.insuranceDocumentUrl || "",
+
+  commercialDeliveryCovered: Boolean(
+    data.transportVerification?.commercialDeliveryCovered
+  ),
+
+  hasCargoInsurance: Boolean(
+    data.transportVerification?.hasCargoInsurance
+  ),
+  cargoCoverageAmount:
+    data.transportVerification?.cargoCoverageAmount || "",
+  cargoInsuranceDocumentUrl:
+    data.transportVerification?.cargoInsuranceDocumentUrl || "",
+
+  usdotNumber: data.transportVerification?.usdotNumber || "",
+  usdotStatus: data.transportVerification?.usdotStatus || "unsure",
+
+  mcNumber: data.transportVerification?.mcNumber || "",
+  mcStatus:
+    data.transportVerification?.mcStatus || "not_required",
+},
       });
     } catch (err) {
       setError(err.message || "Failed to load listing");
@@ -1015,6 +1109,47 @@ const isBeautyListing =
         Same-Day Service
       </label>
     </div>
+
+    <hr />
+
+    <h2>Transportation Verification</h2>
+
+    <p className="verification-note">
+      Submit your transportation documents for verification. Verified businesses
+      receive a Verified Transportation badge and build more trust with customers.
+    </p>
+
+    <div className="edit-listing-two-col">
+  <input
+    name="driverFullName"
+    placeholder="Driver Full Name"
+    value={form.transportVerification.driverFullName}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          driverFullName: e.target.value,
+        },
+      }))
+    }
+  />
+
+  <input
+    name="driverLicenseNumber"
+    placeholder="Driver License Number"
+    value={form.transportVerification.driverLicenseNumber}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          driverLicenseNumber: e.target.value,
+        },
+      }))
+    }
+  />
+</div>
   </section>
 )}
 

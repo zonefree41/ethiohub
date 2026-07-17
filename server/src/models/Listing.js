@@ -15,7 +15,198 @@ const HoursSchema = new mongoose.Schema(
 
 const ListingSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true, trim: true },
+    transportVerification: {
+  driverFullName: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  driverLicenseNumber: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  driverLicenseState: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  driverLicenseExpirationDate: {
+    type: Date,
+    default: null,
+  },
+
+  driverLicenseFrontUrl: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  driverLicenseBackUrl: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  vehicleMake: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  vehicleModel: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  vehicleYear: {
+    type: Number,
+    default: null,
+  },
+
+  vehicleVin: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  vehicleLicensePlate: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  vehicleRegistrationExpirationDate: {
+    type: Date,
+    default: null,
+  },
+
+  vehicleRegistrationUrl: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  insuranceCompany: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  insurancePolicyNumber: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  insuranceCoverageType: {
+    type: String,
+    enum: ["commercial_auto", "business_auto", "personal", ""],
+    default: "",
+  },
+
+  commercialDeliveryCovered: {
+    type: Boolean,
+    default: false,
+  },
+
+  insuranceExpirationDate: {
+    type: Date,
+    default: null,
+  },
+
+  insuranceDocumentUrl: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  hasCargoInsurance: {
+    type: Boolean,
+    default: false,
+  },
+
+  cargoCoverageAmount: {
+    type: Number,
+    default: null,
+  },
+
+  cargoInsuranceDocumentUrl: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  usdotStatus: {
+    type: String,
+    enum: ["yes", "no", "not_required", "unsure", ""],
+    default: "",
+  },
+
+  usdotNumber: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  mcStatus: {
+    type: String,
+    enum: ["yes", "no", "not_required", "unsure", ""],
+    default: "",
+  },
+
+  mcNumber: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+  identityVerified: {
+    type: Boolean,
+    default: false,
+  },
+
+  driverVerified: {
+    type: Boolean,
+    default: false,
+  },
+
+  vehicleVerified: {
+    type: Boolean,
+    default: false,
+  },
+
+  insuranceVerified: {
+    type: Boolean,
+    default: false,
+  },
+
+  cargoInsuranceVerified: {
+    type: Boolean,
+    default: false,
+  },
+
+  usdotVerified: {
+    type: Boolean,
+    default: false,
+  },
+
+  mcVerified: {
+    type: Boolean,
+    default: false,
+  },
+
+  verificationSubmittedAt: {
+  type: Date,
+  default: null,
+},
+},
+
+title: { type: String, required: true, trim: true },
 
     description_en: { type: String, default: "" },
     description_am: { type: String, default: "" },
@@ -452,9 +643,12 @@ hasUsedTrial: {
 },
 
     submittedBy: {
-      name: { type: String, default: "" },
-      contact: { type: String, default: "" },
-    },
+      type: {
+        name: { type: String, default: "" },
+        contact: { type: String, default: "" },
+      },
+      default: () => ({}),
+    }
   },
   { timestamps: true }
 );

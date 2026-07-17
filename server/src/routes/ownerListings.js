@@ -159,6 +159,58 @@ router.patch("/:id", async (req, res) => {
 
     const updates = {};
 
+
+const allowedTransportVerificationFields = [
+  "driverFullName",
+  "driverLicenseNumber",
+  "driverLicenseState",
+  "driverLicenseExpirationDate",
+  "driverLicenseFrontUrl",
+  "driverLicenseBackUrl",
+
+  "vehicleMake",
+  "vehicleModel",
+  "vehicleYear",
+  "vehicleVin",
+  "vehicleLicensePlate",
+  "vehicleRegistrationExpirationDate",
+  "vehicleRegistrationUrl",
+
+  "insuranceCompany",
+  "insurancePolicyNumber",
+  "insuranceCoverageType",
+  "commercialDeliveryCovered",
+  "insuranceExpirationDate",
+  "insuranceDocumentUrl",
+
+  "hasCargoInsurance",
+  "cargoCoverageAmount",
+  "cargoInsuranceDocumentUrl",
+
+  "usdotStatus",
+  "usdotNumber",
+  "mcStatus",
+  "mcNumber",
+];
+
+if (
+  req.body.transportVerification &&
+  typeof req.body.transportVerification === "object" &&
+  !Array.isArray(req.body.transportVerification)
+) {
+  for (const field of allowedTransportVerificationFields) {
+    if (field in req.body.transportVerification) {
+      const value = req.body.transportVerification[field];
+
+      updates[`transportVerification.${field}`] =
+        typeof value === "string" ? value.trim() : value;
+    }
+  }
+
+  updates["transportVerification.verificationSubmittedAt"] = new Date();
+}
+
+
     for (const field of allowedFields) {
       if (field in req.body) {
         updates[field] =
@@ -173,6 +225,98 @@ router.patch("/:id", async (req, res) => {
   "hacked",
   "test@gmail.com",
 ];
+
+const verificationDateFields = [
+  "transportVerification.driverLicenseExpirationDate",
+  "transportVerification.vehicleRegistrationExpirationDate",
+  "transportVerification.insuranceExpirationDate",
+];
+
+for (const field of verificationDateFields) {
+  if (field in updates) {
+    if (!updates[field]) {
+      updates[field] = null;
+    } else {
+      const parsedDate = new Date(updates[field]);
+
+      if (Number.isNaN(parsedDate.getTime())) {
+        return res.status(400).json({
+          message: `Invalid date for ${field.split(".").pop()}.`,
+        });
+      }
+
+      updates[field] = parsedDate;
+    }
+  }
+}
+
+const verificationNumberFields = [
+  "transportVerification.vehicleYear",
+  "transportVerification.cargoCoverageAmount",
+];
+
+for (const field of verificationNumberFields) {
+  if (field in updates) {
+    if (updates[field] === "" || updates[field] === null) {
+      updates[field] = null;
+    } else {
+      const parsedNumber = Number(updates[field]);
+
+      if (Number.isNaN(parsedNumber) || parsedNumber < 0) {
+        return res.status(400).json({
+          message: `Invalid number for ${field.split(".").pop()}.`,
+        });
+      }
+
+      updates[field] = parsedNumber;
+    }
+  }
+}
+
+const verificationBooleanFields = [
+  "transportVerification.commercialDeliveryCovered",
+  "transportVerification.hasCargoInsurance",
+];
+
+for (const field of verificationBooleanFields) {
+  if (field in updates) {
+    updates[field] =
+      updates[field] === true || updates[field] === "true";
+  }
+}
+
+if (
+  "transportVerification.insuranceCoverageType" in updates &&
+  !["", "commercial_auto", "business_auto", "personal"].includes(
+    updates["transportVerification.insuranceCoverageType"]
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid insurance coverage type.",
+  });
+}
+
+if (
+  "transportVerification.usdotStatus" in updates &&
+  !["", "yes", "no", "not_required", "unsure"].includes(
+    updates["transportVerification.usdotStatus"]
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid USDOT status.",
+  });
+}
+
+if (
+  "transportVerification.mcStatus" in updates &&
+  !["", "yes", "no", "not_required", "unsure"].includes(
+    updates["transportVerification.mcStatus"]
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid MC status.",
+  });
+}
 
 const spamText = Object.values(updates)
   .filter((value) => typeof value === "string")
