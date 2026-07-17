@@ -24,6 +24,7 @@ router.get("/my-listings", async (req, res) => {
   }
 });
 
+
 /**
  * Claim an existing listing by ID
  * Temporary/simple version for now.

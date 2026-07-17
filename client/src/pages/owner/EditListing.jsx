@@ -1497,13 +1497,17 @@ const isBeautyListing =
   </div>
 )}
 
-{isHousingListing && (
+{(isHousingListing || isTransportationListing) && (
               <div className="edit-listing-upload-card">
-  <label>Property Photos</label>
-  <p>
-    Upload up to 20 photos for rentals: living room, kitchen,
-    bedrooms, bathroom, exterior, parking, and more.
-  </p>
+  <label>
+  {isHousingListing ? "Property Photos" : "Vehicle Photos"}
+</label>
+
+<p>
+  {isHousingListing
+    ? "Upload up to 20 photos for rentals: living room, kitchen, bedrooms, bathroom, exterior, parking, and more."
+    : "Upload up to 20 vehicle photos: exterior, interior, cargo area, equipment, loading, and more."}
+</p>
 
   <input
     type="file"
@@ -1534,10 +1538,17 @@ const isBeautyListing =
 
             </section>
 
-  {isHousingListing && (
+  {(isHousingListing || isTransportationListing) && (
     <div className="edit-listing-upload-card">
-      <label>Property Video</label>
-      <p>Upload one MP4 walkthrough video. Recommended length: 60–90 seconds.</p>
+      <label>
+        {isHousingListing ? "Property Video" : "Vehicle Video"}
+      </label>
+
+      <p>
+        {isHousingListing
+          ? "Upload one MP4 walkthrough video. Recommended length: 60–90 seconds."
+          : "Upload one MP4 video showing your vehicle, cargo area, loading process, or equipment."}
+      </p>
 
       <input
         type="file"
