@@ -1372,6 +1372,25 @@ const isBeautyListing =
   maxLength={17}
 />
 </div>
+
+<div className="edit-listing-two-col">
+  <input
+    type="date"
+    name="vehicleRegistrationExpirationDate"
+    value={
+      form.transportVerification.vehicleRegistrationExpirationDate
+    }
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          vehicleRegistrationExpirationDate: e.target.value,
+        },
+      }))
+    }
+  />
+</div>
   </section>
 )}
 
