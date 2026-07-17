@@ -1355,6 +1355,22 @@ const isBeautyListing =
       }))
     }
   />
+
+  <input
+  name="vehicleVin"
+  placeholder="Vehicle VIN"
+  value={form.transportVerification.vehicleVin}
+  onChange={(e) =>
+    setForm((prev) => ({
+      ...prev,
+      transportVerification: {
+        ...prev.transportVerification,
+        vehicleVin: e.target.value.toUpperCase(),
+      },
+    }))
+  }
+  maxLength={17}
+/>
 </div>
   </section>
 )}
