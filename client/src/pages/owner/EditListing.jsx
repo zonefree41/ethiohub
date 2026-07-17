@@ -14,6 +14,12 @@ export default function EditListing() {
 
   const [uploadingLogo, setUploadingLogo] = React.useState(false);
   const [uploadingBanner, setUploadingBanner] = React.useState(false);
+
+  const [uploadingDriverLicenseFront, setUploadingDriverLicenseFront] =
+  React.useState(false);
+
+const [uploadingDriverLicenseBack, setUploadingDriverLicenseBack] =
+  React.useState(false);
   const [uploadingPropertyPhotos, setUploadingPropertyPhotos] = React.useState(false);
   const [uploadingPropertyVideo, setUploadingPropertyVideo] = React.useState(false);
 
@@ -291,6 +297,56 @@ function removePropertyVideo() {
       setUploadingBanner(false);
     }
   }
+
+  async function handleDriverLicenseFrontUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setUploadingDriverLicenseFront(true);
+  setError("");
+  setMessage("");
+
+  try {
+    const url = await uploadSingleImage(file);
+
+    setForm((prev) => ({
+      ...prev,
+      transportVerification: {
+        ...prev.transportVerification,
+        driverLicenseFrontUrl: url,
+      },
+    }));
+  } catch (err) {
+    setError(err.message || "Driver license upload failed");
+  } finally {
+    setUploadingDriverLicenseFront(false);
+  }
+}
+
+async function handleDriverLicenseBackUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setUploadingDriverLicenseBack(true);
+  setError("");
+  setMessage("");
+
+  try {
+    const url = await uploadSingleImage(file);
+
+    setForm((prev) => ({
+      ...prev,
+      transportVerification: {
+        ...prev.transportVerification,
+        driverLicenseBackUrl: url,
+      },
+    }));
+  } catch (err) {
+    setError(err.message || "Driver license back upload failed");
+  } finally {
+    setUploadingDriverLicenseBack(false);
+  }
+}
 
   async function handlePropertyPhotosUpload(e) {
   const files = Array.from(e.target.files || []);
@@ -1149,6 +1205,88 @@ const isBeautyListing =
       }))
     }
   />
+</div>
+
+<div className="edit-listing-two-col">
+  <input
+    name="driverLicenseState"
+    placeholder="Driver License State"
+    value={form.transportVerification.driverLicenseState}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          driverLicenseState: e.target.value,
+        },
+      }))
+    }
+  />
+
+  <input
+    type="date"
+    name="driverLicenseExpirationDate"
+    value={form.transportVerification.driverLicenseExpirationDate}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          driverLicenseExpirationDate: e.target.value,
+        },
+      }))
+    }
+  />
+</div>
+
+<div className="edit-listing-two-col">
+  <div className="edit-listing-upload-card">
+    <label>Driver License Front</label>
+
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleDriverLicenseFrontUpload}
+    />
+
+    {uploadingDriverLicenseFront && (
+      <p className="edit-listing-uploading">
+        Uploading license front...
+      </p>
+    )}
+
+    {form.transportVerification.driverLicenseFrontUrl && (
+      <img
+        src={form.transportVerification.driverLicenseFrontUrl}
+        alt="Driver license front"
+        className="edit-listing-logo-preview"
+      />
+    )}
+  </div>
+
+  <div className="edit-listing-upload-card">
+    <label>Driver License Back</label>
+
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleDriverLicenseBackUpload}
+    />
+
+    {uploadingDriverLicenseBack && (
+      <p className="edit-listing-uploading">
+        Uploading license back...
+      </p>
+    )}
+
+    {form.transportVerification.driverLicenseBackUrl && (
+      <img
+        src={form.transportVerification.driverLicenseBackUrl}
+        alt="Driver license back"
+        className="edit-listing-logo-preview"
+      />
+    )}
+  </div>
 </div>
   </section>
 )}
