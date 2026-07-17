@@ -1280,9 +1280,7 @@ const isBeautyListing =
                 <input
   type="file"
   accept="image/*"
-  onChange={(e) =>
-    handleBeforeAfterImageUpload(e, index, "beforeUrl")
-  }
+  onChange={handleBannerUpload}
 />
 
                 {uploadingBanner && (
