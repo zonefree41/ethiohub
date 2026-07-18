@@ -1449,6 +1449,42 @@ const isBeautyListing =
     />
   )}
 </div>
+
+<hr />
+
+<h3>Commercial Insurance</h3>
+
+<div className="edit-listing-two-col">
+  <input
+    name="insuranceCompany"
+    placeholder="Insurance Company"
+    value={form.transportVerification.insuranceCompany}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          insuranceCompany: e.target.value,
+        },
+      }))
+    }
+  />
+
+  <input
+    name="insurancePolicyNumber"
+    placeholder="Policy Number"
+    value={form.transportVerification.insurancePolicyNumber}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          insurancePolicyNumber: e.target.value,
+        },
+      }))
+    }
+  />
+</div>
   </section>
 )}
 
