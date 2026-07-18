@@ -1684,6 +1684,57 @@ const isBeautyListing =
     </div>
   </>
 )}
+
+<hr />
+
+<h3>USDOT & MC Information</h3>
+
+<p style={{ color: "#6b7280", marginBottom: "18px" }}>
+  If your transportation business operates under a USDOT or MC number,
+  provide it below. If not, simply select the appropriate status.
+</p>
+
+<div className="edit-listing-two-col">
+  <div>
+    <label>USDOT Number</label>
+    <input
+      type="text"
+      value={form.transportVerification.usdotNumber || ""}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          transportVerification: {
+            ...form.transportVerification,
+            usdotNumber: e.target.value,
+          },
+        })
+      }
+      placeholder="Enter USDOT Number"
+    />
+  </div>
+
+  <div>
+    <label>USDOT Status</label>
+
+    <select
+      value={form.transportVerification.usdotStatus || ""}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          transportVerification: {
+            ...form.transportVerification,
+            usdotStatus: e.target.value,
+          },
+        })
+      }
+    >
+      <option value="">Select Status</option>
+      <option value="Active">Active</option>
+      <option value="Inactive">Inactive</option>
+      <option value="Not Applicable">Not Applicable</option>
+    </select>
+  </div>
+</div>
   </section>
 )}
 
