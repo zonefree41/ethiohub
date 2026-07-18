@@ -1,5 +1,5 @@
 import React from "react";
-import { apiGet, apiPatch } from "../../api/http.js";
+import { apiGet, apiPatch, apiPost } from "../../api/http.js";
 import "./EditListing.css";
 
 export default function EditListing() {
@@ -9,6 +9,9 @@ export default function EditListing() {
 
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
+
+  const [submittingVerification, setSubmittingVerification] =
+  React.useState(false);
   const [error, setError] = React.useState("");
   const [message, setMessage] = React.useState("");
 
@@ -777,6 +780,37 @@ transportVerification: {
 
     loadListing();
   }, [id]);
+
+  async function submitTransportVerification() {
+  try {
+    setSubmittingVerification(true);
+    setError("");
+    setMessage("");
+
+    const result = await apiPost(
+  `/api/owner/listings/${id}/submit-transport-verification`,
+  {},
+  token
+);
+
+setMessage(
+  result.message || "Transportation Verification submitted successfully."
+);
+
+setForm((prev) => ({
+  ...prev,
+  transportVerification: {
+    ...prev.transportVerification,
+    verificationStatus: result.verificationStatus,
+  },
+}));
+
+  } catch (err) {
+    setError(err.message || "Failed to submit Transportation Verification.");
+  } finally {
+    setSubmittingVerification(false);
+  }
+}
 
   async function submit(e) {
   e.preventDefault();
@@ -1867,8 +1901,12 @@ const isBeautyListing =
   type="button"
   className="edit-listing-submit"
   style={{ marginTop: "20px" }}
+  onClick={submitTransportVerification}
+  disabled={submittingVerification}
 >
-  Submit Transportation Verification
+  {submittingVerification
+    ? "Submitting..."
+    : "Submit Transportation Verification"}
 </button>
   </div>
 

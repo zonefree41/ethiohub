@@ -165,6 +165,47 @@ const ListingSchema = new mongoose.Schema(
     default: "",
   },
 
+  operatingAuthority: {
+  type: String,
+  enum: [
+    "Common Carrier",
+    "Contract Carrier",
+    "Broker",
+    "Freight Forwarder",
+    "Private Carrier",
+    "Not Applicable",
+    "",
+  ],
+  default: "",
+},
+
+operatingStatus: {
+  type: String,
+  enum: [
+    "Active",
+    "Inactive",
+    "Pending",
+    "",
+  ],
+  default: "",
+},
+
+ownerCertification: {
+  type: Boolean,
+  default: false,
+},
+
+verificationStatus: {
+  type: String,
+  enum: [
+    "Not Submitted",
+    "Pending Review",
+    "Approved",
+    "Rejected",
+  ],
+  default: "Not Submitted",
+},
+
   identityVerified: {
     type: Boolean,
     default: false,

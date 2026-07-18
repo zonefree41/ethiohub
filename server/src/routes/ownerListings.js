@@ -187,10 +187,14 @@ const allowedTransportVerificationFields = [
   "cargoCoverageAmount",
   "cargoInsuranceDocumentUrl",
 
-  "usdotStatus",
+    "usdotStatus",
   "usdotNumber",
   "mcStatus",
   "mcNumber",
+
+  "operatingAuthority",
+  "operatingStatus",
+  "ownerCertification",
 ];
 
 if (
@@ -206,8 +210,6 @@ if (
         typeof value === "string" ? value.trim() : value;
     }
   }
-
-  updates["transportVerification.verificationSubmittedAt"] = new Date();
 }
 
 
@@ -276,6 +278,7 @@ for (const field of verificationNumberFields) {
 const verificationBooleanFields = [
   "transportVerification.commercialDeliveryCovered",
   "transportVerification.hasCargoInsurance",
+  "transportVerification.ownerCertification",
 ];
 
 for (const field of verificationBooleanFields) {
@@ -493,6 +496,45 @@ if ("beautyServes" in updates) {
   } catch (err) {
     console.error("Owner listing update failed:", err);
     res.status(500).json({ message: "Failed to update listing" });
+  }
+});
+
+router.post("/:id/submit-transport-verification", async (req, res) => {
+  try {
+    const listing = await Listing.findOne({
+      _id: req.params.id,
+      ownerId: req.owner.id,
+    });
+
+    if (!listing) {
+      return res.status(404).json({
+        message: "Listing not found.",
+      });
+    }
+
+    if (
+      listing.transportVerification?.verificationStatus === "Pending Review"
+    ) {
+      return res.status(400).json({
+        message: "Transportation Verification is already pending review.",
+      });
+    }
+
+    listing.transportVerification.verificationStatus = "Pending Review";
+    listing.transportVerification.verificationSubmittedAt = new Date();
+
+    await listing.save();
+
+    res.json({
+      message: "Transportation Verification submitted successfully.",
+      verificationStatus:
+        listing.transportVerification.verificationStatus,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Failed to submit Transportation Verification.",
+    });
   }
 });
 
