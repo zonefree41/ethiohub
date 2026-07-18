@@ -1845,6 +1845,31 @@ const isBeautyListing =
     </span>
   </label>
 </div>
+
+<hr />
+
+<h3>Transportation Verification Status</h3>
+
+<div
+  style={{
+    background: "#f8fafc",
+    border: "1px solid #e5e7eb",
+    borderRadius: "14px",
+    padding: "18px",
+    marginTop: "16px",
+  }}
+>
+  <strong>Status:</strong>{" "}
+  {form.transportVerification?.verificationStatus || "Not Submitted"}
+</div>
+
+<button
+  type="button"
+  className="edit-listing-submit"
+  style={{ marginTop: "20px" }}
+>
+  Submit Transportation Verification
+</button>
   </div>
 
   <div>
