@@ -20,6 +20,9 @@ export default function EditListing() {
 
 const [uploadingDriverLicenseBack, setUploadingDriverLicenseBack] =
   React.useState(false);
+
+  const [uploadingVehicleRegistration, setUploadingVehicleRegistration] =
+  React.useState(false);
   const [uploadingPropertyPhotos, setUploadingPropertyPhotos] = React.useState(false);
   const [uploadingPropertyVideo, setUploadingPropertyVideo] = React.useState(false);
 
@@ -345,6 +348,31 @@ async function handleDriverLicenseBackUpload(e) {
     setError(err.message || "Driver license back upload failed");
   } finally {
     setUploadingDriverLicenseBack(false);
+  }
+}
+
+async function handleVehicleRegistrationUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setUploadingVehicleRegistration(true);
+  setError("");
+  setMessage("");
+
+  try {
+    const url = await uploadSingleImage(file);
+
+    setForm((prev) => ({
+      ...prev,
+      transportVerification: {
+        ...prev.transportVerification,
+        vehicleRegistrationUrl: url,
+      },
+    }));
+  } catch (err) {
+    setError(err.message || "Vehicle registration upload failed");
+  } finally {
+    setUploadingVehicleRegistration(false);
   }
 }
 
@@ -1374,22 +1402,52 @@ const isBeautyListing =
 </div>
 
 <div className="edit-listing-two-col">
+  <div>
+    <label>Registration Expiration Date</label>
+
+    <input
+      type="date"
+      name="vehicleRegistrationExpirationDate"
+      value={
+        form.transportVerification.vehicleRegistrationExpirationDate
+      }
+      onChange={(e) =>
+        setForm((prev) => ({
+          ...prev,
+          transportVerification: {
+            ...prev.transportVerification,
+            vehicleRegistrationExpirationDate: e.target.value,
+          },
+        }))
+      }
+    />
+  </div>
+</div>
+
+<div className="edit-listing-upload-card">
+  <label>Vehicle Registration</label>
+
+  <p>Upload a clear photo or scan of your current vehicle registration.</p>
+
   <input
-    type="date"
-    name="vehicleRegistrationExpirationDate"
-    value={
-      form.transportVerification.vehicleRegistrationExpirationDate
-    }
-    onChange={(e) =>
-      setForm((prev) => ({
-        ...prev,
-        transportVerification: {
-          ...prev.transportVerification,
-          vehicleRegistrationExpirationDate: e.target.value,
-        },
-      }))
-    }
+    type="file"
+    accept="image/*"
+    onChange={handleVehicleRegistrationUpload}
   />
+
+  {uploadingVehicleRegistration && (
+    <p className="edit-listing-uploading">
+      Uploading vehicle registration...
+    </p>
+  )}
+
+  {form.transportVerification.vehicleRegistrationUrl && (
+    <img
+      src={form.transportVerification.vehicleRegistrationUrl}
+      alt="Vehicle Registration"
+      className="edit-listing-logo-preview"
+    />
+  )}
 </div>
   </section>
 )}
