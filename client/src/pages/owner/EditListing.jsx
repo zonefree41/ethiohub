@@ -1582,6 +1582,34 @@ const isBeautyListing =
   </div>
 </div>
 
+<div className="edit-listing-upload-card">
+  <label>Commercial Insurance Document</label>
+
+  <p>
+    Upload your current commercial insurance certificate or policy document.
+  </p>
+
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleInsuranceDocumentUpload}
+  />
+
+  {uploadingInsuranceDocument && (
+    <p className="edit-listing-uploading">
+      Uploading insurance document...
+    </p>
+  )}
+
+  {form.transportVerification.insuranceDocumentUrl && (
+    <img
+      src={form.transportVerification.insuranceDocumentUrl}
+      alt="Insurance Document"
+      className="edit-listing-logo-preview"
+    />
+  )}
+</div>
+
 <hr />
 
 <h3>Cargo Insurance (Optional)</h3>
@@ -1656,35 +1684,6 @@ const isBeautyListing =
     </div>
   </>
 )}
-
-
-<div className="edit-listing-upload-card">
-  <label>Commercial Insurance Document</label>
-
-  <p>
-    Upload your current commercial insurance certificate or policy document.
-  </p>
-
-  <input
-    type="file"
-    accept="image/*"
-    onChange={handleInsuranceDocumentUpload}
-  />
-
-  {uploadingInsuranceDocument && (
-    <p className="edit-listing-uploading">
-      Uploading insurance document...
-    </p>
-  )}
-
-  {form.transportVerification.insuranceDocumentUrl && (
-    <img
-      src={form.transportVerification.insuranceDocumentUrl}
-      alt="Insurance Document"
-      className="edit-listing-logo-preview"
-    />
-  )}
-</div>
   </section>
 )}
 
