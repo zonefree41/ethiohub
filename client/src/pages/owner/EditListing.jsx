@@ -1550,7 +1550,7 @@ const isBeautyListing =
   Required for movers and freight carriers transporting customer property.
 </p>
 
-<div className="edit-listing-two-col">
+<div className="edit-listing-checkboxes">
   <label>
     <input
       type="checkbox"
@@ -1565,55 +1565,56 @@ const isBeautyListing =
         }))
       }
     />
-
     I have Cargo Insurance
   </label>
-
-  <input
-    type="number"
-    placeholder="Cargo Coverage Amount ($)"
-    value={form.transportVerification.cargoCoverageAmount}
-    onChange={(e) =>
-      setForm((prev) => ({
-        ...prev,
-        transportVerification: {
-          ...prev.transportVerification,
-          cargoCoverageAmount: e.target.value,
-        },
-      }))
-    }
-    disabled={!form.transportVerification.hasCargoInsurance}
-  />
 </div>
 
 {form.transportVerification.hasCargoInsurance && (
-  <div className="edit-listing-upload-card">
-    <label>Cargo Insurance Document</label>
-
-    <p>
-      Upload your current cargo insurance certificate or policy document.
-    </p>
-
+  <>
     <input
-      type="file"
-      accept="image/*"
-      onChange={handleCargoInsuranceDocumentUpload}
+      type="number"
+      min="0"
+      placeholder="Cargo Coverage Amount ($)"
+      value={form.transportVerification.cargoCoverageAmount}
+      onChange={(e) =>
+        setForm((prev) => ({
+          ...prev,
+          transportVerification: {
+            ...prev.transportVerification,
+            cargoCoverageAmount: e.target.value,
+          },
+        }))
+      }
     />
 
-    {uploadingCargoInsuranceDocument && (
-      <p className="edit-listing-uploading">
-        Uploading cargo insurance document...
-      </p>
-    )}
+    <div className="edit-listing-upload-card">
+      <label>Cargo Insurance Document</label>
 
-    {form.transportVerification.cargoInsuranceDocumentUrl && (
-      <img
-        src={form.transportVerification.cargoInsuranceDocumentUrl}
-        alt="Cargo Insurance Document"
-        className="edit-listing-logo-preview"
+      <p>
+        Upload your current cargo insurance certificate or policy document.
+      </p>
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleCargoInsuranceDocumentUpload}
       />
-    )}
-  </div>
+
+      {uploadingCargoInsuranceDocument && (
+        <p className="edit-listing-uploading">
+          Uploading cargo insurance document...
+        </p>
+      )}
+
+      {form.transportVerification.cargoInsuranceDocumentUrl && (
+        <img
+          src={form.transportVerification.cargoInsuranceDocumentUrl}
+          alt="Cargo Insurance Document"
+          className="edit-listing-logo-preview"
+        />
+      )}
+    </div>
+  </>
 )}
 
 <div className="edit-listing-two-col">
