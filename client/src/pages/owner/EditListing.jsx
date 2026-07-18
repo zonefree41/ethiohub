@@ -1542,6 +1542,46 @@ const isBeautyListing =
   />
 </div>
 
+<div className="edit-listing-two-col">
+  <select
+    name="insuranceCoverageType"
+    value={form.transportVerification.insuranceCoverageType}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          insuranceCoverageType: e.target.value,
+        },
+      }))
+    }
+  >
+    <option value="">Coverage Type</option>
+    <option value="commercial_auto">Commercial Auto</option>
+    <option value="general_liability">General Liability</option>
+    <option value="both">Commercial Auto + General Liability</option>
+  </select>
+
+  <div>
+    <label>Policy Expiration Date</label>
+
+    <input
+      type="date"
+      name="insuranceExpirationDate"
+      value={form.transportVerification.insuranceExpirationDate}
+      onChange={(e) =>
+        setForm((prev) => ({
+          ...prev,
+          transportVerification: {
+            ...prev.transportVerification,
+            insuranceExpirationDate: e.target.value,
+          },
+        }))
+      }
+    />
+  </div>
+</div>
+
 <hr />
 
 <h3>Cargo Insurance (Optional)</h3>
@@ -1617,45 +1657,6 @@ const isBeautyListing =
   </>
 )}
 
-<div className="edit-listing-two-col">
-  <select
-    name="insuranceCoverageType"
-    value={form.transportVerification.insuranceCoverageType}
-    onChange={(e) =>
-      setForm((prev) => ({
-        ...prev,
-        transportVerification: {
-          ...prev.transportVerification,
-          insuranceCoverageType: e.target.value,
-        },
-      }))
-    }
-  >
-    <option value="">Coverage Type</option>
-    <option value="commercial_auto">Commercial Auto</option>
-    <option value="general_liability">General Liability</option>
-    <option value="both">Commercial Auto + General Liability</option>
-  </select>
-
-  <div>
-    <label>Policy Expiration Date</label>
-
-    <input
-      type="date"
-      name="insuranceExpirationDate"
-      value={form.transportVerification.insuranceExpirationDate}
-      onChange={(e) =>
-        setForm((prev) => ({
-          ...prev,
-          transportVerification: {
-            ...prev.transportVerification,
-            insuranceExpirationDate: e.target.value,
-          },
-        }))
-      }
-    />
-  </div>
-</div>
 
 <div className="edit-listing-upload-card">
   <label>Commercial Insurance Document</label>
