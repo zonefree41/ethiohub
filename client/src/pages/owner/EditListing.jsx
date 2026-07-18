@@ -24,6 +24,9 @@ const [uploadingDriverLicenseBack, setUploadingDriverLicenseBack] =
   const [uploadingVehicleRegistration, setUploadingVehicleRegistration] =
   React.useState(false);
 
+  const [uploadingCargoInsuranceDocument, setUploadingCargoInsuranceDocument] =
+  React.useState(false);
+
   const [uploadingInsuranceDocument, setUploadingInsuranceDocument] =
   React.useState(false);
   const [uploadingPropertyPhotos, setUploadingPropertyPhotos] = React.useState(false);
@@ -401,6 +404,31 @@ async function handleInsuranceDocumentUpload(e) {
     setError(err.message || "Insurance document upload failed");
   } finally {
     setUploadingInsuranceDocument(false);
+  }
+}
+
+async function handleCargoInsuranceDocumentUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setUploadingCargoInsuranceDocument(true);
+  setError("");
+  setMessage("");
+
+  try {
+    const url = await uploadSingleImage(file);
+
+    setForm((prev) => ({
+      ...prev,
+      transportVerification: {
+        ...prev.transportVerification,
+        cargoInsuranceDocumentUrl: url,
+      },
+    }));
+  } catch (err) {
+    setError(err.message || "Cargo insurance document upload failed");
+  } finally {
+    setUploadingCargoInsuranceDocument(false);
   }
 }
 
@@ -1513,6 +1541,80 @@ const isBeautyListing =
     }
   />
 </div>
+
+<hr />
+
+<h3>Cargo Insurance (Optional)</h3>
+
+<p>
+  Required for movers and freight carriers transporting customer property.
+</p>
+
+<div className="edit-listing-two-col">
+  <label>
+    <input
+      type="checkbox"
+      checked={form.transportVerification.hasCargoInsurance}
+      onChange={(e) =>
+        setForm((prev) => ({
+          ...prev,
+          transportVerification: {
+            ...prev.transportVerification,
+            hasCargoInsurance: e.target.checked,
+          },
+        }))
+      }
+    />
+
+    I have Cargo Insurance
+  </label>
+
+  <input
+    type="number"
+    placeholder="Cargo Coverage Amount ($)"
+    value={form.transportVerification.cargoCoverageAmount}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          cargoCoverageAmount: e.target.value,
+        },
+      }))
+    }
+    disabled={!form.transportVerification.hasCargoInsurance}
+  />
+</div>
+
+{form.transportVerification.hasCargoInsurance && (
+  <div className="edit-listing-upload-card">
+    <label>Cargo Insurance Document</label>
+
+    <p>
+      Upload your current cargo insurance certificate or policy document.
+    </p>
+
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleCargoInsuranceDocumentUpload}
+    />
+
+    {uploadingCargoInsuranceDocument && (
+      <p className="edit-listing-uploading">
+        Uploading cargo insurance document...
+      </p>
+    )}
+
+    {form.transportVerification.cargoInsuranceDocumentUrl && (
+      <img
+        src={form.transportVerification.cargoInsuranceDocumentUrl}
+        alt="Cargo Insurance Document"
+        className="edit-listing-logo-preview"
+      />
+    )}
+  </div>
+)}
 
 <div className="edit-listing-two-col">
   <select
