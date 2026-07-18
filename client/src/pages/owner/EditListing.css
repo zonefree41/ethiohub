@@ -133,7 +133,8 @@
 }
 
 .edit-listing-form input,
-.edit-listing-form textarea {
+.edit-listing-form textarea,
+.edit-listing-form select {
   width: 100%;
   border: 1px solid #d1d5db;
   border-radius: 14px;
@@ -145,7 +146,8 @@
   color: #111827;
 }
 
-.edit-listing-form input {
+.edit-listing-form input,
+.edit-listing-form select {
   min-height: 50px;
 }
 
@@ -155,7 +157,8 @@
 }
 
 .edit-listing-form input:focus,
-.edit-listing-form textarea:focus {
+.edit-listing-form textarea:focus,
+.edit-listing-form select:focus {
   border-color: #f59e0b;
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22);
 }
