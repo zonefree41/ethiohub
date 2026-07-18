@@ -1112,18 +1112,18 @@
   background: #f9fafb;
   border-radius: 16px;
   padding: 14px;
+  color: #111827;
+}
+
+.listing-rental-item > div {
+  color: #111827 !important;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .listing-rental-item > span {
   font-size: 24px;
   line-height: 1;
-}
-
-.listing-rental-item strong {
-  display: block;
-  color: #111827;
-  font-size: 14px;
-  margin-bottom: 4px;
 }
 
 .listing-rental-item p {
