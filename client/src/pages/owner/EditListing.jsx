@@ -1897,17 +1897,26 @@ const isBeautyListing =
   {form.transportVerification?.verificationStatus || "Not Submitted"}
 </div>
 
-<button
-  type="button"
-  className="edit-listing-submit"
-  style={{ marginTop: "20px" }}
-  onClick={submitTransportVerification}
-  disabled={submittingVerification}
->
-  {submittingVerification
-    ? "Submitting..."
-    : "Submit Transportation Verification"}
-</button>
+{form.transportVerification?.verificationStatus === "Pending Review" ? (
+  <button
+    type="button"
+    className="edit-listing-submit"
+    disabled
+  >
+    ⏳ Pending Review
+  </button>
+) : (
+  <button
+    type="button"
+    className="edit-listing-submit"
+    onClick={submitTransportVerification}
+    disabled={submittingVerification}
+  >
+    {submittingVerification
+      ? "Submitting..."
+      : "Submit Transportation Verification"}
+  </button>
+)}
   </div>
 
   <div>
