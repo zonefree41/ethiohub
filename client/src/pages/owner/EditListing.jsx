@@ -1735,6 +1735,140 @@ const isBeautyListing =
     </select>
   </div>
 </div>
+
+<div className="edit-listing-two-col">
+  <div>
+    <label>MC Number</label>
+    <input
+      type="text"
+      value={form.transportVerification.mcNumber || ""}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          transportVerification: {
+            ...form.transportVerification,
+            mcNumber: e.target.value,
+          },
+        })
+      }
+      placeholder="Enter MC Number"
+    />
+  </div>
+
+  <div>
+    <label>MC Status</label>
+
+    <select
+      value={form.transportVerification.mcStatus || ""}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          transportVerification: {
+            ...form.transportVerification,
+            mcStatus: e.target.value,
+          },
+        })
+      }
+    >
+      <option value="">Select Status</option>
+      <option value="Active">Active</option>
+      <option value="Inactive">Inactive</option>
+      <option value="Pending">Pending</option>
+      <option value="Not Applicable">Not Applicable</option>
+    </select>
+  </div>
+</div>
+
+<div className="edit-listing-two-col">
+  <div>
+    <label>Operating Authority</label>
+
+    <select
+      value={form.transportVerification.operatingAuthority || ""}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          transportVerification: {
+            ...form.transportVerification,
+            operatingAuthority: e.target.value,
+          },
+        })
+      }
+    >
+      <option value="">Select Operating Authority</option>
+      <option value="Common Carrier">Common Carrier</option>
+      <option value="Contract Carrier">Contract Carrier</option>
+      <option value="Broker">Broker</option>
+      <option value="Freight Forwarder">Freight Forwarder</option>
+      <option value="Private Carrier">Private Carrier</option>
+      <option value="Not Applicable">Not Applicable</option>
+    </select>
+
+    <hr />
+
+<h3>Owner Verification Statement</h3>
+
+<p style={{ color: "#6b7280", marginBottom: "18px" }}>
+  Please review and certify that all information provided above is true,
+  accurate, and current.
+</p>
+
+<div className="edit-listing-upload-card">
+  <label
+    style={{
+      display: "flex",
+      alignItems: "flex-start",
+      gap: "12px",
+      cursor: "pointer",
+    }}
+  >
+    <input
+      type="checkbox"
+      checked={form.transportVerification.ownerCertification || false}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          transportVerification: {
+            ...form.transportVerification,
+            ownerCertification: e.target.checked,
+          },
+        })
+      }
+      style={{ marginTop: "4px" }}
+    />
+
+    <span>
+      I certify that all transportation, insurance, licensing, registration,
+      and operating authority information submitted is accurate to the best of
+      my knowledge. I understand that HubEthio may review these documents and
+      may approve or reject my Transportation Verification request.
+    </span>
+  </label>
+</div>
+  </div>
+
+  <div>
+    <label>Operating Status</label>
+
+    <select
+      value={form.transportVerification.operatingStatus || ""}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          transportVerification: {
+            ...form.transportVerification,
+            operatingStatus: e.target.value,
+          },
+        })
+      }
+    >
+      <option value="">Select Status</option>
+      <option value="Active">Active</option>
+      <option value="Inactive">Inactive</option>
+      <option value="Pending">Pending</option>
+    </select>
+  </div>
+</div>
   </section>
 )}
 
