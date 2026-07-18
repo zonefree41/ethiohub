@@ -23,6 +23,9 @@ const [uploadingDriverLicenseBack, setUploadingDriverLicenseBack] =
 
   const [uploadingVehicleRegistration, setUploadingVehicleRegistration] =
   React.useState(false);
+
+  const [uploadingInsuranceDocument, setUploadingInsuranceDocument] =
+  React.useState(false);
   const [uploadingPropertyPhotos, setUploadingPropertyPhotos] = React.useState(false);
   const [uploadingPropertyVideo, setUploadingPropertyVideo] = React.useState(false);
 
@@ -373,6 +376,31 @@ async function handleVehicleRegistrationUpload(e) {
     setError(err.message || "Vehicle registration upload failed");
   } finally {
     setUploadingVehicleRegistration(false);
+  }
+}
+
+async function handleInsuranceDocumentUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setUploadingInsuranceDocument(true);
+  setError("");
+  setMessage("");
+
+  try {
+    const url = await uploadSingleImage(file);
+
+    setForm((prev) => ({
+      ...prev,
+      transportVerification: {
+        ...prev.transportVerification,
+        insuranceDocumentUrl: url,
+      },
+    }));
+  } catch (err) {
+    setError(err.message || "Insurance document upload failed");
+  } finally {
+    setUploadingInsuranceDocument(false);
   }
 }
 
@@ -1484,6 +1512,74 @@ const isBeautyListing =
       }))
     }
   />
+</div>
+
+<div className="edit-listing-two-col">
+  <select
+    name="insuranceCoverageType"
+    value={form.transportVerification.insuranceCoverageType}
+    onChange={(e) =>
+      setForm((prev) => ({
+        ...prev,
+        transportVerification: {
+          ...prev.transportVerification,
+          insuranceCoverageType: e.target.value,
+        },
+      }))
+    }
+  >
+    <option value="">Coverage Type</option>
+    <option value="commercial_auto">Commercial Auto</option>
+    <option value="general_liability">General Liability</option>
+    <option value="both">Commercial Auto + General Liability</option>
+  </select>
+
+  <div>
+    <label>Policy Expiration Date</label>
+
+    <input
+      type="date"
+      name="insuranceExpirationDate"
+      value={form.transportVerification.insuranceExpirationDate}
+      onChange={(e) =>
+        setForm((prev) => ({
+          ...prev,
+          transportVerification: {
+            ...prev.transportVerification,
+            insuranceExpirationDate: e.target.value,
+          },
+        }))
+      }
+    />
+  </div>
+</div>
+
+<div className="edit-listing-upload-card">
+  <label>Commercial Insurance Document</label>
+
+  <p>
+    Upload your current commercial insurance certificate or policy document.
+  </p>
+
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleInsuranceDocumentUpload}
+  />
+
+  {uploadingInsuranceDocument && (
+    <p className="edit-listing-uploading">
+      Uploading insurance document...
+    </p>
+  )}
+
+  {form.transportVerification.insuranceDocumentUrl && (
+    <img
+      src={form.transportVerification.insuranceDocumentUrl}
+      alt="Insurance Document"
+      className="edit-listing-logo-preview"
+    />
+  )}
 </div>
   </section>
 )}
