@@ -294,6 +294,14 @@ async function deleteBusinessRequest(id, businessName) {
             <button type="button" onClick={() => { load(); loadClaims(); }}>
               Refresh
             </button>
+
+          <a
+  href="/admin/transportation-verification"
+  className="admin-btn-transport"
+>
+  🚚 Transportation Verification
+</a>
+
             <button type="button" onClick={logout}>
               Logout
             </button>

@@ -535,3 +535,29 @@
   border: 1px solid #e5e7eb;
   background: #f8fafc;
 }
+
+.admin-btn-transport {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 20px;
+
+  white-space: nowrap;
+
+  background: #ffffff;
+  color: #111827;
+
+  border-radius: 12px;
+  border: none;
+
+  font-weight: 600;
+  text-decoration: none;
+
+  transition: all .2s ease;
+}
+
+.admin-btn-transport:hover {
+  background: #f3f4f6;
+  transform: translateY(-1px);
+}

@@ -5,6 +5,7 @@ import Submit from "./pages/Submit.jsx";
 import Listing from "./pages/Listing.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
+import AdminTransportationVerification from "./pages/admin/AdminTransportationVerification.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PaymentCancelled from "./pages/PaymentCancelled.jsx";
 import OwnerLogin from "./pages/owner/OwnerLogin.jsx";
@@ -48,7 +49,12 @@ export default function App() {
 }, [path]);
 
   if (path.startsWith("/admin/login")) return <AdminLogin />;
-  if (path.startsWith("/admin")) return <AdminDashboard />;
+
+if (path.startsWith("/admin/transportation-verification")) {
+  return <AdminTransportationVerification />;
+}
+
+if (path.startsWith("/admin")) return <AdminDashboard />;
 
   if (path.startsWith("/owner/login")) return <OwnerLogin />;
 if (path.startsWith("/owner/register")) return <OwnerRegister />;

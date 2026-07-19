@@ -65,6 +65,36 @@ router.get("/submissions", requireAdmin, async (req, res) => {
   }
 });
 
+// Transportation Verification Requests
+router.get(
+  "/transportation-verification",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const requests = await Listing.find({
+        "transportVerification.verificationStatus": "Pending Review",
+      })
+        .populate("categoryId")
+        .populate("ownerId", "name email")
+        .sort({
+          "transportVerification.verificationSubmittedAt": -1,
+        });
+
+      res.json(requests);
+    } catch (err) {
+      console.error(
+        "Failed to load transportation verification requests:",
+        err
+      );
+
+      res.status(500).json({
+        message:
+          "Failed to load transportation verification requests",
+      });
+    }
+  }
+);
+
 
 // Approve / reject / edit listing
 router.patch("/listings/:id", requireAdmin, async (req, res) => {
