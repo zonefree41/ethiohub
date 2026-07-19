@@ -1,7 +1,6 @@
 import React from "react";
 import { apiGet } from "../../api/http.js";
 import "./AdminTransportationVerification.css";
-import "./AdminTransportationVerification.css";
 
 export default function AdminTransportationVerification() {
     const token = localStorage.getItem("adminToken");
@@ -9,6 +8,7 @@ export default function AdminTransportationVerification() {
 const [requests, setRequests] = React.useState([]);
 const [loading, setLoading] = React.useState(true);
 const [error, setError] = React.useState("");
+const [selectedRequest, setSelectedRequest] = React.useState(null);
 
 React.useEffect(() => {
   async function loadRequests() {
@@ -145,9 +145,13 @@ React.useEffect(() => {
           </div>
 
           <div className="transport-review-actions">
-            <button className="btn-view">
-              View Details
-            </button>
+            <button
+  type="button"
+  className="btn-view"
+  onClick={() => setSelectedRequest(listing)}
+>
+  View Details
+</button>
 
             <button className="btn-approve">
               Approve
@@ -160,6 +164,268 @@ React.useEffect(() => {
         </div>
       );
     })}
+  </div>
+)}
+
+{selectedRequest && (
+  <div
+    className="transport-modal-overlay"
+    onClick={() => setSelectedRequest(null)}
+  >
+    <div
+      className="transport-modal"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="transport-modal-header">
+        <div>
+          <p className="transport-modal-label">
+            Transportation Verification Review
+          </p>
+
+          <h2>{selectedRequest.title}</h2>
+        </div>
+
+        <button
+          type="button"
+          className="transport-modal-close"
+          onClick={() => setSelectedRequest(null)}
+          aria-label="Close verification details"
+        >
+          ×
+        </button>
+      </div>
+
+      {(() => {
+        const tv =
+          selectedRequest.transportVerification || {};
+
+        return (
+          <>
+            <section className="transport-detail-section">
+              <h3>Owner Information</h3>
+
+              <div className="transport-detail-grid">
+                <div>
+                  <strong>Owner</strong>
+                  <p>
+                    {selectedRequest.ownerId?.name ||
+                      selectedRequest.submittedBy?.name ||
+                      "-"}
+                  </p>
+                </div>
+
+                <div>
+                  <strong>Email</strong>
+                  <p>
+                    {selectedRequest.ownerId?.email ||
+                      selectedRequest.submittedBy?.contact ||
+                      "-"}
+                  </p>
+                </div>
+
+                <div>
+                  <strong>Submitted</strong>
+                  <p>
+                    {tv.verificationSubmittedAt
+                      ? new Date(
+                          tv.verificationSubmittedAt
+                        ).toLocaleString()
+                      : "-"}
+                  </p>
+                </div>
+
+                <div>
+                  <strong>Status</strong>
+                  <p>{tv.verificationStatus || "-"}</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="transport-detail-section">
+              <h3>Driver Information</h3>
+
+              <div className="transport-detail-grid">
+                <div>
+                  <strong>Driver Name</strong>
+                  <p>{tv.driverFullName || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>License Number</strong>
+                  <p>{tv.driverLicenseNumber || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>License State</strong>
+                  <p>{tv.driverLicenseState || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>Driver Verified</strong>
+                  <p>{tv.driverVerified ? "Yes" : "No"}</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="transport-detail-section">
+              <h3>Vehicle Information</h3>
+
+              <div className="transport-detail-grid">
+                <div>
+                  <strong>Vehicle</strong>
+                  <p>
+                    {[tv.vehicleMake, tv.vehicleModel]
+                      .filter(Boolean)
+                      .join(" ") || "-"}
+                  </p>
+                </div>
+
+                <div>
+                  <strong>License Plate</strong>
+                  <p>{tv.vehicleLicensePlate || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>VIN</strong>
+                  <p>{tv.vehicleVin || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>Vehicle Verified</strong>
+                  <p>{tv.vehicleVerified ? "Yes" : "No"}</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="transport-detail-section">
+              <h3>Operating Authority</h3>
+
+              <div className="transport-detail-grid">
+                <div>
+                  <strong>USDOT Number</strong>
+                  <p>{tv.usdotNumber || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>MC Number</strong>
+                  <p>{tv.mcNumber || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>Operating Authority</strong>
+                  <p>{tv.operatingAuthority || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>Operating Status</strong>
+                  <p>{tv.operatingStatus || "-"}</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="transport-detail-section">
+              <h3>Insurance Information</h3>
+
+              <div className="transport-detail-grid">
+                <div>
+                  <strong>Has Insurance</strong>
+                  <p>{tv.hasCargoInsurance ? "Yes" : "No"}</p>
+                </div>
+
+                <div>
+                  <strong>Insurance Company</strong>
+                  <p>{tv.insuranceCompany || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>Policy Number</strong>
+                  <p>{tv.insurancePolicyNumber || "-"}</p>
+                </div>
+
+                <div>
+                  <strong>Coverage Type</strong>
+                  <p>{tv.insuranceCoverageType || "-"}</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="transport-detail-section">
+              <h3>Documents</h3>
+
+              <div className="transport-document-list">
+                {[
+                  {
+                    label: "Driver License — Front",
+                    url: tv.driverLicenseFrontUrl,
+                  },
+                  {
+                    label: "Driver License — Back",
+                    url: tv.driverLicenseBackUrl,
+                  },
+                  {
+                    label: "Vehicle Registration",
+                    url: tv.vehicleRegistrationUrl,
+                  },
+                  {
+                    label: "Insurance Document",
+                    url: tv.insuranceDocumentUrl,
+                  },
+                  {
+                    label: "Cargo Insurance Document",
+                    url: tv.cargoInsuranceDocumentUrl,
+                  },
+                ].map((document) => (
+                  <div
+                    key={document.label}
+                    className="transport-document-row"
+                  >
+                    <span>{document.label}</span>
+
+                    {document.url ? (
+                      <a
+                        href={document.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open Document
+                      </a>
+                    ) : (
+                      <span className="transport-document-missing">
+                        Not provided
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <div className="transport-modal-actions">
+              <button
+                type="button"
+                className="btn-approve"
+              >
+                Approve
+              </button>
+
+              <button
+                type="button"
+                className="btn-reject"
+              >
+                Reject
+              </button>
+
+              <button
+                type="button"
+                className="btn-modal-cancel"
+                onClick={() => setSelectedRequest(null)}
+              >
+                Close
+              </button>
+            </div>
+          </>
+        );
+      })()}
+    </div>
   </div>
 )}
 

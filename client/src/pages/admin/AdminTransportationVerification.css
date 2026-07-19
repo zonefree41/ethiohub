@@ -74,3 +74,142 @@
   background:#DC2626;
   color:white;
 }
+
+.transport-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.transport-modal {
+  width: min(950px, 100%);
+  background: #fff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+}
+
+.transport-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 26px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.transport-modal-header h2 {
+  margin: 4px 0 0;
+}
+
+.transport-modal-label {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.transport-modal-close {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #111827;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.transport-detail-section {
+  margin-bottom: 28px;
+}
+
+.transport-detail-section h3 {
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.transport-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.transport-detail-grid > div {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.transport-detail-grid p {
+  margin: 7px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.transport-document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transport-document-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.transport-document-row a {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.transport-document-missing {
+  color: #9ca3af;
+}
+
+.transport-modal-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 22px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-modal-cancel {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: #e5e7eb;
+  color: #111827;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .transport-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .transport-modal {
+    padding: 20px;
+  }
+
+  .transport-document-row,
+  .transport-modal-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
