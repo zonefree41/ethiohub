@@ -95,6 +95,92 @@ router.get(
   }
 );
 
+// Approve Transportation Verification
+router.patch(
+  "/transportation-verification/:id/approve",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const listing = await Listing.findById(req.params.id);
+
+      if (!listing) {
+        return res.status(404).json({
+          message: "Listing not found",
+        });
+      }
+
+      listing.transportVerification = {
+        ...listing.transportVerification,
+        verificationStatus: "Approved",
+        verifiedAt: new Date(),
+        verifiedBy: req.user.id,
+      };
+
+      // Transportation businesses receive the verified badge
+      listing.isVerified = true;
+
+      await listing.save();
+
+      res.json({
+        message: "Transportation Verification approved successfully.",
+        listing,
+      });
+    } catch (err) {
+      console.error(
+        "Approve transportation verification failed:",
+        err
+      );
+
+      res.status(500).json({
+        message: "Failed to approve transportation verification.",
+      });
+    }
+  }
+);
+
+// Reject Transportation Verification
+router.patch(
+  "/transportation-verification/:id/reject",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const listing = await Listing.findById(req.params.id);
+
+      if (!listing) {
+        return res.status(404).json({
+          message: "Listing not found",
+        });
+      }
+
+      listing.transportVerification = {
+        ...listing.transportVerification,
+        verificationStatus: "Rejected",
+        rejectedAt: new Date(),
+        rejectedBy: req.user.id,
+      };
+
+      // Remove verified badge if previously granted
+      listing.isVerified = false;
+
+      await listing.save();
+
+      res.json({
+        message: "Transportation Verification rejected.",
+        listing,
+      });
+    } catch (err) {
+      console.error(
+        "Reject transportation verification failed:",
+        err
+      );
+
+      res.status(500).json({
+        message: "Failed to reject transportation verification.",
+      });
+    }
+  }
+);
+
 
 // Approve / reject / edit listing
 router.patch("/listings/:id", requireAdmin, async (req, res) => {
