@@ -1,5 +1,5 @@
 import React from "react";
-import { apiGet } from "../../api/http.js";
+import { apiGet, apiPatch } from "../../api/http.js";
 import "./AdminTransportationVerification.css";
 
 export default function AdminTransportationVerification() {
@@ -9,6 +9,9 @@ const [requests, setRequests] = React.useState([]);
 const [loading, setLoading] = React.useState(true);
 const [error, setError] = React.useState("");
 const [selectedRequest, setSelectedRequest] = React.useState(null);
+
+const [processingId, setProcessingId] = React.useState("");
+const [message, setMessage] = React.useState("");
 
 React.useEffect(() => {
   async function loadRequests() {
@@ -31,6 +34,82 @@ React.useEffect(() => {
 
   loadRequests();
 }, []);
+
+async function handleApprove(listingId) {
+  const confirmed = window.confirm(
+    "Are you sure you want to approve this Transportation Verification?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setProcessingId(listingId);
+    setError("");
+    setMessage("");
+
+    const result = await apiPatch(
+      `/api/admin/transportation-verification/${listingId}/approve`,
+      {},
+      token
+    );
+
+    setRequests((prev) =>
+      prev.filter((listing) => listing._id !== listingId)
+    );
+
+    setSelectedRequest(null);
+
+    setMessage(
+      result.message ||
+        "Transportation Verification approved successfully."
+    );
+  } catch (err) {
+    setError(
+      err.message ||
+        "Failed to approve Transportation Verification."
+    );
+  } finally {
+    setProcessingId("");
+  }
+}
+
+async function handleReject(listingId) {
+  const confirmed = window.confirm(
+    "Are you sure you want to reject this Transportation Verification?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setProcessingId(listingId);
+    setError("");
+    setMessage("");
+
+    const result = await apiPatch(
+      `/api/admin/transportation-verification/${listingId}/reject`,
+      {},
+      token
+    );
+
+    setRequests((prev) =>
+      prev.filter((listing) => listing._id !== listingId)
+    );
+
+    setSelectedRequest(null);
+
+    setMessage(
+      result.message ||
+        "Transportation Verification rejected."
+    );
+  } catch (err) {
+    setError(
+      err.message ||
+        "Failed to reject Transportation Verification."
+    );
+  } finally {
+    setProcessingId("");
+  }
+}
 
   return (
     <main className="admin-dashboard-page">
@@ -69,6 +148,12 @@ React.useEffect(() => {
 {!loading && error && (
   <section className="admin-dashboard-error">
     Error: {error}
+  </section>
+)}
+
+{!loading && message && (
+  <section className="admin-dashboard-success">
+    {message}
   </section>
 )}
 
@@ -153,13 +238,27 @@ React.useEffect(() => {
   View Details
 </button>
 
-            <button className="btn-approve">
-              Approve
-            </button>
+            <button
+  type="button"
+  className="btn-approve"
+  onClick={() => handleApprove(listing._id)}
+  disabled={processingId === listing._id}
+>
+  {processingId === listing._id
+    ? "Processing..."
+    : "Approve"}
+</button>
 
-            <button className="btn-reject">
-              Reject
-            </button>
+<button
+  type="button"
+  className="btn-reject"
+  onClick={() => handleReject(listing._id)}
+  disabled={processingId === listing._id}
+>
+  {processingId === listing._id
+    ? "Processing..."
+    : "Reject"}
+</button>
           </div>
         </div>
       );
@@ -401,18 +500,26 @@ React.useEffect(() => {
 
             <div className="transport-modal-actions">
               <button
-                type="button"
-                className="btn-approve"
-              >
-                Approve
-              </button>
+  type="button"
+  className="btn-approve"
+  onClick={() => handleApprove(selectedRequest._id)}
+  disabled={processingId === selectedRequest._id}
+>
+  {processingId === selectedRequest._id
+    ? "Processing..."
+    : "Approve"}
+</button>
 
-              <button
-                type="button"
-                className="btn-reject"
-              >
-                Reject
-              </button>
+<button
+  type="button"
+  className="btn-reject"
+  onClick={() => handleReject(selectedRequest._id)}
+  disabled={processingId === selectedRequest._id}
+>
+  {processingId === selectedRequest._id
+    ? "Processing..."
+    : "Reject"}
+</button>
 
               <button
                 type="button"
