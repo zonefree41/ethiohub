@@ -1,1 +1,76 @@
 @import "./AdminDashboard.css";
+
+.transport-review-list{
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  margin-top:32px;
+}
+
+.transport-review-card{
+  background:#fff;
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.transport-review-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:24px;
+}
+
+.transport-review-header h2{
+  margin:0 0 8px;
+}
+
+.transport-status{
+  padding:8px 14px;
+  border-radius:999px;
+  font-weight:700;
+}
+
+.transport-status.pending{
+  background:#FEF3C7;
+  color:#92400E;
+}
+
+.transport-review-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+
+.transport-review-grid p{
+  margin-top:6px;
+}
+
+.transport-review-actions{
+  display:flex;
+  gap:12px;
+  margin-top:28px;
+}
+
+.transport-review-actions button{
+  border:none;
+  border-radius:10px;
+  padding:12px 18px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.btn-view{
+  background:#2563EB;
+  color:white;
+}
+
+.btn-approve{
+  background:#16A34A;
+  color:white;
+}
+
+.btn-reject{
+  background:#DC2626;
+  color:white;
+}
