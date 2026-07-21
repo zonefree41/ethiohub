@@ -82,7 +82,7 @@ async function handleReject(listingId, reason = "") {
     setError("");
     setMessage("");
 
-    await apiPatch(
+    const result = await apiPatch(
   `/api/admin/transportation-verification/${listingId}/reject`,
   {
     rejectionReason: reason,
