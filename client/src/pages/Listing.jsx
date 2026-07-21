@@ -1261,87 +1261,35 @@ document.title = seoTitle;
 )}
 
 
-            <div className="listing-actions">
-              <button type="button" className="listing-save-btn" onClick={toggleFavorite}>
-                {isSaved ? "Saved ❤️" : "Save Business 🤍"}
-              </button>
-
-              <button type="button" className="listing-share-btn" onClick={shareBusiness}>
-                Share 🔗
-              </button>
-
-              {phone && (
-                <a
-                  href={`tel:${phone}`}
-                  onClick={() => trackListingAction("call", "call_click")}
-                >
-                  Call
-                </a>
-              )}
-
-              {whatsapp && (
-                <a
-                  href={`https://wa.me/${whatsapp}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => trackListingAction("whatsapp", "whatsapp_click")}
-                >
-                  WhatsApp
-                </a>
-              )}
-
-              {address && (
-                <a
-                  href={directionsUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => trackListingAction("directions", "directions_click")}
-                >
-                  Directions
-                </a>
-              )}
-
-              {listing.website && (
-                <a
-                  href={websiteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => trackListingAction("website", "website_click")}
-                >
-                  Website
-                </a>
-              )}
-
-              <div className="listing-actions">
+           <div className="listing-actions">
 
   {isTransportationListing && listing.ownerId && (
     <button
       type="button"
       className="listing-quote-btn"
       onClick={() => {
-        setQuoteMessage("");
-        setQuoteError("");
+  setQuoteMessage("");
+  setQuoteError("");
 
-        setQuoteForm((prev) => ({
-          ...prev,
-          serviceType: [
-            "Furniture Delivery",
-            "Package Delivery",
-            "Moving Service",
-            "Airport Transportation",
-            "Freight Delivery",
-          ].includes(listing.subcategory)
-            ? listing.subcategory
-            : "Other",
-        }));
+  setQuoteForm((prev) => ({
+    ...prev,
+    serviceType: [
+      "Furniture Delivery",
+      "Package Delivery",
+      "Moving Service",
+      "Airport Transportation",
+      "Freight Delivery",
+    ].includes(listing.subcategory)
+      ? listing.subcategory
+      : "Other",
+  }));
 
-        setIsQuoteModalOpen(true);
-      }}
+  setIsQuoteModalOpen(true);
+}}
     >
       🚚 Request a Quote
     </button>
   )}
-
   <button
     type="button"
     className="listing-save-btn"
@@ -1350,9 +1298,35 @@ document.title = seoTitle;
     {isSaved ? "Saved ❤️" : "Save Business 🤍"}
   </button>
 
-  ...
+  <button
+    type="button"
+    className="listing-share-btn"
+    onClick={shareBusiness}
+  >
+    Share 🔗
+  </button>
+
+  {phone && (
+    <a href={`tel:${phone}`} className="listing-contact-btn">
+      📞 Call
+    </a>
+  )}
+  {whatsapp && (
+    <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="listing-contact-btn">
+      💬 WhatsApp
+    </a>
+  )}
+  {address && (
+    <a href={`https://maps.google.com/?q=${encodeURIComponent(address)}`} target="_blank" rel="noreferrer" className="listing-contact-btn">
+      📍 Location
+    </a>
+  )}
+  {listing.website && (
+    <a href={listing.website} target="_blank" rel="noreferrer" className="listing-contact-btn">
+      🌐 Website
+    </a>
+  )}
 </div>
-            </div>
 
             <div className="listing-nearby">
               <h2>Nearby Businesses</h2>
