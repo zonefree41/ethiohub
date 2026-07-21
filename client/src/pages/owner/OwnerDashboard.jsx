@@ -327,14 +327,9 @@ function getTrialDaysLeft(value) {
       Transportation Verification again.
     </p>
   </div>
-)}
-
-    <p>
-      Your Transportation Verification was not approved. Please
-      review your documents and submit again.
-    </p>
+    )}
   </div>
-)}
+                        )}
 
                         <div className="owner-subscription-card">
   <h3>Subscription Status</h3>
