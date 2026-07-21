@@ -268,6 +268,50 @@ function getTrialDaysLeft(value) {
                           {listing.categoryId?.name_en || "N/A"}
                         </p>
 
+                        {listing.transportVerification?.verificationStatus && (
+  <div className="owner-transport-verification-card">
+
+    <h3>🚚 Transportation Verification</h3>
+
+    {listing.transportVerification.verificationStatus ===
+      "Pending Review" && (
+      <div className="owner-transport-status pending">
+        <strong>🟡 Pending Review</strong>
+
+        <p>
+          Your Transportation Verification has been submitted and is
+          currently under review by the HubEthio Admin Team.
+        </p>
+      </div>
+    )}
+
+    {listing.transportVerification.verificationStatus ===
+      "Approved" && (
+      <div className="owner-transport-status approved">
+        <strong>🟢 Approved</strong>
+
+        <p>
+          Congratulations! Your Transportation Verification has been
+          approved and your transportation business is verified.
+        </p>
+      </div>
+    )}
+
+    {listing.transportVerification.verificationStatus ===
+      "Rejected" && (
+      <div className="owner-transport-status rejected">
+        <strong>🔴 Rejected</strong>
+
+        <p>
+          Your Transportation Verification was not approved. Please
+          review your documents and submit again.
+        </p>
+      </div>
+    )}
+
+  </div>
+)}
+
                         <div className="owner-subscription-card">
   <h3>Subscription Status</h3>
 

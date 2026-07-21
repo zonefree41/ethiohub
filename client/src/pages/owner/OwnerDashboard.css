@@ -763,3 +763,56 @@
 .owner-trial-upgrade-btn:hover {
   background: #15803d;
 }
+
+/* ================================
+   Transportation Verification
+================================ */
+
+.owner-transport-verification-card {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.owner-transport-verification-card h3 {
+  margin: 0 0 14px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.owner-transport-status {
+  padding: 14px 16px;
+  border-radius: 10px;
+  border-left: 5px solid;
+}
+
+.owner-transport-status strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.owner-transport-status p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.owner-transport-status.pending {
+  background: #fff8e1;
+  border-color: #f59e0b;
+  color: #92400e;
+}
+
+.owner-transport-status.approved {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+.owner-transport-status.rejected {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #991b1b;
+}
