@@ -520,8 +520,16 @@ router.post("/:id/submit-transport-verification", async (req, res) => {
       });
     }
 
-    listing.transportVerification.verificationStatus = "Pending Review";
-    listing.transportVerification.verificationSubmittedAt = new Date();
+    listing.transportVerification = {
+  ...listing.transportVerification,
+
+  verificationStatus: "Pending Review",
+  verificationSubmittedAt: new Date(),
+
+  rejectionReason: "",
+  rejectedAt: null,
+  rejectedBy: null,
+};
 
     await listing.save();
 
