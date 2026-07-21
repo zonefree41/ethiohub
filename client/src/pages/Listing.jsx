@@ -47,6 +47,31 @@ const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
   const [claimMessage, setClaimMessage] = React.useState("");
   const [claimError, setClaimError] = React.useState("");
 
+  const [isQuoteModalOpen, setIsQuoteModalOpen] =
+  React.useState(false);
+
+const [quoteSubmitting, setQuoteSubmitting] =
+  React.useState(false);
+
+const [quoteMessage, setQuoteMessage] =
+  React.useState("");
+
+const [quoteError, setQuoteError] =
+  React.useState("");
+
+const [quoteForm, setQuoteForm] = React.useState({
+  customerName: "",
+  customerEmail: "",
+  customerPhone: "",
+  pickupAddress: "",
+  deliveryAddress: "",
+  requestedDate: "",
+  requestedTime: "",
+  serviceType: "Other",
+  cargoDetails: "",
+  cargoPhotos: [],
+});
+
   React.useEffect(() => {
     if (!isValidListingId) {
       setError("Invalid listing page.");
@@ -212,6 +237,15 @@ function prevLightboxPhoto() {
     }));
   }
 
+  function updateQuoteForm(e) {
+  const { name, value } = e.target;
+
+  setQuoteForm((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+}
+
   function nextPhoto() {
   if (!Array.isArray(listing?.propertyImages)) return;
 
@@ -328,6 +362,62 @@ function prevPhoto() {
       setClaimError(err.message || "Failed to submit claim request.");
     }
   }
+
+  async function submitQuoteRequest(e) {
+  e.preventDefault();
+
+  setQuoteSubmitting(true);
+  setQuoteMessage("");
+  setQuoteError("");
+
+  try {
+    await apiPost("/api/transportation-requests", {
+      listingId: listing._id,
+
+      customerName: quoteForm.customerName,
+      customerEmail: quoteForm.customerEmail,
+      customerPhone: quoteForm.customerPhone,
+
+      pickupAddress: quoteForm.pickupAddress,
+      deliveryAddress: quoteForm.deliveryAddress,
+
+      requestedDate: quoteForm.requestedDate,
+      requestedTime: quoteForm.requestedTime,
+
+      serviceType: quoteForm.serviceType,
+      cargoDetails: quoteForm.cargoDetails,
+
+      cargoPhotos: [],
+    });
+
+    setQuoteMessage(
+      "✅ Your quote request has been sent successfully."
+    );
+
+    setQuoteForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      pickupAddress: "",
+      deliveryAddress: "",
+      requestedDate: "",
+      requestedTime: "",
+      serviceType: "Other",
+      cargoDetails: "",
+      cargoPhotos: [],
+    });
+
+    setTimeout(() => {
+      setIsQuoteModalOpen(false);
+    }, 1500);
+  } catch (err) {
+    setQuoteError(
+      err.message || "Failed to submit quote request."
+    );
+  } finally {
+    setQuoteSubmitting(false);
+  }
+}
 
   function trackListingAction(type, eventName) {
     if (!listing?._id) return;
@@ -1221,6 +1311,47 @@ document.title = seoTitle;
                   Website
                 </a>
               )}
+
+              <div className="listing-actions">
+
+  {isTransportationListing && listing.ownerId && (
+    <button
+      type="button"
+      className="listing-quote-btn"
+      onClick={() => {
+        setQuoteMessage("");
+        setQuoteError("");
+
+        setQuoteForm((prev) => ({
+          ...prev,
+          serviceType: [
+            "Furniture Delivery",
+            "Package Delivery",
+            "Moving Service",
+            "Airport Transportation",
+            "Freight Delivery",
+          ].includes(listing.subcategory)
+            ? listing.subcategory
+            : "Other",
+        }));
+
+        setIsQuoteModalOpen(true);
+      }}
+    >
+      🚚 Request a Quote
+    </button>
+  )}
+
+  <button
+    type="button"
+    className="listing-save-btn"
+    onClick={toggleFavorite}
+  >
+    {isSaved ? "Saved ❤️" : "Save Business 🤍"}
+  </button>
+
+  ...
+</div>
             </div>
 
             <div className="listing-nearby">
@@ -1390,6 +1521,175 @@ document.title = seoTitle;
             </div>
           </div>
         </section>
+
+        {isQuoteModalOpen && (
+  <div
+    className="listing-quote-modal-overlay"
+    onClick={() => setIsQuoteModalOpen(false)}
+  >
+    <div
+      className="listing-quote-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        type="button"
+        className="listing-quote-modal-close"
+        onClick={() => setIsQuoteModalOpen(false)}
+      >
+        ×
+      </button>
+
+      <h2>🚚 Request a Transportation Quote</h2>
+
+      <p className="listing-quote-modal-subtitle">
+        Send your service request directly to {listing.title}.
+      </p>
+
+      {quoteMessage && (
+        <div className="listing-review-success">
+          {quoteMessage}
+        </div>
+      )}
+
+      {quoteError && (
+        <div className="listing-review-error">
+          {quoteError}
+        </div>
+      )}
+
+      <form
+  className="listing-quote-form"
+  onSubmit={submitQuoteRequest}
+>
+        <div className="listing-quote-grid">
+          <label>
+            Your Name
+            <input
+              type="text"
+              name="customerName"
+              value={quoteForm.customerName}
+              onChange={updateQuoteForm}
+              required
+            />
+          </label>
+
+          <label>
+            Phone Number
+            <input
+              type="tel"
+              name="customerPhone"
+              value={quoteForm.customerPhone}
+              onChange={updateQuoteForm}
+              required
+            />
+          </label>
+
+          <label>
+            Email Address
+            <input
+              type="email"
+              name="customerEmail"
+              value={quoteForm.customerEmail}
+              onChange={updateQuoteForm}
+            />
+          </label>
+
+          <label>
+            Service Type
+            <select
+              name="serviceType"
+              value={quoteForm.serviceType}
+              onChange={updateQuoteForm}
+            >
+              <option value="Furniture Delivery">
+                Furniture Delivery
+              </option>
+              <option value="Package Delivery">
+                Package Delivery
+              </option>
+              <option value="Moving Service">
+                Moving Service
+              </option>
+              <option value="Airport Transportation">
+                Airport Transportation
+              </option>
+              <option value="Freight Delivery">
+                Freight Delivery
+              </option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+
+          <label className="listing-quote-full-width">
+            Pickup Address
+            <input
+              type="text"
+              name="pickupAddress"
+              value={quoteForm.pickupAddress}
+              onChange={updateQuoteForm}
+              required
+            />
+          </label>
+
+          <label className="listing-quote-full-width">
+            Delivery Address
+            <input
+              type="text"
+              name="deliveryAddress"
+              value={quoteForm.deliveryAddress}
+              onChange={updateQuoteForm}
+              required
+            />
+          </label>
+
+          <label>
+            Requested Date
+            <input
+              type="date"
+              name="requestedDate"
+              value={quoteForm.requestedDate}
+              onChange={updateQuoteForm}
+              min={new Date().toISOString().split("T")[0]}
+              required
+            />
+          </label>
+
+          <label>
+            Requested Time
+            <input
+              type="time"
+              name="requestedTime"
+              value={quoteForm.requestedTime}
+              onChange={updateQuoteForm}
+            />
+          </label>
+
+          <label className="listing-quote-full-width">
+            Cargo Details
+            <textarea
+              name="cargoDetails"
+              value={quoteForm.cargoDetails}
+              onChange={updateQuoteForm}
+              rows="5"
+              placeholder="Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
+              required
+            />
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          className="listing-quote-submit-btn"
+          disabled={quoteSubmitting}
+        >
+          {quoteSubmitting
+            ? "Submitting..."
+            : "Submit Quote Request"}
+        </button>
+      </form>
+    </div>
+  </div>
+)}
         {isLightboxOpen && lightboxImages.length > 0 && (
   <div className="listing-lightbox" onClick={closeLightbox}>
     <button

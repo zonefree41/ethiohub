@@ -20,6 +20,7 @@ import stripeCheckoutRoutes from "./routes/stripeCheckout.js";
 import claimRoutes from "./routes/claimRoutes.js";
 import businessRequestRoutes from "./routes/businessRequestRoutes.js";
 import { startMonthlyPerformanceCron } from "./jobs/monthlyPerformanceCron.js";
+import transportationRequestsRoutes from "./routes/transportationRequests.js";
 import { expireTrials } from "./utils/expireTrials.js";
 import { sendTrialReminderEmails } from "./jobs/sendTrialReminderEmails.js";
 import { startDailyJobs } from "./jobs/dailyJobs.js";
@@ -48,6 +49,11 @@ const authLimiter = rateLimit({
     message: "Too many login attempts. Please try again later.",
   },
 });
+
+app.use(
+  "/api/transportation-requests",
+  transportationRequestsRoutes
+);
 
 /*
 |--------------------------------------------------------------------------
