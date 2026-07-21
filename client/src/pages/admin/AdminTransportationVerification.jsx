@@ -10,6 +10,9 @@ const [loading, setLoading] = React.useState(true);
 const [error, setError] = React.useState("");
 const [selectedRequest, setSelectedRequest] = React.useState(null);
 
+const [rejectionReason, setRejectionReason] = React.useState("");
+const [rejectingRequest, setRejectingRequest] = React.useState(null);
+
 const [processingId, setProcessingId] = React.useState("");
 const [message, setMessage] = React.useState("");
 
@@ -73,23 +76,19 @@ async function handleApprove(listingId) {
   }
 }
 
-async function handleReject(listingId) {
-  const confirmed = window.confirm(
-    "Are you sure you want to reject this Transportation Verification?"
-  );
-
-  if (!confirmed) return;
-
+async function handleReject(listingId, reason = "") {
   try {
     setProcessingId(listingId);
     setError("");
     setMessage("");
 
-    const result = await apiPatch(
-      `/api/admin/transportation-verification/${listingId}/reject`,
-      {},
-      token
-    );
+    await apiPatch(
+  `/api/admin/transportation-verification/${listingId}/reject`,
+  {
+    rejectionReason: reason,
+  },
+  token
+);
 
     setRequests((prev) =>
       prev.filter((listing) => listing._id !== listingId)
@@ -252,7 +251,10 @@ async function handleReject(listingId) {
 <button
   type="button"
   className="btn-reject"
-  onClick={() => handleReject(listing._id)}
+  onClick={() => {
+  setRejectingRequest(listing);
+  setRejectionReason("");
+}}
   disabled={processingId === listing._id}
 >
   {processingId === listing._id
@@ -532,6 +534,100 @@ async function handleReject(listingId) {
           </>
         );
       })()}
+    </div>
+  </div>
+)}
+
+{rejectingRequest && (
+  <div
+    className="transport-modal-overlay"
+    onClick={() => {
+      setRejectingRequest(null);
+      setRejectionReason("");
+    }}
+  >
+    <div
+      className="transport-rejection-modal"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="transport-modal-header">
+        <div>
+          <p className="transport-modal-label">
+            Reject Transportation Verification
+          </p>
+
+          <h2>{rejectingRequest.title}</h2>
+        </div>
+
+        <button
+          type="button"
+          className="transport-modal-close"
+          onClick={() => {
+            setRejectingRequest(null);
+            setRejectionReason("");
+          }}
+          aria-label="Close rejection dialog"
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="transport-rejection-content">
+        <label htmlFor="transport-rejection-reason">
+          Reason for rejection
+        </label>
+
+        <textarea
+          id="transport-rejection-reason"
+          value={rejectionReason}
+          onChange={(event) =>
+            setRejectionReason(event.target.value)
+          }
+          placeholder="Example: Insurance document has expired or vehicle registration is unreadable."
+          rows="5"
+          maxLength="500"
+        />
+
+        <p className="transport-rejection-help">
+          This reason will be shown to the business owner.
+        </p>
+      </div>
+
+      <div className="transport-modal-actions">
+        <button
+          type="button"
+          className="btn-reject"
+          disabled={
+            processingId === rejectingRequest._id ||
+            !rejectionReason.trim()
+          }
+          onClick={async () => {
+            await handleReject(
+              rejectingRequest._id,
+              rejectionReason.trim()
+            );
+
+            setRejectingRequest(null);
+            setRejectionReason("");
+          }}
+        >
+          {processingId === rejectingRequest._id
+            ? "Rejecting..."
+            : "Reject Verification"}
+        </button>
+
+        <button
+          type="button"
+          className="btn-modal-cancel"
+          disabled={processingId === rejectingRequest._id}
+          onClick={() => {
+            setRejectingRequest(null);
+            setRejectionReason("");
+          }}
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   </div>
 )}

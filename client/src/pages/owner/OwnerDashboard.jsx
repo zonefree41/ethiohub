@@ -298,17 +298,41 @@ function getTrialDaysLeft(value) {
     )}
 
     {listing.transportVerification.verificationStatus ===
-      "Rejected" && (
-      <div className="owner-transport-status rejected">
-        <strong>🔴 Rejected</strong>
+  "Rejected" && (
+  <div className="owner-transport-status rejected">
+    <strong>🔴 Rejected</strong>
 
+     <p>
+      Your Transportation Verification was not approved.
+    </p>
+
+    {listing.transportVerification.rejectionReason ? (
+      <>
         <p>
-          Your Transportation Verification was not approved. Please
-          review your documents and submit again.
+          <strong>Reason:</strong>
         </p>
-      </div>
+
+        <p className="owner-transport-reason">
+          {listing.transportVerification.rejectionReason}
+        </p>
+      </>
+    ) : (
+      <p>
+        Please review your documents and submit again.
+      </p>
     )}
 
+    <p>
+      After correcting the issue, update your documents and submit your
+      Transportation Verification again.
+    </p>
+  </div>
+)}
+
+    <p>
+      Your Transportation Verification was not approved. Please
+      review your documents and submit again.
+    </p>
   </div>
 )}
 

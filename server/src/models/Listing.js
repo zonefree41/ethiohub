@@ -22,6 +22,13 @@ const ListingSchema = new mongoose.Schema(
     default: "",
   },
 
+  rejectionReason: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+
+
   driverLicenseNumber: {
     type: String,
     trim: true,

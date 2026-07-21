@@ -816,3 +816,15 @@
   border-color: #ef4444;
   color: #991b1b;
 }
+
+.owner-transport-reason {
+  margin: 12px 0;
+  padding: 12px 16px;
+  background: #fff7ed;
+  border-left: 4px solid #f97316;
+  border-radius: 8px;
+  color: #9a3412;
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

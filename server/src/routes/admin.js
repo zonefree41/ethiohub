@@ -110,11 +110,15 @@ router.patch(
       }
 
       listing.transportVerification = {
-        ...listing.transportVerification,
-        verificationStatus: "Approved",
-        verifiedAt: new Date(),
-        verifiedBy: req.admin.id,
-      };
+  ...listing.transportVerification,
+  verificationStatus: "Approved",
+  verifiedAt: new Date(),
+  verifiedBy: req.admin.id,
+
+  rejectedAt: null,
+  rejectedBy: null,
+  rejectionReason: "",
+};
 
       // Transportation businesses receive the verified badge
       listing.isVerified = true;
@@ -153,11 +157,16 @@ router.patch(
       }
 
       listing.transportVerification = {
-        ...listing.transportVerification,
-        verificationStatus: "Rejected",
-        rejectedAt: new Date(),
-        rejectedBy: req.admin.id,
-      };
+  ...listing.transportVerification,
+
+  verificationStatus: "Rejected",
+
+  rejectedAt: new Date(),
+  rejectedBy: req.admin.id,
+
+  rejectionReason:
+    req.body.rejectionReason?.trim() || "",
+};
 
       // Remove verified badge if previously granted
       listing.isVerified = false;
