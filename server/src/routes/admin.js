@@ -113,7 +113,7 @@ router.patch(
         ...listing.transportVerification,
         verificationStatus: "Approved",
         verifiedAt: new Date(),
-        verifiedBy: req.user.id,
+        verifiedBy: req.admin.id,
       };
 
       // Transportation businesses receive the verified badge
@@ -156,7 +156,7 @@ router.patch(
         ...listing.transportVerification,
         verificationStatus: "Rejected",
         rejectedAt: new Date(),
-        rejectedBy: req.user.id,
+        rejectedBy: req.admin.id,
       };
 
       // Remove verified badge if previously granted
