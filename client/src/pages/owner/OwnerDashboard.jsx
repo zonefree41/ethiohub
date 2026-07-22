@@ -10,6 +10,9 @@ export default function OwnerDashboard() {
   const [loading, setLoading] = React.useState(true);
   const [ownerSearch, setOwnerSearch] = React.useState("");
 
+  const [transportationRequests, setTransportationRequests] = React.useState([]);
+const [loadingRequests, setLoadingRequests] = React.useState(false);
+
   React.useEffect(() => {
     document.title = "Owner Dashboard | HubEthio";
   }, []);
@@ -29,14 +32,36 @@ export default function OwnerDashboard() {
     }
   }
 
+  async function loadTransportationRequests() {
+  try {
+    setLoadingRequests(true);
+
+    const data = await apiGet(
+      "/api/transportation-requests/owner",
+      token
+    );
+
+    setTransportationRequests(Array.isArray(data) ? data : []);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoadingRequests(false);
+  }
+}
+
   React.useEffect(() => {
+  async function fetchData() {
     if (!token) {
       window.location.href = "/owner/login";
       return;
     }
 
-    loadListings();
-  }, []);
+    await loadListings();
+    await loadTransportationRequests();
+  }
+
+  fetchData();
+}, []);
 
   async function claimListing(id) {
     try {
@@ -523,6 +548,62 @@ function getTrialDaysLeft(value) {
                 ))}
               </section>
             )}
+
+            <section className="owner-transport-requests-section">
+  <h2>🚚 Transportation Requests</h2>
+
+  {loadingRequests ? (
+    <p>Loading transportation requests...</p>
+  ) : transportationRequests.length === 0 ? (
+    <p>No transportation requests yet.</p>
+  ) : (
+    <div className="owner-transport-requests-list">
+      {transportationRequests.map((request) => (
+        <div
+          key={request._id}
+          className="owner-transport-request-card"
+        >
+          <h3>{request.customerName}</h3>
+
+          <p>
+            <strong>Business:</strong>{" "}
+            {request.listingId?.title || "N/A"}
+          </p>
+
+          <p>
+            <strong>Service:</strong>{" "}
+            {request.serviceType}
+          </p>
+
+          <p>
+            <strong>Pickup:</strong>{" "}
+            {request.pickupAddress}
+          </p>
+
+          <p>
+            <strong>Delivery:</strong>{" "}
+            {request.deliveryAddress}
+          </p>
+
+          <p>
+            <strong>Date:</strong>{" "}
+            {formatDate(request.requestedDate)}
+          </p>
+
+          <p>
+            <strong>Phone:</strong>{" "}
+            {request.customerPhone}
+          </p>
+
+          <p>
+            <strong>Status:</strong>{" "}
+            {request.status}
+          </p>
+        </div>
+      ))}
+    </div>
+  )}
+</section>
           </>
         )}
       </div>

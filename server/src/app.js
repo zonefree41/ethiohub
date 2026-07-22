@@ -50,10 +50,6 @@ const authLimiter = rateLimit({
   },
 });
 
-app.use(
-  "/api/transportation-requests",
-  transportationRequestsRoutes
-);
 
 /*
 |--------------------------------------------------------------------------
@@ -125,7 +121,14 @@ app.use("/api/owner/listings", ownerListingRoutes);
 app.use("/api/stripe", stripeCheckoutRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
+
+app.use(
+  "/api/transportation-requests",
+  transportationRequestsRoutes
+);
+
 app.use("/", sitemapRoutes);
+
 /*
 |--------------------------------------------------------------------------
 | Start Server

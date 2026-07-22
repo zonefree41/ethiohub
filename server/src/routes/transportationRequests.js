@@ -2,6 +2,7 @@ import express from "express";
 import Listing from "../models/Listing.js";
 import TransportationRequest from "../models/TransportationRequest.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { requireOwner } from "../middleware/ownerAuth.js";
 
 const router = express.Router();
 
@@ -245,6 +246,27 @@ router.post("/", async (req, res) => {
 
     res.status(500).json({
       message: "Failed to submit transportation quote request.",
+    });
+  }
+});
+
+router.get("/owner", requireOwner, async (req, res) => {
+  try {
+    const requests = await TransportationRequest.find({
+      ownerId: req.owner.id,
+    })
+      .populate(
+        "listingId",
+        "title city state subcategory imageUrl logoUrl"
+      )
+      .sort({ createdAt: -1 });
+
+    res.json(requests);
+  } catch (err) {
+    console.error("Load owner transportation requests failed:", err);
+
+    res.status(500).json({
+      message: "Failed to load transportation requests.",
     });
   }
 });
