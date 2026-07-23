@@ -6,6 +6,7 @@ import Listing from "./pages/Listing.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminTransportationVerification from "./pages/admin/AdminTransportationVerification.jsx";
+import OwnerTransportationDashboard from "./pages/owner/OwnerTransportationDashboard.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PaymentCancelled from "./pages/PaymentCancelled.jsx";
 import OwnerLogin from "./pages/owner/OwnerLogin.jsx";
@@ -62,6 +63,9 @@ if (path.startsWith("/owner/forgot-password")) return <ForgotPassword />;
 if (path.startsWith("/owner/reset-password/")) return <ResetPassword />;
 if (path.startsWith("/owner/listings/edit/")) return <EditListing />;
 if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
+if (path.startsWith("/owner/transportation")) {
+  return <OwnerTransportationDashboard />;
+}
 if (path.startsWith("/listing/")) return <Listing />;
 
   if (path.startsWith("/submit")) return <><Submit /><Footer /></>;

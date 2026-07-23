@@ -157,11 +157,21 @@ function getTrialDaysLeft(value) {
           </div>
 
           <div className="owner-dashboard-header-actions">
-            <a href="/submit">Submit New Listing</a>
-            <button type="button" onClick={logout}>
-              Logout
-            </button>
-          </div>
+  <a href="/submit">
+    Submit New Listing
+  </a>
+
+  <a href="/owner/transportation">
+    🚚 Transportation Requests
+  </a>
+
+  <button
+    type="button"
+    onClick={logout}
+  >
+    Logout
+  </button>
+</div>
         </header>
 
         {error && <div className="owner-dashboard-error">Error: {error}</div>}
