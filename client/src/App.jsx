@@ -24,6 +24,8 @@ import Pricing from "./pages/Pricing.jsx";
 import Location from "./pages/Location.jsx";
 import Saved from "./pages/Saved.jsx";
 import { trackPageView } from "./utils/analytics.js";
+import TransportationQuotePage
+  from "./pages/TransportationQuotePage.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -44,6 +46,9 @@ function usePath() {
 
 export default function App() {
   const path = usePath();
+
+  const transportationQuoteMatch =
+  path.match(/^\/transportation-quote\/([^/]+)$/);
   
   React.useEffect(() => {
   trackPageView(path);
@@ -83,6 +88,16 @@ if (path.startsWith("/terms")) return <><Terms /><Footer /></>;
 if (path.startsWith("/contact")) return <><Contact /><Footer /></>;
 if (path.startsWith("/delete-data")) return <><DeleteData /><Footer /></>;
 if (path.startsWith("/saved")) return <><Saved /><Footer /></>;
+
+if (transportationQuoteMatch) {
+  const quoteToken = transportationQuoteMatch[1];
+
+  return (
+    <TransportationQuotePage
+      quoteToken={quoteToken}
+    />
+  );
+}
 
 return <><Home /><Footer /></>;
 }
