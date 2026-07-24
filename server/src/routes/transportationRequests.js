@@ -269,6 +269,75 @@ router.get("/owner", requireOwner, async (req, res) => {
   }
 });
 
+router.get("/quote/:token", async (req, res) => {
+  try {
+    const token = cleanText(req.params.token);
+
+    if (!token || !/^[a-f0-9]{64}$/i.test(token)) {
+      return res.status(400).json({
+        message: "This transportation quote link is invalid.",
+      });
+    }
+
+    const request = await TransportationRequest.findOne({
+      quoteAccessToken: token,
+    }).populate("listingId", "title");
+
+    if (!request) {
+      return res.status(404).json({
+        message:
+          "This transportation quote could not be found.",
+      });
+    }
+
+    if (
+      !request.quoteAccessTokenExpiresAt ||
+      request.quoteAccessTokenExpiresAt < new Date()
+    ) {
+      return res.status(410).json({
+        message:
+          "This transportation quote link has expired.",
+      });
+    }
+
+    res.json({
+      id: request._id,
+
+      businessName:
+        request.listingId?.title ||
+        "Transportation Provider",
+
+      customerName: request.customerName,
+      serviceType: request.serviceType,
+
+      pickupAddress: request.pickupAddress,
+      deliveryAddress: request.deliveryAddress,
+
+      requestedDate: request.requestedDate,
+      requestedTime: request.requestedTime,
+
+      cargoDetails: request.cargoDetails,
+
+      quoteAmount: request.quoteAmount,
+      estimatedArrival: request.estimatedArrival,
+      ownerNotes: request.ownerNotes,
+
+      status: request.status,
+      quotedAt: request.quotedAt,
+    });
+  } catch (error) {
+    console.error(
+      "Load transportation quote failed:",
+      error
+    );
+
+    res.status(500).json({
+      message:
+        "Failed to load transportation quote.",
+    });
+  }
+});
+
 router.patch("/:id/status", requireOwner, async (req, res) => {
   try {
     const {
