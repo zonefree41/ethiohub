@@ -1,5 +1,5 @@
 import React from "react";
-import { apiGet } from "../../api/http.js";
+import { apiGet, apiPatch } from "../../api/http.js";
 import "./OwnerTransportationDashboard.css";
 
 export default function OwnerTransportationDashboard() {
@@ -10,6 +10,11 @@ export default function OwnerTransportationDashboard() {
   const [error, setError] = React.useState("");
   const [selectedStatus, setSelectedStatus] = React.useState("All");
   const [selectedRequest, setSelectedRequest] = React.useState(null);
+  const [modalStatus, setModalStatus] = React.useState("New");
+
+  const [quoteAmount, setQuoteAmount] = React.useState("");
+const [estimatedArrival, setEstimatedArrival] = React.useState("");
+const [ownerNotes, setOwnerNotes] = React.useState("");
 
   React.useEffect(() => {
     document.title = "Transportation Requests | HubEthio";
@@ -213,9 +218,15 @@ const filteredRequests =
                     <h2>{request.customerName}</h2>
                   </div>
 
-                  <span className="owner-transport-status">
-                    {request.status || "New"}
-                  </span>
+                  <span
+  className={`owner-transport-status status-${(
+    request.status || "New"
+  )
+    .toLowerCase()
+    .replace(/\s+/g, "-")}`}
+>
+  {request.status || "New"}
+</span>
                 </div>
 
                 <div className="owner-transport-route">
@@ -254,7 +265,10 @@ const filteredRequests =
 
                 <button
   type="button"
-  onClick={() => setSelectedRequest(request)}
+  onClick={() => {
+    setSelectedRequest(request);
+    setModalStatus(request.status || "New");
+  }}
 >
   View Details
 </button>
@@ -287,8 +301,162 @@ const filteredRequests =
               </div>
 
               <div className="owner-transport-modal-body">
-                <p>Request details will appear here.</p>
-              </div>
+  <div className="owner-transport-modal-section">
+    <h3>Customer Information</h3>
+
+    <p>
+      <strong>Name:</strong>{" "}
+      {selectedRequest.customerName || "Not provided"}
+    </p>
+
+    <p>
+      <strong>Phone:</strong>{" "}
+      {selectedRequest.customerPhone || "Not provided"}
+    </p>
+
+    <p>
+      <strong>Email:</strong>{" "}
+      {selectedRequest.customerEmail || "Not provided"}
+    </p>
+  </div>
+
+  <div className="owner-transport-modal-section">
+    <h3>Transportation Details</h3>
+
+    <p>
+      <strong>Service:</strong>{" "}
+      {selectedRequest.serviceType || "Not specified"}
+    </p>
+
+    <p>
+      <strong>Pickup:</strong>{" "}
+      {selectedRequest.pickupAddress || "Not provided"}
+    </p>
+
+    <p>
+      <strong>Delivery:</strong>{" "}
+      {selectedRequest.deliveryAddress || "Not provided"}
+    </p>
+
+    <p>
+      <strong>Requested Date:</strong>{" "}
+      {formatDate(selectedRequest.requestedDate)}
+    </p>
+
+    <p>
+      <strong>Requested Time:</strong>{" "}
+      {selectedRequest.requestedTime || "Not specified"}
+    </p>
+  </div>
+
+  <div className="owner-transport-modal-section">
+    <h3>Additional Information</h3>
+
+    <div className="owner-transport-modal-actions">
+  <button
+  type="button"
+  className="owner-transport-save-btn"
+  onClick={async () => {
+    try {
+      const updated = await apiPatch(
+        `/api/transportation-requests/${selectedRequest._id}/status`,
+        {
+          status: modalStatus,
+        },
+        token
+      );
+
+      setRequests((current) =>
+        current.map((request) =>
+          request._id === updated.request._id
+            ? updated.request
+            : request
+        )
+      );
+
+      setSelectedRequest(updated.request);
+
+      alert("Status updated successfully!");
+    } catch (err) {
+      alert(
+        err.message ||
+          "Failed to update transportation status."
+      );
+    }
+  }}
+>
+  💾 Save Status
+</button>
+</div>
+
+    <p>
+      <strong>Business:</strong>{" "}
+      {selectedRequest.listingId?.title || "N/A"}
+    </p>
+
+    <div className="owner-transport-modal-field">
+  <label>
+    <strong>Status</strong>
+  </label>
+
+  <select
+    value={modalStatus}
+    onChange={(e) => setModalStatus(e.target.value)}
+  >
+    <option value="New">New</option>
+    <option value="Quoted">Quoted</option>
+    <option value="Accepted">Accepted</option>
+    <option value="In Progress">In Progress</option>
+    <option value="Completed">Completed</option>
+    <option value="Cancelled">Cancelled</option>
+  </select>
+</div>
+
+{modalStatus === "Quoted" && (
+  <div className="owner-transport-quote-box">
+    <h3>💰 Quote Details</h3>
+
+    <div className="owner-transport-modal-field">
+      <label>Quote Amount ($)</label>
+
+      <input
+        type="number"
+        placeholder="Enter quote amount"
+        value={quoteAmount}
+        onChange={(e) => setQuoteAmount(e.target.value)}
+      />
+    </div>
+
+    <div className="owner-transport-modal-field">
+      <label>Estimated Arrival</label>
+
+      <input
+        type="text"
+        placeholder="Example: Tomorrow 9:00 AM"
+        value={estimatedArrival}
+        onChange={(e) => setEstimatedArrival(e.target.value)}
+      />
+    </div>
+
+    <div className="owner-transport-modal-field">
+      <label>Owner Notes</label>
+
+      <textarea
+        rows="4"
+        placeholder="Add notes for the customer..."
+        value={ownerNotes}
+        onChange={(e) => setOwnerNotes(e.target.value)}
+      />
+    </div>
+  </div>
+)}
+
+    <p>
+      <strong>Notes:</strong>{" "}
+      {selectedRequest.notes || "No additional notes"}
+    </p>
+  </div>
+</div>
             </div>
           </div>
         )}

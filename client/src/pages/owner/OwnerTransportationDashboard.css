@@ -106,6 +106,46 @@
   font-weight: 800;
 }
 
+/* ============================
+   Status Colors
+============================ */
+
+.status-new {
+  background: #dcfce7;
+  color: #166534;
+  border-left: 4px solid #16a34a;
+}
+
+.status-quoted {
+  background: #fef3c7;
+  color: #92400e;
+  border-left: 4px solid #f59e0b;
+}
+
+.status-accepted {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-left: 4px solid #2563eb;
+}
+
+.status-in-progress {
+  background: #ffedd5;
+  color: #c2410c;
+  border-left: 4px solid #ea580c;
+}
+
+.status-completed {
+  background: #dcfce7;
+  color: #15803d;
+  border-left: 4px solid #22c55e;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-left: 4px solid #ef4444;
+}
+
 .owner-transport-route,
 .owner-transport-details {
   margin-top: 18px;
@@ -265,4 +305,26 @@
 
 .owner-transport-modal-close:hover {
   color: #ef4444;
+}
+
+.owner-transport-modal-actions {
+  margin-top: 28px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.owner-transport-save-btn {
+  background: #0f766e;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.owner-transport-save-btn:hover {
+  background: #115e59;
 }

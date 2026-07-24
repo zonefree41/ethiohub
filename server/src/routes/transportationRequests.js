@@ -271,4 +271,59 @@ router.get("/owner", requireOwner, async (req, res) => {
   }
 });
 
+router.patch("/:id/status", requireOwner, async (req, res) => {
+  try {
+    const allowedStatuses = [
+      "New",
+      "Quoted",
+      "Accepted",
+      "In Progress",
+      "Completed",
+      "Cancelled",
+    ];
+
+    const { status } = req.body;
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        message: "Invalid transportation status.",
+      });
+    }
+
+    const request = await TransportationRequest.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        ownerId: req.owner.id,
+      },
+      {
+        $set: { status },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).populate(
+      "listingId",
+      "title city state subcategory imageUrl logoUrl"
+    );
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Transportation request not found.",
+      });
+    }
+
+    res.json({
+      success: true,
+      request,
+    });
+  } catch (err) {
+    console.error("Transportation status update error:", err);
+
+    res.status(500).json({
+      message: "Failed to update transportation status.",
+    });
+  }
+});
+
 export default router;

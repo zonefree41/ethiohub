@@ -109,6 +109,26 @@ const transportationRequestSchema = new mongoose.Schema(
       index: true,
     },
 
+    quoteAmount: {
+  type: Number,
+  default: null,
+},
+
+estimatedArrival: {
+  type: String,
+  default: "",
+},
+
+ownerNotes: {
+  type: String,
+  default: "",
+},
+
+quotedAt: {
+  type: Date,
+  default: null,
+},
+
     ownerNotes: {
       type: String,
       trim: true,
