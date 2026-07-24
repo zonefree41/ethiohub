@@ -95,32 +95,37 @@ const transportationRequestSchema = new mongoose.Schema(
       default: "Other",
     },
 
-    status: {
-      type: String,
-      enum: [
-        "New",
-        "Contacted",
-        "Quoted",
-        "Accepted",
-        "Completed",
-        "Declined",
-      ],
-      default: "New",
-      index: true,
-    },
+  status: {
+  type: String,
+  enum: [
+    "New",
+    "Quoted",
+    "Accepted",
+    "In Progress",
+    "Completed",
+    "Cancelled",
+  ],
+  default: "New",
+  index: true,
+},
 
-    quoteAmount: {
+quoteAmount: {
   type: Number,
+  min: 0,
   default: null,
 },
 
 estimatedArrival: {
   type: String,
+  trim: true,
+  maxlength: 200,
   default: "",
 },
 
 ownerNotes: {
   type: String,
+  trim: true,
+  maxlength: 2000,
   default: "",
 },
 
@@ -128,19 +133,6 @@ quotedAt: {
   type: Date,
   default: null,
 },
-
-    ownerNotes: {
-      type: String,
-      trim: true,
-      maxlength: 2000,
-      default: "",
-    },
-
-    quotedAmount: {
-      type: Number,
-      min: 0,
-      default: null,
-    },
 
     ownerEmailSentAt: {
       type: Date,

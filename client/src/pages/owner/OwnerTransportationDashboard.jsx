@@ -426,25 +426,36 @@ const filteredRequests =
   className="owner-transport-save-btn"
   onClick={async () => {
     try {
+      console.log({
+  status: modalStatus,
+  quoteAmount,
+  estimatedArrival,
+  ownerNotes,
+});
+
       const updated = await apiPatch(
-        `/api/transportation-requests/${selectedRequest._id}/status`,
-        {
-          status: modalStatus,
-        },
-        token
-      );
+  `/api/transportation-requests/${selectedRequest._id}/status`,
+  {
+    status: modalStatus,
+    quoteAmount,
+    estimatedArrival,
+    ownerNotes,
+  },
+  token
+);
 
       setRequests((current) =>
-        current.map((request) =>
-          request._id === updated.request._id
-            ? updated.request
-            : request
-        )
-      );
+  current.map((request) =>
+    request._id === updated._id
+      ? updated
+      : request
+  )
+);
 
-      setSelectedRequest(updated.request);
+setSelectedRequest(updated);
 
       alert("Status updated successfully!");
+      setSelectedRequest(null);
     } catch (err) {
       alert(
         err.message ||

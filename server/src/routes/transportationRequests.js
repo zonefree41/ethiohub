@@ -255,15 +255,12 @@ router.get("/owner", requireOwner, async (req, res) => {
     const requests = await TransportationRequest.find({
       ownerId: req.owner.id,
     })
-      .populate(
-        "listingId",
-        "title city state subcategory imageUrl logoUrl"
-      )
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .populate("listingId", "title");
 
     res.json(requests);
-  } catch (err) {
-    console.error("Load owner transportation requests failed:", err);
+  } catch (error) {
+    console.error("Load owner requests failed:", error);
 
     res.status(500).json({
       message: "Failed to load transportation requests.",
@@ -273,6 +270,13 @@ router.get("/owner", requireOwner, async (req, res) => {
 
 router.patch("/:id/status", requireOwner, async (req, res) => {
   try {
+    const {
+      status,
+      quoteAmount,
+      estimatedArrival,
+      ownerNotes,
+    } = req.body;
+
     const allowedStatuses = [
       "New",
       "Quoted",
@@ -282,12 +286,30 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
       "Cancelled",
     ];
 
-    const { status } = req.body;
-
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({
-        message: "Invalid transportation status.",
+        message: "Invalid status.",
       });
+    }
+
+    const updateData = {
+      status,
+    };
+
+    if (status === "Quoted") {
+      updateData.quoteAmount =
+        quoteAmount !== "" && quoteAmount != null
+          ? Number(quoteAmount)
+          : null;
+
+      updateData.estimatedArrival = estimatedArrival || "";
+      updateData.ownerNotes = ownerNotes || "";
+      updateData.quotedAt = new Date();
+    } else {
+      updateData.quoteAmount = null;
+      updateData.estimatedArrival = "";
+      updateData.ownerNotes = "";
+      updateData.quotedAt = null;
     }
 
     const request = await TransportationRequest.findOneAndUpdate(
@@ -296,15 +318,11 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
         ownerId: req.owner.id,
       },
       {
-        $set: { status },
+        $set: updateData,
       },
       {
         new: true,
-        runValidators: true,
       }
-    ).populate(
-      "listingId",
-      "title city state subcategory imageUrl logoUrl"
     );
 
     if (!request) {
@@ -313,15 +331,11 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
       });
     }
 
-    res.json({
-      success: true,
-      request,
-    });
-  } catch (err) {
-    console.error("Transportation status update error:", err);
-
+    res.json(request);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({
-      message: "Failed to update transportation status.",
+      message: "Failed to update transportation request.",
     });
   }
 });
