@@ -101,6 +101,7 @@ const transportationRequestSchema = new mongoose.Schema(
     "New",
     "Quoted",
     "Accepted",
+    "Declined",
     "In Progress",
     "Completed",
     "Cancelled",

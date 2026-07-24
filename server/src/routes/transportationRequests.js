@@ -493,4 +493,144 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
   }
 });
 
+router.patch("/quote/:token/respond", async (req, res) => {
+  try {
+    const token = cleanText(req.params.token);
+    const { decision } = req.body || {};
+
+    if (!["Accepted", "Declined"].includes(decision)) {
+      return res.status(400).json({
+        message: "Invalid response.",
+      });
+    }
+
+    const request = await TransportationRequest.findOne({
+      quoteAccessToken: token,
+    }).populate("listingId", "title");
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Transportation quote not found.",
+      });
+    }
+
+    if (
+      !request.quoteAccessTokenExpiresAt ||
+      request.quoteAccessTokenExpiresAt < new Date()
+    ) {
+      return res.status(410).json({
+        message: "This transportation quote has expired.",
+      });
+    }
+
+    if (request.customerRespondedAt) {
+  return res.status(400).json({
+    message:
+      "This transportation quote has already been responded to.",
+  });
+}
+
+    request.status = decision;
+    request.customerRespondedAt = new Date();
+
+    await request.save();
+
+    if (request.ownerId) {
+      try {
+        const listing = await Listing.findById(request.listingId)
+          .populate("ownerId", "email name");
+
+        if (listing?.ownerId?.email) {
+          await sendEmail({
+            to: listing.ownerId.email,
+            subject: `Customer ${decision} Your Transportation Quote`,
+            html: `
+              <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;padding:30px">
+
+                <h2 style="color:#f59e0b">
+                  Customer Response Received
+                </h2>
+
+                <p>
+                  The customer has
+                  <strong>${decision}</strong>
+                  your transportation quote.
+                </p>
+
+                <table style="width:100%;border-collapse:collapse;margin-top:25px">
+
+                  <tr>
+                    <td><strong>Business</strong></td>
+                    <td>${escapeHtml(request.listingId.title)}</td>
+                  </tr>
+
+                  <tr>
+                    <td><strong>Customer</strong></td>
+                    <td>${escapeHtml(request.customerName)}</td>
+                  </tr>
+
+                  <tr>
+                    <td><strong>Quote Amount</strong></td>
+                    <td>$${request.quoteAmount}</td>
+                  </tr>
+
+                  <tr>
+                    <td><strong>Status</strong></td>
+                    <td>${decision}</td>
+                  </tr>
+
+                </table>
+
+                <p style="margin-top:30px">
+                  Log into your HubEthio Owner Dashboard to
+                  continue managing this request.
+                </p>
+
+              </div>
+            `,
+          });
+        }
+      } catch (emailError) {
+        console.error(
+          "Owner response email failed:",
+          emailError
+        );
+      }
+    }
+
+    res.json({
+      businessName:
+        request.listingId?.title ||
+        "Transportation Provider",
+
+      customerName: request.customerName,
+      serviceType: request.serviceType,
+
+      pickupAddress: request.pickupAddress,
+      deliveryAddress: request.deliveryAddress,
+
+      requestedDate: request.requestedDate,
+      requestedTime: request.requestedTime,
+
+      cargoDetails: request.cargoDetails,
+
+      quoteAmount: request.quoteAmount,
+      estimatedArrival: request.estimatedArrival,
+      ownerNotes: request.ownerNotes,
+
+      status: request.status,
+      quotedAt: request.quotedAt,
+    });
+  } catch (error) {
+    console.error(
+      "Transportation quote response failed:",
+      error
+    );
+
+    res.status(500).json({
+      message: "Failed to submit response.",
+    });
+  }
+});
+
 export default router;
