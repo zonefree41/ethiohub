@@ -134,6 +134,27 @@ quotedAt: {
   default: null,
 },
 
+quoteAccessToken: {
+  type: String,
+  default: "",
+  index: true,
+},
+
+quoteAccessTokenExpiresAt: {
+  type: Date,
+  default: null,
+},
+
+customerQuoteEmailSentAt: {
+  type: Date,
+  default: null,
+},
+
+customerRespondedAt: {
+  type: Date,
+  default: null,
+},
+
     ownerEmailSentAt: {
       type: Date,
       default: null,

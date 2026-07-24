@@ -3,6 +3,7 @@ import Listing from "../models/Listing.js";
 import TransportationRequest from "../models/TransportationRequest.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
+import crypto from "crypto";
 
 const router = express.Router();
 
@@ -297,20 +298,22 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
     };
 
     if (status === "Quoted") {
-      updateData.quoteAmount =
-        quoteAmount !== "" && quoteAmount != null
-          ? Number(quoteAmount)
-          : null;
+  updateData.quoteAmount =
+    quoteAmount !== "" && quoteAmount != null
+      ? Number(quoteAmount)
+      : null;
 
-      updateData.estimatedArrival = estimatedArrival || "";
-      updateData.ownerNotes = ownerNotes || "";
-      updateData.quotedAt = new Date();
-    } else {
-      updateData.quoteAmount = null;
-      updateData.estimatedArrival = "";
-      updateData.ownerNotes = "";
-      updateData.quotedAt = null;
-    }
+  updateData.estimatedArrival = estimatedArrival || "";
+  updateData.ownerNotes = ownerNotes || "";
+  updateData.quotedAt = new Date();
+
+  updateData.quoteAccessToken = crypto.randomBytes(32).toString("hex");
+
+  // Link expires in 30 days
+  updateData.quoteAccessTokenExpiresAt = new Date(
+    Date.now() + 30 * 24 * 60 * 60 * 1000
+  );
+}
 
     const request = await TransportationRequest.findOneAndUpdate(
       {
@@ -330,6 +333,87 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
         message: "Transportation request not found.",
       });
     }
+
+    if (
+  status === "Quoted" &&
+  request.customerEmail &&
+  request.quoteAccessToken
+) {
+  try {
+    await sendEmail({
+      to: request.customerEmail,
+      subject: "🚚 Your HubEthio Transportation Quote Is Ready",
+      html: `
+      <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;padding:30px">
+
+        <h2 style="color:#f59e0b;">
+          Your Transportation Quote Is Ready
+        </h2>
+
+        <p>Hello ${escapeHtml(request.customerName)},</p>
+
+        <p>
+          A transportation provider has prepared your quote.
+        </p>
+
+        <table
+          style="width:100%;border-collapse:collapse;margin:25px 0;"
+        >
+          <tr>
+            <td><strong>Quote Amount</strong></td>
+            <td>$${request.quoteAmount}</td>
+          </tr>
+
+          <tr>
+            <td><strong>Estimated Arrival</strong></td>
+            <td>${escapeHtml(request.estimatedArrival)}</td>
+          </tr>
+
+          <tr>
+            <td><strong>Notes</strong></td>
+            <td>${escapeHtml(request.ownerNotes)}</td>
+          </tr>
+        </table>
+
+        <div style="text-align:center;margin:35px 0;">
+
+          <a
+            href="${quoteUrl}"
+            style="
+              background:#f59e0b;
+              color:white;
+              padding:15px 28px;
+              border-radius:8px;
+              text-decoration:none;
+              font-weight:bold;
+            "
+          >
+            View My Quote
+          </a>
+
+        </div>
+
+        <p>
+          This secure link expires in 30 days.
+        </p>
+
+      </div>
+      `,
+    });
+
+    request.customerQuoteEmailSentAt = new Date();
+    await request.save();
+  } catch (err) {
+    console.error(
+      "Customer quote email failed:",
+      err
+    );
+  }
+}
+
+    const quoteUrl =
+  `${process.env.CLIENT_ORIGIN}/transportation-quote/` +
+  request.quoteAccessToken;
 
     res.json(request);
   } catch (error) {
