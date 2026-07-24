@@ -334,6 +334,10 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
       });
     }
 
+    const quoteUrl =
+  `${process.env.CLIENT_ORIGIN}/transportation-quote/` +
+  request.quoteAccessToken;
+
     if (
   status === "Quoted" &&
   request.customerEmail &&
@@ -410,10 +414,6 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
     );
   }
 }
-
-    const quoteUrl =
-  `${process.env.CLIENT_ORIGIN}/transportation-quote/` +
-  request.quoteAccessToken;
 
     res.json(request);
   } catch (error) {
