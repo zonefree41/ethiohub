@@ -351,44 +351,6 @@ const filteredRequests =
 
   <div className="owner-transport-modal-section">
     <h3>Additional Information</h3>
-
-    <div className="owner-transport-modal-actions">
-  <button
-  type="button"
-  className="owner-transport-save-btn"
-  onClick={async () => {
-    try {
-      const updated = await apiPatch(
-        `/api/transportation-requests/${selectedRequest._id}/status`,
-        {
-          status: modalStatus,
-        },
-        token
-      );
-
-      setRequests((current) =>
-        current.map((request) =>
-          request._id === updated.request._id
-            ? updated.request
-            : request
-        )
-      );
-
-      setSelectedRequest(updated.request);
-
-      alert("Status updated successfully!");
-    } catch (err) {
-      alert(
-        err.message ||
-          "Failed to update transportation status."
-      );
-    }
-  }}
->
-  💾 Save Status
-</button>
-</div>
-
     <p>
       <strong>Business:</strong>{" "}
       {selectedRequest.listingId?.title || "N/A"}
@@ -456,6 +418,43 @@ const filteredRequests =
       {selectedRequest.notes || "No additional notes"}
     </p>
   </div>
+</div>
+
+<div className="owner-transport-modal-actions">
+  <button
+  type="button"
+  className="owner-transport-save-btn"
+  onClick={async () => {
+    try {
+      const updated = await apiPatch(
+        `/api/transportation-requests/${selectedRequest._id}/status`,
+        {
+          status: modalStatus,
+        },
+        token
+      );
+
+      setRequests((current) =>
+        current.map((request) =>
+          request._id === updated.request._id
+            ? updated.request
+            : request
+        )
+      );
+
+      setSelectedRequest(updated.request);
+
+      alert("Status updated successfully!");
+    } catch (err) {
+      alert(
+        err.message ||
+          "Failed to update transportation status."
+      );
+    }
+  }}
+>
+  💾 Save Status
+</button>
 </div>
             </div>
           </div>

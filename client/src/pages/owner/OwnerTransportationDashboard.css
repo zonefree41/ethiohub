@@ -328,3 +328,48 @@
 .owner-transport-save-btn:hover {
   background: #115e59;
 }
+
+/* ============================
+   Quote Section
+============================ */
+
+.owner-transport-quote-box {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.owner-transport-quote-box h3 {
+  margin: 0 0 18px;
+  color: #0f172a;
+}
+
+.owner-transport-modal-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.owner-transport-modal-field label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #334155;
+}
+
+.owner-transport-modal-field input,
+.owner-transport-modal-field textarea,
+.owner-transport-modal-field select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.owner-transport-modal-field textarea {
+  resize: vertical;
+  min-height: 100px;
+}
