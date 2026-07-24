@@ -1,5 +1,5 @@
 import React from "react";
-import { apiGet } from "../api/https.js";
+import { apiGet } from "../api/http.js";
 
 export default function TransportationQuotePage({ quoteToken }) {
   const [quote, setQuote] = React.useState(null);
