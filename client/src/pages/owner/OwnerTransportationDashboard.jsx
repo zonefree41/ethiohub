@@ -19,6 +19,9 @@ const [ownerNotes, setOwnerNotes] = React.useState("");
 const quoteLocked =
   !!selectedRequest?.customerRespondedAt;
 
+  const quoteEditingLocked =
+  quoteLocked && modalStatus === "Quoted";
+
   React.useEffect(() => {
     document.title = "Transportation Requests | HubEthio";
   }, []);
