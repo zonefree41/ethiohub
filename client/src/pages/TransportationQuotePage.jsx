@@ -554,6 +554,14 @@ function DetailItem({ label, value }) {
 }
 
 function formatCurrency(amount) {
+  if (
+    amount === null ||
+    amount === undefined ||
+    amount === ""
+  ) {
+    return "Not provided";
+  }
+
   const numericAmount = Number(amount);
 
   if (!Number.isFinite(numericAmount)) {

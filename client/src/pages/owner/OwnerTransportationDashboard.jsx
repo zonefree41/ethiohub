@@ -407,12 +407,51 @@ setLicensePlate(
     value={modalStatus}
     onChange={(e) => setModalStatus(e.target.value)}
   >
-    <option value="New">New</option>
-    <option value="Quoted">Quoted</option>
-    <option value="Accepted">Accepted</option>
-    <option value="In Progress">In Progress</option>
-    <option value="Completed">Completed</option>
-    <option value="Cancelled">Cancelled</option>
+    <option
+  value="New"
+  disabled={selectedRequest?.status !== "New"}
+>
+  New
+</option>
+
+<option
+  value="Quoted"
+  disabled={Boolean(selectedRequest?.customerRespondedAt)}
+>
+  Quoted
+</option>
+
+<option value="Accepted" disabled>
+  Accepted (Customer Only)
+</option>
+
+<option
+  value="Declined"
+  disabled
+>
+  Declined (Customer Only)
+</option>
+
+<option
+  value="In Progress"
+  disabled={selectedRequest?.status !== "Accepted"}
+>
+  In Progress
+</option>
+
+<option
+  value="Completed"
+  disabled={selectedRequest?.status !== "In Progress"}
+>
+  Completed
+</option>
+
+<option
+  value="Cancelled"
+  disabled={selectedRequest?.status === "Completed"}
+>
+  Cancelled
+</option>
   </select>
 </div>
 
@@ -553,9 +592,11 @@ setLicensePlate(
     {selectedRequest.customerRespondedAt && (
       <div className="timeline-item">
         <strong>
-          {selectedRequest.status === "Accepted"
-            ? "✅ Customer Accepted"
-            : "❌ Customer Declined"}
+          {["Declined", "Cancelled"].includes(
+  selectedRequest.status
+)
+  ? "❌ Customer Declined"
+  : "✅ Customer Accepted"}
         </strong>
 
         <p>
@@ -620,6 +661,32 @@ setLicensePlate(
   estimatedArrival,
   ownerNotes,
 });
+
+if (
+  modalStatus === "Quoted" &&
+  (
+    quoteAmount === "" ||
+    Number(quoteAmount) <= 0
+  )
+) {
+  alert("Please enter a valid quote amount.");
+  return;
+}
+
+if (
+  modalStatus === "In Progress" &&
+  (
+    !driverName.trim() ||
+    !driverPhone.trim() ||
+    !vehicleDescription.trim() ||
+    !licensePlate.trim()
+  )
+) {
+  alert(
+    "Please complete all driver information before starting the transportation."
+  );
+  return;
+}
 
       const updated = await apiPatch(
   `/api/transportation-requests/${selectedRequest._id}/status`,
