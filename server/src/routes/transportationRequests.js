@@ -341,11 +341,15 @@ router.get("/quote/:token", async (req, res) => {
 router.patch("/:id/status", requireOwner, async (req, res) => {
   try {
     const {
-      status,
-      quoteAmount,
-      estimatedArrival,
-      ownerNotes,
-    } = req.body;
+  status,
+  quoteAmount,
+  estimatedArrival,
+  ownerNotes,
+  driverName,
+  driverPhone,
+  vehicleDescription,
+  licensePlate,
+} = req.body;
 
     const allowedStatuses = [
       "New",
@@ -392,11 +396,21 @@ const statusChanged =
       status,
     };
 
-    if (
-  status === "In Progress" &&
-  !existingRequest.inProgressAt
-) {
-  updateData.inProgressAt = new Date();
+    if (status === "In Progress") {
+  if (!existingRequest.inProgressAt) {
+    updateData.inProgressAt = new Date();
+  }
+
+  updateData.driverName = driverName || "";
+  updateData.driverPhone = driverPhone || "";
+  updateData.vehicleDescription =
+    vehicleDescription || "";
+  updateData.licensePlate =
+    licensePlate || "";
+
+  if (!existingRequest.driverAssignedAt) {
+    updateData.driverAssignedAt = new Date();
+  }
 }
 
 if (

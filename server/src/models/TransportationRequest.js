@@ -150,6 +150,35 @@ cancelledAt: {
   default: null,
 },
 
+driverName: {
+  type: String,
+  trim: true,
+  default: "",
+},
+
+driverPhone: {
+  type: String,
+  trim: true,
+  default: "",
+},
+
+vehicleDescription: {
+  type: String,
+  trim: true,
+  default: "",
+},
+
+licensePlate: {
+  type: String,
+  trim: true,
+  default: "",
+},
+
+driverAssignedAt: {
+  type: Date,
+  default: null,
+},
+
 quoteAccessToken: {
   type: String,
   default: "",

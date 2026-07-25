@@ -485,6 +485,37 @@ const isAcceptedTracking =
     <div>{formatDateTime(quote.completedAt)}</div>
   </div>
 
+  {(quote.status === "In Progress" ||
+  quote.status === "Completed") && (
+  <div style={styles.driverCard}>
+    <h3 style={styles.driverTitle}>
+      🚚 Your Driver
+    </h3>
+
+    <div style={styles.driverGrid}>
+      <DetailItem
+        label="Driver"
+        value={quote.driverName}
+      />
+
+      <DetailItem
+        label="Phone"
+        value={quote.driverPhone}
+      />
+
+      <DetailItem
+        label="Vehicle"
+        value={quote.vehicleDescription}
+      />
+
+      <DetailItem
+        label="License Plate"
+        value={quote.licensePlate}
+      />
+    </div>
+  </div>
+)}
+
   <div style={styles.currentStatus}>
     Current Status:{" "}
     <strong>{quote.status}</strong>
@@ -972,6 +1003,28 @@ declinedResponseIcon: {
   marginTop: "22px",
   paddingTop: "18px",
   borderTop: "1px solid #d1d5db",
+},
+
+driverCard: {
+  marginTop: "24px",
+  padding: "20px",
+  background: "#f8fafc",
+  border: "1px solid #dbeafe",
+  borderRadius: "16px",
+},
+
+driverTitle: {
+  margin: "0 0 18px",
+  color: "#172d40",
+  fontSize: "20px",
+  fontWeight: "800",
+},
+
+driverGrid: {
+  display: "grid",
+  gridTemplateColumns:
+    "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: "14px",
 },
 
 timelineRow: {

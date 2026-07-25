@@ -15,6 +15,12 @@ export default function OwnerTransportationDashboard() {
   const [quoteAmount, setQuoteAmount] = React.useState("");
 const [estimatedArrival, setEstimatedArrival] = React.useState("");
 const [ownerNotes, setOwnerNotes] = React.useState("");
+const [driverName, setDriverName] = React.useState("");
+const [driverPhone, setDriverPhone] = React.useState("");
+const [vehicleDescription, setVehicleDescription] =
+  React.useState("");
+const [licensePlate, setLicensePlate] =
+  React.useState("");
 
 const quoteLocked =
   !!selectedRequest?.customerRespondedAt;
@@ -288,6 +294,22 @@ const filteredRequests =
     setOwnerNotes(
       request.ownerNotes || ""
     );
+
+    setDriverName(
+  request.driverName || ""
+);
+
+setDriverPhone(
+  request.driverPhone || ""
+);
+
+setVehicleDescription(
+  request.vehicleDescription || ""
+);
+
+setLicensePlate(
+  request.licensePlate || ""
+);
   }}
 >
   View Details
@@ -441,6 +463,65 @@ const filteredRequests =
   </div>
 )}
 
+{(modalStatus === "In Progress" ||
+  modalStatus === "Completed") && (
+  <div className="owner-transport-quote-box">
+    <h3>🚚 Driver Information</h3>
+
+    <div className="owner-transport-modal-field">
+      <label>Driver Name</label>
+
+      <input
+        type="text"
+        placeholder="Enter driver's name"
+        value={driverName}
+        onChange={(e) =>
+          setDriverName(e.target.value)
+        }
+      />
+    </div>
+
+    <div className="owner-transport-modal-field">
+      <label>Driver Phone</label>
+
+      <input
+        type="text"
+        placeholder="Enter driver's phone"
+        value={driverPhone}
+        onChange={(e) =>
+          setDriverPhone(e.target.value)
+        }
+      />
+    </div>
+
+    <div className="owner-transport-modal-field">
+      <label>Vehicle Description</label>
+
+      <input
+        type="text"
+        placeholder="Example: White Toyota Sienna"
+        value={vehicleDescription}
+        onChange={(e) =>
+          setVehicleDescription(e.target.value)
+        }
+      />
+    </div>
+
+    <div className="owner-transport-modal-field">
+      <label>License Plate</label>
+
+      <input
+        type="text"
+        placeholder="ABC-1234"
+        value={licensePlate}
+        onChange={(e) =>
+          setLicensePlate(e.target.value)
+        }
+      />
+    </div>
+  </div>
+)}
+
     <p>
       <strong>Notes:</strong>{" "}
       {selectedRequest.notes || "No additional notes"}
@@ -547,6 +628,10 @@ const filteredRequests =
     quoteAmount,
     estimatedArrival,
     ownerNotes,
+    driverName,
+    driverPhone,
+    vehicleDescription,
+    licensePlate,
   },
   token
 );
@@ -573,6 +658,22 @@ setEstimatedArrival(
 
 setOwnerNotes(
   updated.ownerNotes || ""
+);
+
+setDriverName(
+  updated.driverName || ""
+);
+
+setDriverPhone(
+  updated.driverPhone || ""
+);
+
+setVehicleDescription(
+  updated.vehicleDescription || ""
+);
+
+setLicensePlate(
+  updated.licensePlate || ""
 );
 
       alert("Status updated successfully!");
