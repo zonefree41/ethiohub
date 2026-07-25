@@ -383,6 +383,11 @@ if (!existingRequest) {
   });
 }
 
+const previousStatus = existingRequest.status;
+
+const statusChanged =
+  previousStatus !== status;
+
     const updateData = {
       status,
     };
@@ -531,6 +536,81 @@ if (
   } catch (err) {
     console.error(
       "Customer quote email failed:",
+      err
+    );
+  }
+}
+
+if (
+  statusChanged &&
+  request.customerEmail &&
+  ["In Progress", "Completed", "Cancelled"].includes(request.status)
+) {
+  try {
+    let subject = "";
+    let heading = "";
+    let message = "";
+
+    if (request.status === "In Progress") {
+      subject = "🚚 Your HubEthio Transportation Is In Progress";
+      heading = "Your Transportation Is In Progress";
+      message =
+        "Good news! Your transportation provider has started your request.";
+    }
+
+    if (request.status === "Completed") {
+      subject = "✅ Your HubEthio Transportation Has Been Completed";
+      heading = "Transportation Completed";
+      message =
+        "Your transportation request has been completed successfully. Thank you for choosing HubEthio.";
+    }
+
+    if (request.status === "Cancelled") {
+      subject = "❌ Your HubEthio Transportation Has Been Cancelled";
+      heading = "Transportation Cancelled";
+      message =
+        "Unfortunately, your transportation request has been cancelled. Please contact the transportation provider if you have any questions.";
+    }
+
+    await sendEmail({
+      to: request.customerEmail,
+      subject,
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;padding:30px">
+          <h2 style="color:#f59e0b;">${heading}</h2>
+
+          <p>Hello ${escapeHtml(request.customerName)},</p>
+
+          <p>${message}</p>
+
+          <table style="width:100%;border-collapse:collapse;margin:25px 0;">
+            <tr>
+              <td><strong>Status</strong></td>
+              <td>${escapeHtml(request.status)}</td>
+            </tr>
+
+            <tr>
+              <td><strong>Pickup</strong></td>
+              <td>${escapeHtml(request.pickupAddress)}</td>
+            </tr>
+
+            <tr>
+              <td><strong>Delivery</strong></td>
+              <td>${escapeHtml(request.deliveryAddress)}</td>
+            </tr>
+          </table>
+
+          <p>
+            You can continue using your secure transportation tracking link to
+            view the latest status.
+          </p>
+
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error(
+      "Transportation status email failed:",
       err
     );
   }
