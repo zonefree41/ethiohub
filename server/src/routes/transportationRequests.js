@@ -371,6 +371,16 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
   ownerId: req.owner.id,
 });
 
+if (
+  existingRequest.customerRespondedAt &&
+  status === "Quoted"
+) {
+  return res.status(400).json({
+    message:
+      "This quote has already been accepted or declined and can no longer be modified.",
+  });
+}
+
 if (!existingRequest) {
   return res.status(404).json({
     message: "Transportation request not found.",

@@ -16,6 +16,9 @@ export default function OwnerTransportationDashboard() {
 const [estimatedArrival, setEstimatedArrival] = React.useState("");
 const [ownerNotes, setOwnerNotes] = React.useState("");
 
+const quoteLocked =
+  !!selectedRequest?.customerRespondedAt;
+
   React.useEffect(() => {
     document.title = "Transportation Requests | HubEthio";
   }, []);
@@ -268,6 +271,20 @@ const filteredRequests =
   onClick={() => {
     setSelectedRequest(request);
     setModalStatus(request.status || "New");
+
+    setQuoteAmount(
+      request.quoteAmount != null
+        ? String(request.quoteAmount)
+        : ""
+    );
+
+    setEstimatedArrival(
+      request.estimatedArrival || ""
+    );
+
+    setOwnerNotes(
+      request.ownerNotes || ""
+    );
   }}
 >
   View Details
@@ -377,6 +394,11 @@ const filteredRequests =
 {modalStatus === "Quoted" && (
   <div className="owner-transport-quote-box">
     <h3>💰 Quote Details</h3>
+    {quoteLocked && (
+  <div className="owner-transport-quote-locked">
+    🔒 This quote has already been accepted or declined by the customer and can no longer be modified.
+  </div>
+)}
 
     <div className="owner-transport-modal-field">
       <label>Quote Amount ($)</label>
@@ -386,6 +408,7 @@ const filteredRequests =
         placeholder="Enter quote amount"
         value={quoteAmount}
         onChange={(e) => setQuoteAmount(e.target.value)}
+        disabled={quoteLocked}
       />
     </div>
 
@@ -393,22 +416,24 @@ const filteredRequests =
       <label>Estimated Arrival</label>
 
       <input
-        type="text"
-        placeholder="Example: Tomorrow 9:00 AM"
-        value={estimatedArrival}
-        onChange={(e) => setEstimatedArrival(e.target.value)}
-      />
+  type="text"
+  placeholder="Example: Tomorrow 9:00 AM"
+  value={estimatedArrival}
+  onChange={(e) => setEstimatedArrival(e.target.value)}
+  disabled={quoteLocked}
+/>
     </div>
 
     <div className="owner-transport-modal-field">
       <label>Owner Notes</label>
 
       <textarea
-        rows="4"
-        placeholder="Add notes for the customer..."
-        value={ownerNotes}
-        onChange={(e) => setOwnerNotes(e.target.value)}
-      />
+  rows="4"
+  placeholder="Add notes for the customer..."
+  value={ownerNotes}
+  onChange={(e) => setOwnerNotes(e.target.value)}
+  disabled={quoteLocked}
+/>
     </div>
   </div>
 )}
@@ -424,6 +449,7 @@ const filteredRequests =
   <button
   type="button"
   className="owner-transport-save-btn"
+  disabled={quoteEditingLocked}
   onClick={async () => {
     try {
       console.log({
@@ -453,6 +479,20 @@ const filteredRequests =
 );
 
 setSelectedRequest(updated);
+
+setQuoteAmount(
+  updated.quoteAmount != null
+    ? String(updated.quoteAmount)
+    : ""
+);
+
+setEstimatedArrival(
+  updated.estimatedArrival || ""
+);
+
+setOwnerNotes(
+  updated.ownerNotes || ""
+);
 
       alert("Status updated successfully!");
       setSelectedRequest(null);
