@@ -605,6 +605,24 @@ if (
             view the latest status.
           </p>
 
+          ${request.quoteAccessToken ? `
+  <div style="text-align:center;margin:35px 0;">
+    <a
+      href="${process.env.CLIENT_ORIGIN}/transportation-quote/${request.quoteAccessToken}"
+      style="
+        display:inline-block;
+        background:#f59e0b;
+        color:#ffffff;
+        padding:15px 28px;
+        border-radius:8px;
+        text-decoration:none;
+        font-weight:bold;
+      "
+    >
+      View Transportation Status
+    </a>
+  </div>
+` : ""}
         </div>
       `,
     });
