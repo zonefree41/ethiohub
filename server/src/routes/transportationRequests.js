@@ -366,6 +366,17 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
       status,
     };
 
+    const existingRequest = await TransportationRequest.findOne({
+  _id: req.params.id,
+  ownerId: req.owner.id,
+});
+
+if (!existingRequest) {
+  return res.status(404).json({
+    message: "Transportation request not found.",
+  });
+}
+
     if (status === "Quoted") {
   updateData.quoteAmount =
     quoteAmount !== "" && quoteAmount != null
@@ -376,19 +387,29 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
   updateData.ownerNotes = ownerNotes || "";
   updateData.quotedAt = new Date();
 
-  updateData.quoteAccessToken = crypto.randomBytes(32).toString("hex");
+  const tokenIsStillValid =
+    existingRequest.quoteAccessToken &&
+    existingRequest.quoteAccessTokenExpiresAt &&
+    existingRequest.quoteAccessTokenExpiresAt > new Date();
 
-  // Link expires in 30 days
-  updateData.quoteAccessTokenExpiresAt = new Date(
-    Date.now() + 30 * 24 * 60 * 60 * 1000
-  );
+  if (tokenIsStillValid) {
+    updateData.quoteAccessToken =
+      existingRequest.quoteAccessToken;
+
+    updateData.quoteAccessTokenExpiresAt =
+      existingRequest.quoteAccessTokenExpiresAt;
+  } else {
+    updateData.quoteAccessToken =
+      crypto.randomBytes(32).toString("hex");
+
+    updateData.quoteAccessTokenExpiresAt = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000
+    );
+  }
 }
 
-    const request = await TransportationRequest.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        ownerId: req.owner.id,
-      },
+    const request = await TransportationRequest.findByIdAndUpdate(
+  req.params.id,
       {
         $set: updateData,
       },
