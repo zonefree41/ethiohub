@@ -404,25 +404,51 @@ const isAcceptedTracking =
           ) : (
 
             <>
-              <section style={styles.responseComplete}>
-                <div style={styles.responseIcon}>
-                  {displayedStatus === "Accepted" ? "🚚" : "×"}
-                </div>
+              <section
+  style={{
+    ...styles.responseComplete,
+    ...(isDeclined ? styles.declinedResponse : {}),
+  }}
+>
+  <div
+    style={{
+      ...styles.responseIcon,
+      ...(isDeclined ? styles.declinedResponseIcon : {}),
+    }}
+  >
+    {isDeclined
+      ? "×"
+      : quote.status === "Completed"
+      ? "✓"
+      : "🚚"}
+  </div>
 
-                <div>
-                  <strong>
-                    {displayedStatus === "Accepted"
-                      ? "Transportation Tracking"
-                      : "Quote Declined"}
-                  </strong>
+  <div style={{ flex: 1 }}>
+    <strong>
+      {isDeclined
+        ? quote.status === "Cancelled"
+          ? "Transportation Cancelled"
+          : "Quote Declined"
+        : quote.status === "Completed"
+        ? "Transportation Completed"
+        : quote.status === "In Progress"
+        ? "Transportation In Progress"
+        : "Transportation Tracking"}
+    </strong>
 
-                  <p style={styles.responseText}>
-                    {displayedStatus === "Accepted"
-                      ? "Your transportation request is now active. Follow its progress below."
-                      : "Your response has been sent to the transportation provider."}
-                  </p>
+    <p style={styles.responseText}>
+      {isDeclined
+        ? quote.status === "Cancelled"
+          ? "This transportation request has been cancelled by the transportation provider."
+          : "Your response has been sent to the transportation provider."
+        : quote.status === "Completed"
+        ? "Your transportation request has been completed successfully."
+        : quote.status === "In Progress"
+        ? "Your transportation request is currently in progress."
+        : "Your transportation request is active. Follow its progress below."}
+    </p>
 
-                  {displayedStatus === "Accepted" && (
+    {isAcceptedTracking && (
                     <div style={styles.trackingTimeline}>
   <div style={styles.timelineRow}>
     <strong>✅ Request Submitted</strong>
@@ -913,6 +939,16 @@ const styles = {
     border: "1px solid #a7f3d0",
     borderRadius: "15px",
   },
+
+  declinedResponse: {
+  color: "#991b1b",
+  background: "#fef2f2",
+  border: "1px solid #fecaca",
+},
+
+declinedResponseIcon: {
+  background: "#dc2626",
+},
 
   responseIcon: {
     flexShrink: 0,
