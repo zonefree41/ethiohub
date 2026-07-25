@@ -383,6 +383,44 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
   ownerId: req.owner.id,
 });
 
+if (!existingRequest) {
+  return res.status(404).json({
+    message: "Transportation request not found.",
+  });
+}
+
+// Prevent invalid workflow transitions
+
+if (
+  status === "In Progress" &&
+  existingRequest.status !== "Accepted"
+) {
+  return res.status(400).json({
+    message:
+      "Customer must accept the quote before transportation can begin.",
+  });
+}
+
+if (
+  status === "Completed" &&
+  existingRequest.status !== "In Progress"
+) {
+  return res.status(400).json({
+    message:
+      "Transportation must be In Progress before it can be completed.",
+  });
+}
+
+if (
+  status === "Quoted" &&
+  existingRequest.customerRespondedAt
+) {
+  return res.status(400).json({
+    message:
+      "The customer has already responded. The quote cannot be modified.",
+  });
+}
+
 if (
   existingRequest.customerRespondedAt &&
   status === "Quoted"
