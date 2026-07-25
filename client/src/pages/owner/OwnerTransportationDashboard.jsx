@@ -9,6 +9,10 @@ export default function OwnerTransportationDashboard() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
   const [selectedStatus, setSelectedStatus] = React.useState("All");
+  const [searchTerm, setSearchTerm] =
+  React.useState("");
+  const [sortOption, setSortOption] =
+  React.useState("Newest");
   const [selectedRequest, setSelectedRequest] = React.useState(null);
   const [modalStatus, setModalStatus] = React.useState("New");
 
@@ -97,12 +101,65 @@ const completedCount = requests.filter(
   (request) => request.status === "Completed"
 ).length;
 
-const filteredRequests =
-  selectedStatus === "All"
-    ? requests
-    : requests.filter(
-        (request) => request.status === selectedStatus
+const filteredRequests = requests.filter((request) => {
+  const matchesStatus =
+    selectedStatus === "All" ||
+    request.status === selectedStatus;
+
+  const search = searchTerm.toLowerCase().trim();
+
+  const matchesSearch =
+    !search ||
+    request.customerName
+      ?.toLowerCase()
+      .includes(search) ||
+    request.customerPhone
+      ?.toLowerCase()
+      .includes(search) ||
+    request.customerEmail
+      ?.toLowerCase()
+      .includes(search) ||
+    request.serviceType
+      ?.toLowerCase()
+      .includes(search) ||
+    request.pickupAddress
+      ?.toLowerCase()
+      .includes(search) ||
+    request.deliveryAddress
+      ?.toLowerCase()
+      .includes(search);
+
+  return matchesStatus && matchesSearch;
+});
+
+const sortedRequests = [...filteredRequests].sort((a, b) => {
+  switch (sortOption) {
+    case "Oldest":
+      return (
+        new Date(a.createdAt) -
+        new Date(b.createdAt)
       );
+
+    case "RequestedSoonest":
+      return (
+        new Date(a.requestedDate) -
+        new Date(b.requestedDate)
+      );
+
+    case "RequestedLatest":
+      return (
+        new Date(b.requestedDate) -
+        new Date(a.requestedDate)
+      );
+
+    case "Newest":
+    default:
+      return (
+        new Date(b.createdAt) -
+        new Date(a.createdAt)
+      );
+  }
+});
 
   return (
     <main className="owner-transport-page">
@@ -179,6 +236,17 @@ const filteredRequests =
   <p>New</p>
 </div>
 
+<div
+  className={`owner-summary-card ${
+    selectedStatus === "Quoted" ? "active" : ""
+  }`}
+  onClick={() => setSelectedStatus("Quoted")}
+>
+  <span>💰</span>
+  <strong>{quotedCount}</strong>
+  <p>Quoted</p>
+</div>
+
     <div
   className={`owner-summary-card ${
     selectedStatus === "Accepted" ? "active" : ""
@@ -214,9 +282,36 @@ const filteredRequests =
   </section>
 )}
 
+<div className="owner-transport-controls">
+  <div className="owner-transport-search">
+    <input
+      type="text"
+      placeholder="🔍 Search by customer, phone, service, pickup or delivery..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+  </div>
+
+  <div className="owner-transport-sort">
+    <select
+      value={sortOption}
+      onChange={(e) => setSortOption(e.target.value)}
+    >
+      <option value="Newest">Newest First</option>
+      <option value="Oldest">Oldest First</option>
+      <option value="RequestedSoonest">
+        Requested Date: Soonest
+      </option>
+      <option value="RequestedLatest">
+        Requested Date: Latest
+      </option>
+    </select>
+  </div>
+</div>
+
         {!loading && requests.length > 0 && (
           <section className="owner-transport-grid">
-            {filteredRequests.map((request) => (
+            {sortedRequests.map((request) => (
               <article
                 key={request._id}
                 className="owner-transport-card"
@@ -397,6 +492,38 @@ setLicensePlate(
       <strong>Business:</strong>{" "}
       {selectedRequest.listingId?.title || "N/A"}
     </p>
+
+    {selectedRequest.status === "Quoted" &&
+ !selectedRequest.customerRespondedAt && (
+  <div className="owner-transport-banner waiting">
+    🟡 Waiting for customer response...
+  </div>
+)}
+
+{selectedRequest.status === "Accepted" && (
+  <div className="owner-transport-banner accepted">
+    ✅ Customer accepted the quote.
+    You can now begin transportation.
+  </div>
+)}
+
+{selectedRequest.status === "In Progress" && (
+  <div className="owner-transport-banner progress">
+    🚚 Transportation is currently in progress.
+  </div>
+)}
+
+{selectedRequest.status === "Completed" && (
+  <div className="owner-transport-banner completed">
+    🏁 Transportation completed successfully.
+  </div>
+)}
+
+{selectedRequest.status === "Declined" && (
+  <div className="owner-transport-banner declined">
+    ❌ Customer declined the quote.
+  </div>
+)}
 
     <div className="owner-transport-modal-field">
   <label>
