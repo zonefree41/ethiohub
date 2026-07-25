@@ -1,5 +1,6 @@
 import React from "react";
 import { apiGet, apiPatch } from "../api/http.js";
+import hubEthioLogo from "../../resources/icon-only.png";
 
 export default function TransportationQuotePage({ quoteToken }) {
   const [quote, setQuote] = React.useState(null);
@@ -143,7 +144,13 @@ export default function TransportationQuotePage({ quoteToken }) {
       <div style={styles.container}>
         <header style={styles.header}>
           <a href="/" style={styles.brandLink}>
-            <div style={styles.brandMark}>H</div>
+            <div style={styles.brandMark}>
+  <img
+    src={hubEthioLogo}
+    alt="HubEthio"
+    style={styles.brandLogo}
+  />
+</div>
 
             <div>
               <div style={styles.brandName}>HubEthio</div>
@@ -504,18 +511,22 @@ const styles = {
   },
 
   brandMark: {
-    width: "44px",
-    height: "44px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background:
-      "linear-gradient(135deg, #00843d, #f59e0b)",
-    color: "#ffffff",
-    borderRadius: "13px",
-    fontSize: "22px",
-    fontWeight: "800",
-  },
+  width: "54px",
+  height: "54px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "#ffffff",
+  borderRadius: "14px",
+  overflow: "hidden",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+},
+
+  brandLogo: {
+  width: "100%",
+  height: "100%",
+  objectFit: "contain",
+},
 
   brandName: {
     fontSize: "22px",
