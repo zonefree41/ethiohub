@@ -129,15 +129,32 @@ export default function TransportationQuotePage({ quoteToken }) {
   }
 
   const displayedStatus =
-    quote.status === "Cancelled"
-      ? "Declined"
-      : quote.status;
+  quote.status === "Cancelled"
+    ? "Declined"
+    : quote.status;
 
-  const hasResponded = [
-    "Accepted",
-    "Declined",
-    "Cancelled",
-  ].includes(quote.status);
+const declinedStatuses = [
+  "Declined",
+  "Cancelled",
+];
+
+const respondedStatuses = [
+  "Accepted",
+  "Declined",
+  "Cancelled",
+  "In Progress",
+  "Completed",
+];
+
+const hasResponded =
+  Boolean(quote.customerRespondedAt) ||
+  respondedStatuses.includes(quote.status);
+
+const isDeclined =
+  declinedStatuses.includes(quote.status);
+
+const isAcceptedTracking =
+  hasResponded && !isDeclined;
 
   return (
     <div style={styles.page}>
@@ -385,35 +402,82 @@ export default function TransportationQuotePage({ quoteToken }) {
               </div>
             </section>
           ) : (
-            <section style={styles.responseComplete}>
-              <div style={styles.responseIcon}>
-                {displayedStatus === "Accepted"
-                  ? "✓"
-                  : "×"}
-              </div>
 
-              <div>
-                <strong>
-                  Quote {displayedStatus}
-                </strong>
+            <>
+              <section style={styles.responseComplete}>
+                <div style={styles.responseIcon}>
+                  {displayedStatus === "Accepted" ? "🚚" : "×"}
+                </div>
 
-                <p style={styles.responseText}>
-                  Your response has already been submitted to
-                  the transportation provider.
+                <div>
+                  <strong>
+                    {displayedStatus === "Accepted"
+                      ? "Transportation Tracking"
+                      : "Quote Declined"}
+                  </strong>
+
+                  <p style={styles.responseText}>
+                    {displayedStatus === "Accepted"
+                      ? "Your transportation request is now active. Follow its progress below."
+                      : "Your response has been sent to the transportation provider."}
+                  </p>
+
+                  {displayedStatus === "Accepted" && (
+                    <div style={styles.trackingTimeline}>
+  <div style={styles.timelineRow}>
+    <strong>✅ Request Submitted</strong>
+    <div>{formatDateTime(quote.createdAt)}</div>
+  </div>
+
+  <div style={styles.timelineRow}>
+    <strong>✅ Quote Sent</strong>
+    <div>{formatDateTime(quote.quotedAt)}</div>
+  </div>
+
+  <div style={styles.timelineRow}>
+    <strong>✅ Quote Accepted</strong>
+    <div>{formatDateTime(quote.customerRespondedAt)}</div>
+  </div>
+
+  <div style={styles.timelineRow}>
+    <strong>
+      {quote.inProgressAt
+        ? "🚚 In Progress"
+        : "⏳ Waiting to Start"}
+    </strong>
+
+    <div>{formatDateTime(quote.inProgressAt)}</div>
+  </div>
+
+  <div style={styles.timelineRow}>
+    <strong>
+      {quote.completedAt
+        ? "🏁 Completed"
+        : "⬜ Completed"}
+    </strong>
+
+    <div>{formatDateTime(quote.completedAt)}</div>
+  </div>
+
+  <div style={styles.currentStatus}>
+    Current Status:{" "}
+    <strong>{quote.status}</strong>
+  </div>
+</div>
+                  )}
+                </div>
+              </section>
+              <footer style={styles.footer}>
+                <p style={styles.footerText}>
+                  This secure quote was provided through HubEthio.
                 </p>
-              </div>
-            </section>
-          )}
 
-          <footer style={styles.footer}>
-            <p style={styles.footerText}>
-              This secure quote was provided through HubEthio.
-            </p>
-
-            <a href="/" style={styles.footerLink}>
-              Visit HubEthio.com
-            </a>
-          </footer>
+                <a href="/" style={styles.footerLink}>
+                  Visit HubEthio.com
+                </a>
+              </footer>
+            </>
+            )}
         </main>
       </div>
     </div>
@@ -475,6 +539,24 @@ function formatTime(value) {
   }
 
   return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function formatDateTime(value) {
+  if (!value) return "Pending";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Pending";
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
     hour: "numeric",
     minute: "2-digit",
   }).format(date);
@@ -849,6 +931,33 @@ const styles = {
     margin: "5px 0 0",
     lineHeight: 1.5,
   },
+
+  trackingTimeline: {
+  marginTop: "22px",
+  paddingTop: "18px",
+  borderTop: "1px solid #d1d5db",
+},
+
+timelineRow: {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "12px 0",
+  borderBottom: "1px solid #e5e7eb",
+  fontSize: "15px",
+  color: "#1f2937",
+},
+
+currentStatus: {
+  marginTop: "20px",
+  padding: "14px",
+  background: "#eff6ff",
+  border: "1px solid #bfdbfe",
+  borderRadius: "10px",
+  color: "#1e3a8a",
+  fontSize: "16px",
+  fontWeight: "600",
+},
 
   successBox: {
     marginBottom: "22px",
