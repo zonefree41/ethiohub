@@ -559,32 +559,50 @@ router.patch("/quote/:token/respond", async (req, res) => {
 
                 <table style="width:100%;border-collapse:collapse;margin-top:25px">
 
-                  <tr>
-                    <td><strong>Business</strong></td>
-                    <td>${escapeHtml(request.listingId.title)}</td>
-                  </tr>
+  <tr>
+    <td><strong>Business</strong></td>
+    <td>${escapeHtml(request.listingId.title)}</td>
+  </tr>
 
-                  <tr>
-                    <td><strong>Customer</strong></td>
-                    <td>${escapeHtml(request.customerName)}</td>
-                  </tr>
+  <tr>
+    <td><strong>Customer</strong></td>
+    <td>${escapeHtml(request.customerName)}</td>
+  </tr>
 
-                  <tr>
-                    <td><strong>Quote Amount</strong></td>
-                    <td>$${request.quoteAmount}</td>
-                  </tr>
+  <tr>
+    <td><strong>Quote Amount</strong></td>
+    <td>$${request.quoteAmount}</td>
+  </tr>
 
-                  <tr>
-                    <td><strong>Status</strong></td>
-                    <td>${decision}</td>
-                  </tr>
+  <tr>
+    <td><strong>Status</strong></td>
+    <td>${decision}</td>
+  </tr>
 
-                </table>
+</table>
 
                 <p style="margin-top:30px">
-  Log into your HubEthio Owner Dashboard to
+  Log into your HubEthio Transportation Dashboard to
   continue managing this request.
 </p>
+
+<div style="text-align:center;margin:30px 0;">
+  <a
+    href="${process.env.CLIENT_ORIGIN}/owner/transportation"
+    style="
+      display:inline-block;
+      background:#00843d;
+      color:#ffffff;
+      text-decoration:none;
+      padding:14px 28px;
+      border-radius:8px;
+      font-weight:bold;
+      font-size:16px;
+    "
+  >
+    🚚 Open Transportation Dashboard
+  </a>
+</div>
 
 <div style="text-align:center;margin:30px 0;">
   <a
