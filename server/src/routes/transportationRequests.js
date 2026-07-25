@@ -323,7 +323,19 @@ router.get("/quote/:token", async (req, res) => {
       ownerNotes: request.ownerNotes,
 
       status: request.status,
-      quotedAt: request.quotedAt,
+
+createdAt: request.createdAt,
+quotedAt: request.quotedAt,
+customerRespondedAt: request.customerRespondedAt,
+inProgressAt: request.inProgressAt,
+completedAt: request.completedAt,
+cancelledAt: request.cancelledAt,
+
+driverName: request.driverName,
+driverPhone: request.driverPhone,
+vehicleDescription: request.vehicleDescription,
+licensePlate: request.licensePlate,
+driverAssignedAt: request.driverAssignedAt,
     });
   } catch (error) {
     console.error(
