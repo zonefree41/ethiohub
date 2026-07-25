@@ -458,6 +458,29 @@ if (
   }
 }
 
+const trackingStatuses = [
+  "Accepted",
+  "In Progress",
+  "Completed",
+  "Cancelled",
+];
+
+if (trackingStatuses.includes(status)) {
+  const tokenIsStillValid =
+    existingRequest.quoteAccessToken &&
+    existingRequest.quoteAccessTokenExpiresAt &&
+    existingRequest.quoteAccessTokenExpiresAt > new Date();
+
+  if (!tokenIsStillValid) {
+    updateData.quoteAccessToken =
+      crypto.randomBytes(32).toString("hex");
+
+    updateData.quoteAccessTokenExpiresAt = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000
+    );
+  }
+}
+
     const request = await TransportationRequest.findByIdAndUpdate(
   req.params.id,
       {
