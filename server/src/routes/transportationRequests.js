@@ -366,6 +366,27 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
       status,
     };
 
+    if (
+  status === "In Progress" &&
+  !existingRequest.inProgressAt
+) {
+  updateData.inProgressAt = new Date();
+}
+
+if (
+  status === "Completed" &&
+  !existingRequest.completedAt
+) {
+  updateData.completedAt = new Date();
+}
+
+if (
+  status === "Cancelled" &&
+  !existingRequest.cancelledAt
+) {
+  updateData.cancelledAt = new Date();
+}
+
     const existingRequest = await TransportationRequest.findOne({
   _id: req.params.id,
   ownerId: req.owner.id,

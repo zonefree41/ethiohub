@@ -445,6 +445,84 @@ const filteredRequests =
       <strong>Notes:</strong>{" "}
       {selectedRequest.notes || "No additional notes"}
     </p>
+
+    <div className="owner-transport-modal-section">
+  <h3>📍 Transportation Timeline</h3>
+
+  <div className="owner-transport-timeline">
+
+    <div className="timeline-item">
+      <strong>📝 Request Created</strong>
+      <p>
+        {selectedRequest.createdAt
+          ? new Date(selectedRequest.createdAt).toLocaleString()
+          : "—"}
+      </p>
+    </div>
+
+    {selectedRequest.quotedAt && (
+      <div className="timeline-item">
+        <strong>💰 Quote Sent</strong>
+        <p>
+          {new Date(selectedRequest.quotedAt).toLocaleString()}
+        </p>
+      </div>
+    )}
+
+    {selectedRequest.customerRespondedAt && (
+      <div className="timeline-item">
+        <strong>
+          {selectedRequest.status === "Accepted"
+            ? "✅ Customer Accepted"
+            : "❌ Customer Declined"}
+        </strong>
+
+        <p>
+          {new Date(
+            selectedRequest.customerRespondedAt
+          ).toLocaleString()}
+        </p>
+      </div>
+    )}
+
+    {selectedRequest.inProgressAt && (
+      <div className="timeline-item">
+        <strong>🚚 In Progress</strong>
+
+        <p>
+          {new Date(
+            selectedRequest.inProgressAt
+          ).toLocaleString()}
+        </p>
+      </div>
+    )}
+
+    {selectedRequest.completedAt && (
+      <div className="timeline-item">
+        <strong>🏁 Completed</strong>
+
+        <p>
+          {new Date(
+            selectedRequest.completedAt
+          ).toLocaleString()}
+        </p>
+      </div>
+    )}
+
+    {selectedRequest.cancelledAt && (
+      <div className="timeline-item">
+        <strong>❌ Cancelled</strong>
+
+        <p>
+          {new Date(
+            selectedRequest.cancelledAt
+          ).toLocaleString()}
+        </p>
+      </div>
+    )}
+
+  </div>
+</div>
   </div>
 </div>
 

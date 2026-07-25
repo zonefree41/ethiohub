@@ -373,3 +373,45 @@
   resize: vertical;
   min-height: 100px;
 }
+
+/* ===========================
+   Transportation Timeline
+=========================== */
+
+.owner-transport-timeline {
+  margin-top: 1rem;
+  border-left: 3px solid #d6d6d6;
+  padding-left: 1.2rem;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 1.2rem;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -1.55rem;
+  top: 0.35rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0d6efd;
+}
+
+.timeline-item strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.timeline-item p {
+  margin: 0.35rem 0 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}

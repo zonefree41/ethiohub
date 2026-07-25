@@ -135,6 +135,21 @@ quotedAt: {
   default: null,
 },
 
+inProgressAt: {
+  type: Date,
+  default: null,
+},
+
+completedAt: {
+  type: Date,
+  default: null,
+},
+
+cancelledAt: {
+  type: Date,
+  default: null,
+},
+
 quoteAccessToken: {
   type: String,
   default: "",
