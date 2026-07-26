@@ -14,6 +14,9 @@ export default function OwnerTransportationDashboard() {
   const [sortOption, setSortOption] =
   React.useState("Newest");
   const [selectedRequest, setSelectedRequest] = React.useState(null);
+  const openRequest = (request) => {
+  setSelectedRequest(request);
+};
   const [modalStatus, setModalStatus] = React.useState("New");
 
   const [quoteAmount, setQuoteAmount] = React.useState("");
@@ -429,88 +432,87 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
     <section className="owner-transport-grid">
       {sortedRequests.map((request) => (
         <article
-          key={request._id}
-          className="owner-transport-card"
-        >
-          <div className="owner-transport-card-top">
-            <div>
-              <p className="owner-transport-service">
-                {request.serviceType || "Transportation Service"}
-              </p>
+  key={request._id}
+  className="owner-transport-card"
+>
+  <div className="owner-transport-card-top">
+    <div>
+      <p className="owner-transport-service">
+        🚚 {request.serviceType || "Transportation Service"}
+      </p>
 
-              <h2>{request.customerName || "Unknown Customer"}</h2>
-            </div>
+      <h2 className="owner-transport-customer">
+        👤 {request.customerName || "Unknown Customer"}
+      </h2>
+    </div>
 
-            <span
-              className={`owner-transport-status status-${(
-                request.status || "New"
-              )
-                .toLowerCase()
-                .replace(/\s+/g, "-")}`}
-            >
-              {request.status || "New"}
-            </span>
-          </div>
+    <span
+      className={`owner-transport-status status-${(
+        request.status || "New"
+      )
+        .toLowerCase()
+        .replace(/\s+/g, "-")}`}
+    >
+      {request.status || "New"}
+    </span>
+  </div>
 
-          <div className="owner-transport-route">
-            <p>
-              <strong>Pickup:</strong>{" "}
-              {request.pickupAddress || "Not provided"}
-            </p>
+  <div className="owner-transport-route">
+    <div className="owner-transport-route-item">
+      <span className="owner-transport-route-icon">📍</span>
 
-            <p>
-              <strong>Delivery:</strong>{" "}
-              {request.deliveryAddress || "Not provided"}
-            </p>
-          </div>
+      <div>
+        <strong>Pickup</strong>
+        <p>{request.pickupAddress || "Not provided"}</p>
+      </div>
+    </div>
 
-          <div className="owner-transport-details">
-            <p>
-              <strong>Business:</strong>{" "}
-              {request.listingId?.title || "N/A"}
-            </p>
+    <div className="owner-transport-route-line" />
 
-            <p>
-              <strong>Date:</strong>{" "}
-              {formatDate(request.requestedDate)}
-            </p>
+    <div className="owner-transport-route-item">
+      <span className="owner-transport-route-icon">🏁</span>
 
-            <p>
-              <strong>Time:</strong>{" "}
-              {request.requestedTime || "Not specified"}
-            </p>
+      <div>
+        <strong>Delivery</strong>
+        <p>{request.deliveryAddress || "Not provided"}</p>
+      </div>
+    </div>
+  </div>
 
-            <p>
-              <strong>Phone:</strong>{" "}
-              {request.customerPhone || "Not provided"}
-            </p>
-          </div>
+  <div className="owner-transport-details">
+    <p>
+      <span>🏢</span>
+      <strong>Business:</strong>{" "}
+      {request.listingId?.title || "N/A"}
+    </p>
 
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedRequest(request);
-              setModalStatus(request.status || "New");
+    <p>
+      <span>📅</span>
+      <strong>Date:</strong>{" "}
+      {formatDate(request.requestedDate)}
+    </p>
 
-              setQuoteAmount(
-                request.quoteAmount != null
-                  ? String(request.quoteAmount)
-                  : ""
-              );
+    <p>
+      <span>🕒</span>
+      <strong>Time:</strong>{" "}
+      {request.requestedTime || "Not specified"}
+    </p>
 
-              setEstimatedArrival(request.estimatedArrival || "");
-              setOwnerNotes(request.ownerNotes || "");
-              setDriverName(request.driverName || "");
-              setDriverPhone(request.driverPhone || "");
-              setVehicleDescription(
-                request.vehicleDescription || ""
-              );
-              setLicensePlate(request.licensePlate || "");
-            }}
-          >
-            View Details
-          </button>
-        </article>
+    <p>
+      <span>📞</span>
+      <strong>Phone:</strong>{" "}
+      {request.customerPhone || "Not provided"}
+    </p>
+  </div>
+
+  <button
+    type="button"
+    className="owner-transport-view-btn"
+    onClick={() => openRequest(request)}
+  >
+    View Details
+  </button>
+</article>
       ))}
     </section>
   ) : (
@@ -557,57 +559,54 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
 
               <div className="owner-transport-modal-body">
                 <div className="owner-transport-modal-section">
-                  <h3>Customer Information</h3>
+                  <h3>👤 Customer Information</h3>
 
     <p>
-      <strong>Name:</strong>{" "}
-      {selectedRequest.customerName || "Not provided"}
-    </p>
+  👤 <strong>Name:</strong> {selectedRequest.customerName || "Not provided"}
+</p>
 
-    <p>
-      <strong>Phone:</strong>{" "}
-      {selectedRequest.customerPhone || "Not provided"}
-    </p>
+<p>
+  📞 <strong>Phone:</strong> {selectedRequest.customerPhone || "Not provided"}
+</p>
 
-    <p>
-      <strong>Email:</strong>{" "}
-      {selectedRequest.customerEmail || "Not provided"}
-    </p>
+<p>
+  📧 <strong>Email:</strong> {selectedRequest.customerEmail || "Not provided"}
+</p>
   </div>
 
   <div className="owner-transport-modal-section">
-    <h3>Transportation Details</h3>
+    <h3>🚚 Transportation Details</h3>
 
     <p>
-      <strong>Service:</strong>{" "}
-      {selectedRequest.serviceType || "Not specified"}
-    </p>
+  🚚 <strong>Service:</strong>{" "}
+  {selectedRequest.serviceType || "Not specified"}
+</p>
 
-    <p>
-      <strong>Pickup:</strong>{" "}
-      {selectedRequest.pickupAddress || "Not provided"}
-    </p>
+<p>
+  📍 <strong>Pickup:</strong>{" "}
+  {selectedRequest.pickupAddress || "Not provided"}
+</p>
 
-    <p>
-      <strong>Delivery:</strong>{" "}
-      {selectedRequest.deliveryAddress || "Not provided"}
-    </p>
+<p>
+  🏁 <strong>Delivery:</strong>{" "}
+  {selectedRequest.deliveryAddress || "Not provided"}
+</p>
 
-    <p>
-      <strong>Requested Date:</strong>{" "}
-      {formatDate(selectedRequest.requestedDate)}
-    </p>
+<p>
+  📅 <strong>Requested Date:</strong>{" "}
+  {formatDate(selectedRequest.requestedDate)}
+</p>
 
-    <p>
-      <strong>Requested Time:</strong>{" "}
-      {selectedRequest.requestedTime || "Not specified"}
-    </p>
+<p>
+  🕒 <strong>Requested Time:</strong>{" "}
+  {selectedRequest.requestedTime || "Not specified"}
+</p>
   </div>
 
   <div className="owner-transport-modal-section">
-    <h3>Additional Information</h3>
+    <h3>📦 Additional Information</h3>
     <p>
-      <strong>Business:</strong>{" "}
+      🏢 <strong>Business:</strong>{" "}
       {selectedRequest.listingId?.title || "N/A"}
     </p>
 
@@ -752,6 +751,8 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
   <div className="owner-transport-quote-box">
     <h3>🚚 Driver Information</h3>
 
+    <div className="owner-driver-grid">
+
     <div className="owner-transport-modal-field">
       <label>Driver Name</label>
 
@@ -803,7 +804,8 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
         }
       />
     </div>
-  </div>
+    </div>
+    </div>
 )}
 
     <p>
@@ -812,7 +814,7 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
     </p>
 
     <div className="owner-transport-modal-section">
-  <h3>📍 Transportation Timeline</h3>
+  <h3>🕒 Transportation Timeline</h3>
 
   <div className="owner-transport-timeline">
 
