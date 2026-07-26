@@ -101,6 +101,57 @@ const completedCount = requests.filter(
   (request) => request.status === "Completed"
 ).length;
 
+const waitingForResponseCount = requests.filter(
+  (request) =>
+    request.status === "Quoted" &&
+    !request.customerRespondedAt
+).length;
+
+const estimatedRevenue = requests.reduce(
+  (total, request) => {
+    const amount = Number(request.quoteAmount);
+
+    if (
+      request.status === "Completed" &&
+      Number.isFinite(amount)
+    ) {
+      return total + amount;
+    }
+
+    return total;
+  },
+  0
+);
+
+const completedJobsCount = requests.filter(
+  (request) => request.status === "Completed"
+).length;
+
+const averageQuote =
+  requests
+    .filter(
+      (request) =>
+        Number.isFinite(Number(request.quoteAmount))
+    )
+    .reduce(
+      (sum, request) =>
+        sum + Number(request.quoteAmount),
+      0
+    ) /
+    Math.max(
+      requests.filter((request) =>
+        Number.isFinite(Number(request.quoteAmount))
+      ).length,
+      1
+    );
+
+const completionRate =
+  requests.length === 0
+    ? 0
+    : Math.round(
+        (completedJobsCount / requests.length) * 100
+      );
+
 const filteredRequests = requests.filter((request) => {
   const matchesStatus =
     selectedStatus === "All" ||
@@ -281,6 +332,80 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
     </div>
   </section>
 )}
+
+{/* Summary Cards */}
+<section className="owner-transport-summary">
+</section>
+
+{/* NEW Analytics */}
+{!loading && (
+  <section className="owner-transport-analytics">
+    <div className="owner-analytics-card">
+      <span>📋</span>
+      <div>
+        <p>Total Requests</p>
+        <strong>{requests.length}</strong>
+      </div>
+    </div>
+
+    <div className="owner-analytics-card">
+      <span>💰</span>
+      <div>
+        <p>Waiting for Response</p>
+        <strong>{waitingForResponseCount}</strong>
+      </div>
+    </div>
+
+    <div className="owner-analytics-card">
+      <span>✅</span>
+      <div>
+        <p>Accepted</p>
+        <strong>{acceptedCount}</strong>
+      </div>
+    </div>
+
+    <div className="owner-analytics-card">
+      <span>🚚</span>
+      <div>
+        <p>Active Deliveries</p>
+        <strong>{inProgressCount}</strong>
+      </div>
+    </div>
+
+    <div className="owner-analytics-card">
+      <span>🏁</span>
+      <div>
+        <p>Completed</p>
+        <strong>{completedCount}</strong>
+      </div>
+    </div>
+
+    <div className="owner-analytics-card revenue">
+      <span>💵</span>
+      <div>
+        <p>Estimated Revenue</p>
+        <strong>
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(estimatedRevenue)}
+        </strong>
+      </div>
+    </div>
+  </section>
+)}
+
+{/* Search + Sort */}
+<div className="owner-transport-controls">
+  <div className="owner-transport-search">
+  </div>
+
+  <div className="owner-transport-sort">
+  </div>
+</div>
+
+{/* Transportation Requests */}
+<section className="owner-transport-grid"></section>
 
 <div className="owner-transport-controls">
   <div className="owner-transport-search">
