@@ -333,80 +333,70 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
   </section>
 )}
 
-{/* Summary Cards */}
-<section className="owner-transport-summary">
-</section>
-
 {/* NEW Analytics */}
 {!loading && (
   <section className="owner-transport-analytics">
     <div className="owner-analytics-card">
-      <span>📋</span>
-      <div>
-        <p>Total Requests</p>
-        <strong>{requests.length}</strong>
-      </div>
-    </div>
+  <span>💰</span>
+  <div>
+    <p>Waiting for Response</p>
+    <strong>{waitingForResponseCount}</strong>
+  </div>
+</div>
 
-    <div className="owner-analytics-card">
-      <span>💰</span>
-      <div>
-        <p>Waiting for Response</p>
-        <strong>{waitingForResponseCount}</strong>
-      </div>
-    </div>
+<div className="owner-analytics-card">
+  <span>🚚</span>
+  <div>
+    <p>Active Deliveries</p>
+    <strong>{inProgressCount}</strong>
+  </div>
+</div>
 
-    <div className="owner-analytics-card">
-      <span>✅</span>
-      <div>
-        <p>Accepted</p>
-        <strong>{acceptedCount}</strong>
-      </div>
-    </div>
+<div className="owner-analytics-card revenue">
+  <span>💵</span>
+  <div>
+    <p>Estimated Revenue</p>
+    <strong>
+      {new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(estimatedRevenue)}
+    </strong>
+  </div>
+</div>
 
-    <div className="owner-analytics-card">
-      <span>🚚</span>
-      <div>
-        <p>Active Deliveries</p>
-        <strong>{inProgressCount}</strong>
-      </div>
-    </div>
+<div className="owner-analytics-card">
+  <span>📈</span>
+  <div>
+    <p>Average Quote</p>
+    <strong>
+      {new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(averageQuote)}
+    </strong>
+  </div>
+</div>
 
-    <div className="owner-analytics-card">
-      <span>🏁</span>
-      <div>
-        <p>Completed</p>
-        <strong>{completedCount}</strong>
-      </div>
-    </div>
+<div className="owner-analytics-card">
+  <span>📦</span>
+  <div>
+    <p>Total Completed</p>
+    <strong>{completedJobsCount}</strong>
+  </div>
+</div>
 
-    <div className="owner-analytics-card revenue">
-      <span>💵</span>
-      <div>
-        <p>Estimated Revenue</p>
-        <strong>
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          }).format(estimatedRevenue)}
-        </strong>
-      </div>
-    </div>
+<div className="owner-analytics-card">
+  <span>⭐</span>
+  <div>
+    <p>Completion Rate</p>
+    <strong>{completionRate}%</strong>
+  </div>
+</div>
   </section>
 )}
 
 {/* Search + Sort */}
-<div className="owner-transport-controls">
-  <div className="owner-transport-search">
-  </div>
-
-  <div className="owner-transport-sort">
-  </div>
-</div>
-
-{/* Transportation Requests */}
-<section className="owner-transport-grid"></section>
-
 <div className="owner-transport-controls">
   <div className="owner-transport-search">
     <input
@@ -435,113 +425,117 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
 </div>
 
         {!loading && requests.length > 0 && (
-          <section className="owner-transport-grid">
-            {sortedRequests.map((request) => (
-              <article
-                key={request._id}
-                className="owner-transport-card"
-              >
-                <div className="owner-transport-card-top">
-                  <div>
-                    <p className="owner-transport-service">
-                      {request.serviceType || "Transportation Service"}
-                    </p>
+  sortedRequests.length > 0 ? (
+    <section className="owner-transport-grid">
+      {sortedRequests.map((request) => (
+        <article
+          key={request._id}
+          className="owner-transport-card"
+        >
+          <div className="owner-transport-card-top">
+            <div>
+              <p className="owner-transport-service">
+                {request.serviceType || "Transportation Service"}
+              </p>
 
-                    <h2>{request.customerName}</h2>
-                  </div>
+              <h2>{request.customerName || "Unknown Customer"}</h2>
+            </div>
 
-                  <span
-  className={`owner-transport-status status-${(
-    request.status || "New"
+            <span
+              className={`owner-transport-status status-${(
+                request.status || "New"
+              )
+                .toLowerCase()
+                .replace(/\s+/g, "-")}`}
+            >
+              {request.status || "New"}
+            </span>
+          </div>
+
+          <div className="owner-transport-route">
+            <p>
+              <strong>Pickup:</strong>{" "}
+              {request.pickupAddress || "Not provided"}
+            </p>
+
+            <p>
+              <strong>Delivery:</strong>{" "}
+              {request.deliveryAddress || "Not provided"}
+            </p>
+          </div>
+
+          <div className="owner-transport-details">
+            <p>
+              <strong>Business:</strong>{" "}
+              {request.listingId?.title || "N/A"}
+            </p>
+
+            <p>
+              <strong>Date:</strong>{" "}
+              {formatDate(request.requestedDate)}
+            </p>
+
+            <p>
+              <strong>Time:</strong>{" "}
+              {request.requestedTime || "Not specified"}
+            </p>
+
+            <p>
+              <strong>Phone:</strong>{" "}
+              {request.customerPhone || "Not provided"}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedRequest(request);
+              setModalStatus(request.status || "New");
+
+              setQuoteAmount(
+                request.quoteAmount != null
+                  ? String(request.quoteAmount)
+                  : ""
+              );
+
+              setEstimatedArrival(request.estimatedArrival || "");
+              setOwnerNotes(request.ownerNotes || "");
+              setDriverName(request.driverName || "");
+              setDriverPhone(request.driverPhone || "");
+              setVehicleDescription(
+                request.vehicleDescription || ""
+              );
+              setLicensePlate(request.licensePlate || "");
+            }}
+          >
+            View Details
+          </button>
+        </article>
+      ))}
+    </section>
+  ) : (
+    <section className="owner-transport-empty-search">
+      <div className="owner-transport-empty-icon">🔍</div>
+
+      <h2>No transportation requests found</h2>
+
+      <p>No requests match your current search or filters.</p>
+
+      <button
+        type="button"
+        onClick={() => {
+          setSearchTerm("");
+          setSelectedStatus("All");
+        }}
+      >
+        Clear Search
+      </button>
+    </section>
   )
-    .toLowerCase()
-    .replace(/\s+/g, "-")}`}
->
-  {request.status || "New"}
-</span>
-                </div>
+)}
 
-                <div className="owner-transport-route">
-                  <p>
-                    <strong>Pickup:</strong>{" "}
-                    {request.pickupAddress}
-                  </p>
-
-                  <p>
-                    <strong>Delivery:</strong>{" "}
-                    {request.deliveryAddress}
-                  </p>
-                </div>
-
-                <div className="owner-transport-details">
-                  <p>
-                    <strong>Business:</strong>{" "}
-                    {request.listingId?.title || "N/A"}
-                  </p>
-
-                  <p>
-                    <strong>Date:</strong>{" "}
-                    {formatDate(request.requestedDate)}
-                  </p>
-
-                  <p>
-                    <strong>Time:</strong>{" "}
-                    {request.requestedTime || "Not specified"}
-                  </p>
-
-                  <p>
-                    <strong>Phone:</strong>{" "}
-                    {request.customerPhone}
-                  </p>
-                </div>
-
-                <button
-  type="button"
-  onClick={() => {
-    setSelectedRequest(request);
-    setModalStatus(request.status || "New");
-
-    setQuoteAmount(
-      request.quoteAmount != null
-        ? String(request.quoteAmount)
-        : ""
-    );
-
-    setEstimatedArrival(
-      request.estimatedArrival || ""
-    );
-
-    setOwnerNotes(
-      request.ownerNotes || ""
-    );
-
-    setDriverName(
-  request.driverName || ""
-);
-
-setDriverPhone(
-  request.driverPhone || ""
-);
-
-setVehicleDescription(
-  request.vehicleDescription || ""
-);
-
-setLicensePlate(
-  request.licensePlate || ""
-);
-  }}
->
-  View Details
-</button>
-              </article>
-            ))}
-          </section>
-
-        )}
-
-         {selectedRequest && (
-          <div className="owner-transport-modal-overlay">
+{selectedRequest && (
+        <div className="owner-transport-modal-overlay">
             <div className="owner-transport-modal">
               <div className="owner-transport-modal-header">
                 <div>
@@ -556,15 +550,14 @@ setLicensePlate(
                   type="button"
                   className="owner-transport-modal-close"
                   onClick={() => setSelectedRequest(null)}
-                  aria-label="Close request details"
-                >
+                  aria-label="Close request details">
                   ×
                 </button>
               </div>
 
               <div className="owner-transport-modal-body">
-  <div className="owner-transport-modal-section">
-    <h3>Customer Information</h3>
+                <div className="owner-transport-modal-section">
+                  <h3>Customer Information</h3>
 
     <p>
       <strong>Name:</strong>{" "}
@@ -1015,4 +1008,3 @@ setLicensePlate(
     </main>
   );
 }
-  
