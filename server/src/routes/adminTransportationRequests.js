@@ -683,6 +683,102 @@ router.patch(
 
 /*
 |--------------------------------------------------------------------------
+| ASSIGN OR UPDATE DRIVER
+|--------------------------------------------------------------------------
+*/
+router.patch(
+  "/:id/driver",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          message: "Invalid transportation request ID.",
+        });
+      }
+
+      const request =
+        await TransportationRequest.findById(id);
+
+      if (!request) {
+        return res.status(404).json({
+          message: "Transportation request not found.",
+        });
+      }
+
+      const {
+        driverName,
+        driverPhone,
+        vehicleDescription,
+        licensePlate,
+      } = req.body || {};
+
+      request.driverName = cleanText(driverName);
+      request.driverPhone = cleanText(driverPhone);
+      request.vehicleDescription = cleanText(
+        vehicleDescription
+      );
+      request.licensePlate = cleanText(licensePlate);
+
+      request.lastAdminUpdatedBy = req.admin.id;
+      request.lastAdminUpdatedAt = new Date();
+
+      request.adminAuditLog.push({
+        action: "Driver Assigned",
+        note: request.driverName
+          ? `Driver assigned: ${request.driverName}`
+          : "Driver information cleared.",
+        adminId: req.admin.id,
+        adminEmail: req.admin.email || "",
+      });
+
+      await request.save();
+
+      const updatedRequest =
+        await TransportationRequest.findById(
+          request._id
+        )
+          .populate(
+            "listingId",
+            "title description_en logoUrl imageUrl phone whatsapp website address city state zip status isVerified ownerId"
+          )
+          .populate(
+            "ownerId",
+            "name email phone role createdAt"
+          )
+          .populate(
+            "lastAdminUpdatedBy",
+            "email role"
+          )
+          .populate(
+            "adminAuditLog.adminId",
+            "email role"
+          )
+          .lean();
+
+      res.json({
+        message:
+          "Driver information updated successfully.",
+        request: updatedRequest,
+      });
+    } catch (error) {
+      console.error(
+        "Update transportation driver failed:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Unable to update driver information.",
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
 | GET ONE REQUEST
 |--------------------------------------------------------------------------
 |

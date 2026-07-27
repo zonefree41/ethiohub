@@ -37,6 +37,16 @@ const [editableStatus, setEditableStatus] = React.useState("New");
 const [updatingStatus, setUpdatingStatus] = React.useState(false);
 const [statusMessage, setStatusMessage] = React.useState("");
 
+const [driverForm, setDriverForm] = React.useState({
+  driverName: "",
+  driverPhone: "",
+  vehicleDescription: "",
+  licensePlate: "",
+});
+
+const [savingDriver, setSavingDriver] = React.useState(false);
+const [driverMessage, setDriverMessage] = React.useState("");
+
 const [loading, setLoading] = React.useState(false);
 const [detailsLoading, setDetailsLoading] = React.useState(false);
 const [error, setError] = React.useState("");
@@ -117,6 +127,14 @@ const [error, setError] = React.useState("");
 
       setSelectedRequest(data);
 setEditableStatus(data.status || "New");
+setDriverForm({
+  driverName: data.driverName || "",
+  driverPhone: data.driverPhone || "",
+  vehicleDescription: data.vehicleDescription || "",
+  licensePlate: data.licensePlate || "",
+});
+
+setDriverMessage("");
 setStatusMessage("");
     } catch (err) {
       setError(err.message || "Failed to load request details");
@@ -174,6 +192,61 @@ setStatusMessage("");
   }
 }
 
+async function saveDriverAssignment() {
+  if (!selectedRequest?._id) return;
+
+  setSavingDriver(true);
+  setDriverMessage("");
+
+  try {
+    const token = localStorage.getItem("adminToken");
+
+    const data = await apiPatch(
+      `/api/admin/transportation-requests/${selectedRequest._id}/driver`,
+      {
+        driverName: driverForm.driverName.trim(),
+        driverPhone: driverForm.driverPhone.trim(),
+        vehicleDescription:
+          driverForm.vehicleDescription.trim(),
+        licensePlate: driverForm.licensePlate.trim(),
+      },
+      token
+    );
+
+    setSelectedRequest(data.request);
+
+    setRequests((currentRequests) =>
+      currentRequests.map((request) =>
+        request._id === data.request._id
+          ? data.request
+          : request
+      )
+    );
+
+    setDriverForm({
+      driverName: data.request.driverName || "",
+      driverPhone: data.request.driverPhone || "",
+      vehicleDescription:
+        data.request.vehicleDescription || "",
+      licensePlate: data.request.licensePlate || "",
+    });
+
+    setDriverMessage(
+      data.message ||
+        "Driver information updated successfully."
+    );
+  } catch (error) {
+    console.error("Unable to save driver:", error);
+
+    setDriverMessage(
+      error.message ||
+        "Unable to update driver information."
+    );
+  } finally {
+    setSavingDriver(false);
+  }
+}
+
   React.useEffect(() => {
     if (!token) return;
 
@@ -201,6 +274,49 @@ setStatusMessage("");
     });
   }
 
+  function driverInformationChanged() {
+  if (!selectedRequest) return false;
+
+  return (
+    driverForm.driverName.trim() !==
+      (selectedRequest.driverName || "").trim() ||
+    driverForm.driverPhone.trim() !==
+      (selectedRequest.driverPhone || "").trim() ||
+    driverForm.vehicleDescription.trim() !==
+      (selectedRequest.vehicleDescription || "").trim() ||
+    driverForm.licensePlate.trim() !==
+      (selectedRequest.licensePlate || "").trim()
+  );
+}
+
+function getStatusClass(status) {
+  switch (status) {
+    case "New":
+      return "transport-status-new";
+
+    case "Quoted":
+      return "transport-status-quoted";
+
+    case "Accepted":
+      return "transport-status-accepted";
+
+    case "In Progress":
+      return "transport-status-progress";
+
+    case "Completed":
+      return "transport-status-completed";
+
+    case "Declined":
+      return "transport-status-declined";
+
+    case "Cancelled":
+      return "transport-status-cancelled";
+
+    default:
+      return "";
+  }
+}
+
   function formatDateTime(value) {
     if (!value) return "N/A";
 
@@ -224,14 +340,6 @@ setStatusMessage("");
       style: "currency",
       currency: "USD",
     });
-  }
-
-  function getStatusClass(requestStatus) {
-    return `transport-status transport-status-${String(
-      requestStatus || "new"
-    )
-      .toLowerCase()
-      .replace(/\s+/g, "-")}`;
   }
 
   const serviceTypes = React.useMemo(() => {
@@ -378,8 +486,9 @@ setStatusMessage("");
                   <th>Route</th>
                   <th>Requested</th>
                   <th>Quote</th>
-                  <th>Status</th>
-                  <th>Action</th>
+<th>Driver</th>
+<th>Status</th>
+<th>Action</th>
                 </tr>
               </thead>
 
@@ -425,11 +534,29 @@ setStatusMessage("");
 
                     <td>{formatMoney(request.quoteAmount)}</td>
 
-                    <td>
-                      <span className={getStatusClass(request.status)}>
-                        {request.status || "New"}
-                      </span>
-                    </td>
+<td>
+  {request.driverName ? (
+    <>
+      <strong>{request.driverName}</strong>
+      <br />
+      <small>{request.driverPhone}</small>
+    </>
+  ) : (
+    <span className="transport-no-driver">
+      Not Assigned
+    </span>
+  )}
+</td>
+
+<td>
+  <span
+    className={`transport-status-badge ${getStatusClass(
+      request.status || "New"
+    )}`}
+  >
+    {request.status || "New"}
+  </span>
+</td>
 
                     <td>
                       <button
@@ -495,9 +622,13 @@ setStatusMessage("");
 
                   <h2>{selectedRequest.customerName}</h2>
 
-                  <span className={getStatusClass(selectedRequest.status)}>
-                    {selectedRequest.status}
-                  </span>
+                  <span
+  className={`transport-status-badge ${getStatusClass(
+    selectedRequest.status || "New"
+  )}`}
+>
+  {selectedRequest.status || "New"}
+</span>
                 </div>
 
                 <button
@@ -607,28 +738,86 @@ setStatusMessage("");
                 </section>
 
                 <section>
-                  <h3>Driver</h3>
+  <h3>🚚 Driver Assignment</h3>
 
-                  <p>
-                    <strong>Name:</strong>{" "}
-                    {selectedRequest.driverName || "Not assigned"}
-                  </p>
+  <label>Driver Name</label>
 
-                  <p>
-                    <strong>Phone:</strong>{" "}
-                    {selectedRequest.driverPhone || "N/A"}
-                  </p>
+  <input
+    type="text"
+    value={driverForm.driverName}
+    onChange={(e) =>
+      setDriverForm({
+        ...driverForm,
+        driverName: e.target.value,
+      })
+    }
+    placeholder="Driver Name"
+  />
 
-                  <p>
-                    <strong>Vehicle:</strong>{" "}
-                    {selectedRequest.vehicleDescription || "N/A"}
-                  </p>
+  <label>Phone</label>
 
-                  <p>
-                    <strong>License plate:</strong>{" "}
-                    {selectedRequest.licensePlate || "N/A"}
-                  </p>
-                </section>
+  <input
+    type="text"
+    value={driverForm.driverPhone}
+    onChange={(e) =>
+      setDriverForm({
+        ...driverForm,
+        driverPhone: e.target.value,
+      })
+    }
+    placeholder="Driver Phone"
+  />
+
+  <label>Vehicle</label>
+
+  <input
+    type="text"
+    value={driverForm.vehicleDescription}
+    onChange={(e) =>
+      setDriverForm({
+        ...driverForm,
+        vehicleDescription: e.target.value,
+      })
+    }
+    placeholder="Vehicle Description"
+  />
+
+  <label>License Plate</label>
+
+  <input
+    type="text"
+    value={driverForm.licensePlate}
+    onChange={(e) =>
+      setDriverForm({
+        ...driverForm,
+        licensePlate: e.target.value,
+      })
+    }
+    placeholder="License Plate"
+  />
+
+ <button
+  type="button"
+  className="transport-save-driver-btn"
+  onClick={saveDriverAssignment}
+  disabled={
+    savingDriver ||
+    !driverInformationChanged()
+  }
+>
+  {savingDriver
+    ? "Saving..."
+    : driverInformationChanged()
+    ? "Save Driver"
+    : "No Changes"}
+</button>
+
+  {driverMessage && (
+    <p className="transport-driver-message">
+      {driverMessage}
+    </p>
+  )}
+</section>
               </div>
 
               <section className="transport-admin-status-editor">
@@ -671,10 +860,106 @@ setStatusMessage("");
   )}
 </section>
 
+<section className="transport-admin-history">
+  <h3>📜 Activity History</h3>
+
+  {!selectedRequest?.adminAuditLog?.length ? (
+    <p>No activity recorded yet.</p>
+  ) : (
+    <div className="transport-admin-history-list">
+      {[...selectedRequest.adminAuditLog]
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt) -
+            new Date(a.createdAt)
+        )
+        .map((item, index) => (
+          <div
+            key={item._id || index}
+            className="transport-admin-history-item"
+          >
+            <div className="transport-history-header">
+              <strong>{item.action}</strong>
+
+              <span>
+                {formatDateTime(item.createdAt)}
+              </span>
+            </div>
+
+            {item.previousStatus &&
+              item.newStatus && (
+                <p>
+                  <strong>Status:</strong>{" "}
+                  {item.previousStatus}
+                  {" → "}
+                  {item.newStatus}
+                </p>
+              )}
+
+            {item.note && (
+              <p>
+                <strong>Details:</strong>{" "}
+                {item.note}
+              </p>
+            )}
+
+            <p>
+              <strong>Admin:</strong>{" "}
+              {item.adminEmail ||
+                item.adminId?.email ||
+                "Unknown"}
+            </p>
+          </div>
+        ))}
+    </div>
+  )}
+</section>
+
               <section className="transport-admin-notes">
                 <h3>Owner Notes</h3>
                 <p>{selectedRequest.ownerNotes || "No owner notes."}</p>
               </section>
+
+              <section className="transport-admin-history">
+  <h3>Status History</h3>
+
+  {!selectedRequest.adminAuditLog ||
+  selectedRequest.adminAuditLog.length === 0 ? (
+    <p>No status changes have been recorded.</p>
+  ) : (
+    <div className="transport-admin-history-list">
+      {[...selectedRequest.adminAuditLog]
+        .reverse()
+        .map((entry) => (
+          <div
+            key={entry._id || entry.createdAt}
+            className="transport-admin-history-item"
+          >
+            <strong>
+              {entry.previousStatus} → {entry.newStatus}
+            </strong>
+
+            <div>
+              {formatDateTime(entry.createdAt)}
+            </div>
+
+            <div>
+              Admin:{" "}
+              {entry.adminEmail ||
+                entry.adminId?.email ||
+                "Unknown"}
+            </div>
+
+            {entry.note && (
+              <div>
+                Note: {entry.note}
+              </div>
+            )}
+          </div>
+        ))}
+    </div>
+  )}
+</section>
 
               <section className="transport-admin-request-meta">
                 <span>
