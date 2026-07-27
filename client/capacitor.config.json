@@ -1,5 +1,10 @@
 {
   "appId": "com.hubethio.app",
   "appName": "HubEthio",
-  "webDir": "dist"
+  "webDir": "dist",
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
 }
