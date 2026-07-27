@@ -840,3 +840,148 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================
+   Cross-Device Rendering Protection
+   Android WebView, Samsung Internet, iOS
+========================================== */
+
+.owner-transport-page {
+  color-scheme: light;
+  background-color: #f8fafc;
+  color: #0f172a;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.owner-transport-card {
+  background-color: #ffffff;
+  color: #0f172a;
+  overflow: hidden;
+}
+
+.owner-transport-card,
+.owner-transport-card * {
+  box-sizing: border-box;
+}
+
+/* Header text */
+.owner-transport-customer {
+  color: #0f172a;
+  -webkit-text-fill-color: #0f172a;
+}
+
+.owner-transport-service {
+  color: #2563eb;
+  -webkit-text-fill-color: #2563eb;
+}
+
+/* Route information */
+.owner-transport-route {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.owner-transport-route-item {
+  min-width: 0;
+}
+
+.owner-transport-route-item > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.owner-transport-route-item strong {
+  color: #0f172a;
+  -webkit-text-fill-color: #0f172a;
+}
+
+.owner-transport-route-item p {
+  color: #475569;
+  -webkit-text-fill-color: #475569;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+/* Business, date, time and phone rows */
+.owner-transport-details {
+  color: #334155;
+}
+
+.owner-transport-details p {
+  color: #334155;
+  -webkit-text-fill-color: #334155;
+  line-height: 1.5;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.owner-transport-details p strong {
+  color: #0f172a;
+  -webkit-text-fill-color: #0f172a;
+}
+
+.owner-transport-details p span {
+  flex: 0 0 auto;
+  color: initial;
+  -webkit-text-fill-color: initial;
+}
+
+/* Keep status badges readable */
+.owner-transport-status {
+  flex-shrink: 0;
+  white-space: nowrap;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Keep button consistent on Android */
+.owner-transport-view-btn {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #2563eb;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  opacity: 1;
+}
+
+/* Prevent Android tap highlighting */
+.owner-transport-card button,
+.owner-summary-card {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 700px) {
+  .owner-transport-page {
+    padding: 20px 12px;
+  }
+
+  .owner-transport-card {
+    padding: 18px;
+  }
+
+  .owner-transport-card-top {
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .owner-transport-route {
+    margin: 14px 0;
+    padding: 14px;
+  }
+
+  .owner-transport-details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 0 0 18px;
+  }
+
+  .owner-transport-details p {
+    margin: 0;
+    align-items: flex-start;
+  }
+}

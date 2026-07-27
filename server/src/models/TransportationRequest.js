@@ -200,6 +200,80 @@ customerRespondedAt: {
   default: null,
 },
 
+adminNotes: {
+  type: String,
+  trim: true,
+  maxlength: 4000,
+  default: "",
+},
+
+adminCancellationReason: {
+  type: String,
+  trim: true,
+  maxlength: 1000,
+  default: "",
+},
+
+lastAdminUpdatedBy: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "AdminUser",
+  default: null,
+},
+
+lastAdminUpdatedAt: {
+  type: Date,
+  default: null,
+},
+
+adminAuditLog: {
+  type: [
+    {
+      action: {
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: 100,
+      },
+
+      previousStatus: {
+        type: String,
+        default: "",
+      },
+
+      newStatus: {
+        type: String,
+        default: "",
+      },
+
+      note: {
+        type: String,
+        trim: true,
+        maxlength: 2000,
+        default: "",
+      },
+
+      adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "AdminUser",
+        required: true,
+      },
+
+      adminEmail: {
+        type: String,
+        trim: true,
+        lowercase: true,
+        default: "",
+      },
+
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  default: [],
+},
+
     ownerEmailSentAt: {
       type: Date,
       default: null,

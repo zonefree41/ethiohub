@@ -25,6 +25,7 @@ import { expireTrials } from "./utils/expireTrials.js";
 import { sendTrialReminderEmails } from "./jobs/sendTrialReminderEmails.js";
 import { startDailyJobs } from "./jobs/dailyJobs.js";
 import sitemapRoutes from "./routes/sitemap.js";
+import adminTransportationRoutes from "./routes/adminTransportationRequests.js";
 
 const app = express();
 
@@ -68,26 +69,81 @@ app.use(
 | CORS
 |--------------------------------------------------------------------------
 */
+/*
+|--------------------------------------------------------------------------
+| CORS
+|--------------------------------------------------------------------------
+*/
+
 const allowedOrigins = [
   process.env.CLIENT_ORIGIN,
   process.env.CLIENT_URL,
+
+  // Production website
+  "https://hubethio.com",
+  "https://www.hubethio.com",
+
+  // Local web development
   "http://localhost:5173",
+  "http://127.0.0.1:5173",
+
+  // Capacitor Android
+  "http://localhost",
   "https://localhost",
+
+  // Capacitor iOS
   "capacitor://localhost",
-];
+].filter(Boolean);
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+      // Allow tools such as curl, Postman and server-to-server requests
+      // that do not send an Origin header.
+      if (!origin) {
+        return callback(null, true);
       }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.error(`❌ CORS blocked origin: ${origin}`);
+
+      return callback(
+        new Error(`CORS policy does not allow origin: ${origin}`)
+      );
     },
+
     credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
+
+    optionsSuccessStatus: 204,
   })
 );
+
+app.use((err, req, res, next) => {
+  if (err?.message?.includes("CORS")) {
+    return res.status(403).json({
+      message: err.message,
+    });
+  }
+
+  next(err);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -121,6 +177,7 @@ app.use("/api/owner/listings", ownerListingRoutes);
 app.use("/api/stripe", stripeCheckoutRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
+app.use("/api/admin/transportation-requests", adminTransportationRoutes);
 
 app.use(
   "/api/transportation-requests",
