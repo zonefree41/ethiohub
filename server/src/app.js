@@ -31,7 +31,13 @@ const app = express();
 
 app.set("trust proxy", 1);
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: {
+      policy: "cross-origin",
+    },
+  })
+);
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
