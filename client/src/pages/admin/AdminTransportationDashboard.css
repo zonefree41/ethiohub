@@ -1,0 +1,547 @@
+.transport-admin-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(22, 163, 74, 0.08), transparent 28%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  padding: 32px 20px 60px;
+  color: #0f172a;
+}
+
+.transport-admin-container {
+  width: min(1500px, 100%);
+  margin: 0 auto;
+}
+
+.transport-admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 30px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+}
+
+.transport-admin-header h1 {
+  margin: 6px 0 10px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  color: #0f172a;
+}
+
+.transport-admin-header p {
+  max-width: 760px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.transport-admin-label {
+  margin: 0;
+  color: #15803d;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.transport-admin-back {
+  display: inline-flex;
+  margin-bottom: 18px;
+  color: #15803d;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.transport-admin-back:hover {
+  text-decoration: underline;
+}
+
+.transport-admin-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.transport-admin-header-actions button,
+.transport-admin-filters button,
+.transport-admin-table button,
+.transport-admin-pagination button {
+  border: none;
+  border-radius: 10px;
+  background: #15803d;
+  color: #ffffff;
+  padding: 11px 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.transport-admin-header-actions button:hover,
+.transport-admin-filters button:hover,
+.transport-admin-table button:hover,
+.transport-admin-pagination button:hover:not(:disabled) {
+  background: #166534;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(21, 128, 61, 0.2);
+}
+
+.transport-admin-header-actions button:last-child {
+  background: #334155;
+}
+
+.transport-admin-header-actions button:last-child:hover {
+  background: #1e293b;
+}
+
+.transport-admin-error {
+  margin-bottom: 20px;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  background: #fff1f2;
+  color: #b91c1c;
+  padding: 14px 18px;
+  font-weight: 700;
+}
+
+.transport-admin-summary {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.transport-admin-summary article {
+  min-height: 126px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.transport-admin-summary span {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.transport-admin-summary strong {
+  color: #0f172a;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.transport-admin-summary article:nth-child(1) {
+  border-top: 4px solid #2563eb;
+}
+
+.transport-admin-summary article:nth-child(2) {
+  border-top: 4px solid #f59e0b;
+}
+
+.transport-admin-summary article:nth-child(3) {
+  border-top: 4px solid #16a34a;
+}
+
+.transport-admin-summary article:nth-child(4) {
+  border-top: 4px solid #dc2626;
+}
+
+.transport-admin-summary article:nth-child(5),
+.transport-admin-summary article:nth-child(6) {
+  border-top: 4px solid #7c3aed;
+}
+
+.transport-admin-filters {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) 220px 240px;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 18px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.transport-admin-filters form {
+  display: flex;
+  gap: 10px;
+}
+
+.transport-admin-filters input,
+.transport-admin-filters select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0 14px;
+  color: #0f172a;
+  font: inherit;
+  outline: none;
+}
+
+.transport-admin-filters input:focus,
+.transport-admin-filters select:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+}
+
+.transport-admin-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.transport-admin-table {
+  width: 100%;
+  min-width: 1180px;
+  border-collapse: collapse;
+}
+
+.transport-admin-table th,
+.transport-admin-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.transport-admin-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.transport-admin-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.transport-admin-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.transport-admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.transport-admin-table td strong {
+  display: inline-block;
+  color: #0f172a;
+}
+
+.transport-admin-table td span {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.transport-admin-table td > .transport-status {
+  display: inline-flex;
+  margin-top: 0;
+}
+
+.transport-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.transport-status-new {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.transport-status-quoted {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.transport-status-accepted {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.transport-status-declined {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.transport-status-in-progress {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.transport-status-completed {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.transport-status-cancelled {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.transport-admin-state {
+  display: grid;
+  place-items: center;
+  min-height: 230px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.transport-admin-state h2 {
+  margin: 14px 0 6px;
+}
+
+.transport-admin-state p {
+  margin: 0;
+  color: #64748b;
+}
+
+.transport-admin-spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid #dbeafe;
+  border-top-color: #15803d;
+  border-radius: 50%;
+  animation: transport-spin 0.8s linear infinite;
+}
+
+@keyframes transport-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.transport-admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.transport-admin-pagination span {
+  color: #475569;
+  font-weight: 700;
+}
+
+.transport-admin-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.transport-admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.72);
+  padding: 24px;
+  backdrop-filter: blur(4px);
+}
+
+.transport-admin-modal {
+  width: min(1000px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  background: #ffffff;
+  padding: 28px;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+}
+
+.transport-admin-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.transport-admin-modal-header h2 {
+  margin: 6px 0 12px;
+  color: #0f172a;
+  font-size: 2rem;
+}
+
+.transport-admin-modal-close {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.transport-admin-modal-close:hover {
+  background: #e2e8f0;
+}
+
+.transport-admin-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.transport-admin-details-grid section,
+.transport-admin-notes {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 18px;
+}
+
+.transport-admin-details-grid h3,
+.transport-admin-notes h3 {
+  margin: 0 0 14px;
+  color: #166534;
+  font-size: 1rem;
+}
+
+.transport-admin-details-grid p,
+.transport-admin-notes p {
+  margin: 8px 0;
+  color: #475569;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.transport-admin-details-grid strong {
+  color: #0f172a;
+}
+
+.transport-admin-notes {
+  margin-top: 18px;
+}
+
+.transport-admin-request-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 18px;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 1250px) {
+  .transport-admin-summary {
+    grid-template-columns: repeat(3, minmax(160px, 1fr));
+  }
+
+  .transport-admin-filters {
+    grid-template-columns: 1fr 190px 210px;
+  }
+}
+
+@media (max-width: 850px) {
+  .transport-admin-page {
+    padding: 20px 12px 40px;
+  }
+
+  .transport-admin-header {
+    flex-direction: column;
+    padding: 22px;
+  }
+
+  .transport-admin-summary {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+
+  .transport-admin-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .transport-admin-filters form {
+    flex-direction: column;
+  }
+
+  .transport-admin-filters button {
+    width: 100%;
+  }
+
+  .transport-admin-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .transport-admin-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .transport-admin-summary article {
+    min-height: 105px;
+  }
+
+  .transport-admin-header-actions {
+    width: 100%;
+  }
+
+  .transport-admin-header-actions button {
+    flex: 1;
+  }
+
+  .transport-admin-modal-backdrop {
+    padding: 10px;
+  }
+
+  .transport-admin-modal {
+    border-radius: 18px;
+    padding: 20px;
+  }
+
+  .transport-admin-modal-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .transport-admin-request-meta {
+    flex-direction: column;
+  }
+}

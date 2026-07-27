@@ -6,6 +6,7 @@ import Listing from "./pages/Listing.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminTransportationVerification from "./pages/admin/AdminTransportationVerification.jsx";
+import AdminTransportationDashboard from "./pages/admin/AdminTransportationDashboard.jsx";
 import OwnerTransportationDashboard from "./pages/owner/OwnerTransportationDashboard.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PaymentCancelled from "./pages/PaymentCancelled.jsx";
@@ -58,6 +59,10 @@ export default function App() {
 
 if (path.startsWith("/admin/transportation-verification")) {
   return <AdminTransportationVerification />;
+}
+
+if (path.startsWith("/admin/transportation-requests")) {
+  return <AdminTransportationDashboard />;
 }
 
 if (path.startsWith("/admin")) return <AdminDashboard />;

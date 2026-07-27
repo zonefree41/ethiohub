@@ -302,6 +302,13 @@ async function deleteBusinessRequest(id, businessName) {
   🚚 Transportation Verification
 </a>
 
+<a
+  href="/admin/transportation-requests"
+  className="admin-btn-transport"
+>
+  📦 Transportation Requests
+</a>
+
             <button type="button" onClick={logout}>
               Logout
             </button>

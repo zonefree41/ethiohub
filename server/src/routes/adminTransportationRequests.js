@@ -573,6 +573,116 @@ router.get(
 
 /*
 |--------------------------------------------------------------------------
+| UPDATE REQUEST STATUS
+|--------------------------------------------------------------------------
+*/
+router.patch(
+  "/:id/status",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { status, note = "" } = req.body || {};
+
+      const allowedStatuses = [
+        "New",
+        "Quoted",
+        "Accepted",
+        "Declined",
+        "In Progress",
+        "Completed",
+        "Cancelled",
+      ];
+
+      if (
+        !mongoose.Types.ObjectId.isValid(
+          req.params.id
+        )
+      ) {
+        return res.status(400).json({
+          message:
+            "Invalid transportation request ID.",
+        });
+      }
+
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+          message:
+            "Invalid transportation request status.",
+        });
+      }
+
+      const request =
+        await TransportationRequest.findById(
+          req.params.id
+        );
+
+      if (!request) {
+        return res.status(404).json({
+          message:
+            "Transportation request not found.",
+        });
+      }
+
+      const previousStatus = request.status;
+
+      request.status = status;
+      request.lastAdminUpdatedBy = req.admin.id;
+      request.lastAdminUpdatedAt = new Date();
+
+      request.adminAuditLog.push({
+        action: "Status Updated",
+        previousStatus,
+        newStatus: status,
+        note: String(note || "").trim(),
+        adminId: req.admin.id,
+        adminEmail: req.admin.email || "",
+      });
+
+      await request.save();
+
+      const updatedRequest =
+        await TransportationRequest.findById(
+          request._id
+        )
+          .populate(
+            "listingId",
+            "title description_en logoUrl imageUrl phone whatsapp website address city state zip status isVerified ownerId"
+          )
+          .populate(
+            "ownerId",
+            "name email phone role createdAt"
+          )
+          .populate(
+            "lastAdminUpdatedBy",
+            "email role"
+          )
+          .populate(
+            "adminAuditLog.adminId",
+            "email role"
+          )
+          .lean();
+
+      res.json({
+        message:
+          "Transportation request status updated successfully.",
+        request: updatedRequest,
+      });
+    } catch (error) {
+      console.error(
+        "Update transportation request status failed:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Failed to update transportation request status.",
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
 | GET ONE REQUEST
 |--------------------------------------------------------------------------
 |
