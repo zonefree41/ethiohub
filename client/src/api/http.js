@@ -1,4 +1,4 @@
-import { CapacitorHttp } from "@capacitor/core";
+import { Capacitor, CapacitorHttp } from "@capacitor/core";
 
 const ENV_API = import.meta.env.VITE_API_URL?.trim();
 
@@ -68,14 +68,36 @@ export async function apiGet(path, token) {
   try {
     console.log("GET:", url);
 
-    const response = await CapacitorHttp.get({
-      url,
+    // Android/iOS: use native HTTP
+    if (Capacitor.isNativePlatform()) {
+      const response = await CapacitorHttp.get({
+        url,
+        headers: buildHeaders(token),
+        connectTimeout: 15000,
+        readTimeout: 30000,
+      });
+
+      return handleResponse(response);
+    }
+
+    // Browser/localhost: use fetch without cache
+    const response = await fetch(url, {
+      method: "GET",
       headers: buildHeaders(token),
-      connectTimeout: 15000,
-      readTimeout: 30000,
+      cache: "no-store",
     });
 
-    return handleResponse(response);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data?.message ||
+          data?.error ||
+          `Request failed with status ${response.status}`
+      );
+    }
+
+    return data;
   } catch (err) {
     handleRequestError(err, "GET", path);
   }
