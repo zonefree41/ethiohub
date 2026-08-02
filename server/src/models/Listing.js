@@ -347,6 +347,45 @@ furnished: {
   default: false,
 },
 
+privateEntrance: {
+  type: Boolean,
+  default: false,
+},
+
+bathroomType: {
+  type: String,
+  enum: ["Private", "Shared", "None", ""],
+  default: "",
+},
+
+kitchenAccess: {
+  type: Boolean,
+  default: false,
+},
+
+laundryAccess: {
+  type: Boolean,
+  default: false,
+},
+
+maximumOccupants: {
+  type: Number,
+  default: null,
+  min: 1,
+},
+
+ownerLivesOnProperty: {
+  type: Boolean,
+  default: false,
+},
+
+housingNotes: {
+  type: String,
+  default: "",
+  trim: true,
+  maxlength: 1500,
+},
+
 propertyImages: [
   {
     type: String,

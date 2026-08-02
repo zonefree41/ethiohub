@@ -348,6 +348,8 @@ router.post("/submissions", async (req, res) => {
   tags = [],
   submittedBy = {},
 
+
+  availabilityStatus = "available",    
   monthlyRent = null,
   bedrooms = null,
   bathrooms = null,
@@ -358,6 +360,14 @@ router.post("/submissions", async (req, res) => {
   petsAllowed = false,
   utilitiesIncluded = false,
   furnished = false,
+
+  privateEntrance = false,
+bathroomType = "",
+kitchenAccess = false,
+laundryAccess = false,
+maximumOccupants = null,
+ownerLivesOnProperty = false,
+housingNotes = "",
   
   propertyImages = [],
 propertyVideoUrl = "",
@@ -410,12 +420,13 @@ if (spamError) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const numberFields = {
+   const numberFields = {
   monthlyRent,
   bedrooms,
   bathrooms,
   squareFeet,
   securityDeposit,
+  maximumOccupants,
 };
 
 const cleanedNumbers = {};
@@ -436,13 +447,44 @@ for (const [field, value] of Object.entries(numberFields)) {
   }
 }
 
+if (
+  cleanedNumbers.maximumOccupants !== null &&
+  cleanedNumbers.maximumOccupants < 1
+) {
+  return res.status(400).json({
+    message: "Maximum occupants must be at least 1.",
+  });
+}
+
 const cleanedBooleans = {
   parking: parking === true || parking === "true",
   petsAllowed: petsAllowed === true || petsAllowed === "true",
   utilitiesIncluded:
     utilitiesIncluded === true || utilitiesIncluded === "true",
   furnished: furnished === true || furnished === "true",
+
+  privateEntrance:
+    privateEntrance === true || privateEntrance === "true",
+
+  kitchenAccess:
+    kitchenAccess === true || kitchenAccess === "true",
+
+  laundryAccess:
+    laundryAccess === true || laundryAccess === "true",
+
+  ownerLivesOnProperty:
+    ownerLivesOnProperty === true ||
+    ownerLivesOnProperty === "true",
 };
+
+if (
+  availabilityStatus &&
+  !["available", "rented"].includes(availabilityStatus)
+) {
+  return res.status(400).json({
+    message: "Invalid housing availability status.",
+  });
+}
 
 if (
   leaseTerm &&
@@ -450,6 +492,15 @@ if (
 ) {
   return res.status(400).json({
     message: "Invalid lease term.",
+  });
+}
+
+if (
+  bathroomType &&
+  !["Private", "Shared", "None"].includes(bathroomType)
+) {
+  return res.status(400).json({
+    message: "Invalid bathroom type.",
   });
 }
 
@@ -476,6 +527,13 @@ if (
       tags,
       submittedBy,
 
+      availabilityStatus,
+availableFrom:
+  availableFrom &&
+  !Number.isNaN(new Date(availableFrom).getTime())
+    ? new Date(availableFrom)
+    : null,
+
       monthlyRent: cleanedNumbers.monthlyRent,
 bedrooms: cleanedNumbers.bedrooms,
 bathrooms: cleanedNumbers.bathrooms,
@@ -486,6 +544,18 @@ parking: cleanedBooleans.parking,
 petsAllowed: cleanedBooleans.petsAllowed,
 utilitiesIncluded: cleanedBooleans.utilitiesIncluded,
 furnished: cleanedBooleans.furnished,
+
+privateEntrance: cleanedBooleans.privateEntrance,
+bathroomType,
+kitchenAccess: cleanedBooleans.kitchenAccess,
+laundryAccess: cleanedBooleans.laundryAccess,
+maximumOccupants: cleanedNumbers.maximumOccupants,
+ownerLivesOnProperty:
+  cleanedBooleans.ownerLivesOnProperty,
+housingNotes:
+  typeof housingNotes === "string"
+    ? housingNotes.trim()
+    : "",
 
 beautyServices: req.body.beautyServices || [],
 beautyWalkInsWelcome: req.body.beautyWalkInsWelcome || false,
