@@ -7,6 +7,7 @@ import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminTransportationVerification from "./pages/admin/AdminTransportationVerification.jsx";
 import AdminTransportationDashboard from "./pages/admin/AdminTransportationDashboard.jsx";
+import AdminHousingRequests from "./pages/admin/AdminHousingRequests.jsx";
 import OwnerTransportationDashboard from "./pages/owner/OwnerTransportationDashboard.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PaymentCancelled from "./pages/PaymentCancelled.jsx";
@@ -27,6 +28,8 @@ import Saved from "./pages/Saved.jsx";
 import { trackPageView } from "./utils/analytics.js";
 import TransportationQuotePage
   from "./pages/TransportationQuotePage.jsx";
+  import HousingRequests from "./pages/HousingRequests.jsx";
+  import SubmitHousingRequest from "./pages/SubmitHousingRequest.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -63,6 +66,18 @@ if (path.startsWith("/admin/transportation-verification")) {
 
 if (path.startsWith("/admin/transportation-requests")) {
   return <AdminTransportationDashboard />;
+}
+
+if (path.startsWith("/submit-housing-request")) {
+  return <SubmitHousingRequest />;
+}
+
+if (path.startsWith("/housing-requests")) {
+  return <HousingRequests />;
+}
+
+if (path.startsWith("/admin/housing-requests")) {
+  return <AdminHousingRequests />;
 }
 
 if (path.startsWith("/admin")) return <AdminDashboard />;

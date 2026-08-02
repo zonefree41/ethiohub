@@ -17,6 +17,12 @@ export default function Home() {
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [recentListings, setRecentListings] = React.useState([]);
 
+  const [housingRequests, setHousingRequests] =
+  React.useState([]);
+
+const [housingRequestsLoading, setHousingRequestsLoading] =
+  React.useState(false);
+
   const [businessRequestForm, setBusinessRequestForm] = React.useState({
     businessName: "",
     category: "",
@@ -132,6 +138,43 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
   }, []);
 
   React.useEffect(() => {
+  let active = true;
+
+  async function loadHousingRequests() {
+    try {
+      setHousingRequestsLoading(true);
+
+      const data = await apiGet(
+        "/api/housing-requests"
+      );
+
+      if (!active) return;
+
+      setHousingRequests(
+        Array.isArray(data)
+          ? data.slice(0, 3)
+          : []
+      );
+    } catch (error) {
+      console.error(
+        "Failed to load homepage housing requests:",
+        error
+      );
+    } finally {
+      if (active) {
+        setHousingRequestsLoading(false);
+      }
+    }
+  }
+
+  loadHousingRequests();
+
+  return () => {
+    active = false;
+  };
+}, []);
+
+  React.useEffect(() => {
   async function loadRecentListings() {
     try {
       const recentIds = JSON.parse(
@@ -173,6 +216,47 @@ function removeRecentListing(id) {
   setRecentListings((prev) =>
     prev.filter((item) => item._id !== id)
   );
+}
+
+function getHousingPublicName(name) {
+  if (!name) return "Housing Seeker";
+
+  const parts = name.trim().split(/\s+/);
+
+  if (parts.length === 1) {
+    return parts[0];
+  }
+
+  return `${parts[0]} ${parts[1][0]}.`;
+}
+
+function formatHousingMoney(value) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return "$0";
+  }
+
+  return number.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
+}
+
+function formatHousingPhone(value) {
+  if (!value) return "";
+
+  const digits = String(value).replace(/\D/g, "");
+
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(
+      3,
+      6
+    )}-${digits.slice(6)}`;
+  }
+
+  return value;
 }
 
   function goSearch(e) {
@@ -330,17 +414,30 @@ function removeRecentListing(id) {
 
             {availableSubcategories.length > 0 && (
   <select
-    value={subcategory}
-    onChange={(e) => setSubcategory(e.target.value)}
-    className="home-input"
-  >
-    <option value="">All Subcategories</option>
-    {availableSubcategories.map((sub) => (
-      <option key={sub} value={sub}>
-        {sub}
-      </option>
-    ))}
-  </select>
+  value={subcategory}
+  onChange={(e) => {
+    const value = e.target.value;
+
+    if (
+      categorySlug === "housing-rentals" &&
+      value === "Looking for Housing"
+    ) {
+      window.location.href = "/housing-requests";
+      return;
+    }
+
+    setSubcategory(value);
+  }}
+  className="home-input"
+>
+  <option value="">All Subcategories</option>
+
+  {availableSubcategories.map((sub) => (
+    <option key={sub} value={sub}>
+      {sub}
+    </option>
+  ))}
+</select>
 )}
 
             <div className="home-location-row">
@@ -613,6 +710,119 @@ function removeRecentListing(id) {
             )}
           </section>
         )}
+
+        <section className="home-housing-requests">
+  <div className="home-section-heading">
+    <div>
+      <p className="home-housing-kicker">
+        🏠 Housing Marketplace
+      </p>
+
+      <h2>People Looking for Housing</h2>
+
+      <p>
+        Have a room, basement, apartment, or shared space available?
+        Connect directly with approved housing seekers.
+      </p>
+    </div>
+
+    <a href="/housing-requests" className="home-section-link">
+      View All Requests →
+    </a>
+  </div>
+
+  {housingRequestsLoading ? (
+    <div className="home-housing-empty">
+      Loading housing requests...
+    </div>
+  ) : housingRequests.length === 0 ? (
+    <div className="home-housing-empty">
+      No approved housing requests yet.
+    </div>
+  ) : (
+    <div className="home-housing-grid">
+      {housingRequests.map((request) => (
+        <article
+          className="home-housing-card"
+          key={request._id}
+        >
+          <div className="home-housing-card-top">
+            <div>
+              <span className="home-housing-label">
+                Looking for housing
+              </span>
+
+              <h3>
+                {getHousingPublicName(request.requesterName)}
+              </h3>
+            </div>
+
+            <span className="home-housing-approved">
+              ✓ Approved
+            </span>
+          </div>
+
+          <div className="home-housing-types">
+            {(request.housingTypes || []).map((type) => (
+              <span key={type}>{type}</span>
+            ))}
+          </div>
+
+          <p>
+            <strong>Preferred areas:</strong>{" "}
+            {request.preferredCities?.length
+              ? request.preferredCities.join(", ")
+              : "Flexible"}
+            {request.preferredState
+              ? `, ${request.preferredState}`
+              : ""}
+          </p>
+
+          <p>
+            <strong>Budget:</strong>{" "}
+            {formatHousingMoney(request.budgetMin)}–
+            {formatHousingMoney(request.budgetMax)} / month
+          </p>
+
+          <p className="home-housing-about">
+            {request.aboutMe}
+          </p>
+
+          <div className="home-housing-actions">
+            {request.phone && (
+              <a
+                href={`tel:${request.phone}`}
+                className="home-housing-call"
+              >
+                📞 Call {formatHousingPhone(request.phone)}
+              </a>
+            )}
+
+            <a
+              href="/housing-requests"
+              className="home-housing-details"
+            >
+              View Details
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  )}
+
+  <div className="home-housing-footer">
+    <div>
+      <strong>Need a room or basement?</strong>
+      <span>
+        Post your housing request and let homeowners contact you.
+      </span>
+    </div>
+
+    <a href="/submit-housing-request">
+      Post Housing Request
+    </a>
+  </div>
+</section>
 
         <section className="request-business-section">
           <div className="request-business-card">

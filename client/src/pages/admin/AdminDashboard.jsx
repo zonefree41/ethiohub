@@ -309,6 +309,16 @@ async function deleteBusinessRequest(id, businessName) {
   📦 Transportation Requests
 </a>
 
+<button
+  className="admin-action-button"
+  onClick={() =>
+    (window.location.href =
+      "/admin/housing-requests")
+  }
+>
+  🏠 Housing Requests
+</button>
+
             <button type="button" onClick={logout}>
               Logout
             </button>

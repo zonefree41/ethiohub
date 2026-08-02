@@ -186,10 +186,16 @@ app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
 app.use("/api/admin/transportation-requests", adminTransportationRoutes);
 app.use("/api/housing-requests", housingRequestRoutes);
+import adminHousingRequestRoutes from "./routes/adminHousingRequests.js";
 
 app.use(
   "/api/transportation-requests",
   transportationRequestsRoutes
+);
+
+app.use(
+  "/api/admin/housing-requests",
+  adminHousingRequestRoutes
 );
 
 app.use("/", sitemapRoutes);

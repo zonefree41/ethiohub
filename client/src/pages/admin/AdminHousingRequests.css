@@ -1,0 +1,509 @@
+.housing-admin-page {
+  min-height: 100vh;
+  padding: 32px;
+  background: #f4f7fb;
+  color: #14213d;
+}
+
+.housing-admin-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.housing-admin-header h1 {
+  margin: 12px 0 8px;
+  font-size: 34px;
+}
+
+.housing-admin-header p {
+  margin: 0;
+  color: #667085;
+}
+
+.housing-back-button {
+  border: 0;
+  background: transparent;
+  color: #1d4ed8;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0;
+}
+
+.housing-total-card {
+  min-width: 150px;
+  background: white;
+  border-radius: 18px;
+  padding: 18px 22px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  text-align: center;
+}
+
+.housing-total-card strong {
+  display: block;
+  font-size: 30px;
+}
+
+.housing-total-card span {
+  color: #667085;
+  font-size: 14px;
+}
+
+.housing-admin-filters {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 190px 210px auto;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.housing-search-form {
+  display: flex;
+  gap: 8px;
+}
+
+.housing-search-form input,
+.housing-admin-filters select,
+.housing-admin-label select,
+.housing-admin-label textarea {
+  width: 100%;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  background: white;
+  padding: 12px 14px;
+  font: inherit;
+}
+
+.housing-search-form button,
+.housing-refresh-button,
+.housing-view-button,
+.housing-pagination button,
+.housing-admin-actions button {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.housing-search-form button,
+.housing-view-button,
+.housing-save-button {
+  background: #1d4ed8;
+  color: white;
+}
+
+.housing-refresh-button {
+  background: #e2e8f0;
+  color: #14213d;
+}
+
+.housing-admin-error,
+.housing-admin-success {
+  border-radius: 12px;
+  padding: 13px 16px;
+  margin-bottom: 18px;
+}
+
+.housing-admin-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.housing-admin-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.housing-request-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  );
+  gap: 18px;
+}
+
+.housing-request-card {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #e4e7ec;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.housing-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.housing-card-top h2 {
+  margin: 0 0 6px;
+  font-size: 21px;
+}
+
+.housing-request-location {
+  margin: 0;
+  color: #667085;
+}
+
+.housing-status-badge {
+  height: fit-content;
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-closed {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.housing-type-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.housing-type-list span {
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.housing-card-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+}
+
+.housing-card-details p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+.housing-about-preview {
+  color: #475467;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.housing-view-button {
+  width: 100%;
+  margin-top: auto;
+}
+
+.housing-empty-state {
+  background: white;
+  border-radius: 20px;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.housing-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.housing-pagination button {
+  background: white;
+  border: 1px solid #d0d5dd;
+}
+
+.housing-pagination button:disabled,
+.housing-admin-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.housing-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.68);
+}
+
+.housing-modal {
+  position: relative;
+  width: min(820px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 24px;
+  padding: 28px;
+}
+
+.housing-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  border: 0;
+  background: transparent;
+  font-size: 32px;
+  cursor: pointer;
+}
+
+.housing-modal-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding-right: 40px;
+}
+
+.housing-modal-heading h2 {
+  margin: 4px 0 0;
+}
+
+.housing-modal-label {
+  margin: 0;
+  color: #667085;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.housing-modal-section {
+  border-top: 1px solid #e4e7ec;
+  margin-top: 22px;
+  padding-top: 20px;
+}
+
+.housing-modal-section h3 {
+  margin-top: 0;
+}
+
+.housing-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    3,
+    minmax(0, 1fr)
+  );
+  gap: 12px;
+}
+
+.housing-detail-grid p {
+  margin: 0;
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 13px;
+}
+
+.housing-detail-grid strong,
+.housing-detail-grid span {
+  display: block;
+}
+
+.housing-detail-grid strong {
+  color: #667085;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.housing-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.housing-contact-actions a {
+  text-decoration: none;
+  border-radius: 12px;
+  padding: 11px 15px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.housing-preference-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.housing-preference-grid span {
+  border-radius: 12px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.housing-admin-label {
+  display: block;
+  margin-top: 14px;
+  color: #344054;
+  font-weight: 700;
+}
+
+.housing-admin-label select,
+.housing-admin-label textarea {
+  margin-top: 7px;
+}
+
+.housing-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.housing-approve-button {
+  background: #16a34a;
+  color: white;
+}
+
+.housing-reject-button {
+  background: #dc2626;
+  color: white;
+}
+
+.housing-close-request-button {
+  background: #475569;
+  color: white;
+}
+
+@media (max-width: 800px) {
+  .housing-admin-page {
+    padding: 18px;
+  }
+
+  .housing-admin-header {
+    flex-direction: column;
+  }
+
+  .housing-total-card {
+    width: 100%;
+  }
+
+  .housing-admin-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .housing-search-form {
+    flex-direction: column;
+  }
+
+  .housing-card-details,
+  .housing-detail-grid,
+  .housing-preference-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .housing-modal {
+    padding: 22px 18px;
+  }
+}
+
+.housing-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    2,
+    minmax(0, 1fr)
+  );
+  gap: 14px;
+}
+
+.housing-edit-grid label,
+.housing-edit-types strong {
+  display: block;
+  color: #344054;
+  font-weight: 700;
+}
+
+.housing-edit-grid input,
+.housing-edit-grid select {
+  width: 100%;
+  margin-top: 7px;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  background: white;
+}
+
+.housing-edit-wide {
+  grid-column: 1 / -1;
+}
+
+.housing-edit-types,
+.housing-edit-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.housing-edit-types strong {
+  width: 100%;
+}
+
+.housing-edit-types label,
+.housing-edit-checks label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  color: #344054;
+  font-weight: 600;
+}
+
+.housing-save-profile-button {
+  margin-top: 18px;
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 18px;
+  background: #1d4ed8;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.housing-save-profile-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .housing-edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .housing-edit-wide {
+    grid-column: auto;
+  }
+}

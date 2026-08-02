@@ -1,0 +1,165 @@
+.submit-housing-page {
+  min-height: 100vh;
+  background: #f6f8fb;
+  color: #172033;
+}
+
+.submit-housing-hero {
+  padding: 64px 24px;
+  background: linear-gradient(
+    120deg,
+    #071426,
+    #6b351c
+  );
+  color: white;
+}
+
+.submit-housing-hero > div {
+  width: min(1000px, 100%);
+  margin: 0 auto;
+}
+
+.submit-housing-kicker {
+  color: #f59e0b;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.submit-housing-hero h1 {
+  margin: 8px 0 14px;
+  font-size: clamp(38px, 6vw, 60px);
+}
+
+.submit-housing-hero p {
+  max-width: 720px;
+  color: #e5e7eb;
+  line-height: 1.7;
+  font-size: 18px;
+}
+
+.submit-housing-content {
+  width: min(980px, calc(100% - 28px));
+  margin: -28px auto 0;
+  padding-bottom: 60px;
+}
+
+.submit-housing-form {
+  padding: 28px;
+  border-radius: 22px;
+  background: white;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.submit-housing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.submit-housing-grid label,
+.submit-housing-about {
+  display: block;
+  font-weight: 700;
+  color: #344054;
+}
+
+.submit-housing-grid input,
+.submit-housing-grid select,
+.submit-housing-about textarea {
+  width: 100%;
+  margin-top: 7px;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+}
+
+.submit-housing-wide {
+  grid-column: 1 / -1;
+}
+
+.submit-housing-section {
+  margin-top: 26px;
+}
+
+.submit-housing-section h2 {
+  margin-bottom: 12px;
+  font-size: 19px;
+}
+
+.submit-housing-types,
+.submit-housing-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.submit-housing-types label,
+.submit-housing-checks label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.submit-housing-about {
+  margin-top: 24px;
+}
+
+.submit-housing-notice,
+.submit-housing-error,
+.submit-housing-success {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 12px;
+}
+
+.submit-housing-notice {
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.submit-housing-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.submit-housing-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.submit-housing-button {
+  width: 100%;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.submit-housing-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .submit-housing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .submit-housing-wide {
+    grid-column: auto;
+  }
+
+  .submit-housing-form {
+    padding: 20px;
+  }
+}
