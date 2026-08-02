@@ -21,6 +21,7 @@ const emptyForm = {
   imageUrl: "",
   businessHours: "",
   monthlyRent: "",
+
 bedrooms: "",
 bathrooms: "",
 squareFeet: "",
@@ -30,6 +31,14 @@ parking: false,
 petsAllowed: false,
 utilitiesIncluded: false,
 furnished: false,
+
+privateEntrance: false,
+bathroomType: "",
+kitchenAccess: false,
+laundryAccess: false,
+maximumOccupants: "",
+ownerLivesOnProperty: false,
+housingNotes: "",
 availabilityStatus: "available",
 availableFrom: "",
 propertyImages: [],
@@ -301,6 +310,14 @@ parking: form.parking,
 petsAllowed: form.petsAllowed,
 utilitiesIncluded: form.utilitiesIncluded,
 furnished: form.furnished,
+
+privateEntrance: form.privateEntrance,
+bathroomType: form.bathroomType,
+kitchenAccess: form.kitchenAccess,
+laundryAccess: form.laundryAccess,
+maximumOccupants: form.maximumOccupants,
+ownerLivesOnProperty: form.ownerLivesOnProperty,
+housingNotes: form.housingNotes,
 availabilityStatus: form.availabilityStatus,
 availableFrom: form.availableFrom,
 propertyImages: form.propertyImages,
@@ -599,6 +616,96 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
       </label>
     </div>
   </section>
+)}
+
+{isHousingCategory && (
+  <>
+    <section className="submit-section">
+      <h2>Rental Information</h2>
+
+      {/* Keep all your current rental fields here */}
+
+      <div className="submit-checkboxes">
+        {/* Parking, Pets Allowed, Utilities Included, Furnished */}
+      </div>
+    </section>
+
+    <section className="submit-section">
+      <h3>Property Features</h3>
+
+      <div className="submit-checkboxes">
+        <label>
+          <input
+            type="checkbox"
+            name="privateEntrance"
+            checked={form.privateEntrance}
+            onChange={updateCheckbox}
+          />
+          Private Entrance
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="kitchenAccess"
+            checked={form.kitchenAccess}
+            onChange={updateCheckbox}
+          />
+          Kitchen Access
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="laundryAccess"
+            checked={form.laundryAccess}
+            onChange={updateCheckbox}
+          />
+          Laundry Access
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            name="ownerLivesOnProperty"
+            checked={form.ownerLivesOnProperty}
+            onChange={updateCheckbox}
+          />
+          Owner Lives on Property
+        </label>
+      </div>
+
+      <div className="submit-two-col">
+        <select
+          name="bathroomType"
+          value={form.bathroomType}
+          onChange={update}
+        >
+          <option value="">Bathroom Type</option>
+          <option value="Private">Private Bathroom</option>
+          <option value="Shared">Shared Bathroom</option>
+          <option value="None">No Bathroom</option>
+        </select>
+
+        <input
+          type="number"
+          name="maximumOccupants"
+          value={form.maximumOccupants}
+          onChange={update}
+          placeholder="Maximum Occupants"
+          min="1"
+        />
+      </div>
+
+      <textarea
+        name="housingNotes"
+        value={form.housingNotes}
+        onChange={update}
+        rows="5"
+        placeholder="Additional information (quiet neighborhood, separate entrance, utilities included, close to Metro, etc.)"
+      />
+    </section>
+  </>
 )}
 
 {isTransportationCategory && (
