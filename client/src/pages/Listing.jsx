@@ -452,15 +452,27 @@ function prevPhoto() {
 function hasRentalDetails(item) {
   return Boolean(
     item?.monthlyRent ||
-      item?.bedrooms ||
-      item?.bathrooms ||
-      item?.squareFeet ||
-      item?.securityDeposit ||
-      item?.leaseTerm ||
-      item?.parking ||
-      item?.petsAllowed ||
-      item?.utilitiesIncluded ||
-      item?.furnished
+    item?.bedrooms ||
+    item?.bathrooms ||
+    item?.squareFeet ||
+    item?.securityDeposit ||
+    item?.leaseTerm ||
+
+    item?.parking ||
+    item?.petsAllowed ||
+    item?.utilitiesIncluded ||
+    item?.furnished ||
+
+    item?.privateEntrance ||
+    item?.bathroomType ||
+    item?.kitchenAccess ||
+    item?.laundryAccess ||
+    item?.maximumOccupants ||
+    item?.ownerLivesOnProperty ||
+    item?.housingNotes ||
+
+    (item?.livingEnvironment?.length ?? 0) > 0 ||
+    (item?.idealFor?.length ?? 0) > 0
   );
 }
 
@@ -761,6 +773,42 @@ document.title = seoTitle;
         </div>
       )}
 
+      {Array.isArray(listing.livingEnvironment) &&
+  listing.livingEnvironment.length > 0 && (
+    <div className="listing-housing-feature-section">
+      <h3>🏡 Living Environment</h3>
+
+      <div className="listing-housing-tags">
+        {listing.livingEnvironment.map((item) => (
+          <span key={item}>{item}</span>
+        ))}
+      </div>
+    </div>
+  )}
+
+{Array.isArray(listing.idealFor) &&
+  listing.idealFor.length > 0 && (
+    <div className="listing-housing-feature-section">
+      <h3>👥 Ideal For</h3>
+
+      <div className="listing-housing-tags">
+        {listing.idealFor.map((item) => (
+          <span key={item}>{item}</span>
+        ))}
+      </div>
+    </div>
+  )}
+
+{listing.housingNotes && (
+  <div className="listing-housing-feature-section">
+    <h3>📝 Additional Housing Information</h3>
+
+    <p className="listing-housing-notes">
+      {listing.housingNotes}
+    </p>
+  </div>
+)}
+
       {listing.bedrooms !== null && listing.bedrooms !== undefined && (
         <div className="listing-rental-item">
           <span>🛏️</span>
@@ -822,6 +870,66 @@ document.title = seoTitle;
           <p>{listing.furnished ? "Yes" : "No"}</p>
         </div>
       </div>
+
+      {listing.privateEntrance && (
+  <div className="listing-rental-item">
+    <span>🚪</span>
+    <div>
+      <strong>Private Entrance</strong>
+      <p>Yes</p>
+    </div>
+  </div>
+)}
+
+{listing.kitchenAccess && (
+  <div className="listing-rental-item">
+    <span>🍳</span>
+    <div>
+      <strong>Kitchen</strong>
+      <p>Available</p>
+    </div>
+  </div>
+)}
+
+{listing.laundryAccess && (
+  <div className="listing-rental-item">
+    <span>🧺</span>
+    <div>
+      <strong>Laundry</strong>
+      <p>Available</p>
+    </div>
+  </div>
+)}
+
+{listing.bathroomType && (
+  <div className="listing-rental-item">
+    <span>🚿</span>
+    <div>
+      <strong>Bathroom</strong>
+      <p>{listing.bathroomType}</p>
+    </div>
+  </div>
+)}
+
+{listing.maximumOccupants && (
+  <div className="listing-rental-item">
+    <span>👥</span>
+    <div>
+      <strong>Maximum Occupants</strong>
+      <p>{listing.maximumOccupants}</p>
+    </div>
+  </div>
+)}
+
+{listing.ownerLivesOnProperty && (
+  <div className="listing-rental-item">
+    <span>🏡</span>
+    <div>
+      <strong>Owner Lives Here</strong>
+      <p>Yes</p>
+    </div>
+  </div>
+)}
 
       {listing.leaseTerm && (
         <div className="listing-rental-item">
