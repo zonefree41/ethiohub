@@ -39,6 +39,8 @@ laundryAccess: false,
 maximumOccupants: "",
 ownerLivesOnProperty: false,
 housingNotes: "",
+livingEnvironment: [],
+idealFor: [],
 availabilityStatus: "available",
 availableFrom: "",
 propertyImages: [],
@@ -111,6 +113,28 @@ function updateCheckbox(e) {
   setForm((prev) => ({
     ...prev,
     [name]: checked,
+  }));
+}
+
+function toggleLivingEnvironment(option) {
+  setForm((current) => ({
+    ...current,
+    livingEnvironment: current.livingEnvironment.includes(option)
+      ? current.livingEnvironment.filter(
+          (item) => item !== option
+        )
+      : [...current.livingEnvironment, option],
+  }));
+}
+
+function toggleIdealFor(option) {
+  setForm((current) => ({
+    ...current,
+    idealFor: current.idealFor.includes(option)
+      ? current.idealFor.filter(
+          (item) => item !== option
+        )
+      : [...current.idealFor, option],
   }));
 }
 
@@ -318,6 +342,8 @@ laundryAccess: form.laundryAccess,
 maximumOccupants: form.maximumOccupants,
 ownerLivesOnProperty: form.ownerLivesOnProperty,
 housingNotes: form.housingNotes,
+livingEnvironment: form.livingEnvironment,
+idealFor: form.idealFor,
 availabilityStatus: form.availabilityStatus,
 availableFrom: form.availableFrom,
 propertyImages: form.propertyImages,
@@ -704,6 +730,72 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
         rows="5"
         placeholder="Additional information (quiet neighborhood, separate entrance, utilities included, close to Metro, etc.)"
       />
+    </section>
+  </>
+)}
+
+{isHousingCategory && (
+  <>
+    <section className="submit-section">
+      <h2>Rental Information</h2>
+
+      {/* your existing rental fields */}
+    </section>
+
+    <section className="submit-section">
+      <h3>Property Features</h3>
+
+      {/* your property feature fields */}
+    </section>
+
+    <section className="submit-section">
+      <h3>🏡 Living Environment</h3>
+
+      <div className="submit-checkboxes">
+        {[
+          "Quiet Home",
+          "Family Home",
+          "Professionals Living Here",
+          "Students Living Here",
+          "Pet-Friendly Home",
+        ].map((option) => (
+          <label key={option}>
+            <input
+              type="checkbox"
+              checked={form.livingEnvironment.includes(option)}
+              onChange={() =>
+                toggleLivingEnvironment(option)
+              }
+            />
+            {option}
+          </label>
+        ))}
+      </div>
+    </section>
+
+    <section className="submit-section">
+      <h3>👥 Ideal For</h3>
+
+      <div className="submit-checkboxes">
+        {[
+          "Working Professional",
+          "Student",
+          "Single Person",
+          "Couple",
+          "Small Family",
+        ].map((option) => (
+          <label key={option}>
+            <input
+              type="checkbox"
+              checked={form.idealFor.includes(option)}
+              onChange={() =>
+                toggleIdealFor(option)
+              }
+            />
+            {option}
+          </label>
+        ))}
+      </div>
     </section>
   </>
 )}
