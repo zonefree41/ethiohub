@@ -386,6 +386,30 @@ housingNotes: {
   maxlength: 1500,
 },
 
+livingEnvironment: {
+  type: [String],
+  enum: [
+    "Quiet Home",
+    "Family Home",
+    "Professionals Living Here",
+    "Students Living Here",
+    "Pet-Friendly Home",
+  ],
+  default: [],
+},
+
+idealFor: {
+  type: [String],
+  enum: [
+    "Working Professional",
+    "Student",
+    "Single Person",
+    "Couple",
+    "Small Family",
+  ],
+  default: [],
+},
+
 propertyImages: [
   {
     type: String,

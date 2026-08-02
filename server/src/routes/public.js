@@ -349,7 +349,8 @@ router.post("/submissions", async (req, res) => {
   submittedBy = {},
 
 
-  availabilityStatus = "available",    
+  availabilityStatus = "available",
+  availableFrom = null,    
   monthlyRent = null,
   bedrooms = null,
   bathrooms = null,
@@ -368,6 +369,8 @@ laundryAccess = false,
 maximumOccupants = null,
 ownerLivesOnProperty = false,
 housingNotes = "",
+livingEnvironment = [],
+idealFor = [],
   
   propertyImages = [],
 propertyVideoUrl = "",
@@ -506,6 +509,53 @@ if (
 
     const ownerId = getOptionalOwnerId(req);
 
+    if (
+  bathroomType &&
+  !["Private", "Shared", "None"].includes(bathroomType)
+) {
+  return res.status(400).json({
+    message: "Invalid bathroom type.",
+  });
+}
+
+const allowedLivingEnvironment = [
+  "Quiet Home",
+  "Family Home",
+  "Professionals Living Here",
+  "Students Living Here",
+  "Pet-Friendly Home",
+];
+
+const allowedIdealFor = [
+  "Working Professional",
+  "Student",
+  "Single Person",
+  "Couple",
+  "Small Family",
+];
+
+if (
+  !Array.isArray(livingEnvironment) ||
+  livingEnvironment.some(
+    (item) => !allowedLivingEnvironment.includes(item)
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid living environment.",
+  });
+}
+
+if (
+  !Array.isArray(idealFor) ||
+  idealFor.some(
+    (item) => !allowedIdealFor.includes(item)
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid ideal-for selection.",
+  });
+}
+
     const listing = await Listing.create({
       title,
       categoryId,
@@ -556,6 +606,8 @@ housingNotes:
   typeof housingNotes === "string"
     ? housingNotes.trim()
     : "",
+    livingEnvironment,
+idealFor,
 
 beautyServices: req.body.beautyServices || [],
 beautyWalkInsWelcome: req.body.beautyWalkInsWelcome || false,
