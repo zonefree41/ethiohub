@@ -1,0 +1,144 @@
+import mongoose from "mongoose";
+
+const HousingRequestSchema = new mongoose.Schema(
+  {
+    requesterName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    email: {
+      type: String,
+      default: "",
+      trim: true,
+      lowercase: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    housingTypes: {
+      type: [String],
+      required: true,
+      enum: [
+        "Room",
+        "Basement",
+        "Apartment",
+        "House",
+        "Shared Housing",
+      ],
+    },
+
+    preferredCities: {
+      type: [String],
+      default: [],
+    },
+
+    preferredState: {
+      type: String,
+      required: true,
+      trim: true,
+      uppercase: true,
+    },
+
+    moveInDate: {
+      type: Date,
+      required: true,
+    },
+
+    budgetMin: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    budgetMax: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    leasePreference: {
+      type: String,
+      enum: [
+        "Month-to-Month",
+        "Short-Term",
+        "6 Months",
+        "12 Months",
+        "Flexible",
+      ],
+      default: "Flexible",
+    },
+
+    aboutMe: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 1500,
+    },
+
+    smokingStatus: {
+      type: String,
+      enum: ["Non-Smoker", "Smoker", "Prefer not to say"],
+      default: "Prefer not to say",
+    },
+
+    hasPets: {
+      type: Boolean,
+      default: false,
+    },
+
+    needsParking: {
+      type: Boolean,
+      default: false,
+    },
+
+    utilitiesPreferred: {
+      type: Boolean,
+      default: false,
+    },
+
+    furnishedPreferred: {
+      type: Boolean,
+      default: false,
+    },
+
+    contactPreference: {
+      type: String,
+      enum: ["Phone", "Email", "Either"],
+      default: "Either",
+    },
+
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected", "closed"],
+      default: "pending",
+    },
+
+    isPublic: {
+      type: Boolean,
+      default: false,
+    },
+
+    adminNote: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+HousingRequestSchema.index({
+  preferredState: 1,
+  status: 1,
+  moveInDate: 1,
+});
+
+export default mongoose.model("HousingRequest", HousingRequestSchema);
