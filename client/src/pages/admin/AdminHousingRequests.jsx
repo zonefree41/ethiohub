@@ -50,15 +50,19 @@ function formatMoney(value) {
 }
 
 function formatPreferredAreas(cities, state) {
+  const cleanedState = String(state || "")
+    .trim()
+    .toUpperCase();
+
   const items = Array.isArray(cities)
     ? cities
         .map((city) => String(city).trim())
         .filter(Boolean)
+        .filter(
+          (city) =>
+            city.toUpperCase() !== cleanedState
+        )
     : [];
-
-  const cleanedState = String(state || "")
-    .trim()
-    .toUpperCase();
 
   if (items.length === 0) {
     return cleanedState || "Not provided";
@@ -68,11 +72,15 @@ function formatPreferredAreas(cities, state) {
     .map((city) => {
       const normalizedCity = city.toUpperCase();
 
-      if (
-        cleanedState &&
-        !normalizedCity.endsWith(`, ${cleanedState}`) &&
-        !normalizedCity.endsWith(` ${cleanedState}`)
-      ) {
+      const alreadyHasState =
+        normalizedCity.endsWith(
+          `, ${cleanedState}`
+        ) ||
+        normalizedCity.endsWith(
+          ` ${cleanedState}`
+        );
+
+      if (cleanedState && !alreadyHasState) {
         return `${city}, ${cleanedState}`;
       }
 

@@ -28,27 +28,37 @@ function formatDate(value) {
 }
 
 function formatPreferredAreas(cities, state) {
-  const items = Array.isArray(cities)
-    ? cities.map((city) => String(city).trim()).filter(Boolean)
-    : [];
-
   const cleanedState = String(state || "")
     .trim()
     .toUpperCase();
 
+  const items = Array.isArray(cities)
+    ? cities
+        .map((city) => String(city).trim())
+        .filter(Boolean)
+        .filter(
+          (city) =>
+            city.toUpperCase() !== cleanedState
+        )
+    : [];
+
   if (items.length === 0) {
-    return cleanedState || "Flexible";
+    return cleanedState || "Not provided";
   }
 
   return items
     .map((city) => {
       const normalizedCity = city.toUpperCase();
 
-      if (
-        cleanedState &&
-        !normalizedCity.endsWith(`, ${cleanedState}`) &&
-        !normalizedCity.endsWith(` ${cleanedState}`)
-      ) {
+      const alreadyHasState =
+        normalizedCity.endsWith(
+          `, ${cleanedState}`
+        ) ||
+        normalizedCity.endsWith(
+          ` ${cleanedState}`
+        );
+
+      if (cleanedState && !alreadyHasState) {
         return `${city}, ${cleanedState}`;
       }
 
