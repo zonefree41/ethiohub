@@ -187,12 +187,40 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
       }
 
       const results = await Promise.all(
-        recentIds.map((listingId) =>
-          apiGet(`/api/listings/${listingId}`).catch(() => null)
-        )
+  recentIds.map(async (listingId) => {
+    try {
+      const listing = await apiGet(
+        `/api/listings/${listingId}`
       );
 
-      setRecentListings(results.filter(Boolean));
+      return {
+        listingId,
+        listing,
+      };
+    } catch (error) {
+      console.warn(
+        `Removing unavailable recent listing: ${listingId}`
+      );
+
+      return null;
+    }
+  })
+);
+
+const validResults = results.filter(Boolean);
+
+const validIds = validResults.map(
+  (result) => result.listingId
+);
+
+localStorage.setItem(
+  "hubethioRecentlyViewed",
+  JSON.stringify(validIds)
+);
+
+setRecentListings(
+  validResults.map((result) => result.listing)
+);
     } catch (err) {
       console.error("Failed to load recent listings:", err);
     }
