@@ -27,6 +27,36 @@ function formatDate(value) {
   });
 }
 
+function formatPreferredAreas(cities, state) {
+  const items = Array.isArray(cities)
+    ? cities.map((city) => String(city).trim()).filter(Boolean)
+    : [];
+
+  const cleanedState = String(state || "")
+    .trim()
+    .toUpperCase();
+
+  if (items.length === 0) {
+    return cleanedState || "Flexible";
+  }
+
+  return items
+    .map((city) => {
+      const normalizedCity = city.toUpperCase();
+
+      if (
+        cleanedState &&
+        !normalizedCity.endsWith(`, ${cleanedState}`) &&
+        !normalizedCity.endsWith(` ${cleanedState}`)
+      ) {
+        return `${city}, ${cleanedState}`;
+      }
+
+      return city;
+    })
+    .join(" • ");
+}
+
 function formatMoney(value) {
   const amount = Number(value);
 
@@ -309,15 +339,11 @@ export default function HousingRequests() {
                   <p>
                     <strong>Preferred areas</strong>
                     <span>
-                      {request.preferredCities?.length
-                        ? request.preferredCities.join(
-                            ", "
-                          )
-                        : "Flexible"}
-                      {request.preferredState
-                        ? `, ${request.preferredState}`
-                        : ""}
-                    </span>
+  {formatPreferredAreas(
+    request.preferredCities,
+    request.preferredState
+  )}
+</span>
                   </p>
 
                   <p>

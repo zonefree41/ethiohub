@@ -770,12 +770,10 @@ function formatHousingPhone(value) {
 
           <p>
             <strong>Preferred areas:</strong>{" "}
-            {request.preferredCities?.length
-              ? request.preferredCities.join(", ")
-              : "Flexible"}
-            {request.preferredState
-              ? `, ${request.preferredState}`
-              : ""}
+            {formatPreferredAreas(
+  request.preferredCities,
+  request.preferredState
+)}
           </p>
 
           <p>
