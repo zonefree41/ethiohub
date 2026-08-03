@@ -49,6 +49,38 @@ function formatMoney(value) {
   });
 }
 
+function formatPreferredAreas(cities, state) {
+  const items = Array.isArray(cities)
+    ? cities
+        .map((city) => String(city).trim())
+        .filter(Boolean)
+    : [];
+
+  const cleanedState = String(state || "")
+    .trim()
+    .toUpperCase();
+
+  if (items.length === 0) {
+    return cleanedState || "Not provided";
+  }
+
+  return items
+    .map((city) => {
+      const normalizedCity = city.toUpperCase();
+
+      if (
+        cleanedState &&
+        !normalizedCity.endsWith(`, ${cleanedState}`) &&
+        !normalizedCity.endsWith(` ${cleanedState}`)
+      ) {
+        return `${city}, ${cleanedState}`;
+      }
+
+      return city;
+    })
+    .join(" • ");
+}
+
 function formatPhone(value) {
   if (!value) return "";
 
@@ -534,12 +566,10 @@ async function saveProfileChanges() {
 
                   <p className="housing-request-location">
                     📍{" "}
-                    {request.preferredCities?.length
-                      ? request.preferredCities.join(", ")
-                      : "Location not provided"}
-                    {request.preferredState
-                      ? `, ${request.preferredState}`
-                      : ""}
+                    {formatPreferredAreas(
+  request.preferredCities,
+  request.preferredState
+)}
                   </p>
                 </div>
 
@@ -736,23 +766,13 @@ async function saveProfileChanges() {
 
               <div className="housing-detail-grid">
                 <p>
-                  <strong>Preferred cities</strong>
-                  <span>
-                    {selectedRequest.preferredCities
-                      ?.length
-                      ? selectedRequest.preferredCities.join(
-                          ", "
-                        )
-                      : "Not provided"}
-                  </span>
-                </p>
-
-                <p>
-                  <strong>Preferred state</strong>
-                  <span>
-                    {selectedRequest.preferredState ||
-                      "Not provided"}
-                  </span>
+                  <strong>Preferred areas</strong>
+<span>
+  {formatPreferredAreas(
+    selectedRequest.preferredCities,
+    selectedRequest.preferredState
+  )}
+</span>
                 </p>
 
                 <p>
