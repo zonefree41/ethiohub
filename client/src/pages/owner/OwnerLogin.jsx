@@ -34,7 +34,16 @@ export default function OwnerLogin() {
       localStorage.setItem("ownerUser", JSON.stringify(data.user));
 
       setMessage("✅ Login successful");
-      window.location.href = "/owner/dashboard";
+      const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const redirect =
+  params.get("redirect") ||
+  "/owner/dashboard";
+
+window.location.href = redirect;
     } catch (err) {
       setError(err.message || "Login failed");
     }

@@ -77,11 +77,36 @@ const [loadingTravelRequests, setLoadingTravelRequests] =
 
     await Promise.all(workspaceRequests);
   } catch (err) {
-    setError(
-      err.message ||
-        "Failed to load listings"
+  const message =
+    err.message ||
+    "Failed to load listings";
+
+  const unauthorized =
+    message
+      .toLowerCase()
+      .includes("invalid or expired token") ||
+    message
+      .toLowerCase()
+      .includes("unauthorized") ||
+    message.includes("401");
+
+  if (unauthorized) {
+    localStorage.removeItem(
+      "ownerToken"
     );
-  } finally {
+
+    localStorage.removeItem(
+      "ownerUser"
+    );
+
+    window.location.href =
+      "/owner/login?redirect=/owner/dashboard";
+
+    return;
+  }
+
+  setError(message);
+} finally {
     setLoading(false);
   }
 }
