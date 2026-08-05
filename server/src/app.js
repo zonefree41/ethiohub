@@ -27,6 +27,9 @@ import { startDailyJobs } from "./jobs/dailyJobs.js";
 import sitemapRoutes from "./routes/sitemap.js";
 import adminTransportationRoutes from "./routes/adminTransportationRequests.js";
 import housingRequestRoutes from "./routes/housingRequests.js";
+import travelRequestRoutes from "./routes/travelRequests.js";
+import adminHousingRequestRoutes from "./routes/adminHousingRequests.js";
+import adminTravelRequestsRoutes from "./routes/adminTravelRequests.js";
 
 const app = express();
 
@@ -186,11 +189,20 @@ app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
 app.use("/api/admin/transportation-requests", adminTransportationRoutes);
 app.use("/api/housing-requests", housingRequestRoutes);
-import adminHousingRequestRoutes from "./routes/adminHousingRequests.js";
 
 app.use(
   "/api/transportation-requests",
   transportationRequestsRoutes
+);
+
+app.use(
+  "/api/admin/travel-requests",
+  adminTravelRequestsRoutes
+);
+
+app.use(
+  "/api/travel-requests",
+  travelRequestRoutes
 );
 
 app.use(

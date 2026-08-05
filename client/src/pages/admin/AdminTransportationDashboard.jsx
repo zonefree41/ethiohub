@@ -52,7 +52,7 @@ const [detailsLoading, setDetailsLoading] = React.useState(false);
 const [error, setError] = React.useState("");
 
   React.useEffect(() => {
-    document.title = "Transportation Admin | HubEthio";
+    document.title = "Travel Admin | HubEthio";
 
     if (!token) {
       window.location.href = "/admin/login";

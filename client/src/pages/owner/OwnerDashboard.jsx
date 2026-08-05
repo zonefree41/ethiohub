@@ -1,6 +1,8 @@
 import React from "react";
 import { apiGet, apiPatch, apiPost } from "../../api/http.js";
 import "./OwnerDashboard.css";
+import TravelWorkspaceSummary from "./workspaces/TravelWorkspaceSummary.jsx";
+import TransportationWorkspaceSummary from "./workspaces/TransportationWorkspaceSummary.jsx";
 
 export default function OwnerDashboard() {
   const token = localStorage.getItem("ownerToken");
@@ -13,55 +15,110 @@ export default function OwnerDashboard() {
   const [transportationRequests, setTransportationRequests] = React.useState([]);
 const [loadingRequests, setLoadingRequests] = React.useState(false);
 
+const [travelRequests, setTravelRequests] =
+  React.useState([]);
+
+const [loadingTravelRequests, setLoadingTravelRequests] =
+  React.useState(true);
+
   React.useEffect(() => {
     document.title = "Owner Dashboard | HubEthio";
   }, []);
 
   async function loadListings() {
-    try {
-      setLoading(true);
-      setError("");
-
-      const data = await apiGet("/api/owner/listings/my-listings", token);
-
-      setListings(Array.isArray(data) ? data : []);
-    } catch (err) {
-      setError(err.message || "Failed to load listings");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadTransportationRequests() {
   try {
-    setLoadingRequests(true);
+    setLoading(true);
+    setError("");
 
     const data = await apiGet(
-      "/api/transportation-requests/owner",
+      "/api/owner/listings/my-listings",
       token
     );
 
-    setTransportationRequests(Array.isArray(data) ? data : []);
+    const ownerListings = Array.isArray(data)
+      ? data
+      : [];
+
+    setListings(ownerListings);
+
+    const ownsTransportation =
+      ownerListings.some(
+        (listing) =>
+          listing.categoryId?.slug ===
+          "transportation"
+      );
+
+    const ownsTravel =
+      ownerListings.some(
+        (listing) =>
+          listing.categoryId?.slug ===
+          "travel-tours"
+      );
+
+    const workspaceRequests = [];
+
+    if (ownsTransportation) {
+      workspaceRequests.push(
+        loadTransportationRequests()
+      );
+    } else {
+      setTransportationRequests([]);
+      setLoadingRequests(false);
+    }
+
+    if (ownsTravel) {
+      workspaceRequests.push(
+        loadTravelRequests()
+      );
+    } else {
+      setTravelRequests([]);
+      setLoadingTravelRequests(false);
+    }
+
+    await Promise.all(workspaceRequests);
   } catch (err) {
-    console.error(err);
+    setError(
+      err.message ||
+        "Failed to load listings"
+    );
   } finally {
-    setLoadingRequests(false);
+    setLoading(false);
+  }
+}
+
+async function loadTravelRequests() {
+  try {
+    setLoadingTravelRequests(true);
+
+    const data = await apiGet(
+      "/api/travel-requests/owner",
+      token
+    );
+
+    setTravelRequests(
+      Array.isArray(data) ? data : []
+    );
+  } catch (err) {
+    console.error(
+      "Failed to load travel requests:",
+      err
+    );
+
+    setTravelRequests([]);
+  } finally {
+    setLoadingTravelRequests(false);
   }
 }
 
   React.useEffect(() => {
-  async function fetchData() {
-    if (!token) {
-      window.location.href = "/owner/login";
-      return;
-    }
-
-    await loadListings();
-    await loadTransportationRequests();
+  if (!token) {
+    window.location.href =
+      "/owner/login";
+    return;
   }
 
-  fetchData();
-}, []);
+  loadListings();
+}, [token]);
 
   async function claimListing(id) {
     try {
@@ -142,6 +199,23 @@ function getTrialDaysLeft(value) {
     );
   });
 
+const ownerWorkspaces = React.useMemo(
+  () => ({
+    travel: listings.some(
+      (listing) =>
+        listing.categoryId?.slug ===
+        "travel-tours"
+    ),
+
+    transportation: listings.some(
+      (listing) =>
+        listing.categoryId?.slug ===
+        "transportation"
+    ),
+  }),
+  [listings]
+);
+
   return (
     <main className="owner-dashboard-page">
       <div className="owner-dashboard-container">
@@ -161,9 +235,26 @@ function getTrialDaysLeft(value) {
     Submit New Listing
   </a>
 
+  {ownerWorkspaces.transportation && (
   <a href="/owner/transportation">
     🚚 Transportation Requests
+    {transportationRequests.length > 0 && (
+      <span>
+        {" "}
+        ({transportationRequests.length})
+      </span>
+    )}
   </a>
+)}
+
+  {ownerWorkspaces.travel && (
+  <a href="/owner/travel-requests">
+    ✈️ Travel Requests
+    {travelRequests.length > 0 && (
+      <span> ({travelRequests.length})</span>
+    )}
+  </a>
+)}
 
   <button
     type="button"
@@ -559,61 +650,25 @@ function getTrialDaysLeft(value) {
               </section>
             )}
 
-            <section className="owner-transport-requests-section">
-  <h2>🚚 Transportation Requests</h2>
+            {ownerWorkspaces.transportation && (
+  <TransportationWorkspaceSummary
+    transportationRequests={
+      transportationRequests
+    }
+    loadingRequests={loadingRequests}
+    formatDate={formatDate}
+  />
+)}
 
-  {loadingRequests ? (
-    <p>Loading transportation requests...</p>
-  ) : transportationRequests.length === 0 ? (
-    <p>No transportation requests yet.</p>
-  ) : (
-    <div className="owner-transport-requests-list">
-      {transportationRequests.map((request) => (
-        <div
-          key={request._id}
-          className="owner-transport-request-card"
-        >
-          <h3>{request.customerName}</h3>
-
-          <p>
-            <strong>Business:</strong>{" "}
-            {request.listingId?.title || "N/A"}
-          </p>
-
-          <p>
-            <strong>Service:</strong>{" "}
-            {request.serviceType}
-          </p>
-
-          <p>
-            <strong>Pickup:</strong>{" "}
-            {request.pickupAddress}
-          </p>
-
-          <p>
-            <strong>Delivery:</strong>{" "}
-            {request.deliveryAddress}
-          </p>
-
-          <p>
-            <strong>Date:</strong>{" "}
-            {formatDate(request.requestedDate)}
-          </p>
-
-          <p>
-            <strong>Phone:</strong>{" "}
-            {request.customerPhone}
-          </p>
-
-          <p>
-            <strong>Status:</strong>{" "}
-            {request.status}
-          </p>
-        </div>
-      ))}
-    </div>
-  )}
-</section>
+{ownerWorkspaces.travel && (
+  <TravelWorkspaceSummary
+    travelRequests={travelRequests}
+    loadingTravelRequests={
+      loadingTravelRequests
+    }
+    formatDate={formatDate}
+  />
+)}
           </>
         )}
       </div>

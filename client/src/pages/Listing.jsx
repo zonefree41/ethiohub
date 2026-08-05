@@ -1398,6 +1398,16 @@ document.title = seoTitle;
       🚚 Request a Quote
     </button>
   )}
+
+  {listing.categoryId?.slug === "travel-tours" &&
+  listing.ownerId && (
+    <a
+      href={`/submit-travel-request?listing=${listing._id}`}
+      className="listing-quote-btn"
+    >
+      ✈️ Request Travel Quote
+    </a>
+  )}
   <button
     type="button"
     className="listing-save-btn"

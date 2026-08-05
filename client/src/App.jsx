@@ -9,6 +9,7 @@ import AdminTransportationVerification from "./pages/admin/AdminTransportationVe
 import AdminTransportationDashboard from "./pages/admin/AdminTransportationDashboard.jsx";
 import AdminHousingRequests from "./pages/admin/AdminHousingRequests.jsx";
 import OwnerTransportationDashboard from "./pages/owner/OwnerTransportationDashboard.jsx";
+import OwnerTravelDashboard from "./pages/owner/OwnerTravelDashboard.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PaymentCancelled from "./pages/PaymentCancelled.jsx";
 import OwnerLogin from "./pages/owner/OwnerLogin.jsx";
@@ -30,6 +31,8 @@ import TransportationQuotePage
   from "./pages/TransportationQuotePage.jsx";
   import HousingRequests from "./pages/HousingRequests.jsx";
   import SubmitHousingRequest from "./pages/SubmitHousingRequest.jsx";
+  import SubmitTravelRequest from "./pages/SubmitTravelRequest";
+  import AdminTravelDashboard from "./pages/admin/AdminTravelDashboard.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -64,12 +67,24 @@ if (path.startsWith("/admin/transportation-verification")) {
   return <AdminTransportationVerification />;
 }
 
+if (path.startsWith("/owner/travel-requests")) {
+  return <OwnerTravelDashboard />;
+}
+
 if (path.startsWith("/admin/transportation-requests")) {
   return <AdminTransportationDashboard />;
 }
 
 if (path.startsWith("/submit-housing-request")) {
   return <SubmitHousingRequest />;
+}
+
+if (path.startsWith("/submit-travel-request")) {
+  return <SubmitTravelRequest />;
+}
+
+if (path.startsWith("/admin/travel-requests")) {
+  return <AdminTravelDashboard />;
 }
 
 if (path.startsWith("/housing-requests")) {

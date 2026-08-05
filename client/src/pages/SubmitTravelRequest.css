@@ -1,0 +1,240 @@
+.travel-request-page {
+  min-height: 100vh;
+  background: #f5f7fb;
+  color: #172033;
+}
+
+.travel-request-hero {
+  padding: 72px 24px 96px;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(7, 20, 38, 0.97),
+      rgba(92, 45, 21, 0.94)
+    );
+  color: white;
+}
+
+.travel-request-hero-content {
+  width: min(1050px, 100%);
+  margin: 0 auto;
+}
+
+.travel-request-kicker {
+  margin: 0 0 12px;
+  color: #fbbf24;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.travel-request-hero h1 {
+  max-width: 760px;
+  margin: 0;
+  font-size: clamp(40px, 6vw, 66px);
+  line-height: 1.05;
+}
+
+.travel-request-hero p {
+  max-width: 760px;
+  margin: 20px 0 0;
+  color: #e5e7eb;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.travel-request-content {
+  width: min(980px, calc(100% - 28px));
+  margin: -54px auto 0;
+  padding-bottom: 70px;
+}
+
+.travel-request-form {
+  padding: 30px;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.14);
+}
+
+.travel-form-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.travel-form-section:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.travel-form-section h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  color: #172033;
+}
+
+.travel-form-section > label,
+.travel-form-grid label,
+.travel-passenger-grid label,
+.travel-notes-label {
+  display: block;
+  color: #344054;
+  font-weight: 700;
+}
+
+.travel-form-section select,
+.travel-form-grid input,
+.travel-form-grid select,
+.travel-passenger-grid input,
+.travel-notes-label textarea {
+  width: 100%;
+  margin-top: 7px;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  background: white;
+  padding: 12px 14px;
+  font: inherit;
+  color: #172033;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.travel-form-section select:focus,
+.travel-form-grid input:focus,
+.travel-form-grid select:focus,
+.travel-passenger-grid input:focus,
+.travel-notes-label textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.travel-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.travel-form-wide {
+  grid-column: 1 / -1;
+}
+
+.travel-passenger-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.travel-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.travel-checkbox-grid label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #344054;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.travel-checkbox-grid input {
+  width: auto;
+  margin: 0;
+}
+
+.travel-notes-label {
+  margin-top: 16px;
+}
+
+.travel-form-help {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.travel-request-notice,
+.travel-request-error,
+.travel-request-success {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  line-height: 1.55;
+}
+
+.travel-request-notice {
+  margin-top: 24px;
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.travel-request-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.travel-request-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.travel-submit-button {
+  width: 100%;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 13px;
+  padding: 15px 18px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 850;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.travel-submit-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.28);
+}
+
+.travel-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .travel-request-hero {
+    padding: 56px 18px 82px;
+  }
+
+  .travel-request-content {
+    width: min(100% - 20px, 980px);
+  }
+
+  .travel-request-form {
+    padding: 20px;
+  }
+
+  .travel-form-grid,
+  .travel-passenger-grid,
+  .travel-checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .travel-form-wide {
+    grid-column: auto;
+  }
+}
