@@ -111,6 +111,30 @@ const [loadingTravelRequests, setLoadingTravelRequests] =
   }
 }
 
+async function loadTransportationRequests() {
+  try {
+    setLoadingRequests(true);
+
+    const data = await apiGet(
+      "/api/transportation-requests/owner",
+      token
+    );
+
+    setTransportationRequests(
+      Array.isArray(data) ? data : []
+    );
+  } catch (err) {
+    console.error(
+      "Failed to load transportation requests:",
+      err
+    );
+
+    setTransportationRequests([]);
+  } finally {
+    setLoadingRequests(false);
+  }
+}
+
 async function loadTravelRequests() {
   try {
     setLoadingTravelRequests(true);
