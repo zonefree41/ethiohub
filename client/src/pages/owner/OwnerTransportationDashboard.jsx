@@ -1,6 +1,8 @@
 import React from "react";
 import { apiGet, apiPatch } from "../../api/http.js";
 import "./OwnerTransportationDashboard.css";
+import WorkspaceLayout from "../../components/owner/workspaces/WorkspaceLayout.jsx";
+import WorkspaceStats from "../../components/owner/workspaces/WorkspaceStats.jsx";
 
 export default function OwnerTransportationDashboard() {
   const token = localStorage.getItem("ownerToken");
@@ -216,32 +218,20 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
 });
 
   return (
-    <main className="owner-transport-page">
-      <div className="owner-transport-container">
-        <header className="owner-transport-header">
-          <div>
-            <a
-              href="/owner/dashboard"
-              className="owner-transport-back"
-            >
-              ← Back to Owner Dashboard
-            </a>
-
-            <p className="owner-transport-label">
-              Transportation Workspace
-            </p>
-
-            <h1>🚚 Transportation Requests</h1>
-
-            <p>
-              Review customer requests and manage transportation jobs.
-            </p>
-          </div>
-
-          <button type="button" onClick={logout}>
-            Logout
-          </button>
-        </header>
+  <WorkspaceLayout
+    label="Transportation Workspace"
+    title="Transportation Requests"
+    icon="🚚"
+    description="Review customer requests and manage transportation jobs."
+    actions={
+      <button
+        type="button"
+        onClick={logout}
+      >
+        Logout
+      </button>
+    }
+  >
 
         {error && (
           <div className="owner-transport-error">
@@ -1006,7 +996,6 @@ setLicensePlate(
             </div>
           </div>
         )}
-      </div>
-    </main>
+       </WorkspaceLayout>
   );
 }

@@ -33,6 +33,7 @@ import TransportationQuotePage
   import SubmitHousingRequest from "./pages/SubmitHousingRequest.jsx";
   import SubmitTravelRequest from "./pages/SubmitTravelRequest";
   import AdminTravelDashboard from "./pages/admin/AdminTravelDashboard.jsx";
+  import BeautyWorkspace from "./pages/owner/workspaces/BeautyWorkspace.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -105,6 +106,9 @@ if (path.startsWith("/owner/listings/edit/")) return <EditListing />;
 if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
 if (path.startsWith("/owner/transportation")) {
   return <OwnerTransportationDashboard />;
+}
+if (path.startsWith("/owner/workspaces/beauty")) {
+  return <BeautyWorkspace />;
 }
 if (path.startsWith("/listing/")) return <Listing />;
 

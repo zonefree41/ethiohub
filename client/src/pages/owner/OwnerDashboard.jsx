@@ -3,6 +3,7 @@ import { apiGet, apiPatch, apiPost } from "../../api/http.js";
 import "./OwnerDashboard.css";
 import TravelWorkspaceSummary from "./workspaces/TravelWorkspaceSummary.jsx";
 import TransportationWorkspaceSummary from "./workspaces/TransportationWorkspaceSummary.jsx";
+import WorkspaceLauncher from "../../components/owner/WorkspaceLauncher.jsx";
 
 export default function OwnerDashboard() {
   const token = localStorage.getItem("ownerToken");
@@ -38,6 +39,13 @@ const [loadingTravelRequests, setLoadingTravelRequests] =
     const ownerListings = Array.isArray(data)
       ? data
       : [];
+
+      ownerListings.forEach((listing) => {
+  console.log(
+    listing.title,
+    listing.categoryId?.slug
+  );
+});
 
     setListings(ownerListings);
 
@@ -261,6 +269,12 @@ const ownerWorkspaces = React.useMemo(
         listing.categoryId?.slug ===
         "transportation"
     ),
+
+    beauty: listings.some(
+      (listing) =>
+        listing.categoryId?.slug ===
+        "beauty-wellness"
+    ),
   }),
   [listings]
 );
@@ -362,6 +376,19 @@ const ownerWorkspaces = React.useMemo(
                 <span>Featured</span>
               </div>
             </section>
+
+            <WorkspaceLauncher
+  listings={listings}
+  requestCounts={{
+    transportation:
+      transportationRequests.length,
+
+    travel:
+      travelRequests.length,
+
+    beauty: 0,
+  }}
+/>
 
             <section className="owner-dashboard-search">
               <input
