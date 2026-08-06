@@ -326,67 +326,47 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
   </section>
 )}
 
-{/* NEW Analytics */}
 {!loading && (
-  <section className="owner-transport-analytics">
-    <div className="owner-analytics-card">
-  <span>💰</span>
-  <div>
-    <p>Waiting for Response</p>
-    <strong>{waitingForResponseCount}</strong>
-  </div>
-</div>
-
-<div className="owner-analytics-card">
-  <span>🚚</span>
-  <div>
-    <p>Active Deliveries</p>
-    <strong>{inProgressCount}</strong>
-  </div>
-</div>
-
-<div className="owner-analytics-card revenue">
-  <span>💵</span>
-  <div>
-    <p>Estimated Revenue</p>
-    <strong>
-      {new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(estimatedRevenue)}
-    </strong>
-  </div>
-</div>
-
-<div className="owner-analytics-card">
-  <span>📈</span>
-  <div>
-    <p>Average Quote</p>
-    <strong>
-      {new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(averageQuote)}
-    </strong>
-  </div>
-</div>
-
-<div className="owner-analytics-card">
-  <span>📦</span>
-  <div>
-    <p>Total Completed</p>
-    <strong>{completedJobsCount}</strong>
-  </div>
-</div>
-
-<div className="owner-analytics-card">
-  <span>⭐</span>
-  <div>
-    <p>Completion Rate</p>
-    <strong>{completionRate}%</strong>
-  </div>
-</div>
-  </section>
+  <WorkspaceStats
+    items={[
+      {
+        label: "Waiting for Response",
+        value: waitingForResponseCount,
+      },
+      {
+        label: "Active Deliveries",
+        value: inProgressCount,
+      },
+      {
+        label: "Estimated Revenue",
+        value: new Intl.NumberFormat(
+          "en-US",
+          {
+            style: "currency",
+            currency: "USD",
+          }
+        ).format(estimatedRevenue),
+      },
+      {
+        label: "Average Quote",
+        value: new Intl.NumberFormat(
+          "en-US",
+          {
+            style: "currency",
+            currency: "USD",
+          }
+        ).format(averageQuote),
+      },
+      {
+        label: "Total Completed",
+        value: completedJobsCount,
+      },
+      {
+        label: "Completion Rate",
+        value: `${completionRate}%`,
+      },
+    ]}
+  />
 )}
 
 {/* Search + Sort */}
