@@ -1,5 +1,7 @@
 import React from "react";
 import { apiGet, apiPatch } from "../../api/http.js";
+import WorkspaceLayout from "../../components/owner/workspaces/WorkspaceLayout.jsx";
+import WorkspaceStats from "../../components/owner/workspaces/WorkspaceStats.jsx";
 import "./OwnerTravelDashboard.css";
 
 const STATUS_OPTIONS = [
@@ -470,36 +472,20 @@ setSelectedRequest(updated);
   }
 
   return (
-    <main className="owner-transport-page">
-      <div className="owner-transport-container">
-        <header className="owner-transport-header">
-          <div>
-            <a
-              href="/owner/dashboard"
-              className="owner-transport-back"
-            >
-              ← Back to Owner Dashboard
-            </a>
-
-            <p className="owner-transport-label">
-              Travel Agency Workspace
-            </p>
-
-            <h1>✈️ Travel Requests</h1>
-
-            <p>
-              Review traveler requests, prepare
-              quotes, and manage bookings.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={logout}
-          >
-            Logout
-          </button>
-        </header>
+  <WorkspaceLayout
+    label="Travel Agency Workspace"
+    title="Travel Requests"
+    icon="✈️"
+    description="Review traveler requests, prepare quotes, and manage bookings."
+    actions={
+      <button
+        type="button"
+        onClick={logout}
+      >
+        Logout
+      </button>
+    }
+  >
 
         {error && (
           <div className="owner-transport-error">
@@ -1802,7 +1788,6 @@ setSelectedRequest(updated);
             </div>
           </div>
         )}
-      </div>
-    </main>
+       </WorkspaceLayout>
   );
 }
