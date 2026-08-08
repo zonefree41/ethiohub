@@ -1118,7 +1118,22 @@ document.title = seoTitle;
   </section>
 )}
 
-{isHousingListing && listing.ownerId && (
+{isHousingListing &&
+  listing.availabilityStatus === "rented" && (
+    <section className="listing-housing-inquiry">
+      <div className="listing-housing-inquiry-header">
+        <h3>🔴 Currently Rented</h3>
+        <p>
+          This property is currently marked as rented
+          and is not accepting new housing inquiries.
+        </p>
+      </div>
+    </section>
+)}
+
+{isHousingListing &&
+  listing.ownerId &&
+  listing.availabilityStatus !== "rented" && (
   <section className="listing-housing-inquiry">
     <div className="listing-housing-inquiry-header">
       <h3>🏠 Send Housing Inquiry</h3>
