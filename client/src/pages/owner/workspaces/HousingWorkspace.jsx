@@ -11,6 +11,15 @@ export default function HousingWorkspace() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
 
+  const [housingInquiries, setHousingInquiries] =
+  React.useState([]);
+
+const [loadingInquiries, setLoadingInquiries] =
+  React.useState(true);
+
+const [inquiryError, setInquiryError] =
+  React.useState("");
+
   React.useEffect(() => {
     document.title = "Housing Workspace | HubEthio";
 
@@ -19,6 +28,36 @@ export default function HousingWorkspace() {
         "/owner/login?redirect=/owner/workspaces/housing";
       return;
     }
+
+    async function loadHousingInquiries() {
+  try {
+    setLoadingInquiries(true);
+    setInquiryError("");
+
+    const data = await apiGet(
+      "/api/housing-inquiries/owner",
+      token
+    );
+
+    setHousingInquiries(
+      Array.isArray(data) ? data : []
+    );
+  } catch (err) {
+    console.error(
+      "Failed to load Housing inquiries:",
+      err
+    );
+
+    setInquiryError(
+      err.message ||
+        "Failed to load Housing inquiries."
+    );
+
+    setHousingInquiries([]);
+  } finally {
+    setLoadingInquiries(false);
+  }
+}
 
     async function loadHousingListings() {
       try {
@@ -72,8 +111,63 @@ export default function HousingWorkspace() {
       }
     }
 
-    loadHousingListings();
+    Promise.all([
+  loadHousingListings(),
+  loadHousingInquiries(),
+]);
+   
   }, [token]);
+
+  async function updateHousingInquiryStatus(
+  inquiryId,
+  status
+) {
+  try {
+    setInquiryError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/housing-inquiries/${inquiryId}/status`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to update Housing inquiry."
+      );
+    }
+
+    setHousingInquiries((current) =>
+      current.map((inquiry) =>
+        inquiry._id === inquiryId
+          ? data.inquiry
+          : inquiry
+      )
+    );
+  } catch (err) {
+    console.error(
+      "Housing inquiry update failed:",
+      err
+    );
+
+    setInquiryError(
+      err.message ||
+        "Failed to update Housing inquiry."
+    );
+  }
+}
 
   const approvedCount = listings.filter(
     (listing) => listing.status === "approved"
@@ -88,6 +182,25 @@ export default function HousingWorkspace() {
       total + Number(listing.clicks?.views || 0),
     0
   );
+
+
+  const totalInquiries =
+  housingInquiries.length;
+
+const newInquiries =
+  housingInquiries.filter(
+    (item) => item.status === "New"
+  ).length;
+
+const contactedInquiries =
+  housingInquiries.filter(
+    (item) => item.status === "Contacted"
+  ).length;
+
+const approvedInquiries =
+  housingInquiries.filter(
+    (item) => item.status === "Approved"
+  ).length;
 
   return (
     <WorkspaceLayout
@@ -141,6 +254,245 @@ export default function HousingWorkspace() {
               },
             ]}
           />
+
+          <WorkspaceStats
+  items={[
+    {
+      label: "Total Inquiries",
+      value: totalInquiries,
+    },
+    {
+      label: "New Inquiries",
+      value: newInquiries,
+    },
+    {
+      label: "Contacted",
+      value: contactedInquiries,
+    },
+    {
+      label: "Approved",
+      value: approvedInquiries,
+    },
+  ]}
+/>
+
+<section className="housing-inquiries-section">
+  <div className="housing-inquiries-header">
+    <div>
+      <h2>Recent Housing Inquiries</h2>
+      <p>
+        Review renter inquiries and track their status.
+      </p>
+    </div>
+  </div>
+
+  {inquiryError && (
+    <div className="housing-workspace-error">
+      Error: {inquiryError}
+    </div>
+  )}
+
+  {loadingInquiries ? (
+    <div className="housing-workspace-state">
+      Loading Housing inquiries...
+    </div>
+  ) : housingInquiries.length === 0 ? (
+    <div className="housing-workspace-state">
+      <h3>No Housing inquiries yet</h3>
+      <p>
+        New renter inquiries will appear here.
+      </p>
+    </div>
+  ) : (
+    <div className="housing-inquiries-list">
+      {housingInquiries
+        .slice(0, 5)
+        .map((inquiry) => (
+          <article
+            key={inquiry._id}
+            className="housing-inquiry-card"
+          >
+            <div className="housing-inquiry-card-top">
+              <div>
+                <h3>
+                  {inquiry.customerName ||
+                    "Unknown Renter"}
+                </h3>
+
+                <p>
+                  {inquiry.listingId?.title ||
+                    "Housing Listing"}
+                </p>
+              </div>
+
+              <span
+                className={`housing-inquiry-status status-${String(
+                  inquiry.status || "New"
+                )
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")}`}
+              >
+                {inquiry.status || "New"}
+              </span>
+            </div>
+
+            <div className="housing-inquiry-details">
+              <div>
+                <strong>Move-In Date</strong>
+                <span>
+                  {inquiry.desiredMoveInDate
+                    ? new Date(
+                        inquiry.desiredMoveInDate
+                      ).toLocaleDateString(
+                        undefined,
+                        { timeZone: "UTC" }
+                      )
+                    : "Not provided"}
+                </span>
+              </div>
+
+              <div>
+                <strong>Occupants</strong>
+                <span>
+                  {inquiry.occupants || 1}
+                </span>
+              </div>
+
+              <div>
+                <strong>Phone</strong>
+                <span>
+                  {inquiry.customerPhone ||
+                    "Not provided"}
+                </span>
+              </div>
+
+              <div>
+                <strong>Email</strong>
+                <span>
+                  {inquiry.customerEmail ||
+                    "Not provided"}
+                </span>
+              </div>
+            </div>
+
+            {inquiry.message && (
+              <div className="housing-inquiry-notes">
+                <strong>Renter Message</strong>
+                <p>{inquiry.message}</p>
+              </div>
+            )}
+
+            {inquiry.ownerNotes && (
+              <div className="housing-inquiry-notes">
+                <strong>Owner Notes</strong>
+                <p>{inquiry.ownerNotes}</p>
+              </div>
+            )}
+
+            <div className="housing-inquiry-actions">
+  {inquiry.status === "New" && (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Contacted"
+          )
+        }
+      >
+        Mark Contacted
+      </button>
+
+      <button
+        type="button"
+        className="danger"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Declined"
+          )
+        }
+      >
+        Decline
+      </button>
+    </>
+  )}
+
+  {inquiry.status === "Contacted" && (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Approved"
+          )
+        }
+      >
+        Approve
+      </button>
+
+      <button
+        type="button"
+        className="danger"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Declined"
+          )
+        }
+      >
+        Decline
+      </button>
+
+      <button
+        type="button"
+        className="secondary"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Closed"
+          )
+        }
+      >
+        Close
+      </button>
+    </>
+  )}
+
+  {inquiry.status === "Approved" && (
+    <button
+      type="button"
+      className="secondary"
+      onClick={() =>
+        updateHousingInquiryStatus(
+          inquiry._id,
+          "Closed"
+        )
+      }
+    >
+      Close Inquiry
+    </button>
+  )}
+
+  {inquiry.status === "Declined" && (
+    <span className="housing-inquiry-final-state">
+      Inquiry declined
+    </span>
+  )}
+
+  {inquiry.status === "Closed" && (
+    <span className="housing-inquiry-final-state">
+      Inquiry closed
+    </span>
+  )}
+</div>
+          </article>
+        ))}
+    </div>
+  )}
+</section>
 
           <section className="housing-workspace-grid">
             {listings.map((listing) => (

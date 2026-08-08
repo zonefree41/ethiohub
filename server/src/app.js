@@ -31,6 +31,7 @@ import travelRequestRoutes from "./routes/travelRequests.js";
 import adminHousingRequestRoutes from "./routes/adminHousingRequests.js";
 import adminTravelRequestsRoutes from "./routes/adminTravelRequests.js";
 import beautyAppointmentRoutes from "./routes/beautyAppointmentRequests.js";
+import housingInquiryRoutes from "./routes/housingInquiries.js";
 
 const app = express();
 
@@ -213,6 +214,11 @@ app.use(
 app.use(
   "/api/admin/housing-requests",
   adminHousingRequestRoutes
+);
+
+app.use(
+  "/api/housing-inquiries",
+  housingInquiryRoutes
 );
 
 app.use("/", sitemapRoutes);
