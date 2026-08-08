@@ -392,3 +392,26 @@
     width: 100%;
   }
 }
+
+.housing-availability-btn {
+  min-height: 42px;
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 10px;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.housing-availability-btn.rented {
+  background: #b91c1c;
+}
+
+.housing-availability-btn.available {
+  background: #15803d;
+}
+
+.housing-availability-btn:hover {
+  opacity: 0.92;
+}

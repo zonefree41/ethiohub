@@ -169,6 +169,64 @@ const [inquiryError, setInquiryError] =
   }
 }
 
+async function updateHousingAvailability(
+  listingId,
+  availabilityStatus
+) {
+  try {
+    setError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/owner/listings/${listingId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          availabilityStatus,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to update Housing availability."
+      );
+    }
+
+    setListings((current) =>
+      current.map((listing) =>
+        listing._id === listingId
+          ? {
+              ...listing,
+              availabilityStatus:
+                data.listing?.availabilityStatus ||
+                availabilityStatus,
+            }
+          : listing
+      )
+    );
+  } catch (err) {
+    console.error(
+      "Housing availability update failed:",
+      err
+    );
+
+    setError(
+      err.message ||
+        "Failed to update Housing availability."
+    );
+  }
+}
+
   const approvedCount = listings.filter(
     (listing) => listing.status === "approved"
   ).length;
@@ -532,6 +590,15 @@ const approvedInquiries =
                       {listing.isFeatured ? "Yes" : "No"}
                     </p>
                   </div>
+
+                  <div>
+  <strong>Availability</strong>
+  <p>
+    {listing.availabilityStatus === "rented"
+      ? "Rented"
+      : "Available"}
+  </p>
+</div>
 
                   <div>
                     <strong>Views</strong>
