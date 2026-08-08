@@ -32,6 +32,7 @@ import adminHousingRequestRoutes from "./routes/adminHousingRequests.js";
 import adminTravelRequestsRoutes from "./routes/adminTravelRequests.js";
 import beautyAppointmentRoutes from "./routes/beautyAppointmentRequests.js";
 import housingInquiryRoutes from "./routes/housingInquiries.js";
+import immigrationConsultationRequestRoutes from "./routes/immigrationConsultationRequests.js";
 
 const app = express();
 
@@ -219,6 +220,11 @@ app.use(
 app.use(
   "/api/housing-inquiries",
   housingInquiryRoutes
+);
+
+app.use(
+  "/api/immigration-consultation-requests",
+  immigrationConsultationRequestRoutes
 );
 
 app.use("/", sitemapRoutes);
