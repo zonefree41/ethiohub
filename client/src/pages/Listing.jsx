@@ -1037,6 +1037,12 @@ document.title = seoTitle;
   </section>
 )}
 
+{isHousingListing && listing.ownerId && (
+  <section className="listing-housing-inquiry">
+    <h3>🏠 Send Housing Inquiry</h3>
+  </section>
+)}
+
 {isTransportationListing && (
   <section className="listing-rental-card">
     <h2>🚚 Transportation Details</h2>
