@@ -31,6 +31,31 @@ export default function Listing() {
 const [lightboxIndex, setLightboxIndex] = React.useState(0);
 const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
 
+const [housingInquiryForm, setHousingInquiryForm] =
+  React.useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    desiredMoveInDate: "",
+    occupants: 1,
+    message: "",
+  });
+
+const [
+  submittingHousingInquiry,
+  setSubmittingHousingInquiry,
+] = React.useState(false);
+
+const [
+  housingInquiryMessage,
+  setHousingInquiryMessage,
+] = React.useState("");
+
+const [
+  housingInquiryError,
+  setHousingInquiryError,
+] = React.useState("");
+
 const [beautyAppointmentForm, setBeautyAppointmentForm] =
   React.useState({
     customerName: "",
@@ -308,6 +333,62 @@ function prevPhoto() {
       setIsSaved(true);
     }
   }
+
+  async function submitHousingInquiry(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingHousingInquiry(true);
+    setHousingInquiryMessage("");
+    setHousingInquiryError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/housing-inquiries`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...housingInquiryForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit Housing inquiry."
+      );
+    }
+
+    setHousingInquiryMessage(
+      "Housing inquiry submitted successfully!"
+    );
+
+    setHousingInquiryForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      desiredMoveInDate: "",
+      occupants: 1,
+      message: "",
+    });
+  } catch (err) {
+    setHousingInquiryError(
+      err.message ||
+        "Failed to submit Housing inquiry."
+    );
+  } finally {
+    setSubmittingHousingInquiry(false);
+  }
+}
 
   async function submitBeautyAppointment(e) {
   e.preventDefault();
@@ -1039,7 +1120,143 @@ document.title = seoTitle;
 
 {isHousingListing && listing.ownerId && (
   <section className="listing-housing-inquiry">
-    <h3>🏠 Send Housing Inquiry</h3>
+    <div className="listing-housing-inquiry-header">
+      <h3>🏠 Send Housing Inquiry</h3>
+
+      <p>
+        Interested in this property? Send your
+        inquiry directly to {listing.title}.
+      </p>
+    </div>
+
+    {housingInquiryMessage && (
+      <div className="listing-housing-inquiry-success">
+        {housingInquiryMessage}
+      </div>
+    )}
+
+    {housingInquiryError && (
+      <div className="listing-housing-inquiry-error">
+        {housingInquiryError}
+      </div>
+    )}
+
+    <form
+      className="listing-housing-inquiry-form"
+      onSubmit={submitHousingInquiry}
+    >
+      <div className="listing-housing-inquiry-grid">
+        <label>
+          Your Name
+          <input
+            type="text"
+            required
+            value={housingInquiryForm.customerName}
+            onChange={(e) =>
+              setHousingInquiryForm((current) => ({
+                ...current,
+                customerName: e.target.value,
+              }))
+            }
+            placeholder="Full name"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            required
+            value={housingInquiryForm.customerEmail}
+            onChange={(e) =>
+              setHousingInquiryForm((current) => ({
+                ...current,
+                customerEmail: e.target.value,
+              }))
+            }
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label>
+          Phone
+          <input
+            type="tel"
+            required
+            value={housingInquiryForm.customerPhone}
+            onChange={(e) =>
+              setHousingInquiryForm((current) => ({
+                ...current,
+                customerPhone: e.target.value,
+              }))
+            }
+            placeholder="Phone number"
+          />
+        </label>
+
+        <label>
+          Desired Move-In Date
+          <input
+            type="date"
+            required
+            value={housingInquiryForm.desiredMoveInDate}
+            onChange={(e) =>
+              setHousingInquiryForm((current) => ({
+                ...current,
+                desiredMoveInDate: e.target.value,
+              }))
+            }
+          />
+        </label>
+
+        <label>
+          Occupants
+          <input
+            type="number"
+            min="1"
+            required
+            value={housingInquiryForm.occupants}
+            onChange={(e) =>
+              setHousingInquiryForm((current) => ({
+                ...current,
+                occupants: e.target.value,
+              }))
+            }
+          />
+        </label>
+      </div>
+
+      <label className="listing-housing-inquiry-message">
+        Message
+        <textarea
+          rows="4"
+          value={housingInquiryForm.message}
+          onChange={(e) =>
+            setHousingInquiryForm((current) => ({
+              ...current,
+              message: e.target.value,
+            }))
+          }
+          placeholder="Tell the property owner about your housing needs."
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-housing-inquiry-submit"
+        disabled={submittingHousingInquiry}
+      >
+        {submittingHousingInquiry
+          ? "Sending Inquiry..."
+          : "Send Housing Inquiry"}
+      </button>
+
+      <p className="listing-housing-inquiry-disclaimer">
+        This is an inquiry only. The property owner
+        will review your request and contact you
+        regarding availability and next steps.
+      </p>
+    </form>
   </section>
 )}
 
