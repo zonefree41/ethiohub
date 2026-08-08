@@ -31,6 +31,32 @@ export default function Listing() {
 const [lightboxIndex, setLightboxIndex] = React.useState(0);
 const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
 
+const [beautyAppointmentForm, setBeautyAppointmentForm] =
+  React.useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    service: "",
+    preferredDate: "",
+    preferredTime: "",
+    notes: "",
+  });
+
+const [
+  submittingBeautyAppointment,
+  setSubmittingBeautyAppointment,
+] = React.useState(false);
+
+const [
+  beautyAppointmentMessage,
+  setBeautyAppointmentMessage,
+] = React.useState("");
+
+const [
+  beautyAppointmentError,
+  setBeautyAppointmentError,
+] = React.useState("");
+
   const [reviewForm, setReviewForm] = React.useState({
     name: "",
     rating: "5",
@@ -282,6 +308,63 @@ function prevPhoto() {
       setIsSaved(true);
     }
   }
+
+  async function submitBeautyAppointment(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingBeautyAppointment(true);
+    setBeautyAppointmentMessage("");
+    setBeautyAppointmentError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/beauty-appointment-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...beautyAppointmentForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit appointment request."
+      );
+    }
+
+    setBeautyAppointmentMessage(
+      "Appointment request submitted successfully!"
+    );
+
+    setBeautyAppointmentForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      service: "",
+      preferredDate: "",
+      preferredTime: "",
+      notes: "",
+    });
+  } catch (err) {
+    setBeautyAppointmentError(
+      err.message ||
+        "Failed to submit appointment request."
+    );
+  } finally {
+    setSubmittingBeautyAppointment(false);
+  }
+}
 
   async function shareBusiness() {
     if (!listing) return;
@@ -1327,16 +1410,187 @@ document.title = seoTitle;
     </section>
 )}
 
-{listing.beautyBookingUrl && (
-  <section className="listing-beauty-booking">
-    <a
-      href={listing.beautyBookingUrl}
-      target="_blank"
-      rel="noreferrer"
-      className="listing-book-appointment-btn"
+{listing.categoryId?.slug === "beauty-wellness" && (
+  <section className="listing-beauty-request">
+    <div className="listing-beauty-request-header">
+      <h3>💄 Request an Appointment</h3>
+      <p>
+        Send an appointment request directly to{" "}
+        {listing.title}.
+      </p>
+    </div>
+
+    {beautyAppointmentMessage && (
+      <div className="listing-beauty-request-success">
+        {beautyAppointmentMessage}
+      </div>
+    )}
+
+    {beautyAppointmentError && (
+      <div className="listing-beauty-request-error">
+        {beautyAppointmentError}
+      </div>
+    )}
+
+    <form
+      className="listing-beauty-request-form"
+      onSubmit={submitBeautyAppointment}
     >
-      📅 Book Appointment
-    </a>
+      <div className="listing-beauty-request-grid">
+        <label>
+          Your Name
+          <input
+            type="text"
+            required
+            value={beautyAppointmentForm.customerName}
+            onChange={(e) =>
+              setBeautyAppointmentForm((current) => ({
+                ...current,
+                customerName: e.target.value,
+              }))
+            }
+            placeholder="Full name"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            required
+            value={beautyAppointmentForm.customerEmail}
+            onChange={(e) =>
+              setBeautyAppointmentForm((current) => ({
+                ...current,
+                customerEmail: e.target.value,
+              }))
+            }
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label>
+          Phone
+          <input
+            type="tel"
+            required
+            value={beautyAppointmentForm.customerPhone}
+            onChange={(e) =>
+              setBeautyAppointmentForm((current) => ({
+                ...current,
+                customerPhone: e.target.value,
+              }))
+            }
+            placeholder="Phone number"
+          />
+        </label>
+
+        <label>
+          Service
+          {Array.isArray(listing.beautyServices) &&
+          listing.beautyServices.length > 0 ? (
+            <select
+              required
+              value={beautyAppointmentForm.service}
+              onChange={(e) =>
+                setBeautyAppointmentForm((current) => ({
+                  ...current,
+                  service: e.target.value,
+                }))
+              }
+            >
+              <option value="">
+                Select a service
+              </option>
+
+              {listing.beautyServices.map(
+                (service, index) => (
+                  <option
+                    key={`${service}-${index}`}
+                    value={service}
+                  >
+                    {service}
+                  </option>
+                )
+              )}
+            </select>
+          ) : (
+            <input
+              type="text"
+              required
+              value={beautyAppointmentForm.service}
+              onChange={(e) =>
+                setBeautyAppointmentForm((current) => ({
+                  ...current,
+                  service: e.target.value,
+                }))
+              }
+              placeholder="Service requested"
+            />
+          )}
+        </label>
+
+        <label>
+          Preferred Date
+          <input
+            type="date"
+            required
+            value={beautyAppointmentForm.preferredDate}
+            onChange={(e) =>
+              setBeautyAppointmentForm((current) => ({
+                ...current,
+                preferredDate: e.target.value,
+              }))
+            }
+          />
+        </label>
+
+        <label>
+          Preferred Time
+          <input
+            type="time"
+            required
+            value={beautyAppointmentForm.preferredTime}
+            onChange={(e) =>
+              setBeautyAppointmentForm((current) => ({
+                ...current,
+                preferredTime: e.target.value,
+              }))
+            }
+          />
+        </label>
+      </div>
+
+      <label className="listing-beauty-request-notes">
+        Additional Notes
+        <textarea
+          rows="4"
+          value={beautyAppointmentForm.notes}
+          onChange={(e) =>
+            setBeautyAppointmentForm((current) => ({
+              ...current,
+              notes: e.target.value,
+            }))
+          }
+          placeholder="Anything the business should know?"
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-beauty-request-submit"
+        disabled={submittingBeautyAppointment}
+      >
+        {submittingBeautyAppointment
+          ? "Sending Request..."
+          : "Request Appointment"}
+      </button>
+
+      <p className="listing-beauty-request-disclaimer">
+        This is an appointment request. The business
+        must confirm your requested date and time.
+      </p>
+    </form>
   </section>
 )}
 

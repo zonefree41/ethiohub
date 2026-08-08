@@ -260,3 +260,227 @@
     box-sizing: border-box;
   }
 }
+
+.beauty-appointments-section {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid #eadce5;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow:
+    0 14px 34px
+    rgba(56, 24, 49, 0.07);
+}
+
+.beauty-appointments-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.beauty-appointments-header h2 {
+  margin: 0;
+  color: #251827;
+  font-size: 1.45rem;
+}
+
+.beauty-appointments-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.beauty-appointments-list {
+  display: grid;
+  gap: 16px;
+}
+
+.beauty-appointment-card {
+  padding: 20px;
+  border: 1px solid #f0e1e9;
+  border-radius: 18px;
+  background: #fff9fc;
+}
+
+.beauty-appointment-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.beauty-appointment-card-top h3 {
+  margin: 0;
+  color: #251827;
+  font-size: 1.15rem;
+}
+
+.beauty-appointment-card-top p {
+  margin: 5px 0 0;
+  color: #7a2459;
+  font-weight: 700;
+}
+
+.beauty-appointment-status {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.beauty-appointment-status.status-new {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.beauty-appointment-status.status-confirmed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.beauty-appointment-status.status-declined {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.beauty-appointment-status.status-completed {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.beauty-appointment-status.status-cancelled {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.beauty-appointment-details {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.beauty-appointment-details > div {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #f0e1e9;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.beauty-appointment-details strong,
+.beauty-appointment-details span {
+  display: block;
+}
+
+.beauty-appointment-details strong {
+  margin-bottom: 5px;
+  color: #7a2459;
+  font-size: 0.8rem;
+}
+
+.beauty-appointment-details span {
+  color: #475569;
+  overflow-wrap: anywhere;
+}
+
+.beauty-appointment-notes {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #f0e1e9;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.beauty-appointment-notes strong {
+  color: #7a2459;
+}
+
+.beauty-appointment-notes p {
+  margin: 6px 0 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+@media (max-width: 850px) {
+  .beauty-appointment-details {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .beauty-appointments-section {
+    padding: 18px;
+  }
+
+  .beauty-appointment-card {
+    padding: 16px;
+  }
+
+  .beauty-appointment-card-top {
+    flex-direction: column;
+  }
+
+  .beauty-appointment-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+.beauty-appointment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.beauty-appointment-actions button {
+  min-height: 42px;
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 10px;
+  background: #7a2459;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.beauty-appointment-actions button:hover {
+  opacity: 0.92;
+}
+
+.beauty-appointment-actions button.danger {
+  background: #b91c1c;
+}
+
+.beauty-appointment-actions button.secondary {
+  background: #64748b;
+}
+
+.beauty-appointment-final-state {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .beauty-appointment-actions {
+    flex-direction: column;
+  }
+
+  .beauty-appointment-actions button {
+    width: 100%;
+  }
+}

@@ -10,6 +10,9 @@ export default function BeautyWorkspace() {
   const [listings, setListings] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
+  const [appointmentRequests, setAppointmentRequests] = React.useState([]);
+  const [loadingAppointments, setLoadingAppointments] = React.useState(true);
+  const [appointmentError, setAppointmentError] = React.useState("");
 
   React.useEffect(() => {
     document.title = "Beauty Workspace | HubEthio";
@@ -77,8 +80,92 @@ export default function BeautyWorkspace() {
       }
     }
 
-    loadBeautyListings();
+    Promise.all([
+  loadBeautyListings(),
+  loadAppointmentRequests(),
+]);
   }, [token]);
+
+  async function updateAppointmentStatus(
+  requestId,
+  status
+) {
+  try {
+    setAppointmentError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/beauty-appointment-requests/${requestId}/status`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to update appointment."
+      );
+    }
+
+    setAppointmentRequests((current) =>
+      current.map((request) =>
+        request._id === requestId
+          ? data.request
+          : request
+      )
+    );
+  } catch (err) {
+    console.error(
+      "Beauty appointment update failed:",
+      err
+    );
+
+    setAppointmentError(
+      err.message ||
+        "Failed to update appointment."
+    );
+  }
+}
+
+  async function loadAppointmentRequests() {
+  try {
+    setLoadingAppointments(true);
+    setAppointmentError("");
+
+    const data = await apiGet(
+      "/api/beauty-appointment-requests/owner",
+      token
+    );
+
+    setAppointmentRequests(
+      Array.isArray(data) ? data : []
+    );
+  } catch (err) {
+    console.error(
+      "Failed to load Beauty appointments:",
+      err
+    );
+
+    setAppointmentError(
+      err.message ||
+        "Failed to load appointment requests."
+    );
+
+    setAppointmentRequests([]);
+  } finally {
+    setLoadingAppointments(false);
+  }
+}
 
   const totalServices = listings.reduce(
     (total, listing) =>
@@ -114,6 +201,27 @@ export default function BeautyWorkspace() {
         ),
       0
     );
+
+    const totalAppointments =
+  appointmentRequests.length;
+
+const newAppointments =
+  appointmentRequests.filter(
+    (request) =>
+      request.status === "New"
+  ).length;
+
+const confirmedAppointments =
+  appointmentRequests.filter(
+    (request) =>
+      request.status === "Confirmed"
+  ).length;
+
+const completedAppointments =
+  appointmentRequests.filter(
+    (request) =>
+      request.status === "Completed"
+  ).length;
 
   return (
     <WorkspaceLayout
@@ -173,6 +281,224 @@ export default function BeautyWorkspace() {
     },
   ]}
 />
+
+<WorkspaceStats
+  items={[
+    {
+      label: "Appointments",
+      value: totalAppointments,
+    },
+    {
+      label: "New Requests",
+      value: newAppointments,
+    },
+    {
+      label: "Confirmed",
+      value: confirmedAppointments,
+    },
+    {
+      label: "Completed",
+      value: completedAppointments,
+    },
+  ]}
+/>
+
+<section className="beauty-appointments-section">
+  <div className="beauty-appointments-header">
+    <div>
+      <h2>Recent Appointment Requests</h2>
+      <p>
+        Review customer appointment requests and their current status.
+      </p>
+    </div>
+  </div>
+
+  {appointmentError && (
+    <div className="beauty-workspace-error">
+      Error: {appointmentError}
+    </div>
+  )}
+
+  {loadingAppointments ? (
+    <div className="beauty-workspace-state">
+      Loading appointment requests...
+    </div>
+  ) : appointmentRequests.length === 0 ? (
+    <div className="beauty-workspace-state">
+      <h3>No appointment requests yet</h3>
+      <p>
+        New customer Beauty appointment requests will appear here.
+      </p>
+    </div>
+  ) : (
+    <div className="beauty-appointments-list">
+      {appointmentRequests
+        .slice(0, 5)
+        .map((request) => (
+          <article
+            key={request._id}
+            className="beauty-appointment-card"
+          >
+            <div className="beauty-appointment-card-top">
+              <div>
+                <h3>
+                  {request.customerName ||
+                    "Unknown Customer"}
+                </h3>
+
+                <p>
+                  {request.service ||
+                    "Service not provided"}
+                </p>
+              </div>
+
+              <span
+                className={`beauty-appointment-status status-${String(
+                  request.status || "New"
+                )
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")}`}
+              >
+                {request.status || "New"}
+              </span>
+            </div>
+
+            <div className="beauty-appointment-details">
+              <div>
+                <strong>Date</strong>
+                <span>
+                  {request.preferredDate
+  ? new Date(
+      request.preferredDate
+    ).toLocaleDateString(
+      undefined,
+      { timeZone: "UTC" }
+    )
+  : "Not provided"}
+                </span>
+              </div>
+
+              <div>
+                <strong>Time</strong>
+                <span>
+                  {request.preferredTime ||
+                    "Not provided"}
+                </span>
+              </div>
+
+              <div>
+                <strong>Phone</strong>
+                <span>
+                  {request.customerPhone ||
+                    "Not provided"}
+                </span>
+              </div>
+
+              <div>
+                <strong>Email</strong>
+                <span>
+                  {request.customerEmail ||
+                    "Not provided"}
+                </span>
+              </div>
+            </div>
+
+            {request.notes && (
+              <div className="beauty-appointment-notes">
+                <strong>Customer Notes</strong>
+                <p>{request.notes}</p>
+              </div>
+            )}
+
+            {request.ownerNotes && (
+              <div className="beauty-appointment-notes">
+                <strong>Owner Notes</strong>
+                <p>{request.ownerNotes}</p>
+              </div>
+            )}
+
+            <div className="beauty-appointment-actions">
+  {request.status === "New" && (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          updateAppointmentStatus(
+            request._id,
+            "Confirmed"
+          )
+        }
+      >
+        Confirm
+      </button>
+
+      <button
+        type="button"
+        className="danger"
+        onClick={() =>
+          updateAppointmentStatus(
+            request._id,
+            "Declined"
+          )
+        }
+      >
+        Decline
+      </button>
+    </>
+  )}
+
+  {request.status === "Confirmed" && (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          updateAppointmentStatus(
+            request._id,
+            "Completed"
+          )
+        }
+      >
+        Mark Completed
+      </button>
+
+      <button
+        type="button"
+        className="secondary"
+        onClick={() =>
+          updateAppointmentStatus(
+            request._id,
+            "Cancelled"
+          )
+        }
+      >
+        Cancel
+      </button>
+    </>
+  )}
+
+  {request.status === "Declined" && (
+    <span className="beauty-appointment-final-state">
+      Request declined
+    </span>
+  )}
+
+  {request.status === "Completed" && (
+    <span className="beauty-appointment-final-state">
+      Appointment completed
+    </span>
+  )}
+
+  {request.status === "Cancelled" && (
+    <span className="beauty-appointment-final-state">
+      Appointment cancelled
+    </span>
+  )}
+</div>
+          </article>
+        ))}
+    </div>
+  )}
+</section>
 
             <section className="beauty-workspace-grid">
               {listings.map(
