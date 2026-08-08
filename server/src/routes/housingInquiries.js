@@ -64,6 +64,13 @@ router.post("/", async (req, res) => {
       });
     }
 
+    if (listing.availabilityStatus === "rented") {
+  return res.status(400).json({
+    message:
+      "This property is currently rented and is not accepting new housing inquiries.",
+  });
+}
+
     if (!listing.ownerId) {
       return res.status(400).json({
         message:
