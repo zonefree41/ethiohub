@@ -569,7 +569,7 @@ function formatHousingPhone(value) {
               </div>
             ) : (
               <div className="home-grid">
-                {featuredListings.slice(0, 6).map((listing) => (
+                {featuredListings.slice(0, 8).map((listing) => (
                   <a
                     key={listing._id}
                     href={`/listing/${listing._id}`}
