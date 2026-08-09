@@ -2,8 +2,18 @@ import express from "express";
 import ImmigrationConsultationRequest from "../models/ImmigrationConsultationRequest.js";
 import Listing from "../models/Listing.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const router = express.Router();
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 /*
   PUBLIC
@@ -36,7 +46,12 @@ router.post("/", async (req, res) => {
       });
     }
 
-    const listing = await Listing.findById(listingId);
+    const listing = await Listing.findById(
+  listingId
+).populate(
+  "ownerId",
+  "name email"
+);
 
     if (!listing) {
       return res.status(404).json({
@@ -72,6 +87,302 @@ router.post("/", async (req, res) => {
         preferredContactMethod,
         message,
       });
+
+      const ownerEmail = listing.ownerId?.email;
+
+if (ownerEmail) {
+  try {
+    const businessTitle =
+      listing.title || "Immigration Lawyer";
+
+    await sendEmail({
+      to: ownerEmail,
+      subject: `New Immigration Consultation Request: ${businessTitle}`,
+      html: `
+        <div style="
+          max-width:640px;
+          margin:0 auto;
+          font-family:Arial,Helvetica,sans-serif;
+          background:#f8fafc;
+          padding:24px;
+          color:#0f172a;
+        ">
+          <div style="
+            background:linear-gradient(135deg,#4c1d95,#7c3aed);
+            color:#ffffff;
+            padding:24px;
+            border-radius:18px 18px 0 0;
+          ">
+            <h1 style="
+              margin:0;
+              font-size:24px;
+            ">
+              ⚖️ New Consultation Request
+            </h1>
+
+            <p style="
+              margin:8px 0 0;
+              opacity:.92;
+            ">
+              A new potential client contacted you through HubEthio.
+            </p>
+          </div>
+
+          <div style="
+            background:#ffffff;
+            padding:24px;
+            border:1px solid #e2e8f0;
+            border-top:0;
+            border-radius:0 0 18px 18px;
+          ">
+            <h2 style="
+              margin-top:0;
+              color:#4c1d95;
+            ">
+              ${escapeHtml(businessTitle)}
+            </h2>
+
+            <div style="
+              background:#faf5ff;
+              border:1px solid #ddd6fe;
+              border-radius:14px;
+              padding:18px;
+              margin:18px 0;
+            ">
+              <p><strong>Client:</strong> ${escapeHtml(customerName)}</p>
+              <p><strong>Case Type:</strong> ${escapeHtml(caseType)}</p>
+              <p><strong>Email:</strong> ${escapeHtml(customerEmail)}</p>
+              <p><strong>Phone:</strong> ${escapeHtml(customerPhone)}</p>
+              <p><strong>Preferred Contact:</strong> ${escapeHtml(preferredContactMethod)}</p>
+              <p><strong>Preferred Date:</strong> ${
+                preferredConsultationDate
+                  ? escapeHtml(preferredConsultationDate)
+                  : "Not provided"
+              }</p>
+              <p><strong>Preferred Time:</strong> ${
+                preferredConsultationTime
+                  ? escapeHtml(preferredConsultationTime)
+                  : "Not provided"
+              }</p>
+            </div>
+
+            ${
+              message
+                ? `
+                  <div style="
+                    background:#f8fafc;
+                    border-left:4px solid #7c3aed;
+                    padding:14px 16px;
+                    margin:18px 0;
+                  ">
+                    <strong>Client Message</strong>
+                    <p style="
+                      margin:8px 0 0;
+                      line-height:1.6;
+                    ">
+                      ${escapeHtml(message)}
+                    </p>
+                  </div>
+                `
+                : ""
+            }
+
+            <div style="text-align:center;margin-top:24px;">
+              <a
+                href="https://hubethio.com/owner/workspaces/immigration"
+                style="
+                  display:inline-block;
+                  background:#7c3aed;
+                  color:#ffffff;
+                  text-decoration:none;
+                  padding:13px 20px;
+                  border-radius:10px;
+                  font-weight:700;
+                "
+              >
+                Open Immigration Workspace
+              </a>
+            </div>
+
+            <p style="
+              margin-top:24px;
+              color:#64748b;
+              font-size:13px;
+              line-height:1.5;
+            ">
+              This message was sent because a customer submitted an
+              Immigration consultation request through your HubEthio listing.
+            </p>
+          </div>
+        </div>
+      `,
+    });
+  } catch (emailError) {
+    console.error(
+      "Immigration owner notification email failed:",
+      emailError
+    );
+  }
+}
+
+try {
+  const businessTitle =
+    listing.title || "Immigration Lawyer";
+
+  await sendEmail({
+    to: customerEmail,
+    subject: `Your Immigration Consultation Request Was Received: ${businessTitle}`,
+    html: `
+      <div style="
+        max-width:640px;
+        margin:0 auto;
+        font-family:Arial,Helvetica,sans-serif;
+        background:#f8fafc;
+        padding:24px;
+        color:#0f172a;
+      ">
+        <div style="
+          background:linear-gradient(135deg,#312e81,#7c3aed);
+          color:#ffffff;
+          padding:24px;
+          border-radius:18px 18px 0 0;
+        ">
+          <h1 style="
+            margin:0;
+            font-size:24px;
+          ">
+            ⚖️ Consultation Request Received
+          </h1>
+
+          <p style="
+            margin:8px 0 0;
+            opacity:.92;
+          ">
+            Thank you for contacting an Immigration Lawyer through HubEthio.
+          </p>
+        </div>
+
+        <div style="
+          background:#ffffff;
+          padding:24px;
+          border:1px solid #e2e8f0;
+          border-top:0;
+          border-radius:0 0 18px 18px;
+        ">
+          <p style="font-size:16px;">
+            Hello ${escapeHtml(customerName)},
+          </p>
+
+          <p style="
+            line-height:1.7;
+            color:#475569;
+          ">
+            Your consultation request has been successfully
+            sent to <strong>${escapeHtml(businessTitle)}</strong>.
+            The law office can now review your request and
+            contact you regarding next steps.
+          </p>
+
+          <div style="
+            background:#faf5ff;
+            border:1px solid #ddd6fe;
+            border-radius:14px;
+            padding:18px;
+            margin:20px 0;
+          ">
+            <p><strong>Case Type:</strong> ${escapeHtml(caseType)}</p>
+
+            <p>
+              <strong>Preferred Contact:</strong>
+              ${escapeHtml(preferredContactMethod)}
+            </p>
+
+            <p>
+              <strong>Preferred Date:</strong>
+              ${
+                preferredConsultationDate
+                  ? escapeHtml(preferredConsultationDate)
+                  : "Not provided"
+              }
+            </p>
+
+            <p>
+              <strong>Preferred Time:</strong>
+              ${
+                preferredConsultationTime
+                  ? escapeHtml(preferredConsultationTime)
+                  : "Not provided"
+              }
+            </p>
+          </div>
+
+          ${
+            message
+              ? `
+                <div style="
+                  background:#f8fafc;
+                  border-left:4px solid #7c3aed;
+                  padding:14px 16px;
+                  margin:18px 0;
+                ">
+                  <strong>Your Message</strong>
+
+                  <p style="
+                    margin:8px 0 0;
+                    line-height:1.6;
+                    color:#475569;
+                  ">
+                    ${escapeHtml(message)}
+                  </p>
+                </div>
+              `
+              : ""
+          }
+
+          <div style="
+            margin-top:22px;
+            padding:16px;
+            border-radius:12px;
+            background:#fff7ed;
+            border:1px solid #fed7aa;
+          ">
+            <strong style="color:#9a3412;">
+              Important
+            </strong>
+
+            <p style="
+              margin:7px 0 0;
+              color:#7c2d12;
+              line-height:1.5;
+              font-size:14px;
+            ">
+              Submitting this request does not create an
+              attorney-client relationship and does not
+              guarantee legal representation. The lawyer
+              must review and accept your matter separately.
+            </p>
+          </div>
+
+          <p style="
+            margin-top:24px;
+            color:#64748b;
+            font-size:13px;
+            line-height:1.5;
+          ">
+            HubEthio helps connect customers with listed
+            community service providers. Legal advice and
+            representation are provided only by the law office.
+          </p>
+        </div>
+      </div>
+    `,
+  });
+} catch (emailError) {
+  console.error(
+    "Immigration customer confirmation email failed:",
+    emailError
+  );
+}
 
     return res.status(201).json({
       message:
@@ -134,7 +445,12 @@ router.patch(
   requireOwner,
   async (req, res) => {
     try {
-      const { status, ownerNotes = "" } = req.body;
+      const {
+  status,
+  ownerNotes = "",
+  scheduledConsultationDate = null,
+  scheduledConsultationTime = "",
+} = req.body;
 
       const allowedStatuses = [
         "New",
@@ -176,8 +492,18 @@ router.patch(
       }
 
       if (status === "Consultation Scheduled") {
-        request.consultationScheduledAt = now;
-      }
+  request.consultationScheduledAt = now;
+
+  request.scheduledConsultationDate =
+    scheduledConsultationDate
+      ? new Date(scheduledConsultationDate)
+      : null;
+
+  request.scheduledConsultationTime =
+    String(
+      scheduledConsultationTime || ""
+    ).trim();
+}
 
       if (status === "Retained") {
         request.retainedAt = now;
@@ -197,6 +523,153 @@ router.patch(
         "listingId",
         "title city state status"
       );
+
+      if (
+  status === "Contacted" &&
+  request.customerEmail
+) {
+  try {
+    const businessTitle =
+      request.listingId?.title ||
+      "Immigration Lawyer";
+
+    await sendEmail({
+      to: request.customerEmail,
+      subject: `Update on Your Immigration Consultation: ${businessTitle}`,
+      html: `
+        <div style="
+          max-width:640px;
+          margin:0 auto;
+          font-family:Arial,Helvetica,sans-serif;
+          background:#f8fafc;
+          padding:24px;
+          color:#0f172a;
+        ">
+          <div style="
+            background:linear-gradient(135deg,#312e81,#7c3aed);
+            color:#ffffff;
+            padding:24px;
+            border-radius:18px 18px 0 0;
+          ">
+            <h1 style="
+              margin:0;
+              font-size:24px;
+            ">
+              📞 Your Consultation Request Was Reviewed
+            </h1>
+
+            <p style="
+              margin:8px 0 0;
+              opacity:.92;
+            ">
+              ${escapeHtml(businessTitle)} has updated your consultation request.
+            </p>
+          </div>
+
+          <div style="
+            background:#ffffff;
+            padding:24px;
+            border:1px solid #e2e8f0;
+            border-top:0;
+            border-radius:0 0 18px 18px;
+          ">
+            <p style="font-size:16px;">
+              Hello ${escapeHtml(request.customerName)},
+            </p>
+
+            <p style="
+              color:#475569;
+              line-height:1.7;
+            ">
+              Your Immigration consultation request has been marked
+              <strong>Contacted</strong>.
+            </p>
+
+            <div style="
+              margin:20px 0;
+              padding:18px;
+              border-radius:14px;
+              background:#faf5ff;
+              border:1px solid #ddd6fe;
+            ">
+              <p>
+                <strong>Case Type:</strong>
+                ${escapeHtml(request.caseType)}
+              </p>
+
+              <p>
+                <strong>Preferred Contact:</strong>
+                ${escapeHtml(
+                  request.preferredContactMethod ||
+                    "Either"
+                )}
+              </p>
+            </div>
+
+            ${
+              request.ownerNotes
+                ? `
+                  <div style="
+                    margin:18px 0;
+                    padding:14px 16px;
+                    background:#f8fafc;
+                    border-left:4px solid #7c3aed;
+                  ">
+                    <strong>Update from the law office</strong>
+                    <p style="
+                      margin:8px 0 0;
+                      line-height:1.6;
+                      color:#475569;
+                    ">
+                      ${escapeHtml(request.ownerNotes)}
+                    </p>
+                  </div>
+                `
+                : ""
+            }
+
+            <p style="
+              margin-top:22px;
+              color:#64748b;
+              font-size:14px;
+              line-height:1.6;
+            ">
+              Please keep an eye on your phone, email, or WhatsApp
+              based on the contact method you selected.
+            </p>
+
+            <div style="
+              margin-top:22px;
+              padding:16px;
+              border-radius:12px;
+              background:#fff7ed;
+              border:1px solid #fed7aa;
+            ">
+              <strong style="color:#9a3412;">
+                Important
+              </strong>
+
+              <p style="
+                margin:7px 0 0;
+                color:#7c2d12;
+                line-height:1.5;
+                font-size:14px;
+              ">
+                This status update does not create an attorney-client
+                relationship or guarantee legal representation.
+              </p>
+            </div>
+          </div>
+        </div>
+      `,
+    });
+  } catch (emailError) {
+    console.error(
+      "Immigration Contacted status email failed:",
+      emailError
+    );
+  }
+}
 
       return res.json({
         message:

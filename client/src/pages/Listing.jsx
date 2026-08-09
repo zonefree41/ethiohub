@@ -31,6 +31,35 @@ export default function Listing() {
 const [lightboxIndex, setLightboxIndex] = React.useState(0);
 const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
 
+const [
+  immigrationConsultationForm,
+  setImmigrationConsultationForm,
+] = React.useState({
+  customerName: "",
+  customerEmail: "",
+  customerPhone: "",
+  caseType: "",
+  preferredConsultationDate: "",
+  preferredConsultationTime: "",
+  preferredContactMethod: "Either",
+  message: "",
+});
+
+const [
+  submittingImmigrationConsultation,
+  setSubmittingImmigrationConsultation,
+] = React.useState(false);
+
+const [
+  immigrationConsultationMessage,
+  setImmigrationConsultationMessage,
+] = React.useState("");
+
+const [
+  immigrationConsultationError,
+  setImmigrationConsultationError,
+] = React.useState("");
+
 const [housingInquiryForm, setHousingInquiryForm] =
   React.useState({
     customerName: "",
@@ -333,6 +362,64 @@ function prevPhoto() {
       setIsSaved(true);
     }
   }
+
+  async function submitImmigrationConsultation(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingImmigrationConsultation(true);
+    setImmigrationConsultationMessage("");
+    setImmigrationConsultationError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/immigration-consultation-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...immigrationConsultationForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit consultation request."
+      );
+    }
+
+    setImmigrationConsultationMessage(
+      "Consultation request submitted successfully!"
+    );
+
+    setImmigrationConsultationForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      caseType: "",
+      preferredConsultationDate: "",
+      preferredConsultationTime: "",
+      preferredContactMethod: "Either",
+      message: "",
+    });
+  } catch (err) {
+    setImmigrationConsultationError(
+      err.message ||
+        "Failed to submit consultation request."
+    );
+  } finally {
+    setSubmittingImmigrationConsultation(false);
+  }
+}
 
   async function submitHousingInquiry(e) {
   e.preventDefault();
@@ -781,6 +868,10 @@ function hasRentalDetails(item) {
     "Rooms",
     "Roommates",
   ].includes(listing.subcategory);
+
+  const isImmigrationListing =
+  listing.categoryId?.slug ===
+  "immigration-lawyer";
 
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
@@ -1271,6 +1362,239 @@ document.title = seoTitle;
         will review your request and contact you
         regarding availability and next steps.
       </p>
+
+          </form>
+  </section>
+)}
+
+{isImmigrationListing && listing.ownerId && (
+  <section className="listing-immigration-consultation">
+    <div className="listing-immigration-consultation-header">
+      <h3>⚖️ Request Immigration Consultation</h3>
+
+      <p>
+        Need help with an immigration matter? Send a
+        consultation request directly to {listing.title}.
+      </p>
+    </div>
+
+    {immigrationConsultationMessage && (
+  <div className="listing-immigration-consultation-success">
+    {immigrationConsultationMessage}
+  </div>
+)}
+
+{immigrationConsultationError && (
+  <div className="listing-immigration-consultation-error">
+    {immigrationConsultationError}
+  </div>
+)}
+
+    <form
+      className="listing-immigration-consultation-form"
+      onSubmit={submitImmigrationConsultation}
+    >
+      <label>
+        Your Name
+        <input
+          type="text"
+          required
+          value={immigrationConsultationForm.customerName}
+          onChange={(e) =>
+            setImmigrationConsultationForm((current) => ({
+              ...current,
+              customerName: e.target.value,
+            }))
+          }
+          placeholder="Full name"
+        />
+      </label>
+
+      <label>
+        Email
+        <input
+  type="email"
+  inputMode="email"
+  autoComplete="email"
+  required
+  value={immigrationConsultationForm.customerEmail}
+          onChange={(e) =>
+            setImmigrationConsultationForm((current) => ({
+              ...current,
+              customerEmail: e.target.value,
+            }))
+          }
+          placeholder="you@example.com"
+        />
+      </label>
+
+      <label>
+        Phone
+        <input
+  type="tel"
+  inputMode="tel"
+  autoComplete="tel"
+  required
+  value={immigrationConsultationForm.customerPhone}
+          onChange={(e) =>
+            setImmigrationConsultationForm((current) => ({
+              ...current,
+              customerPhone: e.target.value,
+            }))
+          }
+          placeholder="Phone number"
+        />
+      </label>
+
+      <label>
+  Case Type
+  <select
+  required
+  value={immigrationConsultationForm.caseType}
+  onChange={(e) =>
+    setImmigrationConsultationForm((current) => ({
+      ...current,
+      caseType: e.target.value,
+    }))
+  }
+>
+  <option value="">Select case type</option>
+
+  <option value="Family Immigration">
+    Family Immigration
+  </option>
+
+  <option value="Marriage / Fiancé Visa">
+    Marriage / Fiancé Visa
+  </option>
+
+  <option value="Green Card / Adjustment of Status">
+    Green Card / Adjustment of Status
+  </option>
+
+  <option value="Citizenship / Naturalization">
+    Citizenship / Naturalization
+  </option>
+
+  <option value="Asylum">
+    Asylum
+  </option>
+
+  <option value="Work Visa / Employment Immigration">
+    Work Visa / Employment Immigration
+  </option>
+
+  <option value="Student Visa">
+    Student Visa
+  </option>
+
+  <option value="Removal / Deportation Defense">
+    Removal / Deportation Defense
+  </option>
+
+  <option value="TPS">
+    Temporary Protected Status (TPS)
+  </option>
+
+  <option value="DACA">
+    DACA
+  </option>
+
+  <option value="Humanitarian Immigration">
+    Humanitarian Immigration
+  </option>
+
+  <option value="Immigration Appeal">
+    Immigration Appeal
+  </option>
+
+  <option value="Visa / Consular Processing">
+    Visa / Consular Processing
+  </option>
+
+  <option value="Other Immigration Matter">
+    Other Immigration Matter
+  </option>
+</select>
+</label>
+
+<label>
+  Preferred Consultation Date
+  <input
+    type="date"
+    min={new Date().toISOString().split("T")[0]}
+    value={
+      immigrationConsultationForm.preferredConsultationDate
+    }
+    onChange={(e) =>
+      setImmigrationConsultationForm((current) => ({
+        ...current,
+        preferredConsultationDate: e.target.value,
+      }))
+    }
+  />
+</label>
+
+<label>
+  Preferred Consultation Time
+  <input
+    type="time"
+    value={
+      immigrationConsultationForm.preferredConsultationTime
+    }
+    onChange={(e) =>
+      setImmigrationConsultationForm((current) => ({
+        ...current,
+        preferredConsultationTime: e.target.value,
+      }))
+    }
+  />
+</label>
+
+<label>
+  Preferred Contact Method
+  <select
+    value={
+      immigrationConsultationForm.preferredContactMethod
+    }
+    onChange={(e) =>
+      setImmigrationConsultationForm((current) => ({
+        ...current,
+        preferredContactMethod: e.target.value,
+      }))
+    }
+  >
+    <option value="Either">Either</option>
+    <option value="Phone">Phone</option>
+    <option value="Email">Email</option>
+    <option value="WhatsApp">WhatsApp</option>
+  </select>
+</label>
+
+<label>
+  Message
+  <textarea
+    rows="4"
+    value={immigrationConsultationForm.message}
+    onChange={(e) =>
+      setImmigrationConsultationForm((current) => ({
+        ...current,
+        message: e.target.value,
+      }))
+    }
+    placeholder="Briefly describe what you would like to discuss with the immigration lawyer."
+  />
+</label>
+
+<button
+  type="submit"
+  className="listing-immigration-consultation-submit"
+  disabled={submittingImmigrationConsultation}
+>
+  {submittingImmigrationConsultation
+    ? "Sending Request..."
+    : "Request Consultation"}
+</button>
     </form>
   </section>
 )}
@@ -2107,173 +2431,171 @@ document.title = seoTitle;
         </section>
 
         {isQuoteModalOpen && (
-  <div
-    className="listing-quote-modal-overlay"
-    onClick={() => setIsQuoteModalOpen(false)}
-  >
-    <div
-      className="listing-quote-modal"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        type="button"
-        className="listing-quote-modal-close"
-        onClick={() => setIsQuoteModalOpen(false)}
-      >
-        ×
-      </button>
-
-      <h2>🚚 Request a Transportation Quote</h2>
-
-      <p className="listing-quote-modal-subtitle">
-        Send your service request directly to {listing.title}.
-      </p>
-
-      {quoteMessage && (
-        <div className="listing-review-success">
-          {quoteMessage}
-        </div>
-      )}
-
-      {quoteError && (
-        <div className="listing-review-error">
-          {quoteError}
-        </div>
-      )}
-
-      <form
-  className="listing-quote-form"
-  onSubmit={submitQuoteRequest}
->
-        <div className="listing-quote-grid">
-          <label>
-            Your Name
-            <input
-              type="text"
-              name="customerName"
-              value={quoteForm.customerName}
-              onChange={updateQuoteForm}
-              required
-            />
-          </label>
-
-          <label>
-            Phone Number
-            <input
-              type="tel"
-              name="customerPhone"
-              value={quoteForm.customerPhone}
-              onChange={updateQuoteForm}
-              required
-            />
-          </label>
-
-          <label>
-            Email Address
-            <input
-              type="email"
-              name="customerEmail"
-              value={quoteForm.customerEmail}
-              onChange={updateQuoteForm}
-            />
-          </label>
-
-          <label>
-            Service Type
-            <select
-              name="serviceType"
-              value={quoteForm.serviceType}
-              onChange={updateQuoteForm}
+          <div
+            className="listing-quote-modal-overlay"
+            onClick={() => setIsQuoteModalOpen(false)}
+          >
+            <div
+              className="listing-quote-modal"
+              onClick={(e) => e.stopPropagation()}
             >
-              <option value="Furniture Delivery">
-                Furniture Delivery
-              </option>
-              <option value="Package Delivery">
-                Package Delivery
-              </option>
-              <option value="Moving Service">
-                Moving Service
-              </option>
-              <option value="Airport Transportation">
-                Airport Transportation
-              </option>
-              <option value="Freight Delivery">
-                Freight Delivery
-              </option>
-              <option value="Other">Other</option>
-            </select>
-          </label>
+              <button
+                type="button"
+                className="listing-quote-modal-close"
+                onClick={() => setIsQuoteModalOpen(false)}
+              >
+                ×
+              </button>
 
-          <label className="listing-quote-full-width">
-            Pickup Address
-            <input
-              type="text"
-              name="pickupAddress"
-              value={quoteForm.pickupAddress}
-              onChange={updateQuoteForm}
-              required
-            />
-          </label>
+              <h2>🚚 Request a Transportation Quote</h2>
 
-          <label className="listing-quote-full-width">
-            Delivery Address
-            <input
-              type="text"
-              name="deliveryAddress"
-              value={quoteForm.deliveryAddress}
-              onChange={updateQuoteForm}
-              required
-            />
-          </label>
+              <p className="listing-quote-modal-subtitle">
+                Send your service request directly to {listing.title}.
+              </p>
 
-          <label>
-            Requested Date
-            <input
-              type="date"
-              name="requestedDate"
-              value={quoteForm.requestedDate}
-              onChange={updateQuoteForm}
-              min={new Date().toISOString().split("T")[0]}
-              required
-            />
-          </label>
+              {quoteMessage && (
+                <div className="listing-review-success">
+                  {quoteMessage}
+                </div>
+              )}
 
-          <label>
-            Requested Time
-            <input
-              type="time"
-              name="requestedTime"
-              value={quoteForm.requestedTime}
-              onChange={updateQuoteForm}
-            />
-          </label>
+              {quoteError && (
+                <div className="listing-review-error">
+                  {quoteError}
+                </div>
+              )}
 
-          <label className="listing-quote-full-width">
-            Cargo Details
-            <textarea
-              name="cargoDetails"
-              value={quoteForm.cargoDetails}
-              onChange={updateQuoteForm}
-              rows="5"
-              placeholder="Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
-              required
-            />
-          </label>
-        </div>
+              <form className="listing-quote-form" onSubmit={submitQuoteRequest}>
+                <div className="listing-quote-grid">
+                  <label>
+                    Your Name
+                    <input
+                      type="text"
+                      name="customerName"
+                      value={quoteForm.customerName}
+                      onChange={updateQuoteForm}
+                      required
+                    />
+                  </label>
 
-        <button
-          type="submit"
-          className="listing-quote-submit-btn"
-          disabled={quoteSubmitting}
-        >
-          {quoteSubmitting
-            ? "Submitting..."
-            : "Submit Quote Request"}
-        </button>
-      </form>
-    </div>
-  </div>
-)}
+                  <label>
+                    Phone Number
+                    <input
+                      type="tel"
+                      name="customerPhone"
+                      value={quoteForm.customerPhone}
+                      onChange={updateQuoteForm}
+                      required
+                    />
+                  </label>
+
+                  <label>
+                    Email Address
+                    <input
+                      type="email"
+                      name="customerEmail"
+                      value={quoteForm.customerEmail}
+                      onChange={updateQuoteForm}
+                    />
+                  </label>
+
+                  <label>
+                    Service Type
+                    <select
+                      name="serviceType"
+                      value={quoteForm.serviceType}
+                      onChange={updateQuoteForm}
+                    >
+                      <option value="Furniture Delivery">
+                        Furniture Delivery
+                      </option>
+                      <option value="Package Delivery">
+                        Package Delivery
+                      </option>
+                      <option value="Moving Service">
+                        Moving Service
+                      </option>
+                      <option value="Airport Transportation">
+                        Airport Transportation
+                      </option>
+                      <option value="Freight Delivery">
+                        Freight Delivery
+                      </option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </label>
+
+                  <label className="listing-quote-full-width">
+                    Pickup Address
+                    <input
+                      type="text"
+                      name="pickupAddress"
+                      value={quoteForm.pickupAddress}
+                      onChange={updateQuoteForm}
+                      required
+                    />
+                  </label>
+
+                  <label className="listing-quote-full-width">
+                    Delivery Address
+                    <input
+                      type="text"
+                      name="deliveryAddress"
+                      value={quoteForm.deliveryAddress}
+                      onChange={updateQuoteForm}
+                      required
+                    />
+                  </label>
+
+                  <label>
+                    Requested Date
+                    <input
+                      type="date"
+                      name="requestedDate"
+                      value={quoteForm.requestedDate}
+                      onChange={updateQuoteForm}
+                      min={new Date().toISOString().split("T")[0]}
+                      required
+                    />
+                  </label>
+
+                  <label>
+                    Requested Time
+                    <input
+                      type="time"
+                      name="requestedTime"
+                      value={quoteForm.requestedTime}
+                      onChange={updateQuoteForm}
+                    />
+                  </label>
+
+                  <label className="listing-quote-full-width">
+                    Cargo Details
+                    <textarea
+                      name="cargoDetails"
+                      value={quoteForm.cargoDetails}
+                      onChange={updateQuoteForm}
+                      rows="5"
+                      placeholder="Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
+                      required
+                    />
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  className="listing-quote-submit-btn"
+                  disabled={quoteSubmitting}
+                >
+                  {quoteSubmitting
+                    ? "Submitting..."
+                    : "Submit Quote Request"}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
         {isLightboxOpen && lightboxImages.length > 0 && (
   <div className="listing-lightbox" onClick={closeLightbox}>
     <button

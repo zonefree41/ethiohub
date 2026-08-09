@@ -101,6 +101,17 @@ const ImmigrationConsultationRequestSchema =
         default: null,
       },
 
+      scheduledConsultationDate: {
+  type: Date,
+  default: null,
+},
+
+scheduledConsultationTime: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
       retainedAt: {
         type: Date,
         default: null,

@@ -11,6 +11,21 @@ export default function ImmigrationWorkspace() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
 
+  const [
+  schedulingRequestId,
+  setSchedulingRequestId,
+] = React.useState(null);
+
+const [
+  scheduledConsultationDate,
+  setScheduledConsultationDate,
+] = React.useState("");
+
+const [
+  scheduledConsultationTime,
+  setScheduledConsultationTime,
+] = React.useState("");
+
   const [consultationRequests, setConsultationRequests] =
   React.useState([]);
 
@@ -129,7 +144,9 @@ const [
 
   async function updateConsultationStatus(
   requestId,
-  status
+  status,
+  scheduledConsultationDate = null,
+  scheduledConsultationTime = ""
 ) {
   try {
     setConsultationError("");
@@ -145,7 +162,11 @@ const [
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({
+  status,
+  scheduledConsultationDate,
+  scheduledConsultationTime,
+}),
       }
     );
 
@@ -468,16 +489,15 @@ const scheduledConsultations =
   {request.status === "Contacted" && (
     <>
       <button
-        type="button"
-        onClick={() =>
-          updateConsultationStatus(
-            request._id,
-            "Consultation Scheduled"
-          )
-        }
-      >
-        Schedule Consultation
-      </button>
+  type="button"
+  onClick={() => {
+    setSchedulingRequestId(request._id);
+    setScheduledConsultationDate("");
+    setScheduledConsultationTime("");
+  }}
+>
+  Schedule Consultation
+</button>
 
       <button
         type="button"
@@ -564,6 +584,69 @@ const scheduledConsultations =
       Close Case
     </button>
   )}
+
+  {schedulingRequestId === request._id && (
+  <div className="immigration-schedule-panel">
+    <label>
+      Confirmed Consultation Date
+      <input
+        type="date"
+        min={new Date().toISOString().split("T")[0]}
+        value={scheduledConsultationDate}
+        onChange={(e) =>
+          setScheduledConsultationDate(e.target.value)
+        }
+      />
+    </label>
+
+    <label>
+      Confirmed Consultation Time
+      <input
+        type="time"
+        value={scheduledConsultationTime}
+        onChange={(e) =>
+          setScheduledConsultationTime(e.target.value)
+        }
+      />
+    </label>
+
+    <div className="immigration-schedule-actions">
+      <button
+        type="button"
+        disabled={
+          !scheduledConsultationDate ||
+          !scheduledConsultationTime
+        }
+        onClick={async () => {
+          await updateConsultationStatus(
+            request._id,
+            "Consultation Scheduled",
+            scheduledConsultationDate,
+            scheduledConsultationTime
+          );
+
+          setSchedulingRequestId(null);
+          setScheduledConsultationDate("");
+          setScheduledConsultationTime("");
+        }}
+      >
+        Confirm Schedule
+      </button>
+
+      <button
+        type="button"
+        className="secondary"
+        onClick={() => {
+          setSchedulingRequestId(null);
+          setScheduledConsultationDate("");
+          setScheduledConsultationTime("");
+        }}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
 
   {request.status === "Declined" && (
     <span className="immigration-consultation-final-state">

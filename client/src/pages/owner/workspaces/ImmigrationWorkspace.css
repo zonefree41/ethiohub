@@ -352,9 +352,23 @@
 .immigration-consultation-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 10px;
   margin-top: 16px;
 }
+
+.immigration-schedule-panel {
+  flex: 0 0 100%;
+  width: 100%;
+  box-sizing: border-box;
+
+  margin-top: 16px;
+  padding: 18px;
+  border: 1px solid #ddd6fe;
+  border-radius: 14px;
+  background: #faf5ff;
+}
+
 
 .immigration-consultation-actions button {
   min-height: 42px;
@@ -397,6 +411,69 @@
   }
 
   .immigration-consultation-actions button {
+    width: 100%;
+  }
+}
+
+.immigration-schedule-panel {
+  margin-top: 16px;
+  padding: 18px;
+  border: 1px solid #ddd6fe;
+  border-radius: 14px;
+  background: #faf5ff;
+}
+
+.immigration-schedule-panel label {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 14px;
+  color: #374151;
+  font-weight: 700;
+}
+
+.immigration-schedule-panel input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #ffffff;
+  font: inherit;
+}
+
+.immigration-schedule-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.immigration-schedule-actions button {
+  min-height: 42px;
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 10px;
+  background: #7c3aed;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.immigration-schedule-actions button.secondary {
+  background: #64748b;
+}
+
+.immigration-schedule-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .immigration-schedule-actions {
+    flex-direction: column;
+  }
+
+  .immigration-schedule-actions button {
     width: 100%;
   }
 }
