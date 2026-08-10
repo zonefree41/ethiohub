@@ -944,6 +944,594 @@ await sendEmail({
   }
 }
 
+if (
+  status === "Retained" &&
+  request.customerEmail
+) {
+  try {
+    const businessTitle =
+      request.listingId?.title ||
+      "Immigration Lawyer";
+
+    await sendEmail({
+      to: request.customerEmail,
+      subject: `Your Immigration Matter Is Moving Forward: ${businessTitle}`,
+      html: `
+        <div style="
+          max-width:640px;
+          margin:0 auto;
+          font-family:Arial,Helvetica,sans-serif;
+          background:#f8fafc;
+          padding:24px;
+          color:#0f172a;
+        ">
+          <div style="
+            background:linear-gradient(135deg,#14532d,#16a34a);
+            color:#ffffff;
+            padding:28px 24px;
+            border-radius:18px 18px 0 0;
+            text-align:center;
+          ">
+            <div style="
+              font-size:38px;
+              margin-bottom:10px;
+            ">
+              ✅
+            </div>
+
+            <h1 style="
+              margin:0;
+              font-size:25px;
+              line-height:1.3;
+            ">
+              Your Matter Is Moving Forward
+            </h1>
+
+            <p style="
+              margin:10px 0 0;
+              opacity:.92;
+              line-height:1.5;
+            ">
+              ${escapeHtml(businessTitle)}
+              has updated your consultation status.
+            </p>
+          </div>
+
+          <div style="
+            background:#ffffff;
+            padding:26px 24px;
+            border:1px solid #e2e8f0;
+            border-top:0;
+            border-radius:0 0 18px 18px;
+          ">
+            <p style="
+              margin-top:0;
+              font-size:16px;
+            ">
+              Hello ${escapeHtml(request.customerName)},
+            </p>
+
+            <p style="
+              color:#475569;
+              line-height:1.7;
+            ">
+              Your immigration consultation request
+              has been marked <strong>Retained</strong>.
+              This means the law office has indicated
+              that your matter is moving forward with
+              them.
+            </p>
+
+            <div style="
+              margin:22px 0;
+              padding:18px;
+              border-radius:14px;
+              background:#f0fdf4;
+              border:1px solid #bbf7d0;
+            ">
+              <p style="margin:0 0 10px;">
+                <strong>Law Office:</strong>
+                ${escapeHtml(businessTitle)}
+              </p>
+
+              <p style="margin:0;">
+                <strong>Case Type:</strong>
+                ${escapeHtml(request.caseType)}
+              </p>
+            </div>
+
+            ${
+              request.ownerNotes
+                ? `
+                  <div style="
+                    margin:20px 0;
+                    padding:16px;
+                    border-left:4px solid #16a34a;
+                    background:#f8fafc;
+                  ">
+                    <strong style="color:#166534;">
+                      Message from the law office
+                    </strong>
+
+                    <p style="
+                      margin:8px 0 0;
+                      color:#475569;
+                      line-height:1.6;
+                    ">
+                      ${escapeHtml(request.ownerNotes)}
+                    </p>
+                  </div>
+                `
+                : ""
+            }
+
+            <div style="
+              margin-top:22px;
+              padding:17px;
+              border-radius:12px;
+              background:#eff6ff;
+              border:1px solid #bfdbfe;
+            ">
+              <strong style="color:#1e40af;">
+                Next steps
+              </strong>
+
+              <p style="
+                margin:8px 0 0;
+                color:#1e3a8a;
+                line-height:1.6;
+                font-size:14px;
+              ">
+                Please continue communicating directly
+                with the law office regarding documents,
+                fees, representation agreements, and
+                next steps for your matter.
+              </p>
+            </div>
+
+            <div style="
+              margin-top:18px;
+              padding:16px;
+              border-radius:12px;
+              background:#fff7ed;
+              border:1px solid #fed7aa;
+            ">
+              <strong style="color:#9a3412;">
+                Important
+              </strong>
+
+              <p style="
+                margin:7px 0 0;
+                color:#7c2d12;
+                line-height:1.5;
+                font-size:14px;
+              ">
+                HubEthio does not provide legal advice
+                and does not determine whether an
+                attorney-client relationship has been
+                formally established. Any representation
+                agreement is between you and the law
+                office.
+              </p>
+            </div>
+
+            <p style="
+              margin-top:24px;
+              color:#64748b;
+              font-size:13px;
+              line-height:1.6;
+            ">
+              HubEthio helps connect customers with
+              community service providers. Legal advice
+              and representation are provided only by
+              the law office.
+            </p>
+          </div>
+        </div>
+      `,
+    });
+  } catch (emailError) {
+    console.error(
+      "Immigration Retained status email failed:",
+      emailError
+    );
+  }
+}
+
+if (
+  status === "Declined" &&
+  request.customerEmail
+) {
+  try {
+    const businessTitle =
+      request.listingId?.title ||
+      "Immigration Lawyer";
+
+    await sendEmail({
+      to: request.customerEmail,
+      subject: `Update on Your Immigration Consultation: ${businessTitle}`,
+      html: `
+        <div style="
+          max-width:640px;
+          margin:0 auto;
+          font-family:Arial,Helvetica,sans-serif;
+          background:#f8fafc;
+          padding:24px;
+          color:#0f172a;
+        ">
+          <div style="
+            background:linear-gradient(135deg,#7f1d1d,#dc2626);
+            color:#ffffff;
+            padding:28px 24px;
+            border-radius:18px 18px 0 0;
+            text-align:center;
+          ">
+            <div style="
+              font-size:38px;
+              margin-bottom:10px;
+            ">
+              📄
+            </div>
+
+            <h1 style="
+              margin:0;
+              font-size:25px;
+              line-height:1.3;
+            ">
+              Consultation Status Update
+            </h1>
+
+            <p style="
+              margin:10px 0 0;
+              opacity:.92;
+              line-height:1.5;
+            ">
+              ${escapeHtml(businessTitle)}
+              has reviewed your consultation request.
+            </p>
+          </div>
+
+          <div style="
+            background:#ffffff;
+            padding:26px 24px;
+            border:1px solid #e2e8f0;
+            border-top:0;
+            border-radius:0 0 18px 18px;
+          ">
+            <p style="
+              margin-top:0;
+              font-size:16px;
+            ">
+              Hello ${escapeHtml(request.customerName)},
+            </p>
+
+            <p style="
+              color:#475569;
+              line-height:1.7;
+            ">
+              The law office has updated your
+              immigration consultation request to
+              <strong>Declined</strong>.
+            </p>
+
+            <p style="
+              color:#475569;
+              line-height:1.7;
+            ">
+              This means the office is not moving
+              forward with this consultation request
+              through HubEthio at this time.
+            </p>
+
+            <div style="
+              margin:22px 0;
+              padding:18px;
+              border-radius:14px;
+              background:#fef2f2;
+              border:1px solid #fecaca;
+            ">
+              <p style="margin:0 0 10px;">
+                <strong>Law Office:</strong>
+                ${escapeHtml(businessTitle)}
+              </p>
+
+              <p style="margin:0;">
+                <strong>Case Type:</strong>
+                ${escapeHtml(request.caseType)}
+              </p>
+            </div>
+
+            ${
+              request.ownerNotes
+                ? `
+                  <div style="
+                    margin:20px 0;
+                    padding:16px;
+                    border-left:4px solid #dc2626;
+                    background:#f8fafc;
+                  ">
+                    <strong style="color:#991b1b;">
+                      Message from the law office
+                    </strong>
+
+                    <p style="
+                      margin:8px 0 0;
+                      color:#475569;
+                      line-height:1.6;
+                    ">
+                      ${escapeHtml(request.ownerNotes)}
+                    </p>
+                  </div>
+                `
+                : ""
+            }
+
+            <div style="
+              margin-top:22px;
+              padding:17px;
+              border-radius:12px;
+              background:#eff6ff;
+              border:1px solid #bfdbfe;
+            ">
+              <strong style="color:#1e40af;">
+                You may still have options
+              </strong>
+
+              <p style="
+                margin:8px 0 0;
+                color:#1e3a8a;
+                line-height:1.6;
+                font-size:14px;
+              ">
+                A declined consultation request from
+                one law office does not prevent you
+                from contacting another qualified
+                immigration attorney for an
+                independent evaluation.
+              </p>
+            </div>
+
+            <div style="
+              margin-top:18px;
+              padding:16px;
+              border-radius:12px;
+              background:#fff7ed;
+              border:1px solid #fed7aa;
+            ">
+              <strong style="color:#9a3412;">
+                Important
+              </strong>
+
+              <p style="
+                margin:7px 0 0;
+                color:#7c2d12;
+                line-height:1.5;
+                font-size:14px;
+              ">
+                HubEthio does not make decisions about
+                legal representation and does not
+                provide legal advice. The decision to
+                accept or decline a matter belongs to
+                the individual law office.
+              </p>
+            </div>
+
+            <p style="
+              margin-top:24px;
+              color:#64748b;
+              font-size:13px;
+              line-height:1.6;
+            ">
+              HubEthio helps connect customers with
+              community service providers. Legal
+              services are provided only by the
+              individual law office.
+            </p>
+          </div>
+        </div>
+      `,
+    });
+  } catch (emailError) {
+    console.error(
+      "Immigration Declined status email failed:",
+      emailError
+    );
+  }
+}
+
+if (
+  status === "Closed" &&
+  request.customerEmail
+) {
+  try {
+    const businessTitle =
+      request.listingId?.title ||
+      "Immigration Lawyer";
+
+    await sendEmail({
+      to: request.customerEmail,
+      subject: `Your Immigration Consultation Has Been Closed: ${businessTitle}`,
+      html: `
+        <div style="
+          max-width:640px;
+          margin:0 auto;
+          font-family:Arial,Helvetica,sans-serif;
+          background:#f8fafc;
+          padding:24px;
+          color:#0f172a;
+        ">
+          <div style="
+            background:linear-gradient(135deg,#334155,#64748b);
+            color:#ffffff;
+            padding:28px 24px;
+            border-radius:18px 18px 0 0;
+            text-align:center;
+          ">
+            <div style="
+              font-size:38px;
+              margin-bottom:10px;
+            ">
+              📁
+            </div>
+
+            <h1 style="
+              margin:0;
+              font-size:25px;
+              line-height:1.3;
+            ">
+              Consultation Request Closed
+            </h1>
+
+            <p style="
+              margin:10px 0 0;
+              opacity:.92;
+              line-height:1.5;
+            ">
+              ${escapeHtml(businessTitle)}
+              has closed this consultation request.
+            </p>
+          </div>
+
+          <div style="
+            background:#ffffff;
+            padding:26px 24px;
+            border:1px solid #e2e8f0;
+            border-top:0;
+            border-radius:0 0 18px 18px;
+          ">
+            <p style="
+              margin-top:0;
+              font-size:16px;
+            ">
+              Hello ${escapeHtml(request.customerName)},
+            </p>
+
+            <p style="
+              color:#475569;
+              line-height:1.7;
+            ">
+              Your immigration consultation request
+              has been marked <strong>Closed</strong>
+              by the law office.
+            </p>
+
+            <div style="
+              margin:22px 0;
+              padding:18px;
+              border-radius:14px;
+              background:#f8fafc;
+              border:1px solid #cbd5e1;
+            ">
+              <p style="margin:0 0 10px;">
+                <strong>Law Office:</strong>
+                ${escapeHtml(businessTitle)}
+              </p>
+
+              <p style="margin:0;">
+                <strong>Case Type:</strong>
+                ${escapeHtml(request.caseType)}
+              </p>
+            </div>
+
+            ${
+              request.ownerNotes
+                ? `
+                  <div style="
+                    margin:20px 0;
+                    padding:16px;
+                    border-left:4px solid #64748b;
+                    background:#f8fafc;
+                  ">
+                    <strong style="color:#334155;">
+                      Message from the law office
+                    </strong>
+
+                    <p style="
+                      margin:8px 0 0;
+                      color:#475569;
+                      line-height:1.6;
+                    ">
+                      ${escapeHtml(request.ownerNotes)}
+                    </p>
+                  </div>
+                `
+                : ""
+            }
+
+            <div style="
+              margin-top:22px;
+              padding:17px;
+              border-radius:12px;
+              background:#eff6ff;
+              border:1px solid #bfdbfe;
+            ">
+              <strong style="color:#1e40af;">
+                Need additional help?
+              </strong>
+
+              <p style="
+                margin:8px 0 0;
+                color:#1e3a8a;
+                line-height:1.6;
+                font-size:14px;
+              ">
+                If you still need assistance, you may
+                contact the law office directly or
+                submit a new consultation request to
+                another qualified immigration attorney
+                listed on HubEthio.
+              </p>
+            </div>
+
+            <div style="
+              margin-top:18px;
+              padding:16px;
+              border-radius:12px;
+              background:#fff7ed;
+              border:1px solid #fed7aa;
+            ">
+              <strong style="color:#9a3412;">
+                Important
+              </strong>
+
+              <p style="
+                margin:7px 0 0;
+                color:#7c2d12;
+                line-height:1.5;
+                font-size:14px;
+              ">
+                Closing this HubEthio consultation
+                request does not itself determine the
+                status of any attorney-client
+                relationship or legal matter. Please
+                contact the law office directly if you
+                have questions about your case.
+              </p>
+            </div>
+
+            <p style="
+              margin-top:24px;
+              color:#64748b;
+              font-size:13px;
+              line-height:1.6;
+            ">
+              HubEthio helps connect customers with
+              community service providers. Legal advice
+              and representation are provided only by
+              the individual law office.
+            </p>
+          </div>
+        </div>
+      `,
+    });
+  } catch (emailError) {
+    console.error(
+      "Immigration Closed status email failed:",
+      emailError
+    );
+  }
+}
+
 return res.json({
         message:
           "Immigration consultation status updated successfully.",
