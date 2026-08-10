@@ -81,9 +81,7 @@ const user = await User.create({
     ),
 });
 
-const activationUrl = `${
-  process.env.CLIENT_URL || "https://www.hubethio.com"
-}/owner/activate/${rawActivationToken}`;
+const activationUrl = `${process.env.CLIENT_URL || "https://www.hubethio.com"}/owner/activate/${rawActivationToken}`;
 
 await sendEmail({
   to: user.email,
