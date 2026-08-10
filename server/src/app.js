@@ -34,6 +34,7 @@ import beautyAppointmentRoutes from "./routes/beautyAppointmentRequests.js";
 import housingInquiryRoutes from "./routes/housingInquiries.js";
 import immigrationConsultationRequestRoutes from "./routes/immigrationConsultationRequests.js";
 import adminOwnerInvitationRoutes from "./routes/adminOwnerInvitations.js";
+import insuranceConsultationRequestRoutes from "./routes/insuranceConsultationRequests.js";
 
 const app = express();
 
@@ -215,6 +216,11 @@ app.use(
 app.use(
   "/api/travel-requests",
   travelRequestRoutes
+);
+
+app.use(
+  "/api/insurance-consultation-requests",
+  insuranceConsultationRequestRoutes
 );
 
 app.use(
