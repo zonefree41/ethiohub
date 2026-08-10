@@ -296,4 +296,66 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+router.post("/activate-account", async (req, res) => {
+  try {
+    const { token, password } = req.body || {};
+
+    if (!token || !password) {
+      return res.status(400).json({
+        message:
+          "Activation token and password are required",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message:
+          "Password must be at least 6 characters",
+      });
+    }
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      activationToken: hashedToken,
+      activationExpires: { $gt: new Date() },
+      accountStatus: "invited",
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message:
+          "Invalid or expired activation link",
+      });
+    }
+
+    user.passwordHash =
+      await bcrypt.hash(password, 10);
+
+    user.accountStatus = "active";
+    user.activationToken = "";
+    user.activationExpires = null;
+
+    await user.save();
+
+    return res.json({
+      message:
+        "Owner account activated successfully. You can now login.",
+    });
+  } catch (err) {
+    console.error(
+      "Owner account activation error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to activate owner account",
+    });
+  }
+});
+
 export default router;

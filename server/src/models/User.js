@@ -31,6 +31,22 @@ resetPasswordExpires: {
   default: null,
 },
 
+accountStatus: {
+  type: String,
+  enum: ["active", "invited"],
+  default: "active",
+},
+
+activationToken: {
+  type: String,
+  default: "",
+},
+
+activationExpires: {
+  type: Date,
+  default: null,
+},
+
     role: {
       type: String,
       enum: ["owner", "admin"],

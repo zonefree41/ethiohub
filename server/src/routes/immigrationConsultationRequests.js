@@ -671,7 +671,280 @@ router.patch(
   }
 }
 
-      return res.json({
+if (
+  status === "Consultation Scheduled" &&
+  request.customerEmail
+) {
+  try {
+    const businessTitle =
+      request.listingId?.title ||
+      "Immigration Lawyer";
+
+    const formattedScheduledDate =
+  request.scheduledConsultationDate
+    ? new Date(
+        request.scheduledConsultationDate
+      ).toLocaleDateString("en-US", {
+        timeZone: "UTC",
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "Date to be confirmed";
+
+const formattedScheduledTime = (() => {
+  const time = String(
+    request.scheduledConsultationTime || ""
+  ).trim();
+
+  if (!time) {
+    return "Time to be confirmed";
+  }
+
+  const match = time.match(/^(\d{1,2}):(\d{2})$/);
+
+  if (!match) {
+    return time;
+  }
+
+  let hours = Number(match[1]);
+  const minutes = match[2];
+
+  const period = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12 || 12;
+
+  return `${hours}:${minutes} ${period}`;
+})();
+
+await sendEmail({
+  to: request.customerEmail,
+  subject: `Your Immigration Consultation Is Scheduled: ${businessTitle}`,
+  html: `
+    <div style="
+      max-width:640px;
+      margin:0 auto;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#f8fafc;
+      padding:24px;
+      color:#0f172a;
+    ">
+      <div style="
+        background:linear-gradient(135deg,#312e81,#7c3aed);
+        color:#ffffff;
+        padding:28px 24px;
+        border-radius:18px 18px 0 0;
+        text-align:center;
+      ">
+        <div style="
+          font-size:38px;
+          margin-bottom:10px;
+        ">
+          📅
+        </div>
+
+        <h1 style="
+          margin:0;
+          font-size:25px;
+          line-height:1.3;
+        ">
+          Your Consultation Is Scheduled
+        </h1>
+
+        <p style="
+          margin:10px 0 0;
+          opacity:.92;
+          line-height:1.5;
+        ">
+          ${escapeHtml(businessTitle)}
+          has confirmed your consultation.
+        </p>
+      </div>
+
+      <div style="
+        background:#ffffff;
+        padding:26px 24px;
+        border:1px solid #e2e8f0;
+        border-top:0;
+        border-radius:0 0 18px 18px;
+      ">
+        <p style="
+          margin-top:0;
+          font-size:16px;
+        ">
+          Hello ${escapeHtml(request.customerName)},
+        </p>
+
+        <p style="
+          color:#475569;
+          line-height:1.7;
+        ">
+          Good news — your Immigration consultation
+          has been scheduled. Please review the
+          confirmed appointment information below.
+        </p>
+
+        <div style="
+          margin:22px 0;
+          padding:22px;
+          border-radius:16px;
+          background:#faf5ff;
+          border:1px solid #ddd6fe;
+          text-align:center;
+        ">
+          <div style="
+            color:#6d28d9;
+            font-size:13px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:.5px;
+          ">
+            Confirmed Consultation
+          </div>
+
+          <div style="
+            margin-top:14px;
+            font-size:21px;
+            font-weight:800;
+            color:#2e1065;
+          ">
+            📅 ${escapeHtml(formattedScheduledDate)}
+          </div>
+
+          <div style="
+            margin-top:9px;
+            font-size:19px;
+            font-weight:700;
+            color:#4c1d95;
+          ">
+            🕒 ${escapeHtml(formattedScheduledTime)}
+          </div>
+        </div>
+
+        <div style="
+          margin:20px 0;
+          padding:18px;
+          background:#f8fafc;
+          border-radius:14px;
+        ">
+          <p style="margin:0 0 10px;">
+            <strong>Law Office:</strong>
+            ${escapeHtml(businessTitle)}
+          </p>
+
+          <p style="margin:0 0 10px;">
+            <strong>Case Type:</strong>
+            ${escapeHtml(request.caseType)}
+          </p>
+
+          <p style="margin:0;">
+            <strong>Preferred Contact Method:</strong>
+            ${escapeHtml(
+              request.preferredContactMethod ||
+                "Either"
+            )}
+          </p>
+        </div>
+
+        ${
+          request.ownerNotes
+            ? `
+              <div style="
+                margin:20px 0;
+                padding:16px;
+                border-left:4px solid #7c3aed;
+                background:#fafafa;
+              ">
+                <strong style="color:#4c1d95;">
+                  Message from the law office
+                </strong>
+
+                <p style="
+                  margin:8px 0 0;
+                  color:#475569;
+                  line-height:1.6;
+                ">
+                  ${escapeHtml(request.ownerNotes)}
+                </p>
+              </div>
+            `
+            : ""
+        }
+
+        <div style="
+          margin-top:22px;
+          padding:17px;
+          border-radius:12px;
+          background:#eff6ff;
+          border:1px solid #bfdbfe;
+        ">
+          <strong style="color:#1e40af;">
+            Before your consultation
+          </strong>
+
+          <p style="
+            margin:8px 0 0;
+            color:#1e3a8a;
+            line-height:1.6;
+            font-size:14px;
+          ">
+            Please be available at the confirmed
+            date and time. The law office may
+            contact you by phone, email, WhatsApp,
+            or another method arranged directly
+            with you.
+          </p>
+        </div>
+
+        <div style="
+          margin-top:18px;
+          padding:16px;
+          border-radius:12px;
+          background:#fff7ed;
+          border:1px solid #fed7aa;
+        ">
+          <strong style="color:#9a3412;">
+            Important
+          </strong>
+
+          <p style="
+            margin:7px 0 0;
+            color:#7c2d12;
+            line-height:1.5;
+            font-size:14px;
+          ">
+            Scheduling a consultation does not
+            automatically create an attorney-client
+            relationship or guarantee legal
+            representation.
+          </p>
+        </div>
+
+        <p style="
+          margin-top:24px;
+          color:#64748b;
+          font-size:13px;
+          line-height:1.6;
+        ">
+          HubEthio helps connect customers with
+          community service providers. Legal advice
+          and representation are provided only by
+          the law office.
+        </p>
+            </div>
+    </div>
+  `,
+    });
+  } catch (emailError) {
+    console.error(
+      "Immigration Consultation Scheduled email failed:",
+      emailError
+    );
+  }
+}
+
+return res.json({
         message:
           "Immigration consultation status updated successfully.",
         request,

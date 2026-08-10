@@ -33,6 +33,7 @@ import adminTravelRequestsRoutes from "./routes/adminTravelRequests.js";
 import beautyAppointmentRoutes from "./routes/beautyAppointmentRequests.js";
 import housingInquiryRoutes from "./routes/housingInquiries.js";
 import immigrationConsultationRequestRoutes from "./routes/immigrationConsultationRequests.js";
+import adminOwnerInvitationRoutes from "./routes/adminOwnerInvitations.js";
 
 const app = express();
 
@@ -195,6 +196,10 @@ app.use("/api/housing-requests", housingRequestRoutes);
 app.use(
   "/api/beauty-appointment-requests",
   beautyAppointmentRoutes
+);
+app.use(
+  "/api/admin/owner-invitations",
+  adminOwnerInvitationRoutes
 );
 
 app.use(
