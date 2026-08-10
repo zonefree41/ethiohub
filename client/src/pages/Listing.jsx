@@ -60,6 +60,35 @@ const [
   setImmigrationConsultationError,
 ] = React.useState("");
 
+const [
+  insuranceConsultationForm,
+  setInsuranceConsultationForm,
+] = React.useState({
+  customerName: "",
+  customerEmail: "",
+  customerPhone: "",
+  serviceType: "",
+  preferredConsultationDate: "",
+  preferredConsultationTime: "",
+  preferredContactMethod: "Either",
+  message: "",
+});
+
+const [
+  submittingInsuranceConsultation,
+  setSubmittingInsuranceConsultation,
+] = React.useState(false);
+
+const [
+  insuranceConsultationMessage,
+  setInsuranceConsultationMessage,
+] = React.useState("");
+
+const [
+  insuranceConsultationError,
+  setInsuranceConsultationError,
+] = React.useState("");
+
 const [housingInquiryForm, setHousingInquiryForm] =
   React.useState({
     customerName: "",
@@ -418,6 +447,64 @@ function prevPhoto() {
     );
   } finally {
     setSubmittingImmigrationConsultation(false);
+  }
+}
+
+async function submitInsuranceConsultation(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingInsuranceConsultation(true);
+    setInsuranceConsultationMessage("");
+    setInsuranceConsultationError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/insurance-consultation-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...insuranceConsultationForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit Insurance consultation request."
+      );
+    }
+
+    setInsuranceConsultationMessage(
+      "Insurance & Financial Services consultation request submitted successfully!"
+    );
+
+    setInsuranceConsultationForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      serviceType: "",
+      preferredConsultationDate: "",
+      preferredConsultationTime: "",
+      preferredContactMethod: "Either",
+      message: "",
+    });
+  } catch (err) {
+    setInsuranceConsultationError(
+      err.message ||
+        "Failed to submit Insurance consultation request."
+    );
+  } finally {
+    setSubmittingInsuranceConsultation(false);
   }
 }
 
@@ -872,6 +959,10 @@ function hasRentalDetails(item) {
   const isImmigrationListing =
   listing.categoryId?.slug ===
   "immigration-lawyer";
+
+  const isInsuranceListing =
+  listing.categoryId?.slug ===
+  "insurance-agent";
 
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
@@ -1595,6 +1686,240 @@ document.title = seoTitle;
     ? "Sending Request..."
     : "Request Consultation"}
 </button>
+    </form>
+  </section>
+)}
+
+{isInsuranceListing && listing.ownerId && (
+  <section className="listing-insurance-consultation">
+    <div className="listing-insurance-consultation-header">
+      <h3>
+        🛡️ Request Insurance & Financial Consultation
+      </h3>
+
+      <p>
+        Looking for insurance protection or financial
+        planning guidance? Send a consultation request
+        directly to {listing.title}.
+      </p>
+    </div>
+
+    {insuranceConsultationMessage && (
+      <div className="listing-insurance-consultation-success">
+        {insuranceConsultationMessage}
+      </div>
+    )}
+
+    {insuranceConsultationError && (
+      <div className="listing-insurance-consultation-error">
+        {insuranceConsultationError}
+      </div>
+    )}
+
+    <form
+      className="listing-insurance-consultation-form"
+      onSubmit={submitInsuranceConsultation}
+    >
+      <label>
+        Your Name
+        <input
+          type="text"
+          required
+          value={insuranceConsultationForm.customerName}
+          onChange={(e) =>
+            setInsuranceConsultationForm((current) => ({
+              ...current,
+              customerName: e.target.value,
+            }))
+          }
+          placeholder="Full name"
+        />
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          required
+          value={insuranceConsultationForm.customerEmail}
+          onChange={(e) =>
+            setInsuranceConsultationForm((current) => ({
+              ...current,
+              customerEmail: e.target.value,
+            }))
+          }
+          placeholder="you@example.com"
+        />
+      </label>
+
+      <label>
+        Phone
+        <input
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          required
+          value={insuranceConsultationForm.customerPhone}
+          onChange={(e) =>
+            setInsuranceConsultationForm((current) => ({
+              ...current,
+              customerPhone: e.target.value,
+            }))
+          }
+          placeholder="Phone number"
+        />
+      </label>
+
+      <label>
+        Service Needed
+        <select
+          required
+          value={insuranceConsultationForm.serviceType}
+          onChange={(e) =>
+            setInsuranceConsultationForm((current) => ({
+              ...current,
+              serviceType: e.target.value,
+            }))
+          }
+        >
+          <option value="">
+            Select service
+          </option>
+
+          <option value="Life Insurance">
+            Life Insurance
+          </option>
+
+          <option value="Disability Income Protection">
+            Disability Income Protection
+          </option>
+
+          <option value="Family Protection">
+            Family Protection
+          </option>
+
+          <option value="Business Owner Protection">
+            Business Owner Protection
+          </option>
+
+          <option value="Financial Planning">
+            Financial Planning
+          </option>
+
+          <option value="Retirement / Long-Term Planning">
+            Retirement / Long-Term Planning
+          </option>
+
+          <option value="Other">
+            Other
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Preferred Consultation Date
+        <input
+          type="date"
+          min={new Date().toISOString().split("T")[0]}
+          value={
+            insuranceConsultationForm
+              .preferredConsultationDate
+          }
+          onChange={(e) =>
+            setInsuranceConsultationForm((current) => ({
+              ...current,
+              preferredConsultationDate:
+                e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Preferred Consultation Time
+        <input
+          type="time"
+          value={
+            insuranceConsultationForm
+              .preferredConsultationTime
+          }
+          onChange={(e) =>
+            setInsuranceConsultationForm((current) => ({
+              ...current,
+              preferredConsultationTime:
+                e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Preferred Contact Method
+        <select
+          value={
+            insuranceConsultationForm
+              .preferredContactMethod
+          }
+          onChange={(e) =>
+            setInsuranceConsultationForm((current) => ({
+              ...current,
+              preferredContactMethod:
+                e.target.value,
+            }))
+          }
+        >
+          <option value="Either">
+            Either
+          </option>
+
+          <option value="Phone">
+            Phone
+          </option>
+
+          <option value="Email">
+            Email
+          </option>
+
+          <option value="WhatsApp">
+            WhatsApp
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Message
+        <textarea
+          rows="4"
+          value={insuranceConsultationForm.message}
+          onChange={(e) =>
+            setInsuranceConsultationForm((current) => ({
+              ...current,
+              message: e.target.value,
+            }))
+          }
+          placeholder="Briefly describe what you would like to discuss."
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-insurance-consultation-submit"
+        disabled={submittingInsuranceConsultation}
+      >
+        {submittingInsuranceConsultation
+          ? "Sending Request..."
+          : "Request Consultation"}
+      </button>
+
+      <p className="listing-insurance-consultation-disclaimer">
+        HubEthio connects customers with independent
+        insurance and financial service providers.
+        Product availability, pricing, eligibility,
+        coverage, and financial recommendations are
+        provided by the business.
+      </p>
     </form>
   </section>
 )}
