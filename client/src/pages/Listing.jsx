@@ -89,6 +89,35 @@ const [
   setInsuranceConsultationError,
 ] = React.useState("");
 
+const [
+  taxServiceRequestForm,
+  setTaxServiceRequestForm,
+] = React.useState({
+  customerName: "",
+  customerEmail: "",
+  customerPhone: "",
+  serviceType: "",
+  preferredAppointmentDate: "",
+  preferredAppointmentTime: "",
+  preferredContactMethod: "Either",
+  message: "",
+});
+
+const [
+  submittingTaxServiceRequest,
+  setSubmittingTaxServiceRequest,
+] = React.useState(false);
+
+const [
+  taxServiceRequestMessage,
+  setTaxServiceRequestMessage,
+] = React.useState("");
+
+const [
+  taxServiceRequestError,
+  setTaxServiceRequestError,
+] = React.useState("");
+
 const [housingInquiryForm, setHousingInquiryForm] =
   React.useState({
     customerName: "",
@@ -564,6 +593,64 @@ async function submitInsuranceConsultation(e) {
   }
 }
 
+async function submitTaxServiceRequest(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingTaxServiceRequest(true);
+    setTaxServiceRequestMessage("");
+    setTaxServiceRequestError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/tax-service-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...taxServiceRequestForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit Tax service request."
+      );
+    }
+
+    setTaxServiceRequestMessage(
+      "Tax service request submitted successfully!"
+    );
+
+    setTaxServiceRequestForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      serviceType: "",
+      preferredAppointmentDate: "",
+      preferredAppointmentTime: "",
+      preferredContactMethod: "Either",
+      message: "",
+    });
+  } catch (err) {
+    setTaxServiceRequestError(
+      err.message ||
+        "Failed to submit Tax service request."
+    );
+  } finally {
+    setSubmittingTaxServiceRequest(false);
+  }
+}
+
   async function submitBeautyAppointment(e) {
   e.preventDefault();
 
@@ -963,6 +1050,10 @@ function hasRentalDetails(item) {
   const isInsuranceListing =
   listing.categoryId?.slug ===
   "insurance-agent";
+
+  const isTaxListing =
+listing.categoryId?.slug ===
+"tax-preparer";
 
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
@@ -1919,6 +2010,222 @@ document.title = seoTitle;
         Product availability, pricing, eligibility,
         coverage, and financial recommendations are
         provided by the business.
+      </p>
+    </form>
+  </section>
+)}
+
+{isTaxListing && listing.ownerId && (
+  <section className="listing-insurance-consultation">
+    <div className="listing-insurance-consultation-header">
+      <h3>
+        🧾 Request Tax Service / Consultation
+      </h3>
+
+      <p>
+        Need help with tax preparation, planning,
+        bookkeeping, or another tax service? Send a
+        request directly to {listing.title}.
+      </p>
+    </div>
+
+    {taxServiceRequestMessage && (
+      <div className="listing-insurance-consultation-success">
+        {taxServiceRequestMessage}
+      </div>
+    )}
+
+    {taxServiceRequestError && (
+      <div className="listing-insurance-consultation-error">
+        {taxServiceRequestError}
+      </div>
+    )}
+
+    <form
+      className="listing-insurance-consultation-form"
+      onSubmit={submitTaxServiceRequest}
+    >
+      <label>
+        Your Name
+        <input
+          type="text"
+          required
+          value={taxServiceRequestForm.customerName}
+          onChange={(e) =>
+            setTaxServiceRequestForm((current) => ({
+              ...current,
+              customerName: e.target.value,
+            }))
+          }
+          placeholder="Full name"
+        />
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          required
+          value={taxServiceRequestForm.customerEmail}
+          onChange={(e) =>
+            setTaxServiceRequestForm((current) => ({
+              ...current,
+              customerEmail: e.target.value,
+            }))
+          }
+          placeholder="you@example.com"
+        />
+      </label>
+
+      <label>
+        Phone
+        <input
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          required
+          value={taxServiceRequestForm.customerPhone}
+          onChange={(e) =>
+            setTaxServiceRequestForm((current) => ({
+              ...current,
+              customerPhone: e.target.value,
+            }))
+          }
+          placeholder="Phone number"
+        />
+      </label>
+
+      <label>
+        Service Needed
+        <select
+          required
+          value={taxServiceRequestForm.serviceType}
+          onChange={(e) =>
+            setTaxServiceRequestForm((current) => ({
+              ...current,
+              serviceType: e.target.value,
+            }))
+          }
+        >
+          <option value="">
+            Select service
+          </option>
+
+          <option value="Individual Tax Return">
+            Individual Tax Return
+          </option>
+
+          <option value="Business Tax Return">
+            Business Tax Return
+          </option>
+
+          <option value="Tax Consultation">
+            Tax Consultation
+          </option>
+
+          <option value="Bookkeeping / Accounting">
+            Bookkeeping / Accounting
+          </option>
+
+          <option value="Tax Planning">
+            Tax Planning
+          </option>
+
+          <option value="Prior-Year / Amended Return">
+            Prior-Year / Amended Return
+          </option>
+
+          <option value="Other">
+            Other
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Preferred Appointment Date
+        <input
+          type="date"
+          min={new Date().toISOString().split("T")[0]}
+          value={
+            taxServiceRequestForm.preferredAppointmentDate
+          }
+          onChange={(e) =>
+            setTaxServiceRequestForm((current) => ({
+              ...current,
+              preferredAppointmentDate: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Preferred Appointment Time
+        <input
+          type="time"
+          value={
+            taxServiceRequestForm.preferredAppointmentTime
+          }
+          onChange={(e) =>
+            setTaxServiceRequestForm((current) => ({
+              ...current,
+              preferredAppointmentTime: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Preferred Contact Method
+        <select
+          value={
+            taxServiceRequestForm.preferredContactMethod
+          }
+          onChange={(e) =>
+            setTaxServiceRequestForm((current) => ({
+              ...current,
+              preferredContactMethod: e.target.value,
+            }))
+          }
+        >
+          <option value="Either">Either</option>
+          <option value="Phone">Phone</option>
+          <option value="Email">Email</option>
+          <option value="WhatsApp">WhatsApp</option>
+        </select>
+      </label>
+
+      <label>
+        Message
+        <textarea
+          rows="4"
+          value={taxServiceRequestForm.message}
+          onChange={(e) =>
+            setTaxServiceRequestForm((current) => ({
+              ...current,
+              message: e.target.value,
+            }))
+          }
+          placeholder="Briefly describe the tax service or assistance you need."
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-insurance-consultation-submit"
+        disabled={submittingTaxServiceRequest}
+      >
+        {submittingTaxServiceRequest
+          ? "Sending Request..."
+          : "Request Tax Service"}
+      </button>
+
+      <p className="listing-insurance-consultation-disclaimer">
+        HubEthio connects customers with independent tax
+        professionals. Tax preparation, filing, advice,
+        pricing, and document requirements are provided
+        directly by the business.
       </p>
     </form>
   </section>
