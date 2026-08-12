@@ -23,16 +23,27 @@ export default function TransportationQuotePage({ quoteToken }) {
 
         setQuote(data);
       } catch (err) {
-        console.error(
-          "Unable to load transportation quote:",
-          err
-        );
+  console.error(
+    "Unable to load transportation quote:",
+    err
+  );
 
-        setError(
-          err.message ||
-            "We could not load this transportation quote."
-        );
-      } finally {
+  const message = String(err?.message || "");
+
+  const isNotFound =
+    message.toLowerCase().includes("not found") ||
+    message.includes("404");
+
+  if (isNotFound) {
+    window.location.replace("/");
+    return;
+  }
+
+  setError(
+    err.message ||
+      "We could not load this transportation quote."
+  );
+} finally {
         setLoading(false);
       }
     }
@@ -40,9 +51,8 @@ export default function TransportationQuotePage({ quoteToken }) {
     if (quoteToken) {
       loadQuote();
     } else {
-      setError("This transportation quote link is invalid.");
-      setLoading(false);
-    }
+  window.location.replace("/");
+}
   }, [quoteToken]);
 
   async function handleDecision(decision) {
