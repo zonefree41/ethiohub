@@ -43,7 +43,30 @@ function handleResponse(response) {
     message = data.message || data.error || message;
   }
 
-  throw new Error(message);
+  const error = new Error(message);
+  error.status = status;
+  error.data = data;
+
+  throw error;
+}
+
+export function isPublicNotFoundError(err) {
+  const status = Number(err?.status || 0);
+
+  if (status === 404) {
+    return true;
+  }
+
+  const message = String(
+    err?.message || ""
+  ).toLowerCase();
+
+  return (
+    message.includes("404") ||
+    message.includes("not found") ||
+    message.includes("could not be found") ||
+    message.includes("not be found")
+  );
 }
 
 function handleRequestError(err, method, path) {
@@ -90,12 +113,17 @@ export async function apiGet(path, token) {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        data?.message ||
-          data?.error ||
-          `Request failed with status ${response.status}`
-      );
-    }
+  const error = new Error(
+    data?.message ||
+      data?.error ||
+      `Request failed with status ${response.status}`
+  );
+
+  error.status = response.status;
+  error.data = data;
+
+  throw error;
+}
 
     return data;
   } catch (err) {
