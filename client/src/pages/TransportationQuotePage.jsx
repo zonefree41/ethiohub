@@ -30,9 +30,14 @@ export default function TransportationQuotePage({ quoteToken }) {
 
   const message = String(err?.message || "");
 
-  const isNotFound =
-    message.toLowerCase().includes("not found") ||
-    message.includes("404");
+  const normalizedMessage =
+  message.toLowerCase();
+
+const isNotFound =
+  normalizedMessage.includes("not found") ||
+  normalizedMessage.includes("could not be found") ||
+  normalizedMessage.includes("not be found") ||
+  message.includes("404");
 
   if (isNotFound) {
     window.location.replace("/");
