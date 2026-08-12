@@ -212,10 +212,9 @@ const [quoteForm, setQuoteForm] = React.useState({
 
   React.useEffect(() => {
     if (!isValidListingId) {
-      setError("Invalid listing page.");
-      setLoading(false);
-      return;
-    }
+  window.location.replace("/");
+  return;
+}
 
     let alive = true;
 
@@ -228,8 +227,24 @@ const [quoteForm, setQuoteForm] = React.useState({
 
         if (alive) setListing(data || null);
       } catch (err) {
-        if (alive) setError(err.message || "Failed to load listing");
-      } finally {
+  const message = String(err?.message || "");
+
+  const isNotFound =
+    message.toLowerCase().includes("not found") ||
+    message.includes("404");
+
+  if (isNotFound) {
+    window.location.replace("/");
+    return;
+  }
+
+  if (alive) {
+    setError(
+      err.message ||
+        "Failed to load listing"
+    );
+  }
+} finally {
         if (alive) setLoading(false);
       }
     }
