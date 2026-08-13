@@ -1,6 +1,10 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { apiGet, apiPost } from "../api/http";
+import {
+  apiGet,
+  apiPost,
+  isPublicNotFoundError,
+} from "../api/http";
 import { trackEvent } from "../utils/analytics.js";
 import "./Listing.css";
 import { useEffect, useState } from "react";
@@ -227,13 +231,7 @@ const [quoteForm, setQuoteForm] = React.useState({
 
         if (alive) setListing(data || null);
       } catch (err) {
-  const message = String(err?.message || "");
-
-  const isNotFound =
-    message.toLowerCase().includes("not found") ||
-    message.includes("404");
-
-  if (isNotFound) {
+  if (isPublicNotFoundError(err)) {
     window.location.replace("/");
     return;
   }

@@ -1,5 +1,9 @@
 import React from "react";
-import { apiGet, apiPatch } from "../api/http.js";
+import {
+  apiGet,
+  apiPatch,
+  isPublicNotFoundError,
+} from "../api/http.js";
 import hubEthioLogo from "../../resources/icon-only.png";
 
 export default function TransportationQuotePage({ quoteToken }) {
@@ -28,21 +32,10 @@ export default function TransportationQuotePage({ quoteToken }) {
     err
   );
 
-  const message = String(err?.message || "");
-
-  const normalizedMessage =
-  message.toLowerCase();
-
-const isNotFound =
-  normalizedMessage.includes("not found") ||
-  normalizedMessage.includes("could not be found") ||
-  normalizedMessage.includes("not be found") ||
-  message.includes("404");
-
-  if (isNotFound) {
-    window.location.replace("/");
-    return;
-  }
+ if (isPublicNotFoundError(err)) {
+  window.location.replace("/");
+  return;
+}
 
   setError(
     err.message ||
