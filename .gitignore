@@ -41,3 +41,6 @@ server/.env.save
 server/.env
 server/.env.production.backup
 server/.env.save
+
+# Client environment files
+client/.env.*
