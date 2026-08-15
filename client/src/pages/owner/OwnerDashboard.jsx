@@ -6,6 +6,7 @@ import TransportationWorkspaceSummary from "./workspaces/TransportationWorkspace
 import WorkspaceLauncher from "../../components/owner/WorkspaceLauncher.jsx";
 
 export default function OwnerDashboard() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -348,7 +349,7 @@ const ownerWorkspaces = React.useMemo(
 
             <div className="owner-dashboard-empty-actions">
               <a href="/submit">Submit Business Listing</a>
-              <a href="/pricing">View Pricing</a>
+              {!isIOSBuild && <a href="/pricing">View Pricing</a>}
             </div>
           </div>
         )}
@@ -580,12 +581,14 @@ const ownerWorkspaces = React.useMemo(
         <span>🚀 Higher Search Ranking</span>
       </div>
 
-      <a
-        href={`/pricing?listingId=${listing._id}`}
-        className="owner-trial-upgrade-btn"
-      >
-        Upgrade Before Trial Ends
-      </a>
+      {!isIOSBuild && (
+  <a
+    href={`/pricing?listingId=${listing._id}`}
+    className="owner-trial-upgrade-btn"
+  >
+    Upgrade Before Trial Ends
+  </a>
+)}
     </div>
   </>
 )}
@@ -630,12 +633,14 @@ const ownerWorkspaces = React.useMemo(
         <span>✓ Premium performance analytics</span>
       </div>
 
-      <a
-        href={`/pricing?listingId=${listing._id}`}
-        className="owner-premium-upgrade-btn"
-      >
-        Upgrade Now
-      </a>
+      {!isIOSBuild && (
+  <a
+    href={`/pricing?listingId=${listing._id}`}
+    className="owner-premium-upgrade-btn"
+  >
+    Upgrade Now
+  </a>
+)}
 
       <p className="owner-premium-note">
         Your basic business listing will remain visible even without Premium.
@@ -709,16 +714,18 @@ const ownerWorkspaces = React.useMemo(
                           Edit Listing
                         </a>
 
-                        {listing.isFeatured && listing.stripeCustomerId && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              manageSubscription(listing.stripeCustomerId)
-                            }
-                          >
-                            Manage Subscription
-                          </button>
-                        )}
+                        {!isIOSBuild &&
+  listing.isFeatured &&
+  listing.stripeCustomerId && (
+    <button
+      type="button"
+      onClick={() =>
+        manageSubscription(listing.stripeCustomerId)
+      }
+    >
+      Manage Subscription
+    </button>
+  )}
                       </div>
                     </div>
                   </article>

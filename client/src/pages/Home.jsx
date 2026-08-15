@@ -1,9 +1,12 @@
 import React from "react";
+import { Capacitor } from "@capacitor/core";
 import { apiGet, apiPost } from "../api/http.js";
 import "./Home.css";
 import { Helmet } from "react-helmet-async";
 
 export default function Home() {
+    const isIOS =
+  __IOS_BUILD__ || Capacitor.getPlatform() === "ios";
   const [categories, setCategories] = React.useState([]);
   const [featuredListings, setFeaturedListings] = React.useState([]);
   const [search, setSearch] = React.useState("");
@@ -399,14 +402,16 @@ function formatHousingPhone(value) {
             </a>
             <a href="/category/all">Categories</a>
             <a href="/location/silver-spring-md">Silver Spring</a>
-            <a href="/pricing">Pricing</a>
-            <a
-  href="https://play.google.com/store/apps/details?id=com.hubethio.app"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  📱 Get App
-</a>
+            {!isIOS && <a href="/pricing">Pricing</a>}
+            {!isIOS && (
+  <a
+    href="https://play.google.com/store/apps/details?id=com.hubethio.app"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    📱 Get App
+  </a>
+)}
             <a href="/saved">Saved ❤️</a>
             <a href="/submit">Submit Business</a>
             <a href="/contact">Contact</a>

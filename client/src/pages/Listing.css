@@ -578,6 +578,23 @@
   color: inherit;
 }
 
+.listing-near-me-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 18px;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.listing-near-me-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .listing-nearby-card img {
   width: 80px;
   height: 80px;

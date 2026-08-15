@@ -2,6 +2,7 @@ import React from "react";
 import "./PaymentStatus.css";
 
 export default function PaymentSuccess() {
+    const isIOSBuild = __IOS_BUILD__;
   React.useEffect(() => {
     document.title = "Payment Successful | HubEthio";
   }, []);
@@ -25,9 +26,11 @@ export default function PaymentSuccess() {
             Go to Owner Dashboard
           </a>
 
-          <a href="/pricing" className="payment-status-secondary">
-            View Pricing
-          </a>
+          {!isIOSBuild && (
+  <a href="/pricing" className="payment-status-secondary">
+    View Pricing
+  </a>
+)}
 
           <a href="/" className="payment-status-link">
             Back Home

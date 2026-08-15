@@ -1,4 +1,8 @@
 import React from "react";
+import { Share } from "@capacitor/share";
+import { Preferences } from "@capacitor/preferences";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Geolocation } from "@capacitor/geolocation";
 import { Helmet } from "react-helmet-async";
 import {
   apiGet,
@@ -29,6 +33,10 @@ export default function Listing() {
   const [isSaved, setIsSaved] = React.useState(false);
   const [nearbyListings, setNearbyListings] = React.useState([]);
   const [relatedListings, setRelatedListings] = React.useState([]);
+
+  const [nearMeListings, setNearMeListings] = React.useState([]);
+const [nearMeLoading, setNearMeLoading] = React.useState(false);
+const [nearMeError, setNearMeError] = React.useState("");
   const [activePhotoIndex, setActivePhotoIndex] = React.useState(0);
 
   const [lightboxImages, setLightboxImages] = React.useState([]);
@@ -404,13 +412,50 @@ function prevLightboxPhoto() {
   }, [listing]);
 
   React.useEffect(() => {
+  let cancelled = false;
+
+  async function loadSavedState() {
     try {
-      const saved = JSON.parse(localStorage.getItem("hubethioFavorites") || "[]");
-      setIsSaved(saved.includes(id));
-    } catch {
-      setIsSaved(false);
+      const result = await Preferences.get({
+        key: "hubethioFavorites",
+      });
+
+      const saved = result.value
+        ? JSON.parse(result.value)
+        : [];
+
+      if (!cancelled) {
+        setIsSaved(saved.includes(id));
+      }
+    } catch (err) {
+      console.error(
+        "Failed to load native favorites:",
+        err
+      );
+
+      try {
+        const saved = JSON.parse(
+          localStorage.getItem("hubethioFavorites") ||
+            "[]"
+        );
+
+        if (!cancelled) {
+          setIsSaved(saved.includes(id));
+        }
+      } catch {
+        if (!cancelled) {
+          setIsSaved(false);
+        }
+      }
     }
-  }, [id]);
+  }
+
+  loadSavedState();
+
+  return () => {
+    cancelled = true;
+  };
+}, [id]);
 
   function updateReviewForm(e) {
     setReviewForm((prev) => ({
@@ -444,26 +489,118 @@ function prevPhoto() {
   );
 }
 
-  function toggleFavorite() {
-    try {
-      const saved = JSON.parse(localStorage.getItem("hubethioFavorites") || "[]");
+async function loadNearMeListings() {
+  try {
+    setNearMeLoading(true);
+    setNearMeError("");
 
-      let updated;
+    const permission =
+      await Geolocation.requestPermissions();
 
-      if (saved.includes(id)) {
-        updated = saved.filter((itemId) => itemId !== id);
-        setIsSaved(false);
-      } else {
-        updated = [...saved, id];
-        setIsSaved(true);
-      }
+    if (
+      permission.location !== "granted" &&
+      permission.coarseLocation !== "granted"
+    ) {
+      setNearMeError(
+        "Location permission is required to find businesses near you."
+      );
+      return;
+    }
 
-      localStorage.setItem("hubethioFavorites", JSON.stringify(updated));
-    } catch {
-      localStorage.setItem("hubethioFavorites", JSON.stringify([id]));
+    const position =
+      await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 60000,
+      });
+
+    const { latitude, longitude } =
+      position.coords;
+
+    const data = await apiGet(
+      `/api/listings/near-me?lat=${latitude}&lng=${longitude}&radiusMiles=25`
+    );
+
+    setNearMeListings(
+      Array.isArray(data) ? data : []
+    );
+  } catch (err) {
+    console.error(
+      "Failed to load near-me listings:",
+      err
+    );
+
+    setNearMeError(
+      err.message ||
+        "Unable to find businesses near your current location."
+    );
+
+    setNearMeListings([]);
+  } finally {
+    setNearMeLoading(false);
+  }
+}
+
+  async function toggleFavorite() {
+  try {
+    const result = await Preferences.get({
+      key: "hubethioFavorites",
+    });
+
+    const saved = result.value
+      ? JSON.parse(result.value)
+      : [];
+
+    let updated;
+
+    if (saved.includes(id)) {
+      updated = saved.filter(
+        (itemId) => itemId !== id
+      );
+
+      setIsSaved(false);
+    } else {
+      updated = [...saved, id];
       setIsSaved(true);
     }
+
+    await Preferences.set({
+      key: "hubethioFavorites",
+      value: JSON.stringify(updated),
+    });
+
+    try {
+  await Haptics.impact({
+    style: ImpactStyle.Medium,
+  });
+} catch (hapticErr) {
+  console.log("Haptics not available:", hapticErr);
+}
+  } catch (err) {
+    console.error(
+      "Native favorite storage failed:",
+      err
+    );
+
+    const saved = JSON.parse(
+      localStorage.getItem("hubethioFavorites") ||
+        "[]"
+    );
+
+    const updated = saved.includes(id)
+      ? saved.filter(
+          (itemId) => itemId !== id
+        )
+      : [...saved, id];
+
+    localStorage.setItem(
+      "hubethioFavorites",
+      JSON.stringify(updated)
+    );
+
+    setIsSaved(updated.includes(id));
   }
+}
 
   async function submitImmigrationConsultation(e) {
   e.preventDefault();
@@ -813,26 +950,34 @@ async function submitNotaryServiceRequest(e) {
 }
 
   async function shareBusiness() {
-    if (!listing) return;
+  if (!listing) return;
 
-    const shareUrl = window.location.href;
-    const shareText = `Check out ${listing.title} on HubEthio`;
+  const shareUrl = `https://www.hubethio.com/listing/${listing._id}`;
+  const shareText = `Check out ${listing.title} on HubEthio`;
+
+  try {
+    await Share.share({
+      title: listing.title,
+      text: shareText,
+      url: shareUrl,
+      dialogTitle: `Share ${listing.title}`,
+    });
+
+    trackEvent("business_share", {
+      listing_id: listing._id,
+      listing_title: listing.title,
+    });
+  } catch (err) {
+    console.error("Native share failed:", err);
 
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: listing.title,
-          text: shareText,
-          url: shareUrl,
-        });
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        alert("Business link copied!");
-      }
-    } catch (err) {
-      console.error("Share failed:", err);
+      await navigator.clipboard.writeText(shareUrl);
+      alert("Business link copied!");
+    } catch (clipboardErr) {
+      console.error("Copy link failed:", clipboardErr);
     }
   }
+}
 
   async function submitReview(e) {
     e.preventDefault();
@@ -3240,9 +3385,61 @@ document.title = seoTitle;
 </div>
 
             <div className="listing-nearby">
-              <h2>Nearby Businesses</h2>
+  <h2>Nearby Businesses</h2>
 
-              {nearbyListings.length === 0 ? (
+  <button
+    type="button"
+    className="listing-near-me-btn"
+    onClick={loadNearMeListings}
+    disabled={nearMeLoading}
+  >
+    {nearMeLoading
+      ? "Finding Businesses Near You..."
+      : "📍 Find Businesses Near Me"}
+  </button>
+
+  {nearMeError && (
+    <p className="listing-empty-state">
+      {nearMeError}
+    </p>
+  )}
+
+  {nearMeListings.length > 0 && (
+    <div className="listing-nearby-grid">
+      {nearMeListings.map((item) => (
+        <a
+          key={item._id}
+          href={`/listing/${item._id}`}
+          className="listing-nearby-card"
+        >
+          {item.imageUrl || item.logoUrl ? (
+            <img
+              src={item.imageUrl || item.logoUrl}
+              alt={item.title}
+            />
+          ) : (
+            <div className="listing-nearby-placeholder">
+              🏪
+            </div>
+          )}
+
+          <div className="listing-nearby-content">
+            <h3>{item.title}</h3>
+            <p>
+              {[item.city, item.state]
+                .filter(Boolean)
+                .join(", ")}
+            </p>
+            <p>
+              📍 {item.distanceMiles} miles away
+            </p>
+          </div>
+        </a>
+      ))}
+    </div>
+  )}
+
+  {nearbyListings.length === 0 ? (
                 <p className="listing-empty-state">No nearby businesses found.</p>
               ) : (
                 <div className="listing-nearby-grid">

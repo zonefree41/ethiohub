@@ -69,6 +69,7 @@ function usePath() {
 }
 
 export default function App() {
+    const isIOSBuild = __IOS_BUILD__;
   const path = usePath();
 
   const transportationQuoteMatch =
@@ -179,10 +180,46 @@ if (path.startsWith("/listing/")) return <><Listing /><Footer /></>;
 if (path.startsWith("/location/")) return <><Location /><Footer /></>;
 if (path.startsWith("/category/")) return <><Category /><Footer /></>;
 
-if (path.startsWith("/success")) return <><PaymentSuccess /><Footer /></>;
-if (path.startsWith("/payment-cancelled")) return <><PaymentCancelled /><Footer /></>;
+if (path.startsWith("/success")) {
+  if (isIOSBuild) {
+    window.location.replace("/");
+    return null;
+  }
 
-if (path.startsWith("/pricing")) return <><Pricing /><Footer /></>;
+  return (
+    <>
+      <PaymentSuccess />
+      <Footer />
+    </>
+  );
+}
+if (path.startsWith("/payment-cancelled")) {
+  if (isIOSBuild) {
+    window.location.replace("/");
+    return null;
+  }
+
+  return (
+    <>
+      <PaymentCancelled />
+      <Footer />
+    </>
+  );
+}
+
+if (path.startsWith("/pricing")) {
+  if (isIOSBuild) {
+    window.location.replace("/");
+    return null;
+  }
+
+  return (
+    <>
+      <Pricing />
+      <Footer />
+    </>
+  );
+}
 
 if (path.startsWith("/privacy")) return <><Privacy /><Footer /></>;
 if (path.startsWith("/terms")) return <><Terms /><Footer /></>;

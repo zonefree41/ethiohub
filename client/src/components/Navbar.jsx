@@ -1,4 +1,5 @@
 import React from "react";
+import { Capacitor } from "@capacitor/core";
 import { LangContext } from "../context/LangContext.jsx";
 
 const GOOGLE_PLAY_URL =
@@ -6,6 +7,8 @@ const GOOGLE_PLAY_URL =
 
 export default function Navbar() {
   const { lang, setLang } = React.useContext(LangContext);
+  const isIOS =
+  __IOS_BUILD__ || Capacitor.getPlatform() === "ios";
 
   return (
     <header
@@ -23,21 +26,23 @@ export default function Navbar() {
       </div>
 
       <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
-        <a
-          href={GOOGLE_PLAY_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            background: "#16a34a",
-            color: "#fff",
-            padding: "9px 14px",
-            borderRadius: "10px",
-            textDecoration: "none",
-            fontWeight: 800,
-          }}
-        >
-          📱 Download App
-        </a>
+        {!isIOS && (
+  <a
+    href={GOOGLE_PLAY_URL}
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      background: "#16a34a",
+      color: "#fff",
+      padding: "9px 14px",
+      borderRadius: "10px",
+      textDecoration: "none",
+      fontWeight: 800,
+    }}
+  >
+    📱 Download App
+  </a>
+)}
 
         <button onClick={() => setLang(lang === "en" ? "am" : "en")}>
           {lang === "en" ? "English → አማርኛ" : "አማርኛ → English"}

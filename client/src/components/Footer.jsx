@@ -1,10 +1,13 @@
 import React from "react";
+import { Capacitor } from "@capacitor/core";
 import "./Footer.css";
 
 const GOOGLE_PLAY_URL =
   "https://play.google.com/store/apps/details?id=com.hubethio.app";
 
 export default function Footer() {
+    const isIOS =
+  __IOS_BUILD__ || Capacitor.getPlatform() === "ios";
   return (
     <footer className="site-footer">
       <div className="site-footer-container">
@@ -33,19 +36,21 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="footer-app">
-            <h3>Download HubEthio</h3>
-            <p>Find Ethiopian businesses faster on Android.</p>
+          {!isIOS && (
+  <div className="footer-app">
+    <h3>Download HubEthio</h3>
+    <p>Find Ethiopian businesses faster on Android.</p>
 
-            <a
-              href={GOOGLE_PLAY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-play-btn"
-            >
-              📱 Download on Google Play
-            </a>
-          </div>
+    <a
+      href={GOOGLE_PLAY_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="footer-play-btn"
+    >
+      📱 Download on Google Play
+    </a>
+  </div>
+)}
 
           <div className="site-footer-columns">
             <div className="site-footer-column">
@@ -62,7 +67,7 @@ export default function Footer() {
             <div className="site-footer-column">
               <h3>Business</h3>
               <nav aria-label="Business links">
-                <a href="/pricing">Pricing</a>
+                {!isIOS && <a href="/pricing">Pricing</a>}
                 <a href="/submit">Submit Listing</a>
                 <a href="/owner/login">Business Login</a>
                 <a href="/contact">Contact</a>

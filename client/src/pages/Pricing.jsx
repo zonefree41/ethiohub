@@ -3,6 +3,7 @@ import { apiPost } from "../api/http.js";
 import "./Pricing.css";
 
 export default function Pricing() {
+    const isIOSBuild = __IOS_BUILD__;
   const [listingId, setListingId] = React.useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get("listingId") || "";
@@ -61,19 +62,21 @@ export default function Pricing() {
 
         {error && <div className="pricing-error">Error: {error}</div>}
 
-        <section className="pricing-listing-box">
-          <h2>Upgrade an existing listing</h2>
-          <p>
-            Enter the business listing ID you want to upgrade. You can find this
-            from the listing URL or owner dashboard.
-          </p>
+        {!isIOSBuild && (
+  <section className="pricing-listing-box">
+    <h2>Upgrade an existing listing</h2>
+    <p>
+      Enter the business listing ID you want to upgrade. You can find this
+      from the listing URL or owner dashboard.
+    </p>
 
-          <input
-            value={listingId}
-            onChange={(e) => setListingId(e.target.value)}
-            placeholder="Listing ID"
-          />
-        </section>
+    <input
+      value={listingId}
+      onChange={(e) => setListingId(e.target.value)}
+      placeholder="Listing ID"
+    />
+  </section>
+)}
 
         <section className="pricing-grid">
           <article className="pricing-card">
@@ -93,57 +96,61 @@ export default function Pricing() {
             </a>
           </article>
 
-          <article className="pricing-card pricing-featured">
-            <div className="pricing-popular">Most Popular</div>
+          {!isIOSBuild && (
+  <article className="pricing-card pricing-featured">
+    <div className="pricing-popular">Most Popular</div>
 
-            <h2>Featured Monthly</h2>
-            <p className="pricing-price">$14.99/mo</p>
-            <p className="pricing-note">Great for active local businesses.</p>
+    <h2>Featured Monthly</h2>
+    <p className="pricing-price">$14.99/mo</p>
+    <p className="pricing-note">Great for active local businesses.</p>
 
-            <ul>
-              <li>Featured business placement</li>
-              <li>Verified badge during active subscription</li>
-              <li>Logo and banner image support</li>
-              <li>Priority visibility in search and related listings</li>
-              <li>Owner dashboard analytics</li>
-            </ul>
+    <ul>
+      <li>Featured business placement</li>
+      <li>Verified badge during active subscription</li>
+      <li>Logo and banner image support</li>
+      <li>Priority visibility in search and related listings</li>
+      <li>Owner dashboard analytics</li>
+    </ul>
 
-            <button
-              type="button"
-              onClick={() => startCheckout("monthly")}
-              disabled={loadingPlan === "monthly"}
-            >
-              {loadingPlan === "monthly"
-                ? "Opening Checkout..."
-                : "Choose Monthly"}
-            </button>
-          </article>
+    <button
+      type="button"
+      onClick={() => startCheckout("monthly")}
+      disabled={loadingPlan === "monthly"}
+    >
+      {loadingPlan === "monthly"
+        ? "Opening Checkout..."
+        : "Choose Monthly"}
+    </button>
+  </article>
+)}
 
-          <article className="pricing-card">
-            <h2>Featured Yearly</h2>
-            <p className="pricing-price">$129/yr</p>
-            <p className="pricing-note">
-              Best value — save compared to monthly.
-            </p>
+          {!isIOSBuild && (
+  <article className="pricing-card">
+    <h2>Featured Yearly</h2>
+    <p className="pricing-price">$129/yr</p>
+    <p className="pricing-note">
+      Best value — save compared to monthly.
+    </p>
 
-            <ul>
-              <li>Everything in Featured Monthly</li>
-              <li>Annual featured placement</li>
-              <li>Verified badge during active subscription</li>
-              <li>Priority visibility all year</li>
-              <li>Best for established businesses</li>
-            </ul>
+    <ul>
+      <li>Everything in Featured Monthly</li>
+      <li>Annual featured placement</li>
+      <li>Verified badge during active subscription</li>
+      <li>Priority visibility all year</li>
+      <li>Best for established businesses</li>
+    </ul>
 
-            <button
-              type="button"
-              onClick={() => startCheckout("yearly")}
-              disabled={loadingPlan === "yearly"}
-            >
-              {loadingPlan === "yearly"
-                ? "Opening Checkout..."
-                : "Choose Yearly"}
-            </button>
-          </article>
+    <button
+      type="button"
+      onClick={() => startCheckout("yearly")}
+      disabled={loadingPlan === "yearly"}
+    >
+      {loadingPlan === "yearly"
+        ? "Opening Checkout..."
+        : "Choose Yearly"}
+    </button>
+  </article>
+)}
         </section>
       </div>
     </main>
