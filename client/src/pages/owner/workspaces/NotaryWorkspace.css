@@ -171,3 +171,272 @@
     box-sizing: border-box;
   }
 }
+
+.notary-request-section {
+  margin-top: 28px;
+}
+
+.notary-request-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.notary-request-section-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.5rem;
+}
+
+.notary-request-section-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.notary-request-section-header > span {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.notary-request-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.notary-request-card {
+  padding: 22px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.notary-request-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.notary-request-card-header h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.25rem;
+}
+
+.notary-request-card-header p {
+  margin: 5px 0 0;
+  color: #64748b;
+}
+
+.notary-request-status {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.notary-request-details {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.notary-request-details > div {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.notary-request-details strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #1d4ed8;
+  font-size: 0.88rem;
+}
+
+.notary-request-details p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.notary-request-details a {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.notary-request-details a:hover {
+  text-decoration: underline;
+}
+
+.notary-request-message {
+  grid-column: 1 / -1;
+}
+
+.notary-request-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.notary-request-actions button {
+  min-height: 44px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notary-request-actions button.danger {
+  background: #dc2626;
+}
+
+.notary-request-actions button.secondary {
+  background: #475569;
+}
+
+.notary-request-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .notary-request-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .notary-request-card {
+    padding: 18px;
+  }
+
+  .notary-request-card-header {
+    flex-direction: column;
+  }
+
+  .notary-request-details {
+    grid-template-columns: 1fr;
+  }
+
+  .notary-request-message {
+    grid-column: auto;
+  }
+
+  .notary-request-actions {
+    flex-direction: column;
+  }
+
+  .notary-request-actions button {
+    width: 100%;
+  }
+}
+
+.notary-schedule-panel {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  background: #eff6ff;
+}
+
+.notary-schedule-panel > div {
+  min-width: 0;
+}
+
+.notary-schedule-panel label {
+  display: block;
+  margin-bottom: 7px;
+  color: #1e3a8a;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.notary-schedule-panel input {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.notary-schedule-panel input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.notary-schedule-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.notary-schedule-actions button {
+  min-height: 44px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notary-schedule-actions button.secondary {
+  background: #475569;
+}
+
+.notary-schedule-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .notary-schedule-panel {
+    grid-template-columns: 1fr;
+    padding: 15px;
+  }
+
+  .notary-schedule-actions {
+    grid-column: auto;
+    flex-direction: column;
+  }
+
+  .notary-schedule-actions button {
+    width: 100%;
+  }
+}

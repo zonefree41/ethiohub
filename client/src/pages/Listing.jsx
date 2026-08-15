@@ -108,6 +108,37 @@ const [
 });
 
 const [
+  notaryServiceRequestForm,
+  setNotaryServiceRequestForm,
+] = React.useState({
+  customerName: "",
+  customerEmail: "",
+  customerPhone: "",
+  serviceType: "",
+  documentType: "",
+  serviceLocation: "Either",
+  preferredAppointmentDate: "",
+  preferredAppointmentTime: "",
+  preferredContactMethod: "Either",
+  message: "",
+});
+
+const [
+  submittingNotaryServiceRequest,
+  setSubmittingNotaryServiceRequest,
+] = React.useState(false);
+
+const [
+  notaryServiceRequestMessage,
+  setNotaryServiceRequestMessage,
+] = React.useState("");
+
+const [
+  notaryServiceRequestError,
+  setNotaryServiceRequestError,
+] = React.useState("");
+
+const [
   submittingTaxServiceRequest,
   setSubmittingTaxServiceRequest,
 ] = React.useState(false);
@@ -664,6 +695,66 @@ async function submitTaxServiceRequest(e) {
   }
 }
 
+async function submitNotaryServiceRequest(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingNotaryServiceRequest(true);
+    setNotaryServiceRequestMessage("");
+    setNotaryServiceRequestError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/notary-service-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...notaryServiceRequestForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit Notary service request."
+      );
+    }
+
+    setNotaryServiceRequestMessage(
+      "Notary service request submitted successfully!"
+    );
+
+    setNotaryServiceRequestForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      serviceType: "",
+      documentType: "",
+      serviceLocation: "Either",
+      preferredAppointmentDate: "",
+      preferredAppointmentTime: "",
+      preferredContactMethod: "Either",
+      message: "",
+    });
+  } catch (err) {
+    setNotaryServiceRequestError(
+      err.message ||
+        "Failed to submit Notary service request."
+    );
+  } finally {
+    setSubmittingNotaryServiceRequest(false);
+  }
+}
+
   async function submitBeautyAppointment(e) {
   e.preventDefault();
 
@@ -1067,6 +1158,10 @@ function hasRentalDetails(item) {
   const isTaxListing =
 listing.categoryId?.slug ===
 "tax-preparer";
+
+const isNotaryListing =
+listing.categoryId?.slug ===
+"notary";
 
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
@@ -2239,6 +2334,243 @@ document.title = seoTitle;
         professionals. Tax preparation, filing, advice,
         pricing, and document requirements are provided
         directly by the business.
+      </p>
+    </form>
+  </section>
+)}
+
+{isNotaryListing && listing.ownerId && (
+  <section className="listing-insurance-consultation">
+    <div className="listing-insurance-consultation-header">
+      <h3>
+        🖋️ Request Notary Service
+      </h3>
+
+      <p>
+        Need a document notarized or a mobile notary?
+        Send a service request directly to {listing.title}.
+      </p>
+    </div>
+
+    {notaryServiceRequestMessage && (
+      <div className="listing-insurance-consultation-success">
+        {notaryServiceRequestMessage}
+      </div>
+    )}
+
+    {notaryServiceRequestError && (
+      <div className="listing-insurance-consultation-error">
+        {notaryServiceRequestError}
+      </div>
+    )}
+
+    <form
+      className="listing-insurance-consultation-form"
+      onSubmit={submitNotaryServiceRequest}
+    >
+      <label>
+        Your Name
+        <input
+          type="text"
+          required
+          value={notaryServiceRequestForm.customerName}
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              customerName: e.target.value,
+            }))
+          }
+          placeholder="Full name"
+        />
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          required
+          value={notaryServiceRequestForm.customerEmail}
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              customerEmail: e.target.value,
+            }))
+          }
+          placeholder="you@example.com"
+        />
+      </label>
+
+      <label>
+        Phone
+        <input
+          type="tel"
+          required
+          value={notaryServiceRequestForm.customerPhone}
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              customerPhone: e.target.value,
+            }))
+          }
+          placeholder="Phone number"
+        />
+      </label>
+
+      <label>
+        Service Needed
+        <select
+          required
+          value={notaryServiceRequestForm.serviceType}
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              serviceType: e.target.value,
+            }))
+          }
+        >
+          <option value="">Select service</option>
+          <option value="Acknowledgment / Signature Notarization">
+            Acknowledgment / Signature Notarization
+          </option>
+          <option value="Jurat / Oath">
+            Jurat / Oath
+          </option>
+          <option value="Power of Attorney">
+            Power of Attorney
+          </option>
+          <option value="Affidavit">
+            Affidavit
+          </option>
+          <option value="Real Estate Documents">
+            Real Estate Documents
+          </option>
+          <option value="Certified Copy / Document Certification">
+            Certified Copy / Document Certification
+          </option>
+          <option value="Mobile Notary">
+            Mobile Notary
+          </option>
+          <option value="Other Notary Service">
+            Other Notary Service
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Document Type
+        <input
+          type="text"
+          value={notaryServiceRequestForm.documentType}
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              documentType: e.target.value,
+            }))
+          }
+          placeholder="Example: Affidavit, POA, deed, form..."
+        />
+      </label>
+
+      <label>
+        Service Location
+        <select
+          value={notaryServiceRequestForm.serviceLocation}
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              serviceLocation: e.target.value,
+            }))
+          }
+        >
+          <option value="Either">Either</option>
+          <option value="Office">Office</option>
+          <option value="Mobile Notary">Mobile Notary</option>
+        </select>
+      </label>
+
+      <label>
+        Preferred Appointment Date
+        <input
+          type="date"
+          min={new Date().toISOString().split("T")[0]}
+          value={
+            notaryServiceRequestForm.preferredAppointmentDate
+          }
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              preferredAppointmentDate: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Preferred Appointment Time
+        <input
+          type="time"
+          value={
+            notaryServiceRequestForm.preferredAppointmentTime
+          }
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              preferredAppointmentTime: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Preferred Contact Method
+        <select
+          value={
+            notaryServiceRequestForm.preferredContactMethod
+          }
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              preferredContactMethod: e.target.value,
+            }))
+          }
+        >
+          <option value="Either">Either</option>
+          <option value="Phone">Phone</option>
+          <option value="Email">Email</option>
+          <option value="WhatsApp">WhatsApp</option>
+        </select>
+      </label>
+
+      <label>
+        Message
+        <textarea
+          rows="4"
+          value={notaryServiceRequestForm.message}
+          onChange={(e) =>
+            setNotaryServiceRequestForm((current) => ({
+              ...current,
+              message: e.target.value,
+            }))
+          }
+          placeholder="Briefly describe what you need notarized. Do not include sensitive document contents."
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-insurance-consultation-submit"
+        disabled={submittingNotaryServiceRequest}
+      >
+        {submittingNotaryServiceRequest
+          ? "Sending Request..."
+          : "Request Notary Service"}
+      </button>
+
+      <p className="listing-insurance-consultation-disclaimer">
+        HubEthio connects customers with independent
+        notary service providers. Availability, fees,
+        identification requirements, and document
+        eligibility are handled directly by the provider.
       </p>
     </form>
   </section>
