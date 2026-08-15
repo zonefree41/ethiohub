@@ -4,6 +4,7 @@ import Listing from "../models/Listing.js";
 import Review from "../models/Review.js";
 import jwt from "jsonwebtoken";
 import { checkSpamSubmission } from "../utils/spamProtection.js";
+import { geocodeAddress } from "../utils/geocodeAddress.js";
 
 const router = express.Router();
 
@@ -14,6 +15,100 @@ router.get("/categories", async (_req, res) => {
     res.json(cats);
   } catch (err) {
     res.status(500).json({ message: "Failed to load categories" });
+  }
+});
+
+router.get("/listings/near-me", async (req, res) => {
+  try {
+    const lat = Number(req.query.lat);
+    const lng = Number(req.query.lng);
+    const radiusMiles = Number(req.query.radiusMiles || 25);
+
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng)
+    ) {
+      return res.status(400).json({
+        message: "Valid lat and lng are required",
+      });
+    }
+
+    const listings = await Listing.find({
+      status: "approved",
+      "location.lat": { $type: "number" },
+      "location.lng": { $type: "number" },
+    }).populate("categoryId");
+
+    const toRadians = (value) =>
+      (value * Math.PI) / 180;
+
+    const earthRadiusMiles = 3958.8;
+
+    const results = listings
+      .map((listing) => {
+        const listingLat = Number(
+          listing.location?.lat
+        );
+
+        const listingLng = Number(
+          listing.location?.lng
+        );
+
+        const dLat = toRadians(
+          listingLat - lat
+        );
+
+        const dLng = toRadians(
+          listingLng - lng
+        );
+
+        const a =
+          Math.sin(dLat / 2) ** 2 +
+          Math.cos(toRadians(lat)) *
+            Math.cos(
+              toRadians(listingLat)
+            ) *
+            Math.sin(dLng / 2) ** 2;
+
+        const c =
+          2 *
+          Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1 - a)
+          );
+
+        const distanceMiles =
+          earthRadiusMiles * c;
+
+        return {
+          ...listing.toObject(),
+          distanceMiles:
+            Math.round(distanceMiles * 10) /
+            10,
+        };
+      })
+      .filter(
+        (listing) =>
+          listing.distanceMiles <= radiusMiles
+      )
+      .sort(
+        (a, b) =>
+          a.distanceMiles -
+          b.distanceMiles
+      )
+      .slice(0, 20);
+
+    res.json(results);
+  } catch (err) {
+    console.error(
+      "Near-me listings failed:",
+      err
+    );
+
+    res.status(500).json({
+      message:
+        "Failed to load nearby businesses",
+    });
   }
 });
 
@@ -556,6 +651,18 @@ if (
   });
 }
 
+const geocodedLocation = await geocodeAddress({
+  address,
+  city,
+  state,
+  zip,
+});
+
+console.log(
+  "GEOCODED LISTING LOCATION:",
+  geocodedLocation
+);
+
     const listing = await Listing.create({
       title,
       categoryId,
@@ -569,6 +676,7 @@ if (
       city,
       state,
       zip,
+      location: geocodedLocation || undefined,
       description_en,
       description_am,
       logoUrl: req.body.logoUrl || "",
