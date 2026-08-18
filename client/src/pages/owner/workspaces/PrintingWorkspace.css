@@ -171,3 +171,255 @@
     box-sizing: border-box;
   }
 }
+
+.printing-request-section {
+  margin-top: 28px;
+}
+
+.printing-request-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.printing-request-section-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.5rem;
+}
+
+.printing-request-section-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.printing-request-section-header > span {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.printing-request-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.printing-request-card {
+  padding: 22px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.printing-request-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.printing-request-card-header h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.25rem;
+}
+
+.printing-request-card-header p {
+  margin: 5px 0 0;
+  color: #64748b;
+}
+
+.printing-request-status {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.printing-request-details {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.printing-request-details > div {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.printing-request-details strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #1d4ed8;
+  font-size: 0.88rem;
+}
+
+.printing-request-details p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.printing-request-details a {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.printing-request-details a:hover {
+  text-decoration: underline;
+}
+
+.printing-request-message {
+  grid-column: 1 / -1;
+}
+
+.printing-request-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.printing-request-actions button {
+  min-height: 44px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.printing-request-actions button.danger {
+  background: #dc2626;
+}
+
+.printing-request-actions button.secondary {
+  background: #475569;
+}
+
+.printing-quote-panel {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  background: #eff6ff;
+}
+
+.printing-quote-panel label {
+  display: block;
+  margin-bottom: 7px;
+  color: #1e3a8a;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.printing-quote-panel input,
+.printing-quote-panel textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.printing-quote-panel input {
+  min-height: 44px;
+}
+
+.printing-quote-panel textarea {
+  resize: vertical;
+}
+
+.printing-quote-panel input:focus,
+.printing-quote-panel textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.printing-quote-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.printing-quote-actions button {
+  min-height: 44px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.printing-quote-actions button.secondary {
+  background: #475569;
+}
+
+.printing-quote-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .printing-request-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .printing-request-card {
+    padding: 18px;
+  }
+
+  .printing-request-card-header {
+    flex-direction: column;
+  }
+
+  .printing-request-details {
+    grid-template-columns: 1fr;
+  }
+
+  .printing-request-message {
+    grid-column: auto;
+  }
+
+  .printing-request-actions,
+  .printing-quote-actions {
+    flex-direction: column;
+  }
+
+  .printing-request-actions button,
+  .printing-quote-actions button {
+    width: 100%;
+  }
+}

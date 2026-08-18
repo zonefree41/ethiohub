@@ -36,6 +36,7 @@ import immigrationConsultationRequestRoutes from "./routes/immigrationConsultati
 import adminOwnerInvitationRoutes from "./routes/adminOwnerInvitations.js";
 import insuranceConsultationRequestRoutes from "./routes/insuranceConsultationRequests.js";
 import taxServiceRequestRoutes from "./routes/taxServiceRequests.js";
+import printingServiceRequestRoutes from "./routes/printingServiceRequests.js";
 import notaryServiceRequestRoutes from "./routes/notaryServiceRequests.js";
 
 const app = express();
@@ -223,6 +224,11 @@ app.use(
 app.use(
   "/api/tax-service-requests",
   taxServiceRequestRoutes
+);
+
+app.use(
+  "/api/printing-service-requests",
+  printingServiceRequestRoutes
 );
 
 app.use(

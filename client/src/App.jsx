@@ -30,6 +30,8 @@ import Saved from "./pages/Saved.jsx";
 import { trackPageView } from "./utils/analytics.js";
 import TransportationQuotePage
   from "./pages/TransportationQuotePage.jsx";
+  import PrintingQuotePage
+  from "./pages/PrintingQuotePage.jsx";
   import HousingRequests from "./pages/HousingRequests.jsx";
   import SubmitHousingRequest from "./pages/SubmitHousingRequest.jsx";
   import SubmitTravelRequest from "./pages/SubmitTravelRequest";
@@ -74,6 +76,9 @@ export default function App() {
 
   const transportationQuoteMatch =
   path.match(/^\/transportation-quote\/([^/]+)$/);
+
+  const printingQuoteMatch =
+  path.match(/^\/printing-quote\/([^/]+)$/);
   
   React.useEffect(() => {
   trackPageView(path);
@@ -232,6 +237,16 @@ if (transportationQuoteMatch) {
 
   return (
     <TransportationQuotePage
+      quoteToken={quoteToken}
+    />
+  );
+}
+
+if (printingQuoteMatch) {
+  const quoteToken = printingQuoteMatch[1];
+
+  return (
+    <PrintingQuotePage
       quoteToken={quoteToken}
     />
   );

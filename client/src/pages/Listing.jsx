@@ -147,6 +147,40 @@ const [
 ] = React.useState("");
 
 const [
+  printingServiceRequestForm,
+  setPrintingServiceRequestForm,
+] = React.useState({
+  customerName: "",
+  customerEmail: "",
+  customerPhone: "",
+  serviceType: "",
+  productType: "",
+  quantity: 1,
+  sizeSpecifications: "",
+  colorOption: "",
+  finishingOptions: "",
+  neededByDate: "",
+  fulfillmentMethod: "Either",
+  preferredContactMethod: "Either",
+  message: "",
+});
+
+const [
+  submittingPrintingServiceRequest,
+  setSubmittingPrintingServiceRequest,
+] = React.useState(false);
+
+const [
+  printingServiceRequestMessage,
+  setPrintingServiceRequestMessage,
+] = React.useState("");
+
+const [
+  printingServiceRequestError,
+  setPrintingServiceRequestError,
+] = React.useState("");
+
+const [
   submittingTaxServiceRequest,
   setSubmittingTaxServiceRequest,
 ] = React.useState(false);
@@ -892,6 +926,69 @@ async function submitNotaryServiceRequest(e) {
   }
 }
 
+async function submitPrintingServiceRequest(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingPrintingServiceRequest(true);
+    setPrintingServiceRequestMessage("");
+    setPrintingServiceRequestError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/printing-service-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...printingServiceRequestForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit Printing service request."
+      );
+    }
+
+    setPrintingServiceRequestMessage(
+      "Printing service request submitted successfully!"
+    );
+
+    setPrintingServiceRequestForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      serviceType: "",
+      productType: "",
+      quantity: 1,
+      sizeSpecifications: "",
+      colorOption: "",
+      finishingOptions: "",
+      neededByDate: "",
+      fulfillmentMethod: "Either",
+      preferredContactMethod: "Either",
+      message: "",
+    });
+  } catch (err) {
+    setPrintingServiceRequestError(
+      err.message ||
+        "Failed to submit Printing service request."
+    );
+  } finally {
+    setSubmittingPrintingServiceRequest(false);
+  }
+}
+
   async function submitBeautyAppointment(e) {
   e.preventDefault();
 
@@ -1307,6 +1404,10 @@ listing.categoryId?.slug ===
 const isNotaryListing =
 listing.categoryId?.slug ===
 "notary";
+
+const isPrintingListing =
+listing.categoryId?.slug ===
+"printing-promotional-services";
 
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
@@ -2716,6 +2817,315 @@ document.title = seoTitle;
         notary service providers. Availability, fees,
         identification requirements, and document
         eligibility are handled directly by the provider.
+      </p>
+    </form>
+  </section>
+)}
+
+{isPrintingListing && listing.ownerId && (
+  <section className="listing-insurance-consultation">
+    <div className="listing-insurance-consultation-header">
+      <h3>
+        🖨️ Request Printing Quote
+      </h3>
+
+      <p>
+        Need printing or promotional products?
+        Send your project details directly to {listing.title}
+        and request a quote.
+      </p>
+    </div>
+
+    {printingServiceRequestMessage && (
+      <div className="listing-insurance-consultation-success">
+        {printingServiceRequestMessage}
+      </div>
+    )}
+
+    {printingServiceRequestError && (
+      <div className="listing-insurance-consultation-error">
+        {printingServiceRequestError}
+      </div>
+    )}
+
+    <form
+      className="listing-insurance-consultation-form"
+      onSubmit={submitPrintingServiceRequest}
+    >
+      <label>
+        Your Name
+        <input
+          type="text"
+          required
+          value={printingServiceRequestForm.customerName}
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              customerName: e.target.value,
+            }))
+          }
+          placeholder="Full name"
+        />
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          required
+          value={printingServiceRequestForm.customerEmail}
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              customerEmail: e.target.value,
+            }))
+          }
+          placeholder="you@example.com"
+        />
+      </label>
+
+      <label>
+        Phone
+        <input
+          type="tel"
+          required
+          value={printingServiceRequestForm.customerPhone}
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              customerPhone: e.target.value,
+            }))
+          }
+          placeholder="Phone number"
+        />
+      </label>
+
+      <label>
+        Service Needed
+        <select
+          required
+          value={printingServiceRequestForm.serviceType}
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              serviceType: e.target.value,
+            }))
+          }
+        >
+          <option value="">Select service</option>
+          <option value="Business Cards">
+            Business Cards
+          </option>
+          <option value="Flyers & Brochures">
+            Flyers & Brochures
+          </option>
+          <option value="Banners & Signs">
+            Banners & Signs
+          </option>
+          <option value="Posters">
+            Posters
+          </option>
+          <option value="T-Shirts & Apparel">
+            T-Shirts & Apparel
+          </option>
+          <option value="Promotional Products">
+            Promotional Products
+          </option>
+          <option value="Labels & Stickers">
+            Labels & Stickers
+          </option>
+          <option value="Invitations">
+            Invitations
+          </option>
+          <option value="Custom Printing">
+            Custom Printing
+          </option>
+          <option value="Other">
+            Other
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Product Type
+        <input
+          type="text"
+          value={printingServiceRequestForm.productType}
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              productType: e.target.value,
+            }))
+          }
+          placeholder="Example: 16 oz banner, business card, shirt..."
+        />
+      </label>
+
+      <label>
+        Quantity
+        <input
+          type="number"
+          min="1"
+          required
+          value={printingServiceRequestForm.quantity}
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              quantity: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Size / Specifications
+        <input
+          type="text"
+          value={
+            printingServiceRequestForm.sizeSpecifications
+          }
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              sizeSpecifications: e.target.value,
+            }))
+          }
+          placeholder="Example: 3.5 x 2 in, 24 x 36 in..."
+        />
+      </label>
+
+      <label>
+        Color Option
+        <select
+          value={printingServiceRequestForm.colorOption}
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              colorOption: e.target.value,
+            }))
+          }
+        >
+          <option value="">Select color option</option>
+          <option value="Full Color">
+            Full Color
+          </option>
+          <option value="Black & White">
+            Black & White
+          </option>
+          <option value="One Color">
+            One Color
+          </option>
+          <option value="Not Sure">
+            Not Sure
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Finishing Options
+        <input
+          type="text"
+          value={
+            printingServiceRequestForm.finishingOptions
+          }
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              finishingOptions: e.target.value,
+            }))
+          }
+          placeholder="Example: Lamination, matte, gloss, folding..."
+        />
+      </label>
+
+      <label>
+        Needed By
+        <input
+          type="date"
+          min={new Date().toISOString().split("T")[0]}
+          value={printingServiceRequestForm.neededByDate}
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              neededByDate: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Pickup / Delivery
+        <select
+          value={
+            printingServiceRequestForm.fulfillmentMethod
+          }
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              fulfillmentMethod: e.target.value,
+            }))
+          }
+        >
+          <option value="Either">Either</option>
+          <option value="Pickup">Pickup</option>
+          <option value="Local Delivery">
+            Local Delivery
+          </option>
+          <option value="Shipping">Shipping</option>
+        </select>
+      </label>
+
+      <label>
+        Preferred Contact Method
+        <select
+          value={
+            printingServiceRequestForm.preferredContactMethod
+          }
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              preferredContactMethod: e.target.value,
+            }))
+          }
+        >
+          <option value="Either">Either</option>
+          <option value="Phone">Phone</option>
+          <option value="Email">Email</option>
+          <option value="WhatsApp">WhatsApp</option>
+        </select>
+      </label>
+
+      <label>
+        Project Details
+        <textarea
+          rows="4"
+          value={printingServiceRequestForm.message}
+          onChange={(e) =>
+            setPrintingServiceRequestForm((current) => ({
+              ...current,
+              message: e.target.value,
+            }))
+          }
+          placeholder="Describe your printing project, artwork status, deadline, and any special requirements."
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-insurance-consultation-submit"
+        disabled={submittingPrintingServiceRequest}
+      >
+        {submittingPrintingServiceRequest
+          ? "Sending Request..."
+          : "Request Printing Quote"}
+      </button>
+
+      <p className="listing-insurance-consultation-disclaimer">
+        HubEthio connects customers with independent
+        printing and promotional service providers.
+        Pricing, artwork requirements, production time,
+        pickup, delivery, and shipping arrangements are
+        handled directly by the business.
       </p>
     </form>
   </section>
