@@ -2310,3 +2310,122 @@
     grid-column: auto;
   }
 }
+.listing-event-services-fieldset {
+  margin: 8px 0 18px;
+  padding: 16px;
+  border: 1px solid #dbe4ef;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.listing-event-services-fieldset legend {
+  padding: 0 8px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.listing-event-service-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 9px 0;
+  color: #334155;
+  font-weight: 700;
+}
+
+.listing-event-service-option input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #7c3aed;
+}
+
+@media (max-width: 600px) {
+  .listing-event-services-fieldset {
+    padding: 14px;
+  }
+}
+
+/* =========================================================
+   Events & Entertainment — Services Needed layout
+   ========================================================= */
+
+.listing-event-services-fieldset {
+  margin: 8px 0 18px;
+  padding: 18px 20px 20px;
+  border: 1px solid #dbe4ef;
+  border-radius: 14px;
+  background: #f8fafc;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+}
+
+.listing-event-services-fieldset legend {
+  padding: 0 8px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.listing-event-service-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+
+  margin: 0;
+  padding: 10px 12px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+
+  color: #334155;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.listing-event-service-option input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  accent-color: #7c3aed;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .listing-event-services-fieldset {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 10px;
+  }
+}
+
+/* Final Events checkbox alignment override */
+
+.listing-event-services-fieldset
+.listing-event-service-option {
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.listing-event-services-fieldset
+.listing-event-service-option
+input[type="checkbox"] {
+  display: inline-block;
+  flex: 0 0 18px;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+}

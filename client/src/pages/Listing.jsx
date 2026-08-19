@@ -231,6 +231,38 @@ const [beautyAppointmentForm, setBeautyAppointmentForm] =
     notes: "",
   });
 
+  const [eventServiceRequestForm, setEventServiceRequestForm] =
+  React.useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    eventType: "",
+    eventDate: "",
+    startTime: "",
+    venue: "",
+    city: "",
+    state: "",
+    guestCount: "",
+    servicesNeeded: [],
+    budget: "",
+    additionalDetails: "",
+  });
+
+const [
+  submittingEventServiceRequest,
+  setSubmittingEventServiceRequest,
+] = React.useState(false);
+
+const [
+  eventServiceRequestMessage,
+  setEventServiceRequestMessage,
+] = React.useState("");
+
+const [
+  eventServiceRequestError,
+  setEventServiceRequestError,
+] = React.useState("");
+
 const [
   submittingBeautyAppointment,
   setSubmittingBeautyAppointment,
@@ -1046,6 +1078,75 @@ async function submitPrintingServiceRequest(e) {
   }
 }
 
+async function submitEventServiceRequest(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingEventServiceRequest(true);
+    setEventServiceRequestMessage("");
+    setEventServiceRequestError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/event-service-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...eventServiceRequestForm,
+          guestCount:
+            eventServiceRequestForm.guestCount === ""
+              ? null
+              : Number(
+                  eventServiceRequestForm.guestCount
+                ),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit event service request."
+      );
+    }
+
+    setEventServiceRequestMessage(
+      "Event service request submitted successfully!"
+    );
+
+    setEventServiceRequestForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      eventType: "",
+      eventDate: "",
+      startTime: "",
+      venue: "",
+      city: "",
+      state: "",
+      guestCount: "",
+      servicesNeeded: [],
+      budget: "",
+      additionalDetails: "",
+    });
+  } catch (err) {
+    setEventServiceRequestError(
+      err.message ||
+        "Failed to submit event service request."
+    );
+  } finally {
+    setSubmittingEventServiceRequest(false);
+  }
+}
+
   async function shareBusiness() {
   if (!listing) return;
 
@@ -1408,6 +1509,10 @@ listing.categoryId?.slug ===
 const isPrintingListing =
 listing.categoryId?.slug ===
 "printing-promotional-services";
+
+const isEventsEntertainmentListing =
+  listing.categoryId?.slug ===
+  "events-entertainment";
 
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
@@ -3126,6 +3231,298 @@ document.title = seoTitle;
         Pricing, artwork requirements, production time,
         pickup, delivery, and shipping arrangements are
         handled directly by the business.
+      </p>
+    </form>
+  </section>
+)}
+
+{isEventsEntertainmentListing && listing.ownerId && (
+  <section className="listing-insurance-consultation">
+    <div className="listing-insurance-consultation-header">
+      <h3>
+        🎉 Request Event Service
+      </h3>
+
+      <p>
+        Planning an event? Send your event details directly
+        to {listing.title} and request service.
+      </p>
+    </div>
+
+    {eventServiceRequestMessage && (
+      <div className="listing-insurance-consultation-success">
+        {eventServiceRequestMessage}
+      </div>
+    )}
+
+    {eventServiceRequestError && (
+      <div className="listing-insurance-consultation-error">
+        {eventServiceRequestError}
+      </div>
+    )}
+
+    <form
+      className="listing-insurance-consultation-form"
+      onSubmit={submitEventServiceRequest}
+    >
+      <label>
+        Your Name
+        <input
+          type="text"
+          required
+          value={eventServiceRequestForm.customerName}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              customerName: e.target.value,
+            }))
+          }
+          placeholder="Full name"
+        />
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          required
+          value={eventServiceRequestForm.customerEmail}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              customerEmail: e.target.value,
+            }))
+          }
+          placeholder="you@example.com"
+        />
+      </label>
+
+      <label>
+        Phone
+        <input
+          type="tel"
+          required
+          value={eventServiceRequestForm.customerPhone}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              customerPhone: e.target.value,
+            }))
+          }
+          placeholder="Phone number"
+        />
+      </label>
+
+      <label>
+        Event Type
+        <select
+          required
+          value={eventServiceRequestForm.eventType}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              eventType: e.target.value,
+            }))
+          }
+        >
+          <option value="">Select event type</option>
+          <option value="Wedding">Wedding</option>
+          <option value="Birthday">Birthday</option>
+          <option value="Private Party">Private Party</option>
+          <option value="Corporate Event">Corporate Event</option>
+          <option value="Networking Event">Networking Event</option>
+          <option value="Graduation">Graduation</option>
+          <option value="Religious / Community Event">
+            Religious / Community Event
+          </option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+
+      <label>
+        Event Date
+        <input
+          type="date"
+          required
+          min={new Date()
+            .toISOString()
+            .split("T")[0]}
+          value={eventServiceRequestForm.eventDate}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              eventDate: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Start Time
+        <input
+          type="time"
+          value={eventServiceRequestForm.startTime}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              startTime: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Venue
+        <input
+          type="text"
+          value={eventServiceRequestForm.venue}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              venue: e.target.value,
+            }))
+          }
+          placeholder="Event venue or location"
+        />
+      </label>
+
+      <label>
+        City
+        <input
+          type="text"
+          value={eventServiceRequestForm.city}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              city: e.target.value,
+            }))
+          }
+          placeholder="City"
+        />
+      </label>
+
+      <label>
+        State
+        <input
+          type="text"
+          value={eventServiceRequestForm.state}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              state: e.target.value,
+            }))
+          }
+          placeholder="State"
+        />
+      </label>
+
+      <label>
+        Estimated Guest Count
+        <input
+          type="number"
+          min="1"
+          value={eventServiceRequestForm.guestCount}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              guestCount: e.target.value,
+            }))
+          }
+          placeholder="Example: 150"
+        />
+      </label>
+
+      <label>
+        Estimated Budget
+        <input
+          type="text"
+          value={eventServiceRequestForm.budget}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              budget: e.target.value,
+            }))
+          }
+          placeholder="Example: $5,000 - $10,000"
+        />
+      </label>
+
+      <fieldset className="listing-event-services-fieldset">
+        <legend>Services Needed</legend>
+
+        {[
+          "Event Planning",
+          "Decoration",
+          "Day-of Coordination",
+          "Venue Setup",
+          "Entertainment",
+          "Photography / Video",
+        ].map((service) => {
+          const checked =
+            eventServiceRequestForm.servicesNeeded.includes(
+              service
+            );
+
+          return (
+            <label
+              key={service}
+              className="listing-event-service-option"
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={(e) =>
+                  setEventServiceRequestForm((current) => ({
+                    ...current,
+                    servicesNeeded: e.target.checked
+                      ? [
+                          ...current.servicesNeeded,
+                          service,
+                        ]
+                      : current.servicesNeeded.filter(
+                          (item) =>
+                            item !== service
+                        ),
+                  }))
+                }
+              />
+              {service}
+            </label>
+          );
+        })}
+      </fieldset>
+
+      <label>
+        Additional Details
+        <textarea
+          rows="5"
+          value={eventServiceRequestForm.additionalDetails}
+          onChange={(e) =>
+            setEventServiceRequestForm((current) => ({
+              ...current,
+              additionalDetails: e.target.value,
+            }))
+          }
+          placeholder="Tell the business about your event, theme, special requirements, or anything else they should know."
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-insurance-consultation-submit"
+        disabled={submittingEventServiceRequest}
+      >
+        {submittingEventServiceRequest
+          ? "Sending Request..."
+          : "Submit Event Request"}
+      </button>
+
+      <p className="listing-insurance-consultation-disclaimer">
+        HubEthio connects customers with independent
+        event and entertainment service providers.
+        Availability, pricing, contracts, deposits, and
+        final arrangements are handled directly by the
+        business.
       </p>
     </form>
   </section>
