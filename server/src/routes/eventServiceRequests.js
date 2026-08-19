@@ -71,13 +71,6 @@ router.post("/", async (req, res) => {
       });
     }
 
-    if (!listing.ownerId) {
-      return res.status(400).json({
-        message:
-          "This listing does not have an assigned owner.",
-      });
-    }
-
     const parsedEventDate = new Date(eventDate);
 
     if (
@@ -120,7 +113,7 @@ router.post("/", async (req, res) => {
     const request =
       await EventServiceRequest.create({
         listingId: listing._id,
-        ownerId: listing.ownerId._id,
+        ownerId: listing.ownerId?._id || null,
         customerName,
         customerEmail,
         customerPhone,
@@ -137,7 +130,11 @@ router.post("/", async (req, res) => {
       });
 
       try {
-  if (listing.ownerId?.email) {
+  const notificationEmail =
+  listing.ownerId?.email ||
+  process.env.ADMIN_EMAIL;
+
+if (notificationEmail) {
     const eventDateText =
       parsedEventDate.toLocaleDateString(
         "en-US",
@@ -149,7 +146,7 @@ router.post("/", async (req, res) => {
       );
 
     await sendEmail({
-      to: listing.ownerId.email,
+      to: notificationEmail,
 
       subject:
         `New Event Request: ${eventType} - ${listing.title}`,
@@ -204,7 +201,10 @@ router.post("/", async (req, res) => {
                 margin-top:0;
                 font-size:17px;
               ">
-                Hello ${listing.ownerId.name || "Business Owner"},
+                Hello ${
+  listing.ownerId?.name ||
+  "HubEthio Admin"
+},
               </p>
 
               <p style="
@@ -271,9 +271,12 @@ router.post("/", async (req, res) => {
                 font-size:14px;
                 color:#64748b;
               ">
-                Log in to your HubEthio Events & Entertainment
-                Workspace to review and manage this request.
-              </p>
+  ${
+    listing.ownerId
+      ? `Log in to your HubEthio Events & Entertainment Workspace to review and manage this request.`
+      : `This Events & Entertainment listing is currently unclaimed. The request has been saved in HubEthio for follow-up until an owner is assigned.`
+  }
+</p>
             </div>
           </div>
         </div>

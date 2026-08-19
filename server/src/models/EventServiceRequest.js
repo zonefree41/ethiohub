@@ -10,11 +10,11 @@ const eventServiceRequestSchema = new mongoose.Schema(
     },
 
     ownerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      index: true,
-    },
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  default: null,
+  index: true,
+},
 
     customerName: {
       type: String,

@@ -3236,7 +3236,7 @@ document.title = seoTitle;
   </section>
 )}
 
-{isEventsEntertainmentListing && listing.ownerId && (
+{isEventsEntertainmentListing && (
   <section className="listing-insurance-consultation">
     <div className="listing-insurance-consultation-header">
       <h3>
