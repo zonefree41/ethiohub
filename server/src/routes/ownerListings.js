@@ -499,51 +499,95 @@ if ("beautyServes" in updates) {
   }
 });
 
-router.post("/:id/submit-transport-verification", async (req, res) => {
-  try {
-    const listing = await Listing.findOne({
-      _id: req.params.id,
-      ownerId: req.owner.id,
-    });
+router.post(
+  "/:id/submit-transport-verification",
+  async (req, res) => {
+    try {
+      const listing = await Listing.findOne({
+        _id: req.params.id,
+        ownerId: req.owner.id,
+      });
 
-    if (!listing) {
-      return res.status(404).json({
-        message: "Listing not found.",
+      if (!listing) {
+        return res.status(404).json({
+          message: "Listing not found.",
+        });
+      }
+
+      const tv =
+        listing.transportVerification || {};
+
+      const missingCommercialInsurance =
+        !String(
+          tv.insuranceCompany || ""
+        ).trim() ||
+        !String(
+          tv.insurancePolicyNumber || ""
+        ).trim() ||
+        !String(
+          tv.insuranceCoverageType || ""
+        ).trim() ||
+        !String(
+          tv.insuranceExpirationDate || ""
+        ).trim() ||
+        !String(
+          tv.insuranceDocumentUrl || ""
+        ).trim();
+
+      if (missingCommercialInsurance) {
+        return res.status(400).json({
+          message:
+            "Please complete all Commercial Insurance information and upload your current insurance document before submitting Transportation Verification.",
+        });
+      }
+
+      if (
+        listing.transportVerification
+          ?.verificationStatus ===
+        "Pending Review"
+      ) {
+        return res.status(400).json({
+          message:
+            "Transportation Verification is already pending review.",
+        });
+      }
+
+      listing.transportVerification = {
+        ...listing.transportVerification,
+
+        verificationStatus:
+          "Pending Review",
+
+        verificationSubmittedAt:
+          new Date(),
+
+        rejectionReason: "",
+        rejectedAt: null,
+        rejectedBy: null,
+      };
+
+      await listing.save();
+
+      return res.json({
+        message:
+          "Transportation Verification submitted successfully.",
+
+        verificationStatus:
+          listing.transportVerification
+            .verificationStatus,
+      });
+    } catch (err) {
+      console.error(
+        "Submit Transportation Verification error:",
+        err
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to submit Transportation Verification.",
       });
     }
-
-    if (
-      listing.transportVerification?.verificationStatus === "Pending Review"
-    ) {
-      return res.status(400).json({
-        message: "Transportation Verification is already pending review.",
-      });
-    }
-
-    listing.transportVerification = {
-  ...listing.transportVerification,
-
-  verificationStatus: "Pending Review",
-  verificationSubmittedAt: new Date(),
-
-  rejectionReason: "",
-  rejectedAt: null,
-  rejectedBy: null,
-};
-
-    await listing.save();
-
-    res.json({
-      message: "Transportation Verification submitted successfully.",
-      verificationStatus:
-        listing.transportVerification.verificationStatus,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      message: "Failed to submit Transportation Verification.",
-    });
   }
-});
+);
 
 export default router;

@@ -781,32 +781,53 @@ transportVerification: {
     loadListing();
   }, [id]);
 
-  async function submitTransportVerification() {
+ async function submitTransportVerification() {
+  const tv = form.transportVerification || {};
+
+  const missingCommercialInsurance =
+    !String(tv.insuranceCompany || "").trim() ||
+    !String(tv.insurancePolicyNumber || "").trim() ||
+    !String(tv.insuranceCoverageType || "").trim() ||
+    !String(tv.insuranceExpirationDate || "").trim() ||
+    !String(tv.insuranceDocumentUrl || "").trim();
+
+  if (missingCommercialInsurance) {
+    setError(
+      "Please complete all Commercial Insurance information and upload your current insurance document before submitting Transportation Verification."
+    );
+
+    return;
+  }
+
   try {
     setSubmittingVerification(true);
     setError("");
     setMessage("");
 
     const result = await apiPost(
-  `/api/owner/listings/${id}/submit-transport-verification`,
-  {},
-  token
-);
+      `/api/owner/listings/${id}/submit-transport-verification`,
+      {},
+      token
+    );
 
-setMessage(
-  result.message || "Transportation Verification submitted successfully."
-);
+    setMessage(
+      result.message ||
+        "Transportation Verification submitted successfully."
+    );
 
-setForm((prev) => ({
-  ...prev,
-  transportVerification: {
-    ...prev.transportVerification,
-    verificationStatus: result.verificationStatus,
-  },
-}));
-
+    setForm((prev) => ({
+      ...prev,
+      transportVerification: {
+        ...prev.transportVerification,
+        verificationStatus:
+          result.verificationStatus,
+      },
+    }));
   } catch (err) {
-    setError(err.message || "Failed to submit Transportation Verification.");
+    setError(
+      err.message ||
+        "Failed to submit Transportation Verification."
+    );
   } finally {
     setSubmittingVerification(false);
   }
