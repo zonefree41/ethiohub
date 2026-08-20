@@ -10,6 +10,12 @@ export default function AddressAutocomplete({
 }) {
   const containerRef = React.useRef(null);
 
+  const onChangeRef = React.useRef(onChange);
+
+  React.useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   React.useEffect(() => {
     let autocompleteElement = null;
     let cancelled = false;
@@ -27,7 +33,9 @@ export default function AddressAutocomplete({
         }
 
         const { PlaceAutocompleteElement } =
-          await google.maps.importLibrary("places");
+          await google.maps.importLibrary(
+            "places"
+          );
 
         autocompleteElement =
           new PlaceAutocompleteElement({
@@ -41,6 +49,7 @@ export default function AddressAutocomplete({
           "100%";
 
         containerRef.current.innerHTML = "";
+
         containerRef.current.appendChild(
           autocompleteElement
         );
@@ -48,32 +57,39 @@ export default function AddressAutocomplete({
         autocompleteElement.addEventListener(
           "gmp-select",
           async (event) => {
-            const placePrediction =
-              event.placePrediction;
+            try {
+              const placePrediction =
+                event.placePrediction;
 
-            if (!placePrediction) {
-              return;
+              if (!placePrediction) {
+                return;
+              }
+
+              const place =
+                placePrediction.toPlace();
+
+              await place.fetchFields({
+                fields: [
+                  "formattedAddress",
+                  "location",
+                ],
+              });
+
+              const address =
+                place.formattedAddress || "";
+
+              onChangeRef.current?.({
+                target: {
+                  name,
+                  value: address,
+                },
+              });
+            } catch (err) {
+              console.error(
+                "Google place selection error:",
+                err
+              );
             }
-
-            const place =
-              placePrediction.toPlace();
-
-            await place.fetchFields({
-              fields: [
-                "formattedAddress",
-                "location",
-              ],
-            });
-
-            const address =
-              place.formattedAddress || "";
-
-            onChange({
-              target: {
-                name,
-                value: address,
-              },
-            });
           }
         );
       } catch (err) {
@@ -98,7 +114,7 @@ export default function AddressAutocomplete({
         );
       }
     };
-  }, [name, onChange, placeholder]);
+  }, [name, placeholder]);
 
   return (
     <>
@@ -110,7 +126,7 @@ export default function AddressAutocomplete({
       <input
         type="hidden"
         name={name}
-        value={value}
+        value={value || ""}
         required={required}
         readOnly
       />
