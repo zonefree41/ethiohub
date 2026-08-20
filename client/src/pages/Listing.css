@@ -2427,3 +2427,13 @@ input[type="checkbox"] {
   height: 18px !important;
   margin: 0 !important;
 }
+
+.hubethio-address-autocomplete {
+  width: 100%;
+}
+
+.hubethio-address-autocomplete
+gmp-place-autocomplete {
+  display: block;
+  width: 100%;
+}

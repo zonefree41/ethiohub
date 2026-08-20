@@ -8,11 +8,10 @@ export default function AddressAutocomplete({
   placeholder = "Start typing an address...",
   required = false,
 }) {
-  const inputRef = React.useRef(null);
+  const containerRef = React.useRef(null);
 
   React.useEffect(() => {
-    let autocomplete = null;
-    let listener = null;
+    let autocompleteElement = null;
     let cancelled = false;
 
     async function setupAutocomplete() {
@@ -21,38 +20,53 @@ export default function AddressAutocomplete({
 
         if (
           cancelled ||
-          !inputRef.current ||
+          !containerRef.current ||
           !google?.maps?.places
         ) {
           return;
         }
 
-        autocomplete =
-          new google.maps.places.Autocomplete(
-            inputRef.current,
-            {
-              types: ["address"],
-              componentRestrictions: {
-                country: "us",
-              },
-              fields: [
-                "formatted_address",
-                "geometry",
-                "name",
-              ],
-            }
-          );
+        const { PlaceAutocompleteElement } =
+          await google.maps.importLibrary("places");
 
-        listener = autocomplete.addListener(
-          "place_changed",
-          () => {
-            const place = autocomplete.getPlace();
+        autocompleteElement =
+          new PlaceAutocompleteElement({
+            includedRegionCodes: ["us"],
+          });
+
+        autocompleteElement.placeholder =
+          placeholder;
+
+        autocompleteElement.style.width =
+          "100%";
+
+        containerRef.current.innerHTML = "";
+        containerRef.current.appendChild(
+          autocompleteElement
+        );
+
+        autocompleteElement.addEventListener(
+          "gmp-select",
+          async (event) => {
+            const placePrediction =
+              event.placePrediction;
+
+            if (!placePrediction) {
+              return;
+            }
+
+            const place =
+              placePrediction.toPlace();
+
+            await place.fetchFields({
+              fields: [
+                "formattedAddress",
+                "location",
+              ],
+            });
 
             const address =
-              place.formatted_address ||
-              place.name ||
-              inputRef.current?.value ||
-              "";
+              place.formattedAddress || "";
 
             onChange({
               target: {
@@ -75,22 +89,31 @@ export default function AddressAutocomplete({
     return () => {
       cancelled = true;
 
-      if (listener) {
-        listener.remove();
+      if (
+        autocompleteElement &&
+        autocompleteElement.parentNode
+      ) {
+        autocompleteElement.parentNode.removeChild(
+          autocompleteElement
+        );
       }
     };
-  }, [name, onChange]);
+  }, [name, onChange, placeholder]);
 
   return (
-    <input
-      ref={inputRef}
-      type="text"
-      name={name}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      autoComplete="off"
-      required={required}
-    />
+    <>
+      <div
+        ref={containerRef}
+        className="hubethio-address-autocomplete"
+      />
+
+      <input
+        type="hidden"
+        name={name}
+        value={value}
+        required={required}
+        readOnly
+      />
+    </>
   );
 }
