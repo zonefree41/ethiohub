@@ -24,18 +24,23 @@ export default function AddressAutocomplete({
       try {
         const google = await loadGoogleMaps();
 
-        if (
-          cancelled ||
-          !containerRef.current ||
-          !google?.maps?.places
-        ) {
-          return;
-        }
+if (
+  cancelled ||
+  !containerRef.current ||
+  !google?.maps
+) {
+  return;
+}
 
-        const { PlaceAutocompleteElement } =
-          await google.maps.importLibrary(
-            "places"
-          );
+const PlaceAutocompleteElement =
+  google.maps.places
+    .PlaceAutocompleteElement;
+
+if (!PlaceAutocompleteElement) {
+  throw new Error(
+    "Google PlaceAutocompleteElement is unavailable."
+  );
+}
 
         autocompleteElement =
           new PlaceAutocompleteElement({
