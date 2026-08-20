@@ -1150,3 +1150,122 @@
     padding: 17px;
   }
 }
+
+.owner-account-settings {
+  margin-top: 36px;
+  padding: 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.owner-account-settings-header {
+  margin-bottom: 22px;
+}
+
+.owner-account-settings-label {
+  margin: 0 0 6px;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.owner-account-settings-header h2 {
+  margin: 0 0 8px;
+  color: #0f172a;
+}
+
+.owner-account-settings-header p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.owner-delete-account-card {
+  padding: 20px;
+  border: 1px solid #fecaca;
+  border-radius: 16px;
+  background: #fff7f7;
+}
+
+.owner-delete-account-card h3 {
+  margin: 0 0 8px;
+  color: #991b1b;
+}
+
+.owner-delete-account-card p {
+  margin: 0 0 18px;
+  color: #7f1d1d;
+  line-height: 1.6;
+}
+
+.owner-delete-account-btn,
+.owner-delete-confirm-btn {
+  border: 0;
+  border-radius: 10px;
+  background: #dc2626;
+  color: #ffffff;
+  padding: 11px 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.owner-delete-confirmation {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #fecaca;
+}
+
+.owner-delete-confirmation h4 {
+  margin: 0 0 8px;
+  color: #991b1b;
+}
+
+.owner-delete-confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.owner-delete-cancel-btn {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #334155;
+  padding: 11px 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.owner-delete-account-error {
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 700;
+}
+
+.owner-delete-confirm-btn:disabled,
+.owner-delete-cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .owner-account-settings {
+    padding: 20px;
+  }
+
+  .owner-delete-confirmation-actions {
+    flex-direction: column;
+  }
+
+  .owner-delete-confirmation-actions button {
+    width: 100%;
+  }
+}

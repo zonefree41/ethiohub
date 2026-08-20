@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
+import Listing from "../models/Listing.js";
+import { requireOwner } from "../middleware/ownerAuth.js";
 
 const router = express.Router();
 
@@ -357,5 +359,62 @@ router.post("/activate-account", async (req, res) => {
     });
   }
 });
+
+router.delete(
+  "/account",
+  requireOwner,
+  async (req, res) => {
+    try {
+      const user = await User.findById(
+        req.owner.id
+      );
+
+      if (!user) {
+        return res.status(404).json({
+          message: "Account not found.",
+        });
+      }
+
+      if (user.role !== "owner") {
+        return res.status(403).json({
+          message:
+            "This account cannot be deleted through the owner account deletion flow.",
+        });
+      }
+
+      // Preserve public business listings, but remove
+      // their connection to the deleted owner account.
+      await Listing.updateMany(
+        {
+          ownerId: user._id,
+        },
+        {
+          $set: {
+            ownerId: null,
+          },
+        }
+      );
+
+      await User.deleteOne({
+        _id: user._id,
+      });
+
+      return res.json({
+        message:
+          "Your HubEthio account has been permanently deleted.",
+      });
+    } catch (err) {
+      console.error(
+        "Delete owner account error:",
+        err
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to delete your account. Please try again.",
+      });
+    }
+  }
+);
 
 export default router;

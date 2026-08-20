@@ -1,9 +1,15 @@
 import React from "react";
-import { apiGet, apiPatch, apiPost } from "../../api/http.js";
+// import { apiGet, apiPatch, apiPost } from "../../api/http.js";
 import "./OwnerDashboard.css";
 import TravelWorkspaceSummary from "./workspaces/TravelWorkspaceSummary.jsx";
 import TransportationWorkspaceSummary from "./workspaces/TransportationWorkspaceSummary.jsx";
 import WorkspaceLauncher from "../../components/owner/WorkspaceLauncher.jsx";
+import {
+  apiGet,
+  apiPatch,
+  apiPost,
+  apiDelete,
+} from "../../api/http.js";
 
 export default function OwnerDashboard() {
   const isIOSBuild = __IOS_BUILD__;
@@ -16,6 +22,15 @@ export default function OwnerDashboard() {
 
   const [transportationRequests, setTransportationRequests] = React.useState([]);
 const [loadingRequests, setLoadingRequests] = React.useState(false);
+
+const [showDeleteAccount, setShowDeleteAccount] =
+  React.useState(false);
+
+const [deletingAccount, setDeletingAccount] =
+  React.useState(false);
+
+const [deleteAccountError, setDeleteAccountError] =
+  React.useState("");
 
 const [travelRequests, setTravelRequests] =
   React.useState([]);
@@ -210,6 +225,36 @@ async function loadTravelRequests() {
     localStorage.removeItem("ownerUser");
     window.location.href = "/";
   }
+
+  function logout() {
+  localStorage.removeItem("ownerToken");
+  localStorage.removeItem("ownerUser");
+  window.location.href = "/";
+}
+
+async function deleteAccount() {
+  try {
+    setDeletingAccount(true);
+    setDeleteAccountError("");
+
+    await apiDelete(
+      "/api/owner/auth/account",
+      token
+    );
+
+    localStorage.removeItem("ownerToken");
+    localStorage.removeItem("ownerUser");
+
+    window.location.href = "/";
+  } catch (err) {
+    setDeleteAccountError(
+      err.message ||
+        "Failed to delete account."
+    );
+  } finally {
+    setDeletingAccount(false);
+  }
+}
 
   function formatDate(value) {
   if (!value) return "N/A";
@@ -755,6 +800,92 @@ const ownerWorkspaces = React.useMemo(
           </>
         )}
       </div>
+
+      <section className="owner-account-settings">
+  <div className="owner-account-settings-header">
+    <p className="owner-account-settings-label">
+      Account Settings
+    </p>
+
+    <h2>Manage Your Account</h2>
+
+    <p>
+      Manage your HubEthio owner account and personal
+      account information.
+    </p>
+  </div>
+
+  <div className="owner-delete-account-card">
+    <div>
+      <h3>Delete Account</h3>
+
+      <p>
+        Permanently delete your HubEthio owner account.
+        Your public business listings will remain on
+        HubEthio but will no longer be connected to your
+        owner account.
+      </p>
+    </div>
+
+    {!showDeleteAccount && (
+      <button
+        type="button"
+        className="owner-delete-account-btn"
+        onClick={() => {
+          setDeleteAccountError("");
+          setShowDeleteAccount(true);
+        }}
+      >
+        Delete Account
+      </button>
+    )}
+
+    {showDeleteAccount && (
+      <div className="owner-delete-confirmation">
+        <h4>
+          Permanently delete your account?
+        </h4>
+
+        <p>
+          This action cannot be undone. Your HubEthio
+          owner account and login information will be
+          permanently deleted.
+        </p>
+
+        {deleteAccountError && (
+          <div className="owner-delete-account-error">
+            {deleteAccountError}
+          </div>
+        )}
+
+        <div className="owner-delete-confirmation-actions">
+          <button
+            type="button"
+            className="owner-delete-cancel-btn"
+            disabled={deletingAccount}
+            onClick={() => {
+              setShowDeleteAccount(false);
+              setDeleteAccountError("");
+            }}
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            className="owner-delete-confirm-btn"
+            disabled={deletingAccount}
+            onClick={deleteAccount}
+          >
+            {deletingAccount
+              ? "Deleting Account..."
+              : "Yes, Delete My Account"}
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+</section>
     </main>
   );
 }
