@@ -12,6 +12,7 @@ import {
 import { trackEvent } from "../utils/analytics.js";
 import "./Listing.css";
 import { useEffect, useState } from "react";
+import AddressAutocomplete from "../components/AddressAutocomplete.jsx";
 
 console.log("Listing component loaded");
 
@@ -4508,24 +4509,24 @@ document.title = seoTitle;
 
                   <label className="listing-quote-full-width">
                     Pickup Address
-                    <input
-                      type="text"
-                      name="pickupAddress"
-                      value={quoteForm.pickupAddress}
-                      onChange={updateQuoteForm}
-                      required
-                    />
+                    <AddressAutocomplete
+  name="pickupAddress"
+  value={quoteForm.pickupAddress}
+  onChange={updateQuoteForm}
+  placeholder="Start typing pickup address..."
+  required
+/>
                   </label>
 
                   <label className="listing-quote-full-width">
                     Delivery Address
-                    <input
-                      type="text"
-                      name="deliveryAddress"
-                      value={quoteForm.deliveryAddress}
-                      onChange={updateQuoteForm}
-                      required
-                    />
+                    <AddressAutocomplete
+  name="deliveryAddress"
+  value={quoteForm.deliveryAddress}
+  onChange={updateQuoteForm}
+  placeholder="Start typing delivery address..."
+  required
+/>
                   </label>
 
                   <label>
