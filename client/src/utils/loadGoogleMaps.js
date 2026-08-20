@@ -1,7 +1,7 @@
 let googleMapsPromise = null;
 
 export function loadGoogleMaps() {
-  if (window.google?.maps?.places) {
+  if (window.google?.maps?.importLibrary) {
     return Promise.resolve(window.google);
   }
 
@@ -28,9 +28,24 @@ export function loadGoogleMaps() {
         );
 
       if (existingScript) {
+        if (window.google?.maps?.importLibrary) {
+          resolve(window.google);
+          return;
+        }
+
         existingScript.addEventListener(
           "load",
-          () => resolve(window.google),
+          () => {
+            if (window.google?.maps?.importLibrary) {
+              resolve(window.google);
+            } else {
+              reject(
+                new Error(
+                  "Google Maps JavaScript API did not load correctly."
+                )
+              );
+            }
+          },
           { once: true }
         );
 
@@ -54,21 +69,20 @@ export function loadGoogleMaps() {
       script.src =
         `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
           apiKey
-        )}&libraries=places&loading=async`;
+        )}&loading=async&v=weekly`;
 
       script.async = true;
-      script.defer = true;
 
       script.dataset.hubethioGoogleMaps =
         "true";
 
       script.onload = () => {
-        if (window.google?.maps?.places) {
+        if (window.google?.maps?.importLibrary) {
           resolve(window.google);
         } else {
           reject(
             new Error(
-              "Google Places did not load correctly."
+              "Google Maps JavaScript API did not load correctly."
             )
           );
         }
