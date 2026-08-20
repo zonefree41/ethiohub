@@ -113,7 +113,7 @@ export default function Location() {
       <main className="location-page">
         <div className="location-container">
           <a href="/" className="location-back">
-            ← Back Home
+            ‹ Back to HubEthio
           </a>
 
           <section className="location-state-card">
@@ -182,7 +182,7 @@ const seoDescription = location
     <main className="location-page">
       <div className="location-container">
         <a href="/" className="location-back">
-          ← Back Home
+          ‹ Back to HubEthio
         </a>
 
         <section className="location-hero">

@@ -12,28 +12,26 @@
 .pricing-back {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-
+  gap: 6px;
   margin-bottom: 16px;
-
-  background: #f59e0b;
-  color: #ffffff;
-
-  border-radius: 12px;
-  padding: 12px 22px;
-
+  padding: 0;
+  background: transparent;
+  color: #2563eb;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 0.95rem;
   font-weight: 700;
   text-decoration: none;
-
-  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25);
-
-  transition: all 0.25s ease;
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
 .pricing-back:hover {
-  background: #d97706;
-  color: #ffffff;
-  transform: translateY(-2px);
+  background: transparent;
+  color: #1d4ed8;
+  box-shadow: none;
+  transform: translateX(-2px);
+  text-decoration: underline;
 }
 
 .pricing-hero {

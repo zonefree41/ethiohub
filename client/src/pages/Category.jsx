@@ -249,8 +249,8 @@ const seoDescription =
     <main className="category-page">
       <div className="category-container">
         <a href="/" className="category-back">
-          ← Back Home
-        </a>
+  ‹ Back to HubEthio
+</a>
 
         <div className="category-header">
           <h1>{title}</h1>

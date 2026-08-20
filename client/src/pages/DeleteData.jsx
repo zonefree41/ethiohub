@@ -10,7 +10,7 @@ export default function DeleteData() {
     <main className="delete-data-page">
       <div className="delete-data-container">
         <a href="/" className="delete-data-back">
-          ← Back Home
+          ‹ Back to HubEthio
         </a>
 
         <section className="delete-data-hero">

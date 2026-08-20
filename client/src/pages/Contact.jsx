@@ -10,7 +10,7 @@ export default function Contact() {
     <main className="contact-page">
       <div className="contact-container">
         <a href="/" className="contact-back">
-          ← Back Home
+          ‹ Back to HubEthio
         </a>
 
         <section className="contact-hero">

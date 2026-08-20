@@ -425,7 +425,7 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
     <main className="submit-page">
       <div className="submit-container">
         <a href="/" className="submit-back-btn">
-  ← Back Home
+  ‹ Back to HubEthio
 </a>
 
         <section className="submit-hero">

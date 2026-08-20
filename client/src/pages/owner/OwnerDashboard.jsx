@@ -286,7 +286,7 @@ const ownerWorkspaces = React.useMemo(
         <header className="owner-dashboard-header">
           <div>
             <a href="/" className="owner-dashboard-back">
-              ← Back Home
+              ‹ Back to HubEthio
             </a>
 
             <p className="owner-dashboard-label">Business Portal</p>

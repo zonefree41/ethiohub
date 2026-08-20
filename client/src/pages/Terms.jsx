@@ -10,7 +10,7 @@ export default function Terms() {
     <main className="terms-page">
       <div className="terms-container">
         <a href="/" className="terms-back">
-          ← Back Home
+          ‹ Back to HubEthio
         </a>
 
         <section className="terms-hero">

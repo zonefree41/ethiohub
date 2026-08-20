@@ -1578,7 +1578,7 @@ document.title = seoTitle;
       <main className="listing-page">
         <div className="listing-top-links">
           <a href="/" className="hubethio-back-btn">
-  ← Back Home
+  ‹ Back to HubEthio
 </a>
 
           <a href="/saved" className="listing-saved-btn">

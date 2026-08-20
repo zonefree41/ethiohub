@@ -48,7 +48,7 @@ export default function Pricing() {
     <main className="pricing-page">
       <div className="pricing-container">
         <a href="/" className="pricing-back">
-          ← Back Home
+          ‹ Back to HubEthio
         </a>
 
         <section className="pricing-hero">

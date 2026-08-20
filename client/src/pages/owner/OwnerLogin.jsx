@@ -53,7 +53,7 @@ window.location.href = redirect;
     <main className="owner-auth-page">
       <div className="owner-auth-card">
         <a href="/" className="owner-auth-back">
-  ← Back Home
+  ‹ Back to HubEthio
 </a>
 
         <div className="owner-auth-header">

@@ -29,7 +29,7 @@ const [password, setPassword] = React.useState("");
     <main className="admin-login-page">
       <section className="admin-login-card">
         <a href="/" className="admin-login-back">
-          ← Back Home
+          ‹ Back to HubEthio
         </a>
 
         <div className="admin-login-header">

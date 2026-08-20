@@ -10,7 +10,7 @@ export default function Privacy() {
     <main className="privacy-page">
       <div className="privacy-container">
         <a href="/" className="privacy-back">
-          ← Back Home
+          ‹ Back to HubEthio
         </a>
 
         <section className="privacy-hero">

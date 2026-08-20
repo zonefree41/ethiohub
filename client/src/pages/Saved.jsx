@@ -49,7 +49,7 @@ export default function Saved() {
   return (
     <main className="saved-page">
       <div className="saved-container">
-        <a href="/" className="saved-back">← Back Home</a>
+        <a href="/" className="saved-back">‹ Back to HubEthio</a>
 
         <header className="saved-header">
           <h1>Saved Businesses ❤️</h1>

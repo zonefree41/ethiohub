@@ -10,14 +10,27 @@
 }
 
 .owner-dashboard-back {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 16px;
+  padding: 0;
+  background: transparent;
   color: #2563eb;
-  font-weight: 800;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 0.95rem;
+  font-weight: 700;
   text-decoration: none;
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
 .owner-dashboard-back:hover {
+  background: transparent;
+  color: #1d4ed8;
+  box-shadow: none;
+  transform: translateX(-2px);
   text-decoration: underline;
 }
 
