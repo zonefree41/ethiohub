@@ -182,6 +182,46 @@ const [
 ] = React.useState("");
 
 const [
+  cargoShippingRequestForm,
+  setCargoShippingRequestForm,
+] = React.useState({
+  customerName: "",
+  customerEmail: "",
+  customerPhone: "",
+  serviceType: "",
+  originCountry: "United States",
+  originCity: "",
+  originState: "",
+  destinationCity: "",
+  destinationCountry: "Ethiopia",
+  itemDescription: "",
+  packageCount: 1,
+  estimatedWeight: "",
+  weightUnit: "lb",
+  dimensions: "",
+  pickupRequired: false,
+  desiredShippingDate: "",
+  customsAssistanceNeeded: false,
+  preferredContactMethod: "Either",
+  message: "",
+});
+
+const [
+  submittingCargoShippingRequest,
+  setSubmittingCargoShippingRequest,
+] = React.useState(false);
+
+const [
+  cargoShippingRequestMessage,
+  setCargoShippingRequestMessage,
+] = React.useState("");
+
+const [
+  cargoShippingRequestError,
+  setCargoShippingRequestError,
+] = React.useState("");
+
+const [
   submittingTaxServiceRequest,
   setSubmittingTaxServiceRequest,
 ] = React.useState(false);
@@ -1022,6 +1062,75 @@ async function submitPrintingServiceRequest(e) {
   }
 }
 
+async function submitCargoShippingRequest(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingCargoShippingRequest(true);
+    setCargoShippingRequestMessage("");
+    setCargoShippingRequestError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/cargo-shipping-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...cargoShippingRequestForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit Cargo & Shipping request."
+      );
+    }
+
+    setCargoShippingRequestMessage(
+      "Cargo & Shipping request submitted successfully!"
+    );
+
+    setCargoShippingRequestForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      serviceType: "",
+      originCountry: "United States",
+      originCity: "",
+      originState: "",
+      destinationCity: "",
+      destinationCountry: "Ethiopia",
+      itemDescription: "",
+      packageCount: 1,
+      estimatedWeight: "",
+      weightUnit: "lb",
+      dimensions: "",
+      pickupRequired: false,
+      desiredShippingDate: "",
+      customsAssistanceNeeded: false,
+      preferredContactMethod: "Either",
+      message: "",
+    });
+  } catch (err) {
+    setCargoShippingRequestError(
+      err.message ||
+        "Failed to submit Cargo & Shipping request."
+    );
+  } finally {
+    setSubmittingCargoShippingRequest(false);
+  }
+}
+
   async function submitBeautyAppointment(e) {
   e.preventDefault();
 
@@ -1510,6 +1619,10 @@ listing.categoryId?.slug ===
 const isPrintingListing =
 listing.categoryId?.slug ===
 "printing-promotional-services";
+
+const isCargoShippingListing =
+  listing.categoryId?.slug ===
+  "cargo-shipping-to-ethiopia";
 
 const isEventsEntertainmentListing =
   listing.categoryId?.slug ===
@@ -3232,6 +3345,368 @@ document.title = seoTitle;
         Pricing, artwork requirements, production time,
         pickup, delivery, and shipping arrangements are
         handled directly by the business.
+      </p>
+    </form>
+  </section>
+)}
+
+{isCargoShippingListing && listing.ownerId && (
+  <section className="listing-insurance-consultation">
+    <div className="listing-insurance-consultation-header">
+      <h3>
+        📦 Request Cargo & Shipping Quote
+      </h3>
+
+      <p>
+        Shipping packages or cargo to Ethiopia?
+        Send your shipment details directly to {listing.title}
+        and request a quote.
+      </p>
+    </div>
+
+    {cargoShippingRequestMessage && (
+      <div className="listing-insurance-consultation-success">
+        {cargoShippingRequestMessage}
+      </div>
+    )}
+
+    {cargoShippingRequestError && (
+      <div className="listing-insurance-consultation-error">
+        {cargoShippingRequestError}
+      </div>
+    )}
+
+    <form
+      className="listing-insurance-consultation-form"
+      onSubmit={submitCargoShippingRequest}
+    >
+      <label>
+        Your Name
+        <input
+          type="text"
+          required
+          value={cargoShippingRequestForm.customerName}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              customerName: e.target.value,
+            }))
+          }
+          placeholder="Full name"
+        />
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          required
+          value={cargoShippingRequestForm.customerEmail}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              customerEmail: e.target.value,
+            }))
+          }
+          placeholder="you@example.com"
+        />
+      </label>
+
+      <label>
+        Phone
+        <input
+          type="tel"
+          required
+          value={cargoShippingRequestForm.customerPhone}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              customerPhone: e.target.value,
+            }))
+          }
+          placeholder="Phone number"
+        />
+      </label>
+
+      <label>
+        Shipping Service
+        <select
+          required
+          value={cargoShippingRequestForm.serviceType}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              serviceType: e.target.value,
+            }))
+          }
+        >
+          <option value="">Select service</option>
+          <option value="Air Cargo">Air Cargo</option>
+          <option value="Sea Cargo">Sea Cargo</option>
+          <option value="Package Shipping">
+            Package Shipping
+          </option>
+          <option value="Moving Services">
+            Moving Services
+          </option>
+          <option value="Commercial Freight">
+            Commercial Freight
+          </option>
+          <option value="Customs Assistance">
+            Customs Assistance
+          </option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+
+      <label>
+        Origin Country
+        <input
+          type="text"
+          value={cargoShippingRequestForm.originCountry}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              originCountry: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Origin City
+        <input
+          type="text"
+          value={cargoShippingRequestForm.originCity}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              originCity: e.target.value,
+            }))
+          }
+          placeholder="Example: Alexandria"
+        />
+      </label>
+
+      <label>
+        Origin State
+        <input
+          type="text"
+          value={cargoShippingRequestForm.originState}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              originState: e.target.value,
+            }))
+          }
+          placeholder="Example: VA"
+        />
+      </label>
+
+      <label>
+        Destination City
+        <input
+          type="text"
+          value={cargoShippingRequestForm.destinationCity}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              destinationCity: e.target.value,
+            }))
+          }
+          placeholder="Example: Addis Ababa"
+        />
+      </label>
+
+      <label>
+        Destination Country
+        <input
+          type="text"
+          value={cargoShippingRequestForm.destinationCountry}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              destinationCountry: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Shipment Description
+        <textarea
+          rows="4"
+          required
+          value={cargoShippingRequestForm.itemDescription}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              itemDescription: e.target.value,
+            }))
+          }
+          placeholder="Describe the packages, cargo, furniture, merchandise, or other items you want to ship."
+        />
+      </label>
+
+      <label>
+        Number of Packages
+        <input
+          type="number"
+          min="1"
+          value={cargoShippingRequestForm.packageCount}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              packageCount: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Estimated Weight
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          value={cargoShippingRequestForm.estimatedWeight}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              estimatedWeight: e.target.value,
+            }))
+          }
+          placeholder="Example: 75"
+        />
+      </label>
+
+      <label>
+        Weight Unit
+        <select
+          value={cargoShippingRequestForm.weightUnit}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              weightUnit: e.target.value,
+            }))
+          }
+        >
+          <option value="lb">lb</option>
+          <option value="kg">kg</option>
+        </select>
+      </label>
+
+      <label>
+        Dimensions
+        <input
+          type="text"
+          value={cargoShippingRequestForm.dimensions}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              dimensions: e.target.value,
+            }))
+          }
+          placeholder="Example: 24 x 18 x 16 in"
+        />
+      </label>
+
+      <label>
+        Desired Shipping Date
+        <input
+          type="date"
+          min={new Date().toISOString().split("T")[0]}
+          value={cargoShippingRequestForm.desiredShippingDate}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              desiredShippingDate: e.target.value,
+            }))
+          }
+        />
+      </label>
+
+      <label>
+        Preferred Contact Method
+        <select
+          value={
+            cargoShippingRequestForm.preferredContactMethod
+          }
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              preferredContactMethod: e.target.value,
+            }))
+          }
+        >
+          <option value="Either">Either</option>
+          <option value="Phone">Phone</option>
+          <option value="Email">Email</option>
+          <option value="WhatsApp">WhatsApp</option>
+        </select>
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={cargoShippingRequestForm.pickupRequired}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              pickupRequired: e.target.checked,
+            }))
+          }
+        />
+        Pickup is required
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={
+            cargoShippingRequestForm.customsAssistanceNeeded
+          }
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              customsAssistanceNeeded: e.target.checked,
+            }))
+          }
+        />
+        I need customs assistance
+      </label>
+
+      <label>
+        Additional Message
+        <textarea
+          rows="4"
+          value={cargoShippingRequestForm.message}
+          onChange={(e) =>
+            setCargoShippingRequestForm((current) => ({
+              ...current,
+              message: e.target.value,
+            }))
+          }
+          placeholder="Add pickup details, timing, special handling instructions, customs questions, or other information."
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-insurance-consultation-submit"
+        disabled={submittingCargoShippingRequest}
+      >
+        {submittingCargoShippingRequest
+          ? "Sending Request..."
+          : "Request Cargo & Shipping Quote"}
+      </button>
+
+      <p className="listing-insurance-consultation-disclaimer">
+        HubEthio connects customers with independent
+        Cargo & Shipping providers. Rates, transit times,
+        insurance, customs requirements, prohibited items,
+        pickup, delivery, and shipment handling are provided
+        directly by the business.
       </p>
     </form>
   </section>

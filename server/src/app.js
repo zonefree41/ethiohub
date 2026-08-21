@@ -39,6 +39,8 @@ import taxServiceRequestRoutes from "./routes/taxServiceRequests.js";
 import printingServiceRequestRoutes from "./routes/printingServiceRequests.js";
 import eventServiceRequestRoutes from "./routes/eventServiceRequests.js";
 import notaryServiceRequestRoutes from "./routes/notaryServiceRequests.js";
+import cargoShippingRequestRoutes
+  from "./routes/cargoShippingRequests.js";
 
 const app = express();
 
@@ -205,6 +207,11 @@ app.use(
 app.use(
   "/api/admin/owner-invitations",
   adminOwnerInvitationRoutes
+);
+
+app.use(
+  "/api/cargo-shipping-requests",
+  cargoShippingRequestRoutes
 );
 
 app.use(
