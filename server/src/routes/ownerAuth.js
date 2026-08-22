@@ -79,20 +79,40 @@ const verificationUrl = `${
         text-align:center;
         color:#ffffff;
       ">
-        <div style="
-          width:68px;
-          height:68px;
-          margin:0 auto 16px;
-          border-radius:50%;
-          border:2px solid #f59e0b;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          font-size:22px;
-          font-weight:900;
-        ">
-          HE
-        </div>
+        <table
+  role="presentation"
+  cellpadding="0"
+  cellspacing="0"
+  border="0"
+  align="center"
+  style="
+    margin:0 auto 16px;
+    border-collapse:separate;
+  "
+>
+  <tr>
+    <td
+      width="68"
+      height="68"
+      align="center"
+      valign="middle"
+      style="
+        width:68px;
+        height:68px;
+        border:2px solid #f59e0b;
+        border-radius:50%;
+        font-size:22px;
+        font-weight:900;
+        line-height:68px;
+        text-align:center;
+        vertical-align:middle;
+        color:#ffffff;
+      "
+    >
+      HE
+    </td>
+  </tr>
+</table>
 
         <h1 style="
           margin:0;
@@ -664,24 +684,186 @@ router.post("/forgot-password", async (req, res) => {
       to: user.email,
       subject: "Reset your HubEthio password",
       html: `
-        <h1>Reset your HubEthio password</h1>
+  <div style="
+    margin:0;
+    padding:0;
+    background:#f4f6f8;
+    font-family:Arial,Helvetica,sans-serif;
+    color:#111827;
+  ">
+    <div style="
+      max-width:640px;
+      margin:0 auto;
+      padding:32px 16px;
+    ">
 
-        <p>Hello ${user.name},</p>
+      <div style="
+        background:linear-gradient(135deg,#0f172a,#92400e);
+        border-radius:24px 24px 0 0;
+        padding:36px 28px;
+        text-align:center;
+        color:#ffffff;
+      ">
 
-        <p>
-          Click the link below to reset your password. This link expires in 30 minutes.
+        <table
+          role="presentation"
+          cellpadding="0"
+          cellspacing="0"
+          border="0"
+          align="center"
+          style="
+            margin:0 auto 16px;
+            border-collapse:separate;
+          "
+        >
+          <tr>
+            <td
+              width="68"
+              height="68"
+              align="center"
+              valign="middle"
+              style="
+                width:68px;
+                height:68px;
+                border:2px solid #f59e0b;
+                border-radius:50%;
+                font-size:22px;
+                font-weight:900;
+                line-height:68px;
+                text-align:center;
+                vertical-align:middle;
+                color:#ffffff;
+              "
+            >
+              HE
+            </td>
+          </tr>
+        </table>
+
+        <h1 style="
+          margin:0;
+          font-size:30px;
+          line-height:1.2;
+        ">
+          Reset Your HubEthio Password
+        </h1>
+
+        <p style="
+          margin:12px 0 0;
+          font-size:16px;
+          line-height:1.6;
+          color:#f8fafc;
+        ">
+          Securely create a new password for your Business Owner account.
+        </p>
+      </div>
+
+      <div style="
+        background:#ffffff;
+        border:1px solid #e5e7eb;
+        border-top:none;
+        border-radius:0 0 24px 24px;
+        padding:32px 28px;
+      ">
+
+        <p style="
+          margin:0 0 16px;
+          font-size:16px;
+          line-height:1.7;
+        ">
+          Hello <strong>${user.name}</strong>,
         </p>
 
-        <p>
-          <a href="${resetUrl}">
+        <p style="
+          margin:0 0 18px;
+          font-size:16px;
+          line-height:1.7;
+          color:#374151;
+        ">
+          We received a request to reset the password for your
+          HubEthio Business Owner account.
+        </p>
+
+        <div style="
+          background:#fff7ed;
+          border:1px solid #fed7aa;
+          border-radius:16px;
+          padding:18px;
+          margin:22px 0;
+        ">
+          <p style="
+            margin:0;
+            color:#9a3412;
+            font-size:15px;
+            line-height:1.6;
+            font-weight:700;
+          ">
+            This password reset link expires in 30 minutes.
+          </p>
+        </div>
+
+        <div style="
+          text-align:center;
+          margin:30px 0;
+        ">
+          <a
+            href="${resetUrl}"
+            style="
+              display:inline-block;
+              background:#f59e0b;
+              color:#111827;
+              text-decoration:none;
+              font-weight:900;
+              padding:15px 28px;
+              border-radius:14px;
+              font-size:16px;
+            "
+          >
             Reset Password
           </a>
+        </div>
+
+        <p style="
+          margin:0 0 14px;
+          font-size:14px;
+          line-height:1.7;
+          color:#6b7280;
+        ">
+          If the button does not work, copy and paste this link into your browser.
         </p>
 
-        <p>
-          If you did not request this, you can ignore this email.
+        <p style="
+          margin:0 0 18px;
+          font-size:14px;
+          line-height:1.7;
+          color:#6b7280;
+          word-break:break-all;
+        ">
+          ${resetUrl}
         </p>
-      `,
+
+        <p style="
+          margin:0 0 16px;
+          font-size:14px;
+          line-height:1.7;
+          color:#6b7280;
+        ">
+          If you did not request a password reset, you can safely ignore this email.
+        </p>
+
+        <p style="
+          margin:0;
+          font-size:15px;
+          line-height:1.7;
+          color:#374151;
+        ">
+          — The HubEthio Team
+        </p>
+
+      </div>
+    </div>
+  </div>
+`,
     });
 
     res.json({

@@ -108,9 +108,40 @@ await sendEmail({
           background:linear-gradient(135deg,#7c3aed,#c084fc);
           color:#ffffff;
         ">
-          <div style="font-size:38px;margin-bottom:10px;">
-            ✨
-          </div>
+          <table
+  role="presentation"
+  cellpadding="0"
+  cellspacing="0"
+  border="0"
+  align="center"
+  style="
+    margin:0 auto 16px;
+    border-collapse:separate;
+  "
+>
+  <tr>
+    <td
+      width="68"
+      height="68"
+      align="center"
+      valign="middle"
+      style="
+        width:68px;
+        height:68px;
+        border:2px solid #ffffff;
+        border-radius:50%;
+        font-size:22px;
+        font-weight:900;
+        line-height:68px;
+        text-align:center;
+        vertical-align:middle;
+        color:#ffffff;
+      "
+    >
+      HE
+    </td>
+  </tr>
+</table>
 
           <h1 style="
             margin:0;
@@ -319,12 +350,40 @@ router.post(
                 background:linear-gradient(135deg,#7c3aed,#c084fc);
                 color:#ffffff;
               ">
-                <div style="
-                  font-size:38px;
-                  margin-bottom:10px;
-                ">
-                  ✨
-                </div>
+                <table
+  role="presentation"
+  cellpadding="0"
+  cellspacing="0"
+  border="0"
+  align="center"
+  style="
+    margin:0 auto 16px;
+    border-collapse:separate;
+  "
+>
+  <tr>
+    <td
+      width="68"
+      height="68"
+      align="center"
+      valign="middle"
+      style="
+        width:68px;
+        height:68px;
+        border:2px solid #ffffff;
+        border-radius:50%;
+        font-size:22px;
+        font-weight:900;
+        line-height:68px;
+        text-align:center;
+        vertical-align:middle;
+        color:#ffffff;
+      "
+    >
+      HE
+    </td>
+  </tr>
+</table>
 
                 <h1 style="
                   margin:0;
