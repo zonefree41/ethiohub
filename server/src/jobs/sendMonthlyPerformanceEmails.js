@@ -137,7 +137,7 @@ export async function sendMonthlyPerformanceEmails() {
         `,
       });
 
-      console.log("📊 Monthly report sent:", ownerEmail);
+      console.log("📊 Monthly performance report sent successfully.");
     }
 
     console.log(`✅ Monthly performance emails checked. Sent: ${listings.length}`);

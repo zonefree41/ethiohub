@@ -27,7 +27,7 @@ try {
     { upsert: true, new: true }
   );
 
-  console.log("✅ Admin user created/updated:", email);
+  console.log("✅ Admin user created/updated.");
   process.exit(0);
 } catch (err) {
   console.error("❌ Seed admin failed:", err.message);

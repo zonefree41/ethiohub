@@ -422,7 +422,6 @@ router.post("/track/:id", async (req, res) => {
 
 // Submit a new listing — creates pending listing
 router.post("/submissions", async (req, res) => {
-  console.log("SUBMISSION BODY:", req.body);
 
   try {
     const {
@@ -657,11 +656,6 @@ const geocodedLocation = await geocodeAddress({
   state,
   zip,
 });
-
-console.log(
-  "GEOCODED LISTING LOCATION:",
-  geocodedLocation
-);
 
     const listing = await Listing.create({
       title,

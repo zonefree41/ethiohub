@@ -95,7 +95,7 @@ export async function expireTrials() {
       await listing.save();
       updatedCount++;
 
-      console.log("✅ Trial expired processed for:", listing._id);
+      console.log("✅ Trial expiration processed.");
     }
 
     console.log(

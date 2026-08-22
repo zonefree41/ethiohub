@@ -49,7 +49,7 @@ export async function geocodeAddress({
     const results = await response.json();
 
     if (!Array.isArray(results) || !results.length) {
-      console.log("No geocoding result for:", query);
+      console.log("No geocoding result found.");
       return null;
     }
 

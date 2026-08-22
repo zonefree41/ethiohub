@@ -19,20 +19,20 @@ async function setListingPaymentStatus(subscriptionId, patch) {
   const listing = await findListingBySubscription(subscriptionId);
 
   if (!listing) {
-    console.log("⚠️ No listing found for subscription:", subscriptionId);
+    console.log("⚠️ No listing found for subscription.");
     return;
   }
 
   await Listing.findByIdAndUpdate(listing._id, patch);
 
-  console.log("✅ Listing payment updated:", listing._id, patch);
+console.log("✅ Listing payment status updated.");
 }
 
 async function sendFeaturedSubscriptionEmail(listing) {
   const ownerEmail = listing?.submittedBy?.contact;
 
   if (!ownerEmail) {
-    console.log("⚠️ No owner email found for listing:", listing?._id);
+    console.log("⚠️ No owner email found for listing.");
     return;
   }
 
@@ -95,7 +95,7 @@ async function sendFeaturedSubscriptionEmail(listing) {
     `,
   });
 
-  console.log("✅ Featured subscription email sent:", ownerEmail);
+ console.log("✅ Featured subscription email sent.");
 }
 
 router.post("/", async (req, res) => {
@@ -141,11 +141,11 @@ router.post("/", async (req, res) => {
         );
 
         if (!listing) {
-          console.log("⚠️ No listing found for checkout listingId:", listingId);
+          console.log("⚠️ No listing found for checkout session.");
           break;
         }
 
-        console.log("✅ Listing featured after checkout:", listingId);
+        console.log("✅ Listing featured after checkout.");
 
         try {
           await sendFeaturedSubscriptionEmail(listing);

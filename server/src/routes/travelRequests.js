@@ -275,10 +275,6 @@ router.post("/", async (req, res) => {
       }
     }
 
-      console.log("TRAVEL REQUEST LISTING ID:", listingId);
-console.log("SERVER DATABASE:", mongoose.connection.name);
-console.log("SERVER MONGO HOST:", mongoose.connection.host);
-
     const listing = await Listing.findOne({
   _id: listingId,
   status: "approved",
@@ -291,8 +287,6 @@ console.log("SERVER MONGO HOST:", mongoose.connection.host);
     "categoryId",
     "name_en slug"
   );
-
-  console.log("Travel listing lookup:", listing);
 
     if (!listing) {
       return res.status(404).json({

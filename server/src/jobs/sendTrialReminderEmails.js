@@ -234,8 +234,8 @@ export async function sendTrialReminderEmails() {
       sentCount += 1;
 
       console.log(
-        `📧 ${reminder.days}-day trial reminder sent to ${ownerEmail} for ${listing.title}`
-      );
+  `📧 ${reminder.days}-day trial reminder sent successfully.`
+);
     }
 
     console.log(`✅ Trial reminders sent: ${sentCount}`);

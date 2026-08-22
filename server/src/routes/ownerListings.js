@@ -49,7 +49,6 @@ router.get("/:id", async (req, res) => {
 
 router.patch("/:id", async (req, res) => {
   try {
-    console.log("OWNER PATCH BODY:", req.body);
 
     const listing = await Listing.findOne({
       _id: req.params.id,
@@ -443,9 +442,6 @@ if ("beautyServes" in updates) {
     }
 
     updates.updatedAt = new Date();
-
-    console.log("OWNER UPDATES:", updates);
-    console.log("HAS SENSITIVE CHANGE:", hasSensitiveChange);
 
     const updatedListing = await Listing.findOneAndUpdate(
       {

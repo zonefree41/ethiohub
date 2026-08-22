@@ -7,18 +7,12 @@ export async function sendEmail({ to, subject, html }) {
   }
 
   if (!to || !subject || !html) {
-    console.error("❌ Missing email fields:", {
-      to,
-      subject,
-      hasHtml: Boolean(html),
-    });
+    console.error("❌ Missing required email fields.");
     return null;
   }
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
-    
-    console.log("📧 Sending email to:", to);
 
     const { data, error } = await resend.emails.send({
       from: "HubEthio <support@hubethio.com>",
@@ -32,7 +26,7 @@ export async function sendEmail({ to, subject, html }) {
       return null;
     }
 
-    console.log("✅ Email sent:", data);
+    console.log("✅ Email sent successfully.");
     return data;
   } catch (err) {
     console.error("❌ Email send failed:", err);
