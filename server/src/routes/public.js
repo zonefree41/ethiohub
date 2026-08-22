@@ -871,8 +871,11 @@ if (
 }
 
     const listing = await Listing.create({
-      title: cleanedCoreFields.title,
-subcategory: cleanedCoreFields.subcategory,
+  title: cleanedCoreFields.title,
+  categoryId: categoryId.trim(),
+  ownerId,
+
+  subcategory: cleanedCoreFields.subcategory,
 phone: cleanedCoreFields.phone,
 businessHours: cleanedCoreFields.businessHours,
 whatsapp: cleanedCoreFields.whatsapp,
