@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import crypto from "crypto";
 
 import CargoShippingRequest from "../models/CargoShippingRequest.js";
@@ -52,6 +53,18 @@ router.post("/", async (req, res) => {
       return res.status(400).json({
         message:
           "Name, email, phone, and shipment description are required.",
+      });
+    }
+
+
+    if (
+      typeof listingId !== "string" ||
+      !mongoose.Types.ObjectId.isValid(
+        listingId.trim()
+      )
+    ) {
+      return res.status(400).json({
+        message: "Invalid listing ID.",
       });
     }
 

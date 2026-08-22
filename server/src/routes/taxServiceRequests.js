@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import TaxServiceRequest from "../models/TaxServiceRequest.js";
 import Listing from "../models/Listing.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
@@ -36,6 +37,17 @@ router.post("/", async (req, res) => {
           "Please provide all required Tax service request information.",
       });
     }
+
+    if (
+  typeof listingId !== "string" ||
+  !mongoose.Types.ObjectId.isValid(
+    listingId.trim()
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid listing ID.",
+  });
+}
 
     const listing = await Listing.findById(
       listingId

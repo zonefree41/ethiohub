@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import ImmigrationConsultationRequest from "../models/ImmigrationConsultationRequest.js";
 import Listing from "../models/Listing.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
@@ -43,6 +44,18 @@ router.post("/", async (req, res) => {
       return res.status(400).json({
         message:
           "Please provide all required consultation request information.",
+      });
+    }
+
+
+    if (
+      typeof listingId !== "string" ||
+      !mongoose.Types.ObjectId.isValid(
+        listingId.trim()
+      )
+    ) {
+      return res.status(400).json({
+        message: "Invalid listing ID.",
       });
     }
 

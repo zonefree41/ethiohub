@@ -275,6 +275,17 @@ router.post("/", async (req, res) => {
       }
     }
 
+    if (
+  typeof listingId !== "string" ||
+  !mongoose.Types.ObjectId.isValid(
+    listingId.trim()
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid listing ID.",
+  });
+}
+
     const listing = await Listing.findOne({
   _id: listingId,
   status: "approved",

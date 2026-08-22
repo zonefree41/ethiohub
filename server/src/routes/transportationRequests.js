@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import Listing from "../models/Listing.js";
 import TransportationRequest from "../models/TransportationRequest.js";
 import { sendEmail } from "../utils/sendEmail.js";
@@ -55,6 +56,17 @@ router.post("/", async (req, res) => {
         message: "Your name is required.",
       });
     }
+
+    if (
+  typeof listingId !== "string" ||
+  !mongoose.Types.ObjectId.isValid(
+    listingId.trim()
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid listing ID.",
+  });
+}
 
     if (!cleanedCustomerPhone) {
       return res.status(400).json({
@@ -777,7 +789,8 @@ router.patch("/quote/:token/respond", async (req, res) => {
 
     if (request.ownerId) {
       try {
-        const listing = await Listing.findById(request.listingId)
+
+    const listing = await Listing.findById(request.listingId)
           .populate("ownerId", "email name");
 
         if (listing?.ownerId?.email) {
