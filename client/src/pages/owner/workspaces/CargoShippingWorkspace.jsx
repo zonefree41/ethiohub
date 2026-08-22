@@ -557,22 +557,36 @@ const completedRequestCount = cargoRequests.filter(
               </div>
 
               <div>
-                <strong>Pickup Required</strong>
-                <p>
-                  {request.pickupRequired
-                    ? "Yes"
-                    : "No"}
-                </p>
-              </div>
+  <strong>Pickup Required</strong>
+
+  <p>
+    {request.pickupRequired
+      ? "Yes"
+      : "No"}
+  </p>
+
+  <span className="cargo-request-helper">
+    {request.pickupRequired
+      ? "Customer needs the provider to pick up the shipment."
+      : "Customer will arrange delivery of the shipment to the provider."}
+  </span>
+</div>
 
               <div>
-                <strong>Customs Assistance</strong>
-                <p>
-                  {request.customsAssistanceNeeded
-                    ? "Yes"
-                    : "No"}
-                </p>
-              </div>
+  <strong>Customs Assistance</strong>
+
+  <p>
+    {request.customsAssistanceNeeded
+      ? "Yes"
+      : "No"}
+  </p>
+
+  <span className="cargo-request-helper">
+    {request.customsAssistanceNeeded
+      ? "Customer is requesting help with customs clearance."
+      : "Customer did not request customs assistance."}
+  </span>
+</div>
 
               <div>
                 <strong>Email</strong>

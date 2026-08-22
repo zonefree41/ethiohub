@@ -431,3 +431,11 @@
     width: 100%;
   }
 }
+
+.cargo-request-helper {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}

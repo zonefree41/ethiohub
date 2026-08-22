@@ -3646,60 +3646,127 @@ document.title = seoTitle;
         </select>
       </label>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={cargoShippingRequestForm.pickupRequired}
-          onChange={(e) =>
-            setCargoShippingRequestForm((current) => ({
-              ...current,
-              pickupRequired: e.target.checked,
-            }))
-          }
-        />
-        Pickup is required
-      </label>
+      <div className="cargo-option-grid">
+  <label
+    className={`cargo-option-card ${
+      cargoShippingRequestForm.pickupRequired
+        ? "active"
+        : ""
+    }`}
+  >
+    <div className="cargo-option-icon">
+      📦
+    </div>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={
-            cargoShippingRequestForm.customsAssistanceNeeded
-          }
-          onChange={(e) =>
-            setCargoShippingRequestForm((current) => ({
-              ...current,
-              customsAssistanceNeeded: e.target.checked,
-            }))
-          }
-        />
+    <div className="cargo-option-content">
+      <strong>Pickup is required</strong>
+      <span>
+        I need the provider to pick up my items.
+      </span>
+    </div>
+
+    <input
+      type="checkbox"
+      checked={
+        cargoShippingRequestForm.pickupRequired
+      }
+      onChange={(e) =>
+        setCargoShippingRequestForm(
+          (current) => ({
+            ...current,
+            pickupRequired: e.target.checked,
+          })
+        )
+      }
+    />
+  </label>
+
+  <label
+    className={`cargo-option-card ${
+      cargoShippingRequestForm
+        .customsAssistanceNeeded
+        ? "active"
+        : ""
+    }`}
+  >
+    <div className="cargo-option-icon">
+      📄
+    </div>
+
+    <div className="cargo-option-content">
+      <strong>
         I need customs assistance
-      </label>
+      </strong>
+      <span>
+        I will need help with customs clearance.
+      </span>
+    </div>
 
-      <label>
-        Additional Message
-        <textarea
-          rows="4"
-          value={cargoShippingRequestForm.message}
-          onChange={(e) =>
-            setCargoShippingRequestForm((current) => ({
-              ...current,
-              message: e.target.value,
-            }))
-          }
-          placeholder="Add pickup details, timing, special handling instructions, customs questions, or other information."
-        />
-      </label>
+    <input
+      type="checkbox"
+      checked={
+        cargoShippingRequestForm
+          .customsAssistanceNeeded
+      }
+      onChange={(e) =>
+        setCargoShippingRequestForm(
+          (current) => ({
+            ...current,
+            customsAssistanceNeeded:
+              e.target.checked,
+          })
+        )
+      }
+    />
+  </label>
+</div>
+
+      <div className="cargo-message-card">
+  <div className="cargo-message-header">
+    <div className="cargo-message-icon">
+      💬
+    </div>
+
+    <div>
+      <strong>Additional Message</strong>
+
+      <p>
+        Add pickup details, timing, special
+        handling instructions, customs questions,
+        or other information.
+      </p>
+    </div>
+  </div>
+
+  <textarea
+    rows="4"
+    maxLength="1000"
+    value={cargoShippingRequestForm.message}
+    onChange={(e) =>
+      setCargoShippingRequestForm(
+        (current) => ({
+          ...current,
+          message: e.target.value,
+        })
+      )
+    }
+    placeholder="Type your message here..."
+  />
+
+  <div className="cargo-message-count">
+    {cargoShippingRequestForm.message.length}/1000
+  </div>
+</div>
 
       <button
-        type="submit"
-        className="listing-insurance-consultation-submit"
-        disabled={submittingCargoShippingRequest}
-      >
-        {submittingCargoShippingRequest
-          ? "Sending Request..."
-          : "Request Cargo & Shipping Quote"}
-      </button>
+  type="submit"
+  className="listing-insurance-consultation-submit cargo-request-submit"
+  disabled={submittingCargoShippingRequest}
+>
+  {submittingCargoShippingRequest
+    ? "Sending Request..."
+    : "📦 Request Cargo & Shipping Quote"}
+</button>
 
       <p className="listing-insurance-consultation-disclaimer">
         HubEthio connects customers with independent
