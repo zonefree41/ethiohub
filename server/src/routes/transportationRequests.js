@@ -531,15 +531,18 @@ if (trackingStatuses.includes(status)) {
   }
 }
 
-    const request = await TransportationRequest.findByIdAndUpdate(
-  req.params.id,
-      {
-        $set: updateData,
-      },
-      {
-        new: true,
-      }
-    );
+    const request = await TransportationRequest.findOneAndUpdate(
+  {
+    _id: req.params.id,
+    ownerId: req.owner.id,
+  },
+  {
+    $set: updateData,
+  },
+  {
+    new: true,
+  }
+);
 
     if (!request) {
       return res.status(404).json({
@@ -658,12 +661,6 @@ if (
       message =
         "Unfortunately, your transportation request has been cancelled. Please contact the transportation provider if you have any questions.";
     }
-
-    console.log("Quote Token:", request.quoteAccessToken);
-console.log(
-  "Tracking URL:",
-  `${process.env.CLIENT_ORIGIN}/transportation-quote/${request.quoteAccessToken}`
-);
 
     await sendEmail({
       to: request.customerEmail,

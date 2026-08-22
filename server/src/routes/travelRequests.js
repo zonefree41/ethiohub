@@ -790,15 +790,18 @@ router.patch(
       }
 
       const request =
-        await TravelRequest.findByIdAndUpdate(
-          req.params.id,
-          {
-            $set: updateData,
-          },
-          {
-            new: true,
-          }
-        )
+  await TravelRequest.findOneAndUpdate(
+    {
+      _id: req.params.id,
+      ownerId: req.owner.id,
+    },
+    {
+      $set: updateData,
+    },
+    {
+      new: true,
+    }
+  )
           .populate(
             "listingId",
             "title logoUrl imageUrl"
@@ -912,15 +915,18 @@ router.patch(
             `,
           });
 
-          await TravelRequest.findByIdAndUpdate(
-            request._id,
-            {
-              $set: {
-                customerQuoteEmailSentAt:
-                  new Date(),
-              },
-            }
-          );
+          await TravelRequest.findOneAndUpdate(
+  {
+    _id: request._id,
+    ownerId: req.owner.id,
+  },
+  {
+    $set: {
+      customerQuoteEmailSentAt:
+        new Date(),
+    },
+  }
+);
         } catch (emailError) {
           console.error(
             "Travel quote email failed:",
