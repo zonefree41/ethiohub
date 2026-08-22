@@ -624,11 +624,18 @@ if (user.accountStatus === "invited") {
   });
 }
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+if (user.accountStatus !== "active") {
+  return res.status(403).json({
+    message:
+      "Your owner account is not active.",
+  });
+}
+
+const token = jwt.sign(
+  { id: user._id, role: user.role },
+  process.env.JWT_SECRET,
+  { expiresIn: "7d" }
+);
 
     res.json({
       token,
