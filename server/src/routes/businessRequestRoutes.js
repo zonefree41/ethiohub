@@ -1,5 +1,6 @@
 import express from "express";
 import BusinessRequest from "../models/BusinessRequest.js";
+import { requireAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -79,7 +80,10 @@ if (blockedPhrases.some((phrase) => spamText.includes(phrase))) {
  * Admin: Get all business requests
  * GET /api/business-requests/admin
  */
-router.get("/admin", async (req, res) => {
+router.get(
+  "/admin",
+  requireAdmin,
+  async (req, res) => {
   try {
     const requests = await BusinessRequest.find().sort({ createdAt: -1 });
 
@@ -96,7 +100,7 @@ router.get("/admin", async (req, res) => {
  * Admin: Update request status
  * PATCH /api/business-requests/admin/:id
  */
-router.patch("/admin/:id", async (req, res) => {
+router.patch("/admin/:id", requireAdmin, async (req, res) => {
   try {
     const { status } = req.body;
 
@@ -134,7 +138,7 @@ router.patch("/admin/:id", async (req, res) => {
  * Admin: Delete business request
  * DELETE /api/business-requests/admin/:id
  */
-router.delete("/admin/:id", async (req, res) => {
+router.delete("/admin/:id", requireAdmin, async (req, res) => {
   try {
     const request = await BusinessRequest.findByIdAndDelete(req.params.id);
 

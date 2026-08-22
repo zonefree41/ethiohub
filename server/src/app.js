@@ -72,6 +72,28 @@ const authLimiter = rateLimit({
 },
 });
 
+const publicSubmissionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message:
+      "Too many submissions. Please wait a few minutes and try again.",
+  },
+});
+
+const uploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message:
+      "Too many uploads. Please wait a few minutes and try again.",
+  },
+});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -173,6 +195,32 @@ app.use((err, req, res, next) => {
 */
 app.use(express.json({ limit: "5mb" }));
 
+const publicSubmissionPaths = [
+  "/api/submissions",
+  "/api/reviews",
+  "/api/claims",
+  "/api/business-requests",
+  "/api/housing-requests",
+  "/api/beauty-appointment-requests",
+  "/api/cargo-shipping-requests",
+  "/api/transportation-requests",
+  "/api/travel-requests",
+  "/api/tax-service-requests",
+  "/api/printing-service-requests",
+  "/api/event-service-requests",
+  "/api/notary-service-requests",
+  "/api/insurance-consultation-requests",
+  "/api/housing-inquiries",
+  "/api/immigration-consultation-requests",
+];
+
+for (const path of publicSubmissionPaths) {
+  app.post(
+    path,
+    publicSubmissionLimiter
+  );
+}
+
 /*
 |--------------------------------------------------------------------------
 | Health Check
@@ -190,7 +238,11 @@ app.get("/health", (_req, res) => {
 app.use("/api", publicRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/payments", paymentRoutes);
-app.use("/api/upload", uploadRoutes);
+app.use(
+  "/api/upload",
+  uploadLimiter,
+  uploadRoutes
+);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/owner/auth", authLimiter, ownerAuthRoutes);
 app.use("/api/owner/listings", ownerListingRoutes);

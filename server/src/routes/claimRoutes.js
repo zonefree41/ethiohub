@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import ClaimRequest from "../models/ClaimRequest.js";
+import { requireAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -73,7 +74,7 @@ router.post("/", async (req, res) => {
  * Admin: Get all claim requests
  * GET /api/claims/admin
  */
-router.get("/admin", async (_req, res) => {
+router.get("/admin", requireAdmin, async (_req, res) => {
   try {
     const claims = await ClaimRequest.find()
       .populate("listingId")
@@ -92,7 +93,7 @@ router.get("/admin", async (_req, res) => {
  * Admin: Update claim status
  * PATCH /api/claims/admin/:id
  */
-router.patch("/admin/:id", async (req, res) => {
+router.patch("/admin/:id", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;

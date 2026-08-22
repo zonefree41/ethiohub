@@ -1,13 +1,14 @@
 import express from "express";
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
+import { fileTypeFromBuffer } from "file-type";
 
 const router = express.Router();
 
 const storage = multer.memoryStorage();
 
 /**
- * Image upload: max 3MB
+ * Image upload: max 10MB
  */
 const imageUpload = multer({
   storage,
@@ -15,12 +16,24 @@ const imageUpload = multer({
     fileSize: 10 * 1024 * 1024,
   },
   fileFilter: (_req, file, cb) => {
-    if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Only image files are allowed"));
-    }
+  const allowedImageTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/heic",
+    "image/heif",
+  ];
 
-    cb(null, true);
-  },
+  if (!allowedImageTypes.includes(file.mimetype)) {
+    return cb(
+      new Error(
+        "Only JPEG, PNG, WebP, HEIC, and HEIF images are allowed"
+      )
+    );
+  }
+
+  cb(null, true);
+},
 });
 
 /**
@@ -67,6 +80,27 @@ router.post("/", imageUpload.single("image"), async (req, res) => {
       return res.status(400).json({ message: "No image uploaded" });
     }
 
+    const detectedType =
+  await fileTypeFromBuffer(req.file.buffer);
+
+const allowedImageTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+];
+
+if (
+  !detectedType ||
+  !allowedImageTypes.includes(detectedType.mime)
+) {
+  return res.status(400).json({
+    message:
+      "Uploaded file content is not a supported image.",
+  });
+}
+
     const result = await uploadToCloudinary(
       req.file.buffer,
       "image",
@@ -93,6 +127,19 @@ router.post("/video", videoUpload.single("video"), async (req, res) => {
       return res.status(400).json({ message: "No video uploaded" });
     }
 
+    const detectedType =
+  await fileTypeFromBuffer(req.file.buffer);
+
+if (
+  !detectedType ||
+  detectedType.mime !== "video/mp4"
+) {
+  return res.status(400).json({
+    message:
+      "Uploaded file content is not a valid MP4 video.",
+  });
+}
+
     const result = await uploadToCloudinary(
       req.file.buffer,
       "video",
@@ -107,6 +154,31 @@ router.post("/video", videoUpload.single("video"), async (req, res) => {
     console.error("❌ Video upload failed:", err.message);
     res.status(500).json({ message: err.message || "Video upload failed" });
   }
+});
+
+router.use((err, _req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(413).json({
+        message: "Uploaded file is too large.",
+      });
+    }
+
+    return res.status(400).json({
+      message: err.message || "Upload failed.",
+    });
+  }
+
+  if (
+    err?.message?.includes("Only JPEG") ||
+    err?.message?.includes("Only MP4")
+  ) {
+    return res.status(400).json({
+      message: err.message,
+    });
+  }
+
+  return next(err);
 });
 
 export default router;
