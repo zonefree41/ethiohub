@@ -3,8 +3,10 @@ import Category from "../models/Category.js";
 import Listing from "../models/Listing.js";
 import Review from "../models/Review.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import { checkSpamSubmission } from "../utils/spamProtection.js";
 import { geocodeAddress } from "../utils/geocodeAddress.js";
+
 
 const router = express.Router();
 
@@ -517,6 +519,17 @@ if (spamError) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    if (
+  typeof categoryId !== "string" ||
+  !mongoose.Types.ObjectId.isValid(
+    categoryId.trim()
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid categoryId.",
+  });
+}
+
    const numberFields = {
   monthlyRent,
   bedrooms,
@@ -603,14 +616,6 @@ if (
 
     const ownerId = getOptionalOwnerId(req);
 
-    if (
-  bathroomType &&
-  !["Private", "Shared", "None"].includes(bathroomType)
-) {
-  return res.status(400).json({
-    message: "Invalid bathroom type.",
-  });
-}
 
 const allowedLivingEnvironment = [
   "Quiet Home",
@@ -657,27 +662,233 @@ const geocodedLocation = await geocodeAddress({
   zip,
 });
 
+const cleanedSubmittedBy =
+  submittedBy &&
+  typeof submittedBy === "object" &&
+  !Array.isArray(submittedBy)
+    ? {
+        name:
+          typeof submittedBy.name === "string"
+            ? submittedBy.name.trim()
+            : "",
+        contact:
+          typeof submittedBy.contact === "string"
+            ? submittedBy.contact.trim()
+            : "",
+      }
+    : {
+        name: "",
+        contact: "",
+      };
+
+      const cleanedLanguages = Array.isArray(languages)
+  ? languages
+      .filter((item) => typeof item === "string")
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .slice(0, 10)
+  : [];
+
+const cleanedTags = Array.isArray(tags)
+  ? tags
+      .filter((item) => typeof item === "string")
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .slice(0, 30)
+  : []; 
+
+  const cleanStringArray = (value, maxItems = 20) =>
+  Array.isArray(value)
+    ? value
+        .filter((item) => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .slice(0, maxItems)
+    : [];
+
+const cleanedBeautyServices = cleanStringArray(
+  req.body.beautyServices,
+  30
+);
+
+const cleanedBeautyServes = cleanStringArray(
+  req.body.beautyServes,
+  10
+);
+
+const cleanedBeautyLanguages = cleanStringArray(
+  req.body.beautyLanguages,
+  10
+);
+
+const cleanedBeautyPhotos = cleanStringArray(
+  req.body.beautyPhotos,
+  20
+);
+
+const cleanedBeautyBooleans = {
+  beautyWalkInsWelcome:
+    req.body.beautyWalkInsWelcome === true ||
+    req.body.beautyWalkInsWelcome === "true",
+
+  beautyAppointmentRequired:
+    req.body.beautyAppointmentRequired === true ||
+    req.body.beautyAppointmentRequired === "true",
+
+  beautySameDayAppointment:
+    req.body.beautySameDayAppointment === true ||
+    req.body.beautySameDayAppointment === "true",
+
+  beautyWeekendAvailability:
+    req.body.beautyWeekendAvailability === true ||
+    req.body.beautyWeekendAvailability === "true",
+};
+
+const cleanedBeautyStartingPrice =
+  typeof req.body.beautyStartingPrice === "string"
+    ? req.body.beautyStartingPrice.trim()
+    : "";
+
+const cleanedBeautyInstagram =
+  typeof req.body.beautyInstagram === "string"
+    ? req.body.beautyInstagram.trim()
+    : "";
+
+const cleanedBeautyFacebook =
+  typeof req.body.beautyFacebook === "string"
+    ? req.body.beautyFacebook.trim()
+    : "";
+
+const cleanedBeautyTikTok =
+  typeof req.body.beautyTikTok === "string"
+    ? req.body.beautyTikTok.trim()
+    : "";
+
+const cleanedBeautyVideoUrl =
+  typeof req.body.beautyVideoUrl === "string"
+    ? req.body.beautyVideoUrl.trim()
+    : "";
+
+    const cleanedTransportVehicleTypes =
+  Array.isArray(transportVehicleTypes)
+    ? transportVehicleTypes
+        .filter((item) => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .slice(0, 20)
+    : [];
+
+const cleanedTransportStrings = {
+  transportServiceArea:
+    typeof transportServiceArea === "string"
+      ? transportServiceArea.trim()
+      : "",
+
+  transportLocalLongDistance:
+    typeof transportLocalLongDistance === "string"
+      ? transportLocalLongDistance.trim()
+      : "",
+
+  transportMaxLoad:
+    typeof transportMaxLoad === "string"
+      ? transportMaxLoad.trim()
+      : "",
+
+  transportCargoLength:
+    typeof transportCargoLength === "string"
+      ? transportCargoLength.trim()
+      : "",
+
+  transportCargoWidth:
+    typeof transportCargoWidth === "string"
+      ? transportCargoWidth.trim()
+      : "",
+
+  transportCargoHeight:
+    typeof transportCargoHeight === "string"
+      ? transportCargoHeight.trim()
+      : "",
+
+  transportPalletCapacity:
+    typeof transportPalletCapacity === "string"
+      ? transportPalletCapacity.trim()
+      : "",
+};
+
+const cleanedLogoUrl =
+  typeof req.body.logoUrl === "string"
+    ? req.body.logoUrl.trim()
+    : "";
+
+const cleanedImageUrl =
+  typeof req.body.imageUrl === "string"
+    ? req.body.imageUrl.trim()
+    : "";
+
+const cleanedPropertyImages =
+  Array.isArray(propertyImages)
+    ? propertyImages
+        .filter((item) => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .slice(0, 20)
+    : [];
+
+const cleanedPropertyVideoUrl =
+  typeof propertyVideoUrl === "string"
+    ? propertyVideoUrl.trim()
+    : "";
+
+const cleanString = (value) =>
+  typeof value === "string"
+    ? value.trim()
+    : "";
+
+const cleanedCoreFields = {
+  title: cleanString(title),
+  subcategory: cleanString(subcategory),
+  phone: cleanString(phone),
+  businessHours: cleanString(businessHours),
+  whatsapp: cleanString(whatsapp),
+  website: cleanString(website),
+  address: cleanString(address),
+  city: cleanString(city),
+  state: cleanString(state),
+  zip: cleanString(zip),
+  description_en: cleanString(description_en),
+  description_am: cleanString(description_am),
+};
+
+if (
+  !cleanedCoreFields.title ||
+  !cleanedCoreFields.phone ||
+  !cleanedCoreFields.city ||
+  !cleanedCoreFields.state
+) {
+  return res.status(400).json({
+    message: "Missing required fields",
+  });
+}
+
     const listing = await Listing.create({
-      title,
-      categoryId,
-      ownerId,
-      subcategory,
-      phone,
-      businessHours: businessHours || "",
-      whatsapp,
-      website,
-      address,
-      city,
-      state,
-      zip,
-      location: geocodedLocation || undefined,
-      description_en,
-      description_am,
-      logoUrl: req.body.logoUrl || "",
-      imageUrl: req.body.imageUrl || "",
-      languages,
-      tags,
-      submittedBy,
+      title: cleanedCoreFields.title,
+subcategory: cleanedCoreFields.subcategory,
+phone: cleanedCoreFields.phone,
+businessHours: cleanedCoreFields.businessHours,
+whatsapp: cleanedCoreFields.whatsapp,
+website: cleanedCoreFields.website,
+address: cleanedCoreFields.address,
+city: cleanedCoreFields.city,
+state: cleanedCoreFields.state,
+zip: cleanedCoreFields.zip,
+location: geocodedLocation || undefined,
+description_en: cleanedCoreFields.description_en,
+description_am: cleanedCoreFields.description_am,
+      logoUrl: cleanedLogoUrl,
+      imageUrl: cleanedImageUrl,
+      languages: cleanedLanguages,
+      tags: cleanedTags,
+      submittedBy: cleanedSubmittedBy,
 
       availabilityStatus,
 availableFrom:
@@ -711,41 +922,46 @@ housingNotes:
     livingEnvironment,
 idealFor,
 
-beautyServices: req.body.beautyServices || [],
-beautyWalkInsWelcome: req.body.beautyWalkInsWelcome || false,
-beautyAppointmentRequired: req.body.beautyAppointmentRequired || false,
-beautySameDayAppointment: req.body.beautySameDayAppointment || false,
-beautyWeekendAvailability: req.body.beautyWeekendAvailability || false,
-beautyServes: req.body.beautyServes || [],
-beautyStartingPrice: req.body.beautyStartingPrice || "",
-beautyLanguages: req.body.beautyLanguages || [],
-beautyInstagram: req.body.beautyInstagram || "",
-beautyFacebook: req.body.beautyFacebook || "",
-beautyTikTok: req.body.beautyTikTok || "",
-beautyPhotos: req.body.beautyPhotos || [],
-beautyVideoUrl: req.body.beautyVideoUrl || "",
+beautyServices: cleanedBeautyServices,
+beautyWalkInsWelcome: cleanedBeautyBooleans.beautyWalkInsWelcome,
+beautyAppointmentRequired: cleanedBeautyBooleans.beautyAppointmentRequired,
+beautySameDayAppointment: cleanedBeautyBooleans.beautySameDayAppointment,
+beautyWeekendAvailability: cleanedBeautyBooleans.beautyWeekendAvailability,
+beautyServes: cleanedBeautyServes,
+beautyStartingPrice: cleanedBeautyStartingPrice,
+beautyLanguages: cleanedBeautyLanguages,
+beautyInstagram: cleanedBeautyInstagram,
+beautyFacebook: cleanedBeautyFacebook,
+beautyTikTok: cleanedBeautyTikTok,
+beautyPhotos: cleanedBeautyPhotos,
+beautyVideoUrl: cleanedBeautyVideoUrl,
 
-propertyImages: Array.isArray(propertyImages)
-  ? propertyImages.slice(0, 20)
-  : [],
-propertyVideoUrl,
+propertyImages: cleanedPropertyImages,
+propertyVideoUrl: cleanedPropertyVideoUrl,
 
-transportVehicleTypes: Array.isArray(transportVehicleTypes)
-  ? transportVehicleTypes
-  : [],
-transportServiceArea,
-transportAvailable24_7:
-  transportAvailable24_7 === true || transportAvailable24_7 === "true",
-transportAirportService:
-  transportAirportService === true || transportAirportService === "true",
-transportSameDayService:
-  transportSameDayService === true || transportSameDayService === "true",
-transportLocalLongDistance,
-transportMaxLoad,
-transportCargoLength,
-transportCargoWidth,
-transportCargoHeight,
-transportPalletCapacity,
+transportVehicleTypes:
+  cleanedTransportVehicleTypes,
+
+transportServiceArea:
+  cleanedTransportStrings.transportServiceArea,
+
+transportLocalLongDistance:
+  cleanedTransportStrings.transportLocalLongDistance,
+
+transportMaxLoad:
+  cleanedTransportStrings.transportMaxLoad,
+
+transportCargoLength:
+  cleanedTransportStrings.transportCargoLength,
+
+transportCargoWidth:
+  cleanedTransportStrings.transportCargoWidth,
+
+transportCargoHeight:
+  cleanedTransportStrings.transportCargoHeight,
+
+transportPalletCapacity:
+  cleanedTransportStrings.transportPalletCapacity,
 transportResidentialDelivery:
   transportResidentialDelivery === true ||
   transportResidentialDelivery === "true",

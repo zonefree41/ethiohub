@@ -5,8 +5,13 @@ import AdminUser from "../models/AdminUser.js";
 import Listing from "../models/Listing.js";
 import { requireAdmin } from "../middleware/auth.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
+
+function isValidObjectId(id) {
+  return mongoose.Types.ObjectId.isValid(id);
+}
 
 // Login
 router.post("/login", async (req, res) => {
@@ -51,9 +56,23 @@ router.post("/login", async (req, res) => {
 // Pending / approved / rejected submissions
 router.get("/submissions", requireAdmin, async (req, res) => {
   try {
-    const status = req.query.status || "pending";
+    const allowedStatuses = [
+  "pending",
+  "approved",
+  "rejected",
+];
 
-    const items = await Listing.find({ status })
+const status = String(
+  req.query.status || "pending"
+).trim();
+
+if (!allowedStatuses.includes(status)) {
+  return res.status(400).json({
+    message: "Invalid listing status.",
+  });
+}
+
+const items = await Listing.find({ status })
       .populate("categoryId")
       .sort({ createdAt: -1 })
       .limit(200);
@@ -101,6 +120,12 @@ router.patch(
   requireAdmin,
   async (req, res) => {
     try {
+
+      if (!isValidObjectId(req.params.id)) {
+  return res.status(400).json({
+    message: "Invalid listing ID.",
+  });
+}
       const listing = await Listing.findById(req.params.id);
 
       if (!listing) {
@@ -148,6 +173,12 @@ router.patch(
   requireAdmin,
   async (req, res) => {
     try {
+
+      if (!isValidObjectId(req.params.id)) {
+  return res.status(400).json({
+    message: "Invalid listing ID.",
+  });
+}
       const listing = await Listing.findById(req.params.id);
 
       if (!listing) {
@@ -194,6 +225,11 @@ router.patch(
 // Approve / reject / edit listing
 router.patch("/listings/:id", requireAdmin, async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+  return res.status(400).json({
+    message: "Invalid listing ID.",
+  });
+}
     const allowedFields = [
   "title",
   "description_en",
@@ -215,15 +251,90 @@ router.patch("/listings/:id", requireAdmin, async (req, res) => {
   "isVerified",
 ];
 
+const booleanFields = new Set([
+  "isFeatured",
+  "isVerified",
+]);
+
+const stringFields = new Set([
+  "title",
+  "description_en",
+  "description_am",
+  "phone",
+  "whatsapp",
+  "website",
+  "address",
+  "city",
+  "state",
+  "zip",
+  "businessHours",
+  "logoUrl",
+  "imageUrl",
+  "subcategory",
+  "status",
+]);
+
 const patch = {};
 
-allowedFields.forEach((field) => {
-  if (field in req.body) {
-    patch[field] = req.body[field];
+for (const field of allowedFields) {
+  if (!(field in req.body)) {
+    continue;
   }
-});
 
-    const existing = await Listing.findById(req.params.id);
+  const value = req.body[field];
+
+  if (booleanFields.has(field)) {
+    if (typeof value !== "boolean") {
+      return res.status(400).json({
+        message: `${field} must be a boolean.`,
+      });
+    }
+
+    patch[field] = value;
+    continue;
+  }
+
+  if (stringFields.has(field)) {
+  if (typeof value !== "string") {
+    return res.status(400).json({
+      message: `${field} must be a string.`,
+    });
+  }
+
+  patch[field] = value.trim();
+  continue;
+}
+
+if (field === "categoryId") {
+  if (
+    typeof value !== "string" ||
+    !mongoose.Types.ObjectId.isValid(
+      value.trim()
+    )
+  ) {
+    return res.status(400).json({
+      message: "Invalid categoryId.",
+    });
+  }
+
+  patch.categoryId = value.trim();
+}
+}
+
+if (
+  "status" in patch &&
+  !["pending", "approved", "rejected"].includes(
+    patch.status
+  )
+) {
+  return res.status(400).json({
+    message: "Invalid listing status.",
+  });
+}
+
+const existing = await Listing.findById(
+  req.params.id
+);
 
     if (!existing) {
       return res.status(404).json({ message: "Not found" });
@@ -391,19 +502,43 @@ if (shouldSendApprovalEmail) {
 });
 
 // Delete listing
-router.delete("/listings/:id", requireAdmin, async (req, res) => {
-  try {
-    const deleted = await Listing.findByIdAndDelete(req.params.id);
+router.delete(
+  "/listings/:id",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      if (!isValidObjectId(req.params.id)) {
+        return res.status(400).json({
+          message: "Invalid listing ID.",
+        });
+      }
 
-    if (!deleted) {
-      return res.status(404).json({ message: "Not found" });
+      const deleted =
+        await Listing.findByIdAndDelete(
+          req.params.id
+        );
+
+      if (!deleted) {
+        return res.status(404).json({
+          message: "Listing not found.",
+        });
+      }
+
+      return res.json({
+        message: "Listing deleted successfully.",
+      });
+    } catch (err) {
+      console.error(
+        "Delete listing failed:",
+        err
+      );
+
+      return res.status(500).json({
+        message: "Failed to delete listing.",
+      });
     }
-
-    res.json({ message: "Deleted" });
-  } catch (err) {
-    console.error("Delete listing failed:", err);
-    res.status(500).json({ message: "Failed to delete listing" });
   }
-});
+);
+
 
 export default router;
