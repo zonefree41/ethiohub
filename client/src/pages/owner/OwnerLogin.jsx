@@ -11,21 +11,38 @@ export default function OwnerLogin() {
   const [error, setError] = React.useState("");
   const [message, setMessage] = React.useState("");
 
-  React.useEffect(() => {
-    document.title = "Business Owner Login | HubEthio";
-  }, []);
+  const [needsVerification, setNeedsVerification] =
+  React.useState(false);
 
-  function update(e) {
-    setForm((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+const [resendingVerification, setResendingVerification] =
+  React.useState(false);
+
+  React.useEffect(() => {
+  document.title = "Business Owner Login | HubEthio";
+
+  const params = new URLSearchParams(
+    window.location.search
+  );
+
+  if (params.get("verified") === "1") {
+    setMessage(
+      "✅ Email verified successfully. You can now sign in."
+    );
   }
+}, []);
+
+function update(e) {
+  setForm((prev) => ({
+    ...prev,
+    [e.target.name]: e.target.value,
+  }));
+}
 
   async function submit(e) {
     e.preventDefault();
     setError("");
     setMessage("");
+    setNeedsVerification(false);
 
     try {
       const data = await apiPost("/api/owner/auth/login", form);
@@ -45,8 +62,19 @@ const redirect =
 
 window.location.href = redirect;
     } catch (err) {
-      setError(err.message || "Login failed");
-    }
+  const message =
+    err.message || "Login failed";
+
+  setError(message);
+
+  if (
+    message
+      .toLowerCase()
+      .includes("verify your email")
+  ) {
+    setNeedsVerification(true);
+  }
+}
   }
 
   return (
@@ -64,6 +92,21 @@ window.location.href = redirect;
 
         {message && <div className="owner-auth-success">{message}</div>}
         {error && <div className="owner-auth-error">Error: {error}</div>}
+
+        {needsVerification && (
+  <button
+    type="button"
+    onClick={resendVerification}
+    disabled={
+      resendingVerification ||
+      !form.email
+    }
+  >
+    {resendingVerification
+      ? "Sending..."
+      : "Resend Verification Email"}
+  </button>
+)}
 
         <form onSubmit={submit} className="owner-auth-form">
           <input

@@ -7,7 +7,6 @@ import { connectDB } from "./config/db.js";
 
 import publicRoutes from "./routes/public.js";
 import adminRoutes from "./routes/admin.js";
-import authRoutes from "./routes/auth.js";
 import paymentRoutes from "./routes/payments.js";
 import webhookRoutes from "./routes/stripeWebhook.js";
 import uploadRoutes from "./routes/upload.js";
@@ -68,8 +67,9 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   message: {
-    message: "Too many login attempts. Please try again later.",
-  },
+  message:
+    "Too many authentication requests. Please try again later.",
+},
 });
 
 
@@ -189,7 +189,6 @@ app.get("/health", (_req, res) => {
 */
 app.use("/api", publicRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/auth", authRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/reviews", reviewRoutes);

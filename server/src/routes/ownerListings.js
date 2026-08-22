@@ -24,36 +24,6 @@ router.get("/my-listings", async (req, res) => {
   }
 });
 
-
-/**
- * Claim an existing listing by ID
- * Temporary/simple version for now.
- */
-router.patch("/claim/:id", async (req, res) => {
-  try {
-    const listing = await Listing.findById(req.params.id);
-
-    if (!listing) {
-      return res.status(404).json({ message: "Listing not found" });
-    }
-
-    if (listing.ownerId && String(listing.ownerId) !== String(req.owner.id)) {
-      return res.status(403).json({ message: "This listing is already claimed" });
-    }
-
-    listing.ownerId = req.owner.id;
-    await listing.save();
-
-    res.json({
-      message: "Listing claimed successfully",
-      listing,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to claim listing" });
-  }
-});
-
 /**
  * Update owned listing
  */

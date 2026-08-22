@@ -33,7 +33,11 @@ resetPasswordExpires: {
 
 accountStatus: {
   type: String,
-  enum: ["active", "invited"],
+  enum: [
+    "active",
+    "invited",
+    "pending_verification",
+  ],
   default: "active",
 },
 

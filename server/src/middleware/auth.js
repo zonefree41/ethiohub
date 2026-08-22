@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
+import AdminUser from "../models/AdminUser.js";
 
-export function requireAdmin(req, res, next) {
+
+export async function requireAdmin(req, res, next) {
   const auth = req.headers.authorization || "";
   const token = auth.startsWith("Bearer ")
     ? auth.slice(7).trim()
@@ -24,11 +26,23 @@ export function requireAdmin(req, res, next) {
       });
     }
 
+    const admin = await AdminUser.findOne({
+  _id: payload.id,
+  role: "admin",
+}).select("_id email role");
+
+if (!admin) {
+  return res.status(401).json({
+    message:
+      "Administrator account is unavailable.",
+  });
+}
+
     req.admin = {
-      id: payload.id,
-      email: payload.email || "",
-      role: payload.role,
-    };
+  id: admin._id,
+  email: admin.email,
+  role: admin.role,
+};
 
     return next();
   } catch (error) {

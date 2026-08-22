@@ -29,87 +29,212 @@ router.post("/register", async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
-      name,
-      email: email.toLowerCase(),
-      passwordHash,
-      role: "owner",
-    });
+const rawVerificationToken =
+  crypto.randomBytes(32).toString("hex");
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+const hashedVerificationToken = crypto
+  .createHash("sha256")
+  .update(rawVerificationToken)
+  .digest("hex");
+
+const user = await User.create({
+  name,
+  email: email.toLowerCase(),
+  passwordHash,
+  role: "owner",
+  accountStatus: "pending_verification",
+  activationToken: hashedVerificationToken,
+  activationExpires: new Date(
+    Date.now() + 24 * 60 * 60 * 1000
+  ),
+});
+
+const verificationUrl = `${
+  process.env.SERVER_URL ||
+  "https://ethiohub.onrender.com"
+}/api/owner/auth/verify-email?token=${rawVerificationToken}`;
 
     try {
   await sendEmail({
     to: user.email,
-    subject: "Welcome to HubEthio",
+    subject: "Verify your HubEthio email",
     html: `
-  <div style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,Helvetica,sans-serif;color:#111827;">
-    <div style="max-width:640px;margin:0 auto;padding:28px 16px;">
-      <div style="background:linear-gradient(135deg,#07111f,#92400e);border-radius:24px 24px 0 0;padding:34px 28px;text-align:center;color:#ffffff;">
-        <div style="width:64px;height:64px;border-radius:50%;border:2px solid #f59e0b;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;">
+  <div style="
+    margin:0;
+    padding:0;
+    background:#f4f6f8;
+    font-family:Arial,Helvetica,sans-serif;
+    color:#111827;
+  ">
+    <div style="
+      max-width:640px;
+      margin:0 auto;
+      padding:32px 16px;
+    ">
+
+      <div style="
+        background:linear-gradient(135deg,#0f172a,#92400e);
+        border-radius:24px 24px 0 0;
+        padding:36px 28px;
+        text-align:center;
+        color:#ffffff;
+      ">
+        <div style="
+          width:68px;
+          height:68px;
+          margin:0 auto 16px;
+          border-radius:50%;
+          border:2px solid #f59e0b;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:22px;
+          font-weight:900;
+        ">
           HE
         </div>
 
-        <h1 style="margin:0;font-size:32px;line-height:1.15;">
-          Welcome to HubEthio 🇪🇹
+        <h1 style="
+          margin:0;
+          font-size:30px;
+          line-height:1.2;
+        ">
+          Verify Your HubEthio Email
         </h1>
 
-        <p style="margin:12px 0 0;font-size:16px;line-height:1.6;color:#f9fafb;">
-          Connecting Ethiopian businesses and communities.
+        <p style="
+          margin:12px 0 0;
+          font-size:16px;
+          line-height:1.6;
+          color:#f8fafc;
+        ">
+          One quick step before you access your Business Owner account.
         </p>
       </div>
 
-      <div style="background:#ffffff;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 24px 24px;padding:30px 28px;">
-        <p style="margin:0 0 16px;font-size:16px;line-height:1.7;">
+      <div style="
+        background:#ffffff;
+        border:1px solid #e5e7eb;
+        border-top:none;
+        border-radius:0 0 24px 24px;
+        padding:32px 28px;
+      ">
+        <p style="
+          margin:0 0 16px;
+          font-size:16px;
+          line-height:1.7;
+        ">
           Hello <strong>${user.name}</strong>,
         </p>
 
-        <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#374151;">
-          Your business owner account has been successfully created. You can now manage your business listing and connect with the Ethiopian community across the DMV area and beyond.
+        <p style="
+          margin:0 0 18px;
+          font-size:16px;
+          line-height:1.7;
+          color:#374151;
+        ">
+          Thank you for creating a HubEthio Business Owner account.
+          Please verify your email address before signing in and
+          managing your business.
         </p>
 
-        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:18px;padding:18px;margin:22px 0;">
-          <h2 style="margin:0 0 12px;font-size:20px;color:#92400e;">
-            What you can do next
-          </h2>
-
-          <ul style="margin:0;padding-left:20px;color:#374151;font-size:15px;line-height:1.8;">
-            <li>Submit a business listing</li>
-            <li>Edit and update your business information</li>
-            <li>Upload your logo and banner image</li>
-            <li>Upgrade to Featured placement</li>
-            <li>Manage your subscription anytime</li>
-          </ul>
+        <div style="
+          background:#fff7ed;
+          border:1px solid #fed7aa;
+          border-radius:16px;
+          padding:18px;
+          margin:22px 0;
+        ">
+          <p style="
+            margin:0;
+            color:#9a3412;
+            font-size:15px;
+            line-height:1.6;
+            font-weight:700;
+          ">
+            This verification link expires in 24 hours.
+          </p>
         </div>
 
-        <div style="text-align:center;margin:28px 0;">
-          <a href="https://www.hubethio.com/owner/dashboard"
-            style="display:inline-block;background:#f59e0b;color:#111827;text-decoration:none;font-weight:900;padding:14px 22px;border-radius:14px;font-size:16px;">
-            Go to Owner Dashboard
+        <div style="
+          text-align:center;
+          margin:30px 0;
+        ">
+          <a
+            href="${verificationUrl}"
+            style="
+              display:inline-block;
+              background:#f59e0b;
+              color:#111827;
+              text-decoration:none;
+              font-weight:900;
+              padding:15px 28px;
+              border-radius:14px;
+              font-size:16px;
+              box-shadow:0 8px 20px rgba(245,158,11,0.25);
+            "
+          >
+            Verify Email Address
           </a>
         </div>
 
-        <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#4b5563;">
-          Thank you for supporting Ethiopian businesses and helping grow our community platform.
+        <p style="
+          margin:0 0 14px;
+          font-size:14px;
+          line-height:1.7;
+          color:#6b7280;
+        ">
+          If the button does not work, copy and paste the verification
+          link into your browser.
         </p>
 
-        <p style="margin:0;font-size:15px;line-height:1.7;color:#4b5563;">
+        <p style="
+          margin:0 0 18px;
+          font-size:14px;
+          line-height:1.7;
+          color:#6b7280;
+          word-break:break-all;
+        ">
+          ${verificationUrl}
+        </p>
+
+        <p style="
+          margin:0 0 16px;
+          font-size:14px;
+          line-height:1.7;
+          color:#6b7280;
+        ">
+          If you did not create this account, you can safely ignore
+          this email.
+        </p>
+
+        <p style="
+          margin:0;
+          font-size:15px;
+          line-height:1.7;
+          color:#374151;
+        ">
           — The HubEthio Team
         </p>
 
-        <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0;" />
+        <hr style="
+          border:none;
+          border-top:1px solid #e5e7eb;
+          margin:28px 0;
+        " />
 
-        <p style="margin:0;text-align:center;font-size:13px;line-height:1.6;color:#6b7280;">
+        <p style="
+          margin:0;
+          text-align:center;
+          font-size:13px;
+          line-height:1.6;
+          color:#9ca3af;
+        ">
           HubEthio<br />
-          <a href="https://www.hubethio.com" style="color:#2563eb;text-decoration:none;font-weight:700;">
-            www.hubethio.com
-          </a>
+          Connecting businesses, services, and communities.
         </p>
       </div>
+
     </div>
   </div>
 `,
@@ -119,17 +244,324 @@ router.post("/register", async (req, res) => {
 }
 
     res.status(201).json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+  message:
+    "Account created. Please check your email and verify your account before signing in.",
+  requiresEmailVerification: true,
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    accountStatus: user.accountStatus,
+  },
+});
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Registration failed" });
+  }
+});
+
+router.get("/verify-email", async (req, res) => {
+  try {
+    const { token } = req.query || {};
+
+    if (!token) {
+      return res.status(400).send(
+        "Verification token is required."
+      );
+    }
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      activationToken: hashedToken,
+      activationExpires: { $gt: new Date() },
+      accountStatus: "pending_verification",
+    });
+
+    if (!user) {
+      return res.status(400).send(
+        "This verification link is invalid or has expired."
+      );
+    }
+
+    user.accountStatus = "active";
+    user.activationToken = "";
+    user.activationExpires = null;
+
+    await user.save();
+
+    const clientUrl =
+      process.env.CLIENT_URL ||
+      "https://www.hubethio.com";
+
+    return res.redirect(
+      `${clientUrl}/owner/login?verified=1`
+    );
+  } catch (err) {
+    console.error(
+      "Owner email verification error:",
+      err
+    );
+
+    return res.status(500).send(
+      "Unable to verify email address."
+    );
+  }
+});
+
+router.post("/resend-verification", async (req, res) => {
+  try {
+    const { email } = req.body || {};
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required.",
+      });
+    }
+
+    const normalizedEmail =
+      String(email).trim().toLowerCase();
+
+    const user = await User.findOne({
+      email: normalizedEmail,
+      role: "owner",
+    });
+
+    // Do not reveal whether the account exists
+    if (
+      !user ||
+      user.accountStatus !== "pending_verification"
+    ) {
+      return res.json({
+        message:
+          "If an unverified account exists, a new verification email has been sent.",
+      });
+    }
+
+    const rawVerificationToken =
+      crypto.randomBytes(32).toString("hex");
+
+    const hashedVerificationToken = crypto
+      .createHash("sha256")
+      .update(rawVerificationToken)
+      .digest("hex");
+
+    user.activationToken =
+      hashedVerificationToken;
+
+    user.activationExpires = new Date(
+      Date.now() + 24 * 60 * 60 * 1000
+    );
+
+    await user.save();
+
+    const verificationUrl = `${
+      process.env.SERVER_URL ||
+      "https://ethiohub.onrender.com"
+    }/api/owner/auth/verify-email?token=${rawVerificationToken}`;
+
+    await sendEmail({
+      to: user.email,
+      subject: "Verify your HubEthio email",
+      html: `
+  <div style="
+    margin:0;
+    padding:0;
+    background:#f4f6f8;
+    font-family:Arial,Helvetica,sans-serif;
+    color:#111827;
+  ">
+    <div style="
+      max-width:640px;
+      margin:0 auto;
+      padding:32px 16px;
+    ">
+
+      <div style="
+        background:linear-gradient(135deg,#0f172a,#92400e);
+        border-radius:24px 24px 0 0;
+        padding:36px 28px;
+        text-align:center;
+        color:#ffffff;
+      ">
+        <div style="
+          width:68px;
+          height:68px;
+          margin:0 auto 16px;
+          border-radius:50%;
+          border:2px solid #f59e0b;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:22px;
+          font-weight:900;
+        ">
+          HE
+        </div>
+
+        <h1 style="
+          margin:0;
+          font-size:30px;
+          line-height:1.2;
+        ">
+          Verify Your HubEthio Email
+        </h1>
+
+        <p style="
+          margin:12px 0 0;
+          font-size:16px;
+          line-height:1.6;
+          color:#f8fafc;
+        ">
+          Here is your new verification link.
+        </p>
+      </div>
+
+      <div style="
+        background:#ffffff;
+        border:1px solid #e5e7eb;
+        border-top:none;
+        border-radius:0 0 24px 24px;
+        padding:32px 28px;
+      ">
+        <p style="
+          margin:0 0 16px;
+          font-size:16px;
+          line-height:1.7;
+        ">
+          Hello <strong>${user.name}</strong>,
+        </p>
+
+        <p style="
+          margin:0 0 18px;
+          font-size:16px;
+          line-height:1.7;
+          color:#374151;
+        ">
+          You requested a new verification link for your
+          HubEthio Business Owner account.
+        </p>
+
+        <div style="
+          background:#fff7ed;
+          border:1px solid #fed7aa;
+          border-radius:16px;
+          padding:18px;
+          margin:22px 0;
+        ">
+          <p style="
+            margin:0;
+            color:#9a3412;
+            font-size:15px;
+            line-height:1.6;
+            font-weight:700;
+          ">
+            This verification link expires in 24 hours.
+          </p>
+        </div>
+
+        <div style="
+          text-align:center;
+          margin:30px 0;
+        ">
+          <a
+            href="${verificationUrl}"
+            style="
+              display:inline-block;
+              background:#f59e0b;
+              color:#111827;
+              text-decoration:none;
+              font-weight:900;
+              padding:15px 28px;
+              border-radius:14px;
+              font-size:16px;
+              box-shadow:0 8px 20px rgba(245,158,11,0.25);
+            "
+          >
+            Verify Email Address
+          </a>
+        </div>
+
+        <p style="
+          margin:0 0 14px;
+          font-size:14px;
+          line-height:1.7;
+          color:#6b7280;
+        ">
+          If the button does not work, copy and paste the verification
+          link into your browser.
+        </p>
+
+        <p style="
+          margin:0 0 18px;
+          font-size:14px;
+          line-height:1.7;
+          color:#6b7280;
+          word-break:break-all;
+        ">
+          ${verificationUrl}
+        </p>
+
+        <p style="
+          margin:0 0 16px;
+          font-size:14px;
+          line-height:1.7;
+          color:#6b7280;
+        ">
+          If you did not request this verification email, you can safely
+          ignore it.
+        </p>
+
+        <p style="
+          margin:0;
+          font-size:15px;
+          line-height:1.7;
+          color:#374151;
+        ">
+          — The HubEthio Team
+        </p>
+
+        <hr style="
+          border:none;
+          border-top:1px solid #e5e7eb;
+          margin:28px 0;
+        " />
+
+        <p style="
+          margin:0;
+          text-align:center;
+          font-size:13px;
+          line-height:1.6;
+          color:#9ca3af;
+        ">
+          HubEthio<br />
+          Connecting businesses, services, and communities.
+        </p>
+      </div>
+
+    </div>
+  </div>
+`,
+    });
+
+    return res.json({
+      message:
+        "If an unverified account exists, a new verification email has been sent.",
+    });
+  } catch (err) {
+    console.error(
+      "Resend verification email error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Unable to resend verification email.",
+    });
   }
 });
 
@@ -147,11 +579,30 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+
     const passwordOk = await bcrypt.compare(password, user.passwordHash);
 
     if (!passwordOk) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+
+    if (
+  user.accountStatus ===
+  "pending_verification"
+) {
+  return res.status(403).json({
+    message:
+      "Please verify your email address before signing in.",
+    requiresEmailVerification: true,
+  });
+}
+
+if (user.accountStatus === "invited") {
+  return res.status(403).json({
+    message:
+      "Please activate your owner account before signing in.",
+  });
+}
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
@@ -232,9 +683,6 @@ router.post("/forgot-password", async (req, res) => {
         </p>
       `,
     });
-
-    // Temporary debug while email is not fully working
-    console.log("Password reset URL:", resetUrl);
 
     res.json({
       message: "If an account exists, a reset link has been sent.",

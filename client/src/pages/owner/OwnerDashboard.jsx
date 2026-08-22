@@ -193,17 +193,6 @@ async function loadTravelRequests() {
   loadListings();
 }, [token]);
 
-  async function claimListing(id) {
-    try {
-      await apiPatch(`/api/owner/listings/claim/${id}`, {}, token);
-
-      await loadListings();
-      alert("Listing claimed successfully");
-    } catch (err) {
-      alert(err.message || "Failed to claim listing");
-    }
-  }
-
   async function manageSubscription(stripeCustomerId) {
     try {
       const data = await apiPost("/api/stripe/create-portal-session", {
@@ -225,12 +214,6 @@ async function loadTravelRequests() {
     localStorage.removeItem("ownerUser");
     window.location.href = "/";
   }
-
-  function logout() {
-  localStorage.removeItem("ownerToken");
-  localStorage.removeItem("ownerUser");
-  window.location.href = "/";
-}
 
 async function deleteAccount() {
   try {

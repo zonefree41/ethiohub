@@ -29,13 +29,21 @@ export default function OwnerRegister() {
     setMessage("");
 
     try {
-      const data = await apiPost("/api/owner/auth/register", form);
+      const data = await apiPost(
+  "/api/owner/auth/register",
+  form
+);
 
-      localStorage.setItem("ownerToken", data.token);
-      localStorage.setItem("ownerUser", JSON.stringify(data.user));
+setMessage(
+  data.message ||
+    "✅ Account created. Please check your email and verify your account before signing in."
+);
 
-      setMessage("✅ Account created successfully");
-      window.location.href = "/owner/dashboard";
+setForm({
+  name: "",
+  email: "",
+  password: "",
+});
     } catch (err) {
       setError(err.message || "Registration failed");
     }
@@ -51,7 +59,10 @@ export default function OwnerRegister() {
         <div className="owner-auth-header">
           <p className="owner-auth-label">Business Portal</p>
           <h1>Create Business Owner Account</h1>
-          <p>Create an account to manage your HubEthio business listing.</p>
+          <p>
+  Create an account and verify your email before
+  managing your HubEthio business listing.
+</p>
         </div>
 
         {message && <div className="owner-auth-success">{message}</div>}
