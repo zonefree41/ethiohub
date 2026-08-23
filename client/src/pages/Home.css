@@ -1188,3 +1188,45 @@
     text-align: center;
   }
 }
+
+.home-quick-services {
+  margin-bottom: 34px;
+}
+
+.home-quick-services-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.home-quick-service-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #111827;
+  text-decoration: none;
+  font-weight: 900;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.home-quick-service-btn:hover {
+  border-color: #f59e0b;
+  background: #fff7ed;
+}
+
+@media (max-width: 640px) {
+  .home-quick-services-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .home-quick-service-btn {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

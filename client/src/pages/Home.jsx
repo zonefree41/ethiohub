@@ -747,6 +747,31 @@ function formatHousingPhone(value) {
           </div>
         </section>
 
+        <section className="home-quick-services">
+  <div className="home-section-heading">
+    <div>
+      <p className="home-section-kicker">Quick access</p>
+      <h2>Popular Services</h2>
+    </div>
+  </div>
+
+  <div className="home-quick-services-row">
+    <a
+      href="/category/transportation"
+      className="home-quick-service-btn"
+    >
+      🚚 Transportation
+    </a>
+
+    <a
+      href="/category/all"
+      className="home-quick-service-btn"
+    >
+      🔎 All Services
+    </a>
+  </div>
+</section>
+
         {!loading && !error && (
           <section className="home-section">
             <h2>Browse Categories</h2>
