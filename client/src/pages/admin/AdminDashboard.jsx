@@ -8,6 +8,8 @@ export default function AdminDashboard() {
   const [status, setStatus] = React.useState("pending");
   const [items, setItems] = React.useState([]);
   const [claims, setClaims] = React.useState([]);
+  const [claimStatusFilter, setClaimStatusFilter] =
+  React.useState("pending");
   const [error, setError] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -272,6 +274,9 @@ async function deleteBusinessRequest(id, businessName) {
   const featuredCount = items.filter((item) => item.isFeatured).length;
   const verifiedCount = items.filter((item) => item.isVerified).length;
   const pendingClaimsCount = claims.filter((claim) => claim.status === "pending").length;
+  const filteredClaims = claims.filter(
+  (claim) => claim.status === claimStatusFilter
+);
 
   return (
     <main className="admin-dashboard-page">
@@ -643,16 +648,123 @@ async function deleteBusinessRequest(id, businessName) {
             </div>
           </div>
 
+          <div className="admin-dashboard-section-header">
+  <div>
+    <h2>Business Claim Requests</h2>
+    <p>Review ownership requests submitted by business owners.</p>
+  </div>
+</div>
+
+<div className="admin-dashboard-tabs">
+  {["pending", "approved", "rejected"].map((claimStatus) => (
+    <button
+      key={claimStatus}
+      type="button"
+      className={
+        claimStatusFilter === claimStatus
+          ? "active"
+          : ""
+      }
+      onClick={() =>
+        setClaimStatusFilter(claimStatus)
+      }
+    >
+      {claimStatus.charAt(0).toUpperCase() +
+        claimStatus.slice(1)}
+    </button>
+  ))}
+</div>
+
+{claimsLoading && <p>Loading claim requests...</p>}
+
           {claimsLoading && <p>Loading claim requests...</p>}
 
-          {!claimsLoading && claims.length === 0 && (
+          {!claimsLoading && filteredClaims.length === 0 && (
             <div className="admin-dashboard-state">
               <h2>No claim requests</h2>
               <p>No business owners have submitted claim requests yet.</p>
             </div>
           )}
 
-          <section
+          {!claimsLoading && filteredClaims.length > 0 && (
+            <section className="admin-claims-grid">
+              {filteredClaims.map((claim) => (
+                <article key={claim._id} className="admin-claim-card">
+                  <h3>{claim.businessName}</h3>
+
+                  <p>
+                    <strong>Status:</strong> {claim.status}
+                  </p>
+
+                  <p>
+                    <strong>Owner Name:</strong> {claim.ownerName}
+                  </p>
+
+                  <p>
+                    <strong>Email:</strong> {claim.email}
+                  </p>
+
+                  <p>
+                    <strong>Phone:</strong> {claim.phone || "N/A"}
+                  </p>
+
+                  <p>
+                    <strong>Message:</strong> {claim.message || "N/A"}
+                  </p>
+
+                  <p>
+                    <strong>Listing:</strong>{" "}
+                    {claim.listingId?._id ? (
+                      <a
+                        href={`/listing/${claim.listingId._id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        View Listing
+                      </a>
+                    ) : (
+                      "N/A"
+                    )}
+                  </p>
+
+                  <div className="admin-listing-actions">
+                    {claim.status !== "approved" && (
+                      <button
+                        type="button"
+                        className="admin-btn-approve"
+                        onClick={() => updateClaim(claim._id, "approved")}
+                      >
+                        Approve Claim
+                      </button>
+                    )}
+
+                    {claim.status !== "rejected" && (
+                      <button
+                        type="button"
+                        className="admin-btn-reject"
+                        onClick={() => updateClaim(claim._id, "rejected")}
+                      >
+                        Reject Claim
+                      </button>
+                    )}
+
+                    {claim.status !== "pending" && (
+                      <button
+                        type="button"
+                        className="admin-btn-neutral"
+                        onClick={() => updateClaim(claim._id, "pending")}
+                      >
+                        Move to Pending
+                      </button>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </section>
+          )}
+        </section>
+
+        <section
   id="admin-business-requests"
   className="admin-claims-section"
 >
@@ -761,83 +873,6 @@ async function deleteBusinessRequest(id, businessName) {
   )}
 </section>
 
-          {!claimsLoading && claims.length > 0 && (
-            <section className="admin-claims-grid">
-              {claims.map((claim) => (
-                <article key={claim._id} className="admin-claim-card">
-                  <h3>{claim.businessName}</h3>
-
-                  <p>
-                    <strong>Status:</strong> {claim.status}
-                  </p>
-
-                  <p>
-                    <strong>Owner Name:</strong> {claim.ownerName}
-                  </p>
-
-                  <p>
-                    <strong>Email:</strong> {claim.email}
-                  </p>
-
-                  <p>
-                    <strong>Phone:</strong> {claim.phone || "N/A"}
-                  </p>
-
-                  <p>
-                    <strong>Message:</strong> {claim.message || "N/A"}
-                  </p>
-
-                  <p>
-                    <strong>Listing:</strong>{" "}
-                    {claim.listingId?._id ? (
-                      <a
-                        href={`/listing/${claim.listingId._id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        View Listing
-                      </a>
-                    ) : (
-                      "N/A"
-                    )}
-                  </p>
-
-                  <div className="admin-listing-actions">
-                    {claim.status !== "approved" && (
-                      <button
-                        type="button"
-                        className="admin-btn-approve"
-                        onClick={() => updateClaim(claim._id, "approved")}
-                      >
-                        Approve Claim
-                      </button>
-                    )}
-
-                    {claim.status !== "rejected" && (
-                      <button
-                        type="button"
-                        className="admin-btn-reject"
-                        onClick={() => updateClaim(claim._id, "rejected")}
-                      >
-                        Reject Claim
-                      </button>
-                    )}
-
-                    {claim.status !== "pending" && (
-                      <button
-                        type="button"
-                        className="admin-btn-neutral"
-                        onClick={() => updateClaim(claim._id, "pending")}
-                      >
-                        Move to Pending
-                      </button>
-                    )}
-                  </div>
-                </article>
-              ))}
-            </section>
-          )}
-        </section>
 
         <section className="admin-dashboard-tabs">
           {["pending", "approved", "rejected"].map((s) => (
