@@ -499,7 +499,8 @@ const ownerWorkspaces = React.useMemo(
                           {listing.categoryId?.name_en || "N/A"}
                         </p>
 
-                        {listing.transportVerification?.verificationStatus && (
+                        {listing.categoryId?.slug === "transportation" &&
+  listing.transportVerification?.verificationStatus && (
   <div className="owner-transport-verification-card">
 
     <h3>🚚 Transportation Verification</h3>
