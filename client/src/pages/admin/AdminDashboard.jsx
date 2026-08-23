@@ -16,6 +16,8 @@ export default function AdminDashboard() {
   const [claimsLoading, setClaimsLoading] = React.useState(false);
   const [adminSearch, setAdminSearch] = React.useState("");
   const [businessRequests, setBusinessRequests] = React.useState([]);
+  const [businessRequestStatusFilter, setBusinessRequestStatusFilter] =
+  React.useState("pending");
   const [pendingReviews, setPendingReviews] = React.useState([]);
 const [reviewsLoading, setReviewsLoading] = React.useState(false);
 const [editingListing, setEditingListing] = React.useState(null);
@@ -274,6 +276,10 @@ async function deleteBusinessRequest(id, businessName) {
   const featuredCount = items.filter((item) => item.isFeatured).length;
   const verifiedCount = items.filter((item) => item.isVerified).length;
   const pendingClaimsCount = claims.filter((claim) => claim.status === "pending").length;
+  const filteredBusinessRequests = businessRequests.filter(
+  (request) =>
+    request.status === businessRequestStatusFilter
+);
   const filteredClaims = claims.filter(
   (claim) => claim.status === claimStatusFilter
 );
@@ -775,13 +781,35 @@ async function deleteBusinessRequest(id, businessName) {
     </div>
   </div>
 
-  {businessRequests.length === 0 ? (
+  <div className="admin-dashboard-tabs">
+  {["pending", "added", "rejected"].map((requestStatus) => (
+    <button
+      key={requestStatus}
+      type="button"
+      className={
+        businessRequestStatusFilter === requestStatus
+          ? "active"
+          : ""
+      }
+      onClick={() =>
+        setBusinessRequestStatusFilter(requestStatus)
+      }
+    >
+      {requestStatus.charAt(0).toUpperCase() +
+        requestStatus.slice(1)}
+    </button>
+  ))}
+</div>
+
+  {filteredBusinessRequests.length === 0 ? (
     <div className="admin-dashboard-state">
-      <h2>No business requests yet</h2>
+      <h2>
+  No {businessRequestStatusFilter} business requests
+</h2>
     </div>
   ) : (
     <section className="admin-claims-grid">
-      {businessRequests.map((request) => (
+      {filteredBusinessRequests.map((request) => (
         <article key={request._id} className="admin-claim-card">
           <h3>{request.businessName}</h3>
 
