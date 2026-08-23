@@ -291,38 +291,22 @@ async function deleteBusinessRequest(id, businessName) {
           </div>
 
           <div className="admin-dashboard-actions-top">
-            <button type="button" onClick={() => { load(); loadClaims(); }}>
-              Refresh
-            </button>
+  <button
+    type="button"
+    onClick={() => {
+      load();
+      loadClaims();
+      loadBusinessRequests();
+      loadPendingReviews();
+    }}
+  >
+    Refresh
+  </button>
 
-          <a
-  href="/admin/transportation-verification"
-  className="admin-btn-transport"
->
-  🚚 Transportation Verification
-</a>
-
-<a
-  href="/admin/transportation-requests"
-  className="admin-btn-transport"
->
-  📦 Transportation Requests
-</a>
-
-<button
-  className="admin-action-button"
-  onClick={() =>
-    (window.location.href =
-      "/admin/housing-requests")
-  }
->
-  🏠 Housing Requests
-</button>
-
-            <button type="button" onClick={logout}>
-              Logout
-            </button>
-          </div>
+  <button type="button" onClick={logout}>
+    Logout
+  </button>
+</div>
         </header>
 
         <section className="admin-dashboard-summary">
@@ -351,6 +335,96 @@ async function deleteBusinessRequest(id, businessName) {
             <span>Pending Claims</span>
           </div>
         </section>
+
+        <section className="admin-tools-section">
+  <div className="admin-dashboard-section-header">
+    <div>
+      <h2>Admin Tools</h2>
+      <p>
+        Quickly access the main HubEthio management areas.
+      </p>
+    </div>
+  </div>
+
+  <div className="admin-tools-grid">
+    <a
+      href="/admin/transportation-verification"
+      className="admin-tool-card"
+    >
+      <span className="admin-tool-icon">🚚</span>
+      <strong>Transportation Verification</strong>
+      <span>Review transportation business verification requests.</span>
+    </a>
+
+    <a
+      href="/admin/transportation-requests"
+      className="admin-tool-card"
+    >
+      <span className="admin-tool-icon">📦</span>
+      <strong>Transportation Requests</strong>
+      <span>Manage transportation customer requests and quotes.</span>
+    </a>
+
+    <a
+      href="/admin/housing-requests"
+      className="admin-tool-card"
+    >
+      <span className="admin-tool-icon">🏠</span>
+      <strong>Housing Requests</strong>
+      <span>Review housing and rental customer requests.</span>
+    </a>
+
+    <button
+      type="button"
+      className="admin-tool-card"
+      onClick={() =>
+        document
+          .getElementById("admin-pending-reviews")
+          ?.scrollIntoView({ behavior: "smooth" })
+      }
+    >
+      <span className="admin-tool-icon">⭐</span>
+      <strong>Pending Reviews</strong>
+      <span>
+        {pendingReviews.length} review
+        {pendingReviews.length !== 1 ? "s" : ""} waiting.
+      </span>
+    </button>
+
+    <button
+      type="button"
+      className="admin-tool-card"
+      onClick={() =>
+        document
+          .getElementById("admin-business-claims")
+          ?.scrollIntoView({ behavior: "smooth" })
+      }
+    >
+      <span className="admin-tool-icon">👤</span>
+      <strong>Business Claims</strong>
+      <span>
+        {pendingClaimsCount} pending ownership claim
+        {pendingClaimsCount !== 1 ? "s" : ""}.
+      </span>
+    </button>
+
+    <button
+      type="button"
+      className="admin-tool-card"
+      onClick={() =>
+        document
+          .getElementById("admin-business-requests")
+          ?.scrollIntoView({ behavior: "smooth" })
+      }
+    >
+      <span className="admin-tool-icon">🏢</span>
+      <strong>Business Requests</strong>
+      <span>
+        Review businesses suggested by the community.
+      </span>
+    </button>
+  </div>
+</section>
 
         {message && <div className="admin-dashboard-success">{message}</div>}
         {error && <div className="admin-dashboard-error">Error: {error}</div>}
@@ -490,7 +564,10 @@ async function deleteBusinessRequest(id, businessName) {
   </section>
 )}
 
-        <section className="admin-claims-section">
+        <section
+  id="admin-pending-reviews"
+  className="admin-claims-section"
+>
   <div className="admin-dashboard-section-header">
     <div>
       <h2>Pending Reviews</h2>
@@ -555,7 +632,10 @@ async function deleteBusinessRequest(id, businessName) {
   )}
 </section>
 
-        <section className="admin-claims-section">
+        <section
+  id="admin-business-claims"
+  className="admin-claims-section"
+>
           <div className="admin-dashboard-section-header">
             <div>
               <h2>Business Claim Requests</h2>
@@ -572,7 +652,10 @@ async function deleteBusinessRequest(id, businessName) {
             </div>
           )}
 
-          <section className="admin-claims-section">
+          <section
+  id="admin-business-requests"
+  className="admin-claims-section"
+>
   <div className="admin-dashboard-section-header">
     <div>
       <h2>Business Requests</h2>

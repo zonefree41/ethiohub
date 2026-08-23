@@ -561,3 +561,64 @@
   background: #f3f4f6;
   transform: translateY(-1px);
 }
+
+.admin-tools-section {
+  margin: 24px 0;
+}
+
+.admin-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-tool-card {
+  width: 100%;
+  min-height: 150px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #111827;
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-tool-card:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.admin-tool-icon {
+  font-size: 28px;
+}
+
+.admin-tool-card strong {
+  font-size: 16px;
+}
+
+.admin-tool-card span:last-child {
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .admin-tools-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-tool-card {
+    min-height: auto;
+  }
+}
