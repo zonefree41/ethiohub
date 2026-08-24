@@ -172,4 +172,58 @@ router.patch(
   }
 );
 
+router.patch(
+  "/:vehicleId/sold",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { vehicleId } = req.params;
+
+      const vehicle =
+        await VehicleListing.findById(vehicleId);
+
+      if (!vehicle) {
+        return res.status(404).json({
+          message: "Vehicle listing not found.",
+        });
+      }
+
+      if (vehicle.paymentStatus !== "paid") {
+        return res.status(400).json({
+          message:
+            "Only paid vehicle listings can be marked sold.",
+        });
+      }
+
+      if (vehicle.status !== "approved") {
+        return res.status(400).json({
+          message:
+            "Only approved vehicle listings can be marked sold.",
+        });
+      }
+
+      vehicle.status = "sold";
+      vehicle.soldAt = new Date();
+
+      await vehicle.save();
+
+      return res.json({
+        message:
+          "Vehicle listing marked as sold.",
+        vehicle,
+      });
+    } catch (err) {
+      console.error(
+        "Mark vehicle sold failed:",
+        err.message
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to mark vehicle as sold.",
+      });
+    }
+  }
+);
+
 export default router;
