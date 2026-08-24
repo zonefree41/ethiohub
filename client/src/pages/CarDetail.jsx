@@ -87,12 +87,25 @@ export default function CarDetail() {
       )}`
     : "";
 
-  const smsHref = vehicle?.sellerPhone
-    ? `sms:${String(vehicle.sellerPhone).replace(
-        /[^\d+]/g,
-        ""
-      )}`
-    : "";
+  const sellerPhone = vehicle?.sellerPhone
+  ? String(vehicle.sellerPhone).replace(/[^\d+]/g, "")
+  : "";
+
+const carUrl = vehicle
+  ? `${window.location.origin}/cars/${vehicle._id}`
+  : "";
+
+const carMessage = vehicle
+  ? `Hi, I'm interested in your ${vehicle.year} ${vehicle.make} ${vehicle.model}${
+      vehicle.trim ? ` ${vehicle.trim}` : ""
+    } listed on HubEthio for ${formatMoney(vehicle.price)}.
+
+Vehicle: ${carUrl}`
+  : "";
+
+const smsHref = sellerPhone
+  ? `sms:${sellerPhone}?&body=${encodeURIComponent(carMessage)}`
+  : "";
 
   if (loading) {
     return (
