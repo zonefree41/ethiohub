@@ -57,6 +57,9 @@ import TransportationQuotePage
   import ChurchCommunityWorkspace from "./pages/owner/workspaces/ChurchCommunityWorkspace.jsx";
   import EventsEntertainmentWorkspace from "./pages/owner/workspaces/EventsEntertainmentWorkspace.jsx";
   import TravelAirlineServicesWorkspace from "./pages/owner/workspaces/TravelAirlineServicesWorkspace.jsx";
+  import CarPaymentSuccess from "./pages/CarPaymentSuccess.jsx";
+  import CarPaymentCancelled from "./pages/CarPaymentCancelled.jsx";
+  import CarDetail from "./pages/CarDetail.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -199,6 +202,34 @@ if (path.startsWith("/sell-car")) {
   return (
     <>
       <SellCar />
+      <Footer />
+    </>
+  );
+}
+if (path.startsWith("/cars/payment-success")) {
+  return (
+    <>
+      <CarPaymentSuccess />
+      <Footer />
+    </>
+  );
+}
+if (path.startsWith("/cars/payment-cancelled")) {
+  return (
+    <>
+      <CarPaymentCancelled />
+      <Footer />
+    </>
+  );
+}
+if (
+  path.startsWith("/cars/") &&
+  !path.startsWith("/cars/payment-success") &&
+  !path.startsWith("/cars/payment-cancelled")
+) {
+  return (
+    <>
+      <CarDetail />
       <Footer />
     </>
   );
