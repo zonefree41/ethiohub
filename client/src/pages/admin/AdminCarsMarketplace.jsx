@@ -202,6 +202,40 @@ export default function AdminCarsMarketplace() {
     }
   }
 
+  async function markVehicleSold(vehicleId) {
+  const confirmed = window.confirm(
+    "Mark this vehicle as sold? It will be removed from the public Cars Marketplace."
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setProcessingId(vehicleId);
+    setError("");
+    setMessage("");
+
+    const result = await apiPatch(
+      `/api/admin/cars/${vehicleId}/sold`,
+      {},
+      token
+    );
+
+    setMessage(
+      result.message ||
+        "Vehicle listing marked as sold."
+    );
+
+    await loadVehicles();
+  } catch (err) {
+    setError(
+      err.message ||
+        "Failed to mark vehicle as sold."
+    );
+  } finally {
+    setProcessingId("");
+  }
+}
+
   return (
     <main className="admin-cars-page">
       <div className="admin-cars-container">
@@ -492,6 +526,25 @@ export default function AdminCarsMarketplace() {
                         </button>
                       </div>
                     )}
+
+                    {status === "approved" && (
+  <div className="admin-car-actions">
+    <button
+      type="button"
+      className="admin-car-sold"
+      disabled={
+        processingId === vehicle._id
+      }
+      onClick={() =>
+        markVehicleSold(vehicle._id)
+      }
+    >
+      {processingId === vehicle._id
+        ? "Updating..."
+        : "✓ Mark as Sold"}
+    </button>
+  </div>
+)}
                   </div>
                 </article>
               ))}

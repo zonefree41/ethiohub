@@ -229,3 +229,22 @@
     grid-template-columns: 1fr;
   }
 }
+
+.admin-car-sold {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #0f172a;
+  color: #fff;
+}
+
+.admin-car-sold:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.admin-car-sold:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
