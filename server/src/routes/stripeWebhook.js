@@ -2,6 +2,7 @@ import express from "express";
 import Stripe from "stripe";
 import Listing from "../models/Listing.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import VehicleListing from "../models/VehicleListing.js";
 
 const router = express.Router();
 
@@ -120,6 +121,52 @@ router.post("/", async (req, res) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
+        const checkoutType = session.metadata?.type;
+
+if (checkoutType === "vehicle_listing") {
+  const vehicleId = session.metadata?.vehicleId;
+
+  if (!vehicleId) {
+    console.log(
+      "⚠️ Vehicle checkout missing vehicleId metadata."
+    );
+    break;
+  }
+
+  if (session.payment_status !== "paid") {
+    console.log(
+      "⚠️ Vehicle checkout completed without paid status."
+    );
+    break;
+  }
+
+  const vehicle =
+    await VehicleListing.findByIdAndUpdate(
+      vehicleId,
+      {
+        paymentStatus: "paid",
+        status: "pending_review",
+        stripeSessionId: session.id,
+        stripePaymentIntentId:
+          session.payment_intent || "",
+        paidAt: new Date(),
+      },
+      { new: true }
+    );
+
+  if (!vehicle) {
+    console.log(
+      "⚠️ No vehicle listing found for checkout session."
+    );
+    break;
+  }
+
+  console.log(
+    "✅ Vehicle listing payment confirmed and moved to pending review."
+  );
+
+  break;
+}
         const listingId = session.metadata?.listingId;
 
         if (!listingId) {

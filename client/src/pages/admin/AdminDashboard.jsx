@@ -368,6 +368,17 @@ async function deleteBusinessRequest(id, businessName) {
     </a>
 
     <a
+  href="/admin/cars"
+  className="admin-tool-card"
+>
+  <span className="admin-tool-icon">🚗</span>
+  <strong>Cars Marketplace</strong>
+  <span>
+    Review paid vehicle listings before publication.
+  </span>
+</a>
+
+    <a
       href="/admin/transportation-requests"
       className="admin-tool-card"
     >

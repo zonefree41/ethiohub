@@ -1,0 +1,231 @@
+.admin-cars-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 28px 16px 60px;
+}
+
+.admin-cars-container {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.admin-cars-hero {
+  background: #111827;
+  color: #ffffff;
+  border-radius: 24px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 20px;
+}
+
+.admin-cars-back {
+  color: #fbbf24;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.admin-cars-kicker {
+  color: #fbbf24;
+  font-weight: 900;
+  margin: 18px 0 7px;
+}
+
+.admin-cars-hero h1 {
+  margin: 0 0 8px;
+}
+
+.admin-cars-hero p {
+  margin: 0;
+}
+
+.admin-cars-hero button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  background: #f59e0b;
+  color: #111827;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.admin-cars-tabs {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.admin-cars-tabs button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 10px 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-cars-tabs button.active {
+  background: #f59e0b;
+  border-color: #f59e0b;
+}
+
+.admin-cars-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-car-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  box-shadow:
+    0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.admin-car-image,
+.admin-car-no-image {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+}
+
+.admin-car-image {
+  object-fit: cover;
+  display: block;
+}
+
+.admin-car-no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5e7eb;
+  font-size: 60px;
+}
+
+.admin-car-body {
+  padding: 22px;
+}
+
+.admin-car-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.admin-car-heading h2 {
+  margin: 0;
+}
+
+.admin-car-heading p {
+  margin: 6px 0 0;
+  color: #6b7280;
+}
+
+.admin-car-status {
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.admin-car-price {
+  display: block;
+  margin-top: 14px;
+  font-size: 24px;
+}
+
+.admin-car-details {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 7px 18px;
+}
+
+.admin-car-details p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.admin-car-rejection {
+  color: #991b1b;
+}
+
+.admin-car-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.admin-car-actions button {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.admin-car-approve {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.admin-car-reject {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.admin-cars-state {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+}
+
+.admin-cars-success,
+.admin-cars-error {
+  padding: 13px 15px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-weight: 800;
+}
+
+.admin-cars-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.admin-cars-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+@media (max-width: 760px) {
+  .admin-cars-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-car-card {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-car-image,
+  .admin-car-no-image {
+    height: 230px;
+    min-height: 230px;
+  }
+
+  .admin-car-details {
+    grid-template-columns: 1fr;
+  }
+}

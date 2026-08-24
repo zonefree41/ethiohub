@@ -40,6 +40,8 @@ import eventServiceRequestRoutes from "./routes/eventServiceRequests.js";
 import notaryServiceRequestRoutes from "./routes/notaryServiceRequests.js";
 import cargoShippingRequestRoutes
   from "./routes/cargoShippingRequests.js";
+  import vehicleListingRoutes from "./routes/vehicleListings.js";
+  import adminVehicleListingRoutes from "./routes/adminVehicleListings.js";
 
 const app = express();
 
@@ -249,6 +251,8 @@ app.use("/api/owner/listings", ownerListingRoutes);
 app.use("/api/stripe", stripeCheckoutRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
+app.use("/api/cars", vehicleListingRoutes);
+app.use("/api/admin/cars", adminVehicleListingRoutes);
 app.use("/api/admin/transportation-requests", adminTransportationRoutes);
 app.use("/api/housing-requests", housingRequestRoutes);
 app.use(

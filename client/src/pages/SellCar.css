@@ -1,0 +1,227 @@
+.sell-car-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 28px 16px 60px;
+}
+
+.sell-car-container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.sell-car-hero {
+  background: #111827;
+  color: #ffffff;
+  border-radius: 24px;
+  padding: 32px;
+  margin-bottom: 20px;
+}
+
+.sell-car-back {
+  color: #fbbf24;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.sell-car-kicker {
+  margin: 22px 0 8px;
+  color: #fbbf24;
+  font-weight: 900;
+}
+
+.sell-car-hero h1 {
+  margin: 0 0 10px;
+  font-size: 36px;
+}
+
+.sell-car-hero p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.sell-car-payment-card,
+.sell-car-payment-summary {
+  background: #fff7ed;
+  border: 1px solid #f59e0b;
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.sell-car-payment-card {
+  margin-bottom: 20px;
+}
+
+.sell-car-payment-card p,
+.sell-car-payment-summary p {
+  margin: 5px 0 0;
+  color: #6b7280;
+}
+
+.sell-car-payment-card > span,
+.sell-car-payment-summary > strong {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.sell-car-form {
+  display: grid;
+  gap: 20px;
+}
+
+.sell-car-section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.sell-car-section h2 {
+  margin: 0 0 18px;
+  color: #111827;
+}
+
+.sell-car-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sell-car-section label {
+  display: grid;
+  gap: 7px;
+  color: #111827;
+  font-weight: 800;
+}
+
+.sell-car-section input,
+.sell-car-section select,
+.sell-car-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 12px 13px;
+  font: inherit;
+  background: #ffffff;
+}
+
+.sell-car-section input:focus,
+.sell-car-section select:focus,
+.sell-car-section textarea:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, 0.18);
+}
+
+.sell-car-full {
+  margin-top: 16px;
+}
+
+.sell-car-help {
+  color: #6b7280;
+}
+
+.sell-car-photos {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.sell-car-photo {
+  position: relative;
+}
+
+.sell-car-photo img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+.sell-car-photo button {
+  width: 100%;
+  margin-top: 7px;
+  border: none;
+  border-radius: 10px;
+  padding: 9px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.sell-car-submit {
+  min-height: 56px;
+  border: none;
+  border-radius: 14px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.sell-car-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sell-car-error {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 800;
+}
+
+.sell-car-disclaimer {
+  margin: 0;
+  text-align: center;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .sell-car-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sell-car-photos {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .sell-car-hero {
+    padding: 26px 20px;
+  }
+
+  .sell-car-hero h1 {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sell-car-page {
+    padding: 16px 12px 44px;
+  }
+
+  .sell-car-photos {
+    grid-template-columns: 1fr;
+  }
+
+  .sell-car-payment-card,
+  .sell-car-payment-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

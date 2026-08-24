@@ -26,6 +26,9 @@ import DeleteData from "./pages/DeleteData.jsx";
 import Footer from "./components/Footer.jsx";
 import Pricing from "./pages/Pricing.jsx";
 import Location from "./pages/Location.jsx";
+import CarsMarketplace from "./pages/CarsMarketplace.jsx";
+import SellCar from "./pages/SellCar.jsx";
+import AdminCarsMarketplace from "./pages/admin/AdminCarsMarketplace.jsx";
 import Saved from "./pages/Saved.jsx";
 import { trackPageView } from "./utils/analytics.js";
 import TransportationQuotePage
@@ -123,6 +126,10 @@ if (path.startsWith("/admin/housing-requests")) {
   return <AdminHousingRequests />;
 }
 
+if (path.startsWith("/admin/cars")) {
+  return <AdminCarsMarketplace />;
+}
+
 if (path.startsWith("/admin")) return <AdminDashboard />;
 
   if (path.startsWith("/owner/login")) return <OwnerLogin />;
@@ -188,6 +195,22 @@ if (path.startsWith("/listing/")) return <Listing />;
   if (path.startsWith("/submit")) return <><Submit /><Footer /></>;
 if (path.startsWith("/listing/")) return <><Listing /><Footer /></>;
 if (path.startsWith("/location/")) return <><Location /><Footer /></>;
+if (path.startsWith("/sell-car")) {
+  return (
+    <>
+      <SellCar />
+      <Footer />
+    </>
+  );
+}
+if (path.startsWith("/cars")) {
+  return (
+    <>
+      <CarsMarketplace />
+      <Footer />
+    </>
+  );
+}
 if (path.startsWith("/category/")) return <><Category /><Footer /></>;
 
 if (path.startsWith("/success")) {
