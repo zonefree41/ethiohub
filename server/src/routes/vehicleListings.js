@@ -252,7 +252,7 @@ router.post(
             `${CLIENT_ORIGIN}/cars/payment-success?vehicleId=${vehicle._id}&session_id={CHECKOUT_SESSION_ID}`,
 
           cancel_url:
-            `${CLIENT_ORIGIN}/sell-car?vehicleId=${vehicle._id}&payment=cancelled`,
+            `${CLIENT_ORIGIN}/cars/payment-cancelled?vehicleId=${vehicle._id}`,
         });
 
       vehicle.stripeSessionId = session.id;
@@ -264,13 +264,12 @@ router.post(
       });
     } catch (err) {
       console.error(
-        "Create vehicle checkout session failed:",
+        "Create checkout session failed:",
         err.message
       );
 
       return res.status(500).json({
-        message:
-          "Failed to create vehicle checkout session.",
+        message: "Failed to create checkout session.",
       });
     }
   }
@@ -305,6 +304,13 @@ router.get("/", async (req, res) => {
       message: "Failed to load vehicle listings.",
     });
   }
+});
+
+router.get("/health", (req, res) => {
+  res.json({
+    ok: true,
+    service: "cars-marketplace",
+  });
 });
 
 router.get("/:vehicleId", async (req, res) => {
@@ -346,13 +352,6 @@ router.get("/:vehicleId", async (req, res) => {
       message: "Failed to load vehicle listing.",
     });
   }
-});
-
-router.get("/health", (req, res) => {
-  res.json({
-    ok: true,
-    service: "cars-marketplace",
-  });
 });
 
 
