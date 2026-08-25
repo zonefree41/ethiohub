@@ -255,9 +255,31 @@ const contactedInquiries =
     (item) => item.status === "Contacted"
   ).length;
 
+const viewingScheduledInquiries =
+  housingInquiries.filter(
+    (item) =>
+      item.status === "Viewing Scheduled"
+  ).length;
+
+const applicationInquiries =
+  housingInquiries.filter(
+    (item) => item.status === "Application"
+  ).length;
+
 const approvedInquiries =
   housingInquiries.filter(
     (item) => item.status === "Approved"
+  ).length;
+
+const moveInScheduledInquiries =
+  housingInquiries.filter(
+    (item) =>
+      item.status === "Move-In Scheduled"
+  ).length;
+
+const completedInquiries =
+  housingInquiries.filter(
+    (item) => item.status === "Completed"
   ).length;
 
   return (
@@ -315,23 +337,39 @@ const approvedInquiries =
 
           <WorkspaceStats
   items={[
-    {
-      label: "Total Inquiries",
-      value: totalInquiries,
-    },
-    {
-      label: "New Inquiries",
-      value: newInquiries,
-    },
-    {
-      label: "Contacted",
-      value: contactedInquiries,
-    },
-    {
-      label: "Approved",
-      value: approvedInquiries,
-    },
-  ]}
+  {
+    label: "Total Inquiries",
+    value: totalInquiries,
+  },
+  {
+    label: "New",
+    value: newInquiries,
+  },
+  {
+    label: "Contacted",
+    value: contactedInquiries,
+  },
+  {
+    label: "Viewing",
+    value: viewingScheduledInquiries,
+  },
+  {
+    label: "Application",
+    value: applicationInquiries,
+  },
+  {
+    label: "Approved",
+    value: approvedInquiries,
+  },
+  {
+    label: "Move-In Scheduled",
+    value: moveInScheduledInquiries,
+  },
+  {
+    label: "Completed",
+    value: completedInquiries,
+  },
+]}
 />
 
 <section className="housing-inquiries-section">
@@ -409,12 +447,118 @@ const approvedInquiries =
                 </span>
               </div>
 
+              <div className="housing-v2-owner-preferences">
+  <div>
+    <strong>Pets</strong>
+    <span>
+      {inquiry.hasPets ? "Yes" : "No"}
+    </span>
+    <small>
+      {inquiry.hasPets
+        ? "Renter indicated that a pet will be part of the household."
+        : "No pet indicated."}
+    </small>
+  </div>
+
+  <div>
+    <strong>Pet-Friendly Required</strong>
+    <span>
+      {inquiry.petFriendlyRequired
+        ? "Yes"
+        : "No"}
+    </span>
+    <small>
+      {inquiry.petFriendlyRequired
+        ? "Renter needs housing where pets are allowed."
+        : "Pet-friendly housing was not marked as required."}
+    </small>
+  </div>
+
+  <div>
+    <strong>Open to Nearby Areas</strong>
+    <span>
+      {inquiry.openToNearbyAreas
+        ? "Yes"
+        : "No"}
+    </span>
+    <small>
+      {inquiry.openToNearbyAreas
+        ? "Renter is willing to consider nearby locations."
+        : "Renter did not indicate flexibility for nearby areas."}
+    </small>
+  </div>
+
+  <div>
+    <strong>Urgent Housing</strong>
+    <span>
+      {inquiry.urgentHousingNeeded
+        ? "Yes"
+        : "No"}
+    </span>
+    <small>
+      {inquiry.urgentHousingNeeded
+        ? "Renter indicated an urgent housing need."
+        : "Housing was not marked urgent."}
+    </small>
+  </div>
+
+  <div>
+    <strong>
+      Security Deposit Assistance
+    </strong>
+    <span>
+      {inquiry.securityDepositAssistanceNeeded
+        ? "Needed"
+        : "Not requested"}
+    </span>
+    <small>
+      {inquiry.securityDepositAssistanceNeeded
+        ? "Renter may need information about legitimate deposit-assistance resources."
+        : "No deposit assistance requested."}
+    </small>
+  </div>
+
+  <div>
+    <strong>Moving Assistance</strong>
+    <span>
+      {inquiry.movingAssistanceNeeded
+        ? "Needed"
+        : "Not requested"}
+    </span>
+    <small>
+      {inquiry.movingAssistanceNeeded
+        ? "Renter may need help coordinating or paying for moving services."
+        : "No moving assistance requested."}
+    </small>
+  </div>
+</div>
+
               <div>
                 <strong>Occupants</strong>
                 <span>
                   {inquiry.occupants || 1}
                 </span>
               </div>
+
+              <div>
+  <strong>Monthly Budget</strong>
+  <span>
+    {inquiry.monthlyBudget != null
+      ? `$${Number(
+          inquiry.monthlyBudget
+        ).toLocaleString()}`
+      : "Not provided"}
+  </span>
+</div>
+
+<div>
+  <strong>Bedrooms Needed</strong>
+  <span>
+    {inquiry.bedroomsNeeded != null
+      ? inquiry.bedroomsNeeded
+      : "Not provided"}
+  </span>
+</div>
 
               <div>
                 <strong>Phone</strong>
@@ -484,6 +628,90 @@ const approvedInquiries =
         onClick={() =>
           updateHousingInquiryStatus(
             inquiry._id,
+            "Viewing Scheduled"
+          )
+        }
+      >
+        Schedule Viewing
+      </button>
+
+      <button
+        type="button"
+        className="danger"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Declined"
+          )
+        }
+      >
+        Decline
+      </button>
+
+      <button
+        type="button"
+        className="secondary"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Closed"
+          )
+        }
+      >
+        Close
+      </button>
+    </>
+  )}
+
+  {inquiry.status === "Viewing Scheduled" && (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Application"
+          )
+        }
+      >
+        Move to Application
+      </button>
+
+      <button
+        type="button"
+        className="danger"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Declined"
+          )
+        }
+      >
+        Decline
+      </button>
+
+      <button
+        type="button"
+        className="secondary"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Closed"
+          )
+        }
+      >
+        Close
+      </button>
+    </>
+  )}
+
+  {inquiry.status === "Application" && (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
             "Approved"
           )
         }
@@ -520,6 +748,64 @@ const approvedInquiries =
   )}
 
   {inquiry.status === "Approved" && (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Move-In Scheduled"
+          )
+        }
+      >
+        Schedule Move-In
+      </button>
+
+      <button
+        type="button"
+        className="secondary"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Closed"
+          )
+        }
+      >
+        Close
+      </button>
+    </>
+  )}
+
+  {inquiry.status === "Move-In Scheduled" && (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Completed"
+          )
+        }
+      >
+        Mark Completed
+      </button>
+
+      <button
+        type="button"
+        className="secondary"
+        onClick={() =>
+          updateHousingInquiryStatus(
+            inquiry._id,
+            "Closed"
+          )
+        }
+      >
+        Close
+      </button>
+    </>
+  )}
+
+  {inquiry.status === "Completed" && (
     <button
       type="button"
       className="secondary"

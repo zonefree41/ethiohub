@@ -23,14 +23,22 @@ function escapeHtml(value = "") {
 router.post("/", async (req, res) => {
   try {
     const {
-      listingId,
-      customerName,
-      customerEmail,
-      customerPhone,
-      desiredMoveInDate,
-      occupants = 1,
-      message = "",
-    } = req.body;
+  listingId,
+  customerName,
+  customerEmail,
+  customerPhone,
+  desiredMoveInDate,
+  occupants = 1,
+  monthlyBudget = null,
+  bedroomsNeeded = null,
+  hasPets = false,
+  petFriendlyRequired = false,
+  openToNearbyAreas = false,
+  urgentHousingNeeded = false,
+  securityDepositAssistanceNeeded = false,
+  movingAssistanceNeeded = false,
+  message = "",
+} = req.body;
 
     if (
       !listingId ||
@@ -99,8 +107,39 @@ router.post("/", async (req, res) => {
       customerPhone,
       desiredMoveInDate,
       occupants: Number(occupants) || 1,
-      message,
-    });
+      monthlyBudget:
+  monthlyBudget === "" ||
+  monthlyBudget == null
+    ? null
+    : Number(monthlyBudget),
+
+bedroomsNeeded:
+  bedroomsNeeded === "" ||
+  bedroomsNeeded == null
+    ? null
+    : Number(bedroomsNeeded),
+
+hasPets: Boolean(hasPets),
+
+petFriendlyRequired:
+  Boolean(petFriendlyRequired),
+
+openToNearbyAreas:
+  Boolean(openToNearbyAreas),
+
+urgentHousingNeeded:
+  Boolean(urgentHousingNeeded),
+
+securityDepositAssistanceNeeded:
+  Boolean(
+    securityDepositAssistanceNeeded
+  ),
+
+movingAssistanceNeeded:
+  Boolean(movingAssistanceNeeded),
+    message,
+    status: "New",
+  });
 
     const ownerEmail = listing.ownerId?.email;
 
@@ -359,12 +398,16 @@ router.patch(
         req.body;
 
       const allowedStatuses = [
-        "New",
-        "Contacted",
-        "Approved",
-        "Declined",
-        "Closed",
-      ];
+  "New",
+  "Contacted",
+  "Viewing Scheduled",
+  "Application",
+  "Approved",
+  "Move-In Scheduled",
+  "Completed",
+  "Declined",
+  "Closed",
+];
 
       if (!allowedStatuses.includes(status)) {
         return res.status(400).json({
@@ -393,20 +436,36 @@ router.patch(
       const now = new Date();
 
       if (status === "Contacted") {
-        inquiry.contactedAt = now;
-      }
+  inquiry.contactedAt = now;
+}
 
-      if (status === "Approved") {
-        inquiry.approvedAt = now;
-      }
+if (status === "Viewing Scheduled") {
+  inquiry.viewingScheduledAt = now;
+}
 
-      if (status === "Declined") {
-        inquiry.declinedAt = now;
-      }
+if (status === "Application") {
+  inquiry.applicationAt = now;
+}
 
-      if (status === "Closed") {
-        inquiry.closedAt = now;
-      }
+if (status === "Approved") {
+  inquiry.approvedAt = now;
+}
+
+if (status === "Move-In Scheduled") {
+  inquiry.moveInScheduledAt = now;
+}
+
+if (status === "Completed") {
+  inquiry.completedAt = now;
+}
+
+if (status === "Declined") {
+  inquiry.declinedAt = now;
+}
+
+if (status === "Closed") {
+  inquiry.closedAt = now;
+}
 
       await inquiry.save();
 
@@ -425,18 +484,30 @@ router.patch(
       "Housing listing";
 
     const statusMessages = {
-      Contacted:
-        "The property owner has contacted or attempted to contact you about your housing inquiry.",
+  Contacted:
+    "The property owner has contacted or attempted to contact you about your housing inquiry.",
 
-      Approved:
-        "Your housing inquiry has been approved by the property owner.",
+  "Viewing Scheduled":
+    "The property owner has moved your housing inquiry to the viewing stage. Please coordinate the viewing details directly with the property owner.",
 
-      Declined:
-        "Your housing inquiry was declined by the property owner.",
+  Application:
+    "Your housing inquiry has moved to the application stage. The property owner will provide any application requirements directly.",
 
-      Closed:
-        "Your housing inquiry has been closed.",
-    };
+  Approved:
+    "Your housing inquiry has been approved by the property owner.",
+
+  "Move-In Scheduled":
+    "Your housing process has moved to the move-in scheduling stage. Please coordinate the final move-in details directly with the property owner.",
+
+  Completed:
+    "Your housing inquiry process has been marked completed.",
+
+  Declined:
+    "Your housing inquiry was declined by the property owner.",
+
+  Closed:
+    "Your housing inquiry has been closed.",
+};
 
     const statusMessage =
       statusMessages[status] ||

@@ -243,6 +243,17 @@ const [housingInquiryForm, setHousingInquiryForm] =
     customerPhone: "",
     desiredMoveInDate: "",
     occupants: 1,
+
+    monthlyBudget: "",
+    bedroomsNeeded: "",
+
+    hasPets: false,
+    petFriendlyRequired: false,
+    openToNearbyAreas: false,
+    urgentHousingNeeded: false,
+    securityDepositAssistanceNeeded: false,
+    movingAssistanceNeeded: false,
+
     message: "",
   });
 
@@ -864,13 +875,24 @@ async function submitInsuranceConsultation(e) {
     );
 
     setHousingInquiryForm({
-      customerName: "",
-      customerEmail: "",
-      customerPhone: "",
-      desiredMoveInDate: "",
-      occupants: 1,
-      message: "",
-    });
+  customerName: "",
+  customerEmail: "",
+  customerPhone: "",
+  desiredMoveInDate: "",
+  occupants: 1,
+
+  monthlyBudget: "",
+  bedroomsNeeded: "",
+
+  hasPets: false,
+  petFriendlyRequired: false,
+  openToNearbyAreas: false,
+  urgentHousingNeeded: false,
+  securityDepositAssistanceNeeded: false,
+  movingAssistanceNeeded: false,
+
+  message: "",
+});
   } catch (err) {
     setHousingInquiryError(
       err.message ||
@@ -2085,7 +2107,222 @@ document.title = seoTitle;
             }
           />
         </label>
+
+        <label>
+  Monthly Budget ($)
+  <input
+    type="number"
+    min="0"
+    step="1"
+    value={housingInquiryForm.monthlyBudget}
+    onChange={(e) =>
+      setHousingInquiryForm((current) => ({
+        ...current,
+        monthlyBudget: e.target.value,
+      }))
+    }
+    placeholder="Example: 1500"
+  />
+</label>
+
+<label>
+  Bedrooms Needed
+  <input
+    type="number"
+    min="0"
+    step="1"
+    value={housingInquiryForm.bedroomsNeeded}
+    onChange={(e) =>
+      setHousingInquiryForm((current) => ({
+        ...current,
+        bedroomsNeeded: e.target.value,
+      }))
+    }
+    placeholder="Example: 1"
+  />
+</label>
       </div>
+
+      <div className="housing-v2-option-grid">
+  <label
+    className={`housing-v2-option-card ${
+      housingInquiryForm.hasPets
+        ? "active"
+        : ""
+    }`}
+  >
+    <input
+      type="checkbox"
+      checked={housingInquiryForm.hasPets}
+      onChange={(e) =>
+        setHousingInquiryForm((current) => ({
+          ...current,
+          hasPets: e.target.checked,
+        }))
+      }
+    />
+
+    <div>
+      <strong>I have a pet</strong>
+      <span>
+        Let the property owner know that a pet
+        will be part of the household.
+      </span>
+    </div>
+  </label>
+
+  <label
+    className={`housing-v2-option-card ${
+      housingInquiryForm.petFriendlyRequired
+        ? "active"
+        : ""
+    }`}
+  >
+    <input
+      type="checkbox"
+      checked={
+        housingInquiryForm.petFriendlyRequired
+      }
+      onChange={(e) =>
+        setHousingInquiryForm((current) => ({
+          ...current,
+          petFriendlyRequired:
+            e.target.checked,
+        }))
+      }
+    />
+
+    <div>
+      <strong>Pet-friendly required</strong>
+      <span>
+        I need housing where pets are allowed.
+      </span>
+    </div>
+  </label>
+
+  <label
+    className={`housing-v2-option-card ${
+      housingInquiryForm.openToNearbyAreas
+        ? "active"
+        : ""
+    }`}
+  >
+    <input
+      type="checkbox"
+      checked={
+        housingInquiryForm.openToNearbyAreas
+      }
+      onChange={(e) =>
+        setHousingInquiryForm((current) => ({
+          ...current,
+          openToNearbyAreas:
+            e.target.checked,
+        }))
+      }
+    />
+
+    <div>
+      <strong>Open to nearby areas</strong>
+      <span>
+        I am willing to consider nearby
+        locations if this property is unavailable.
+      </span>
+    </div>
+  </label>
+
+  <label
+    className={`housing-v2-option-card ${
+      housingInquiryForm.urgentHousingNeeded
+        ? "active"
+        : ""
+    }`}
+  >
+    <input
+      type="checkbox"
+      checked={
+        housingInquiryForm.urgentHousingNeeded
+      }
+      onChange={(e) =>
+        setHousingInquiryForm((current) => ({
+          ...current,
+          urgentHousingNeeded:
+            e.target.checked,
+        }))
+      }
+    />
+
+    <div>
+      <strong>Urgent housing needed</strong>
+      <span>
+        I am looking to move as soon as possible.
+      </span>
+    </div>
+  </label>
+
+  <label
+    className={`housing-v2-option-card ${
+      housingInquiryForm
+        .securityDepositAssistanceNeeded
+        ? "active"
+        : ""
+    }`}
+  >
+    <input
+      type="checkbox"
+      checked={
+        housingInquiryForm
+          .securityDepositAssistanceNeeded
+      }
+      onChange={(e) =>
+        setHousingInquiryForm((current) => ({
+          ...current,
+          securityDepositAssistanceNeeded:
+            e.target.checked,
+        }))
+      }
+    />
+
+    <div>
+      <strong>
+        Security deposit assistance needed
+      </strong>
+      <span>
+        I may need information about legitimate
+        deposit-assistance resources.
+      </span>
+    </div>
+  </label>
+
+  <label
+    className={`housing-v2-option-card ${
+      housingInquiryForm.movingAssistanceNeeded
+        ? "active"
+        : ""
+    }`}
+  >
+    <input
+      type="checkbox"
+      checked={
+        housingInquiryForm.movingAssistanceNeeded
+      }
+      onChange={(e) =>
+        setHousingInquiryForm((current) => ({
+          ...current,
+          movingAssistanceNeeded:
+            e.target.checked,
+        }))
+      }
+    />
+
+    <div>
+      <strong>Moving assistance needed</strong>
+      <span>
+        I may need help coordinating or paying
+        for moving services.
+      </span>
+    </div>
+  </label>
+</div>
 
       <label className="listing-housing-inquiry-message">
         Message

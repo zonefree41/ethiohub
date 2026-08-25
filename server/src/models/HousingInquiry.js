@@ -46,6 +46,48 @@ const HousingInquirySchema = new mongoose.Schema(
       default: 1,
     },
 
+    monthlyBudget: {
+  type: Number,
+  min: 0,
+  default: null,
+},
+
+bedroomsNeeded: {
+  type: Number,
+  min: 0,
+  default: null,
+},
+
+hasPets: {
+  type: Boolean,
+  default: false,
+},
+
+petFriendlyRequired: {
+  type: Boolean,
+  default: false,
+},
+
+openToNearbyAreas: {
+  type: Boolean,
+  default: false,
+},
+
+urgentHousingNeeded: {
+  type: Boolean,
+  default: false,
+},
+
+securityDepositAssistanceNeeded: {
+  type: Boolean,
+  default: false,
+},
+
+movingAssistanceNeeded: {
+  type: Boolean,
+  default: false,
+},
+
     message: {
       type: String,
       default: "",
@@ -56,12 +98,16 @@ const HousingInquirySchema = new mongoose.Schema(
     status: {
       type: String,
       enum: [
-        "New",
-        "Contacted",
-        "Approved",
-        "Declined",
-        "Closed",
-      ],
+  "New",
+  "Contacted",
+  "Viewing Scheduled",
+  "Application",
+  "Approved",
+  "Move-In Scheduled",
+  "Completed",
+  "Declined",
+  "Closed",
+],
       default: "New",
       index: true,
     },
@@ -76,6 +122,26 @@ const HousingInquirySchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
+    viewingScheduledAt: {
+  type: Date,
+  default: null,
+},
+
+applicationAt: {
+  type: Date,
+  default: null,
+},
+
+moveInScheduledAt: {
+  type: Date,
+  default: null,
+},
+
+completedAt: {
+  type: Date,
+  default: null,
+},
 
     approvedAt: {
       type: Date,
