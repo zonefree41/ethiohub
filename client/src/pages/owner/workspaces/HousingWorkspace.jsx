@@ -447,7 +447,51 @@ const completedInquiries =
                 </span>
               </div>
 
-              <div className="housing-v2-owner-preferences">
+              <div>
+                <strong>Occupants</strong>
+                <span>
+                  {inquiry.occupants || 1}
+                </span>
+              </div>
+
+              <div>
+  <strong>Monthly Budget</strong>
+  <span>
+    {inquiry.monthlyBudget != null
+      ? `$${Number(
+          inquiry.monthlyBudget
+        ).toLocaleString()}`
+      : "Not provided"}
+  </span>
+</div>
+
+<div>
+  <strong>Bedrooms Needed</strong>
+  <span>
+    {inquiry.bedroomsNeeded != null
+      ? inquiry.bedroomsNeeded
+      : "Not provided"}
+  </span>
+</div>
+
+              <div>
+                <strong>Phone</strong>
+                <span>
+                  {inquiry.customerPhone ||
+                    "Not provided"}
+                </span>
+              </div>
+
+              <div>
+                <strong>Email</strong>
+                <span>
+                  {inquiry.customerEmail ||
+                    "Not provided"}
+                </span>
+              </div>
+            </div>
+
+                               <div className="housing-v2-owner-preferences">
   <div>
     <strong>Pets</strong>
     <span>
@@ -532,50 +576,6 @@ const completedInquiries =
     </small>
   </div>
 </div>
-
-              <div>
-                <strong>Occupants</strong>
-                <span>
-                  {inquiry.occupants || 1}
-                </span>
-              </div>
-
-              <div>
-  <strong>Monthly Budget</strong>
-  <span>
-    {inquiry.monthlyBudget != null
-      ? `$${Number(
-          inquiry.monthlyBudget
-        ).toLocaleString()}`
-      : "Not provided"}
-  </span>
-</div>
-
-<div>
-  <strong>Bedrooms Needed</strong>
-  <span>
-    {inquiry.bedroomsNeeded != null
-      ? inquiry.bedroomsNeeded
-      : "Not provided"}
-  </span>
-</div>
-
-              <div>
-                <strong>Phone</strong>
-                <span>
-                  {inquiry.customerPhone ||
-                    "Not provided"}
-                </span>
-              </div>
-
-              <div>
-                <strong>Email</strong>
-                <span>
-                  {inquiry.customerEmail ||
-                    "Not provided"}
-                </span>
-              </div>
-            </div>
 
             {inquiry.message && (
               <div className="housing-inquiry-notes">
