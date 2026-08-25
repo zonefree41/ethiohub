@@ -10,24 +10,32 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   try {
     const {
-      requesterName,
-      email = "",
-      phone,
-      housingTypes,
-      preferredCities = [],
-      preferredState,
-      moveInDate,
-      budgetMin,
-      budgetMax,
-      leasePreference = "Flexible",
-      aboutMe,
-      smokingStatus = "Prefer not to say",
-      hasPets = false,
-      needsParking = false,
-      utilitiesPreferred = false,
-      furnishedPreferred = false,
-      contactPreference = "Either",
-    } = req.body;
+  requesterName,
+  email = "",
+  phone,
+  housingTypes,
+  preferredCities = [],
+  preferredState,
+  moveInDate,
+  budgetMin,
+  budgetMax,
+  leasePreference = "Flexible",
+  aboutMe,
+  smokingStatus = "Prefer not to say",
+
+  hasPets = false,
+  petFriendlyRequired = false,
+  openToNearbyAreas = false,
+  bedroomsNeeded = null,
+  urgentHousingNeeded = false,
+  securityDepositAssistanceNeeded = false,
+  movingAssistanceNeeded = false,
+
+  needsParking = false,
+  utilitiesPreferred = false,
+  furnishedPreferred = false,
+  contactPreference = "Either",
+} = req.body;
 
     if (
       !requesterName ||
@@ -73,12 +81,35 @@ router.post("/", async (req, res) => {
       aboutMe,
       smokingStatus,
       hasPets,
+      petFriendlyRequired:
+  Boolean(petFriendlyRequired),
+
+openToNearbyAreas:
+  Boolean(openToNearbyAreas),
+
+bedroomsNeeded:
+  bedroomsNeeded === "" ||
+  bedroomsNeeded == null
+    ? null
+    : Number(bedroomsNeeded),
+
+urgentHousingNeeded:
+  Boolean(urgentHousingNeeded),
+
+securityDepositAssistanceNeeded:
+  Boolean(
+    securityDepositAssistanceNeeded
+  ),
+
+movingAssistanceNeeded:
+  Boolean(movingAssistanceNeeded),
       needsParking,
       utilitiesPreferred,
       furnishedPreferred,
       contactPreference,
       status: "pending",
       isPublic: false,
+      assistanceStatus: "New",
     });
 
     return res.status(201).json({

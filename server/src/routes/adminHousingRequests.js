@@ -1,5 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
+import Listing from "../models/Listing.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 import HousingRequest from "../models/HousingRequest.js";
 import { requireAdmin } from "../middleware/auth.js";
@@ -15,6 +17,15 @@ const ALLOWED_STATUSES = [
 
 function cleanText(value) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function escapeRegex(value) {
@@ -261,6 +272,324 @@ router.patch(
   }
 );
 
+/*
+|--------------------------------------------------------------------------
+| UPDATE HOUSING ASSISTANCE WORKFLOW
+|--------------------------------------------------------------------------
+|
+| PATCH /api/admin/housing-requests/:id/assistance
+|
+*/
+router.patch(
+  "/:id/assistance",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const {
+  assistanceStatus,
+  adminAssistanceNotes = "",
+  matchedListingId = "",
+} = req.body || {};
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          message: "Invalid housing request ID.",
+        });
+      }
+
+      const allowedAssistanceStatuses = [
+        "New",
+        "Reviewing",
+        "Matched",
+        "Referred",
+        "Closed",
+      ];
+
+      if (
+        !allowedAssistanceStatuses.includes(
+          assistanceStatus
+        )
+      ) {
+        return res.status(400).json({
+          message:
+            "Invalid housing assistance status.",
+        });
+      }
+
+      const request =
+        await HousingRequest.findById(id);
+
+      if (!request) {
+        return res.status(404).json({
+          message: "Housing request not found.",
+        });
+      }
+
+      let matchedListing = null;
+
+if (assistanceStatus === "Matched") {
+  const cleanedListingId =
+    cleanText(matchedListingId);
+
+  if (
+    !cleanedListingId ||
+    !mongoose.Types.ObjectId.isValid(
+      cleanedListingId
+    )
+  ) {
+    return res.status(400).json({
+      message:
+        "Please select a valid Housing listing before marking this request as matched.",
+    });
+  }
+
+  matchedListing = await Listing.findOne({
+      _id: cleanedListingId,
+      status: "approved",
+      availabilityStatus: {
+        $ne: "rented",
+      },
+    }).populate("categoryId", "slug name_en");
+
+  if (
+    !matchedListing ||
+    matchedListing.categoryId?.slug !==
+      "housing-rentals"
+  ) {
+    return res.status(400).json({
+      message:
+        "The selected listing is not an available approved Housing listing.",
+    });
+  }
+
+  request.matchedListingIds = [
+    matchedListing._id,
+  ];
+}
+
+      request.assistanceStatus =
+        assistanceStatus;
+
+      request.adminAssistanceNotes =
+        cleanText(adminAssistanceNotes);
+
+      const now = new Date();
+
+      if (assistanceStatus === "Reviewing") {
+        request.reviewingAt = now;
+      }
+
+      if (assistanceStatus === "Matched") {
+        request.matchedAt = now;
+      }
+
+      if (assistanceStatus === "Referred") {
+        request.referredAt = now;
+      }
+
+      if (assistanceStatus === "Closed") {
+        request.assistanceClosedAt = now;
+      }
+
+      await request.save();
+
+      if (
+  assistanceStatus === "Matched" &&
+  matchedListing &&
+  request.email
+) {
+  try {
+    const propertyUrl =
+      `https://www.hubethio.com/listing/${matchedListing._id}`;
+
+    const location =
+      [
+        matchedListing.city,
+        matchedListing.state,
+      ]
+        .filter(Boolean)
+        .join(", ") ||
+      "Location not provided";
+
+    const rent =
+      matchedListing.monthlyRent != null
+        ? `$${Number(
+            matchedListing.monthlyRent
+          ).toLocaleString("en-US")}/month`
+        : "Rent not listed";
+
+    const bedrooms =
+      matchedListing.bedrooms != null
+        ? `${matchedListing.bedrooms} bedroom${
+            Number(matchedListing.bedrooms) === 1
+              ? ""
+              : "s"
+          }`
+        : "Bedrooms not listed";
+
+    await sendEmail({
+      to: request.email,
+
+      subject:
+        "HubEthio found a possible housing match",
+
+      html: `
+        <div style="
+          font-family:Arial,sans-serif;
+          max-width:650px;
+          margin:auto;
+          padding:24px;
+          color:#111827;
+        ">
+          <h1 style="
+            color:#1d4ed8;
+            margin-bottom:8px;
+          ">
+            🏠 Possible Housing Match
+          </h1>
+
+          <p>
+            Hello ${escapeHtml(
+              request.requesterName
+            )},
+          </p>
+
+          <p style="line-height:1.6;">
+            HubEthio found a housing listing that
+            may match some of the preferences in
+            your housing request.
+          </p>
+
+          <div style="
+            background:#f8fafc;
+            border:1px solid #dbe4ef;
+            border-radius:14px;
+            padding:20px;
+            margin:24px 0;
+          ">
+            <h2 style="
+              margin:0 0 14px;
+              color:#0f172a;
+            ">
+              ${escapeHtml(
+                matchedListing.title
+              )}
+            </h2>
+
+            <p>
+              <strong>Location:</strong>
+              ${escapeHtml(location)}
+            </p>
+
+            <p>
+              <strong>Rent:</strong>
+              ${escapeHtml(rent)}
+            </p>
+
+            <p>
+              <strong>Bedrooms:</strong>
+              ${escapeHtml(bedrooms)}
+            </p>
+
+            <p>
+              <strong>Pet-Friendly:</strong>
+              ${
+                matchedListing.petsAllowed
+                  ? "Yes"
+                  : "Please confirm with the property provider"
+              }
+            </p>
+
+            <p>
+              <strong>Availability:</strong>
+              ${escapeHtml(
+                matchedListing.availabilityStatus ||
+                  "Please confirm availability"
+              )}
+            </p>
+          </div>
+
+          <div style="
+            text-align:center;
+            margin:28px 0;
+          ">
+            <a
+              href="${propertyUrl}"
+              style="
+                display:inline-block;
+                background:#1d4ed8;
+                color:#ffffff;
+                text-decoration:none;
+                padding:13px 22px;
+                border-radius:10px;
+                font-weight:bold;
+              "
+            >
+              View Property
+            </a>
+          </div>
+
+          <p style="
+            line-height:1.6;
+            color:#475569;
+          ">
+            This is a possible match, not a housing
+            approval or guarantee. Please review the
+            property and confirm current availability,
+            rent, pet policies, application requirements,
+            fees, lease terms, and other details directly
+            with the property provider.
+          </p>
+
+          <p style="
+            color:#64748b;
+            font-size:13px;
+            margin-top:28px;
+          ">
+            — The HubEthio Team
+          </p>
+        </div>
+      `,
+    });
+  } catch (emailError) {
+    console.error(
+      "Housing match email failed:",
+      emailError
+    );
+  }
+}
+
+      return res.json({
+        message:
+          "Housing assistance status updated successfully.",
+        request,
+      });
+    } catch (error) {
+      console.error(
+        "Update housing assistance status failed:",
+        error
+      );
+
+      if (error?.name === "ValidationError") {
+        return res.status(400).json({
+          message:
+            Object.values(error.errors)
+              .map((item) => item.message)
+              .join(", ") ||
+            "Invalid housing assistance update.",
+        });
+      }
+
+      return res.status(500).json({
+        message:
+          "Failed to update housing assistance status.",
+      });
+    }
+  }
+);
+
 router.patch("/:id", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
@@ -293,6 +622,12 @@ router.patch("/:id", requireAdmin, async (req, res) => {
       aboutMe,
       smokingStatus,
       hasPets,
+      petFriendlyRequired,
+openToNearbyAreas,
+bedroomsNeeded,
+urgentHousingNeeded,
+securityDepositAssistanceNeeded,
+movingAssistanceNeeded,
       needsParking,
       utilitiesPreferred,
       furnishedPreferred,
@@ -353,6 +688,41 @@ router.patch("/:id", requireAdmin, async (req, res) => {
     if (hasPets !== undefined) {
       request.hasPets = Boolean(hasPets);
     }
+
+    if (petFriendlyRequired !== undefined) {
+  request.petFriendlyRequired =
+    Boolean(petFriendlyRequired);
+}
+
+if (openToNearbyAreas !== undefined) {
+  request.openToNearbyAreas =
+    Boolean(openToNearbyAreas);
+}
+
+if (bedroomsNeeded !== undefined) {
+  request.bedroomsNeeded =
+    bedroomsNeeded === "" ||
+    bedroomsNeeded === null
+      ? null
+      : Number(bedroomsNeeded);
+}
+
+if (urgentHousingNeeded !== undefined) {
+  request.urgentHousingNeeded =
+    Boolean(urgentHousingNeeded);
+}
+
+if (
+  securityDepositAssistanceNeeded !== undefined
+) {
+  request.securityDepositAssistanceNeeded =
+    Boolean(securityDepositAssistanceNeeded);
+}
+
+if (movingAssistanceNeeded !== undefined) {
+  request.movingAssistanceNeeded =
+    Boolean(movingAssistanceNeeded);
+}
 
     if (needsParking !== undefined) {
       request.needsParking = Boolean(needsParking);

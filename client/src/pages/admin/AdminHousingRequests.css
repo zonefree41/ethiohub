@@ -507,3 +507,182 @@
     grid-column: auto;
   }
 }
+
+.housing-assistance-panel {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #dbe3ef;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.housing-assistance-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.housing-assistance-header h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.housing-assistance-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.housing-assistance-status {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.housing-assistance-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.housing-assistance-grid > div {
+  padding: 13px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  background: #ffffff;
+}
+
+.housing-assistance-grid strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #475569;
+  font-size: 0.82rem;
+}
+
+.housing-assistance-grid span {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.housing-assistance-notes {
+  display: block;
+  margin-top: 16px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.housing-assistance-notes textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 7px;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font: inherit;
+  resize: vertical;
+}
+
+.housing-assistance-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.housing-assistance-actions button {
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.housing-assistance-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.housing-assistance-final {
+  color: #166534;
+  font-weight: 800;
+}
+
+@media (max-width: 700px) {
+  .housing-assistance-header {
+    flex-direction: column;
+  }
+
+  .housing-assistance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .housing-assistance-actions {
+    flex-direction: column;
+  }
+
+  .housing-assistance-actions button {
+    width: 100%;
+  }
+}
+
+.housing-match-selector {
+  margin-top: 16px;
+}
+
+.housing-match-selector label {
+  display: block;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.housing-match-selector select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 46px;
+  margin-top: 7px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.housing-match-selector select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.housing-match-preview {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #eff6ff;
+}
+
+.housing-match-preview strong {
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.housing-match-preview span {
+  color: #475569;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}

@@ -92,6 +92,37 @@ const HousingRequestSchema = new mongoose.Schema(
       default: false,
     },
 
+    petFriendlyRequired: {
+  type: Boolean,
+  default: false,
+},
+
+openToNearbyAreas: {
+  type: Boolean,
+  default: false,
+},
+
+bedroomsNeeded: {
+  type: Number,
+  min: 0,
+  default: null,
+},
+
+urgentHousingNeeded: {
+  type: Boolean,
+  default: false,
+},
+
+securityDepositAssistanceNeeded: {
+  type: Boolean,
+  default: false,
+},
+
+movingAssistanceNeeded: {
+  type: Boolean,
+  default: false,
+},
+
     needsParking: {
       type: Boolean,
       default: false,
@@ -129,6 +160,52 @@ const HousingRequestSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+
+    assistanceStatus: {
+  type: String,
+  enum: [
+    "New",
+    "Reviewing",
+    "Matched",
+    "Referred",
+    "Closed",
+  ],
+  default: "New",
+  index: true,
+},
+
+matchedListingIds: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Listing",
+  },
+],
+
+adminAssistanceNotes: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
+reviewingAt: {
+  type: Date,
+  default: null,
+},
+
+matchedAt: {
+  type: Date,
+  default: null,
+},
+
+referredAt: {
+  type: Date,
+  default: null,
+},
+
+assistanceClosedAt: {
+  type: Date,
+  default: null,
+},
   },
   {
     timestamps: true,

@@ -131,6 +131,15 @@ export default function AdminHousingRequests() {
   const [adminNote, setAdminNote] =
     React.useState("");
 
+    const [assistanceStatus, setAssistanceStatus] =
+  React.useState("New");
+
+const [adminAssistanceNotes, setAdminAssistanceNotes] =
+  React.useState("");
+
+const [updatingAssistance, setUpdatingAssistance] =
+  React.useState(false);
+
   const [loading, setLoading] = React.useState(false);
   const [detailsLoading, setDetailsLoading] =
     React.useState(false);
@@ -154,6 +163,12 @@ export default function AdminHousingRequests() {
   aboutMe: "",
   smokingStatus: "Prefer not to say",
   hasPets: false,
+  petFriendlyRequired: false,
+openToNearbyAreas: false,
+bedroomsNeeded: "",
+urgentHousingNeeded: false,
+securityDepositAssistanceNeeded: false,
+movingAssistanceNeeded: false,
   needsParking: false,
   utilitiesPreferred: false,
   furnishedPreferred: false,
@@ -166,12 +181,23 @@ const [savingProfile, setSavingProfile] =
 const [profileMessage, setProfileMessage] =
   React.useState("");
 
+  const [housingListings, setHousingListings] =
+  React.useState([]);
+
+const [selectedListingId, setSelectedListingId] =
+  React.useState("");
+
+const [loadingHousingListings, setLoadingHousingListings] =
+  React.useState(false);
+
   React.useEffect(() => {
     document.title = "Housing Requests Admin | HubEthio";
 
     if (!token) {
       window.location.href = "/admin/login";
     }
+
+    loadHousingListings();
   }, [token]);
 
   async function loadRequests(nextPage = 1) {
@@ -232,6 +258,65 @@ const [profileMessage, setProfileMessage] =
     await loadRequests(1);
   }
 
+  async function loadHousingListings() {
+  try {
+    setLoadingHousingListings(true);
+
+    const categories =
+      await apiGet("/api/categories");
+
+    const housingCategory = (
+      Array.isArray(categories) ? categories : []
+    ).find((category) => {
+      const slug = String(
+        category?.slug || ""
+      ).toLowerCase();
+
+      const name = String(
+        category?.name_en || ""
+      ).toLowerCase();
+
+      return (
+        slug === "housing-rentals" ||
+        name === "housing & rentals" ||
+        name === "housing and rentals"
+      );
+    });
+
+    if (!housingCategory?._id) {
+      setHousingListings([]);
+      return;
+    }
+
+    const listings = await apiGet(
+      `/api/listings?category=${encodeURIComponent(
+        housingCategory._id
+      )}`
+    );
+
+    const availableListings = (
+      Array.isArray(listings) ? listings : []
+    ).filter((listing) => {
+      const availability = String(
+        listing?.availabilityStatus || ""
+      ).toLowerCase();
+
+      return availability !== "rented";
+    });
+
+    setHousingListings(availableListings);
+  } catch (err) {
+    console.error(
+      "Load Housing listings failed:",
+      err
+    );
+
+    setHousingListings([]);
+  } finally {
+    setLoadingHousingListings(false);
+  }
+}
+
   async function openRequest(requestId) {
     try {
       setDetailsLoading(true);
@@ -254,6 +339,24 @@ const [profileMessage, setProfileMessage] =
       setSelectedRequest(request);
       setEditableStatus(request.status || "pending");
       setAdminNote(request.adminNote || "");
+
+      setAssistanceStatus(
+  request.assistanceStatus || "New"
+);
+
+setAdminAssistanceNotes(
+  request.adminAssistanceNotes || ""
+);
+
+setSelectedListingId(
+  Array.isArray(request.matchedListingIds) &&
+    request.matchedListingIds.length > 0
+    ? String(
+        request.matchedListingIds[0]?._id ||
+          request.matchedListingIds[0]
+      )
+    : ""
+);
 
       setEditForm({
   requesterName: request.requesterName || "",
@@ -279,6 +382,28 @@ const [profileMessage, setProfileMessage] =
   smokingStatus:
     request.smokingStatus || "Prefer not to say",
   hasPets: Boolean(request.hasPets),
+  petFriendlyRequired: Boolean(
+  request.petFriendlyRequired
+),
+
+openToNearbyAreas: Boolean(
+  request.openToNearbyAreas
+),
+
+bedroomsNeeded:
+  request.bedroomsNeeded ?? "",
+
+urgentHousingNeeded: Boolean(
+  request.urgentHousingNeeded
+),
+
+securityDepositAssistanceNeeded: Boolean(
+  request.securityDepositAssistanceNeeded
+),
+
+movingAssistanceNeeded: Boolean(
+  request.movingAssistanceNeeded
+),
   needsParking: Boolean(request.needsParking),
   utilitiesPreferred: Boolean(
     request.utilitiesPreferred
@@ -302,10 +427,87 @@ setProfileMessage("");
   }
 
   function closeModal() {
+    setAssistanceStatus("New");
+setAdminAssistanceNotes("");
     setSelectedRequest(null);
     setMessage("");
     setAdminNote("");
+    setSelectedListingId("");
   }
+
+  async function updateAssistanceStatus(nextStatus) {
+  if (!selectedRequest?._id) return;
+
+  if (
+  nextStatus === "Matched" &&
+  !selectedListingId
+) {
+  setError(
+    "Please select a Housing listing before marking this request as matched."
+  );
+  return;
+}
+
+  try {
+    setUpdatingAssistance(true);
+    setMessage("");
+    setError("");
+
+    const data = await apiPatch(
+      `/api/admin/housing-requests/${selectedRequest._id}/assistance`,
+      {
+  assistanceStatus: nextStatus,
+
+  adminAssistanceNotes:
+    adminAssistanceNotes.trim(),
+
+  matchedListingId:
+    nextStatus === "Matched"
+      ? selectedListingId
+      : "",
+},
+      token
+    );
+
+    const updatedRequest = data?.request;
+
+    if (!updatedRequest) {
+      throw new Error(
+        "Updated housing assistance request was not returned."
+      );
+    }
+
+    setSelectedRequest(updatedRequest);
+
+    setAssistanceStatus(
+      updatedRequest.assistanceStatus || "New"
+    );
+
+    setAdminAssistanceNotes(
+      updatedRequest.adminAssistanceNotes || ""
+    );
+
+    setRequests((currentRequests) =>
+      currentRequests.map((request) =>
+        request._id === updatedRequest._id
+          ? updatedRequest
+          : request
+      )
+    );
+
+    setMessage(
+      data.message ||
+        "Housing assistance updated successfully."
+    );
+  } catch (err) {
+    setError(
+      err.message ||
+        "Failed to update housing assistance."
+    );
+  } finally {
+    setUpdatingAssistance(false);
+  }
+}
 
   async function updateStatus(nextStatus = editableStatus) {
     if (!selectedRequest?._id) return;
@@ -414,6 +616,25 @@ async function saveProfileChanges() {
         aboutMe: editForm.aboutMe.trim(),
         smokingStatus: editForm.smokingStatus,
         hasPets: editForm.hasPets,
+        petFriendlyRequired:
+  editForm.petFriendlyRequired,
+
+openToNearbyAreas:
+  editForm.openToNearbyAreas,
+
+bedroomsNeeded:
+  editForm.bedroomsNeeded === ""
+    ? null
+    : Number(editForm.bedroomsNeeded),
+
+urgentHousingNeeded:
+  editForm.urgentHousingNeeded,
+
+securityDepositAssistanceNeeded:
+  editForm.securityDepositAssistanceNeeded,
+
+movingAssistanceNeeded:
+  editForm.movingAssistanceNeeded,
         needsParking: editForm.needsParking,
         utilitiesPreferred:
           editForm.utilitiesPreferred,
@@ -857,6 +1078,258 @@ async function saveProfileChanges() {
               <h3>About the Requester</h3>
               <p>{selectedRequest.aboutMe}</p>
             </section>
+
+            <section className="housing-assistance-panel">
+  <div className="housing-assistance-header">
+    <div>
+      <h3>🏠 Housing Assistance & Matching</h3>
+      <p>
+        Track HubEthio assistance separately from
+        the public housing-request moderation status.
+      </p>
+    </div>
+
+    <span
+      className={`housing-assistance-status status-${String(
+        selectedRequest.assistanceStatus || "New"
+      )
+        .toLowerCase()
+        .replace(/\s+/g, "-")}`}
+    >
+      {selectedRequest.assistanceStatus || "New"}
+    </span>
+  </div>
+
+  <div className="housing-assistance-grid">
+    <div>
+      <strong>Bedrooms Needed</strong>
+      <span>
+        {selectedRequest.bedroomsNeeded != null
+          ? selectedRequest.bedroomsNeeded
+          : "Not provided"}
+      </span>
+    </div>
+
+    <div>
+      <strong>Pet-Friendly Required</strong>
+      <span>
+        {selectedRequest.petFriendlyRequired
+          ? "Yes"
+          : "No"}
+      </span>
+    </div>
+
+    <div>
+      <strong>Open to Nearby Areas</strong>
+      <span>
+        {selectedRequest.openToNearbyAreas
+          ? "Yes"
+          : "No"}
+      </span>
+    </div>
+
+    <div>
+      <strong>Urgent Housing</strong>
+      <span>
+        {selectedRequest.urgentHousingNeeded
+          ? "Yes"
+          : "No"}
+      </span>
+    </div>
+
+    <div>
+      <strong>Deposit Assistance</strong>
+      <span>
+        {selectedRequest
+          .securityDepositAssistanceNeeded
+          ? "Needed"
+          : "Not requested"}
+      </span>
+    </div>
+
+    <div>
+      <strong>Moving Assistance</strong>
+      <span>
+        {selectedRequest.movingAssistanceNeeded
+          ? "Needed"
+          : "Not requested"}
+      </span>
+    </div>
+  </div>
+
+  <div className="housing-match-selector">
+  <label>
+    Potential Housing Match
+
+    <select
+      value={selectedListingId}
+      onChange={(e) =>
+        setSelectedListingId(e.target.value)
+      }
+      disabled={loadingHousingListings}
+    >
+      <option value="">
+        {loadingHousingListings
+          ? "Loading available housing..."
+          : "Select a HubEthio housing listing"}
+      </option>
+
+      {housingListings.map((listing) => (
+        <option
+          key={listing._id}
+          value={listing._id}
+        >
+          {listing.title}
+          {" — "}
+          {listing.monthlyRent
+            ? `$${Number(
+                listing.monthlyRent
+              ).toLocaleString()}/mo`
+            : "Rent not listed"}
+          {" — "}
+          {listing.bedrooms != null
+            ? `${listing.bedrooms} BR`
+            : "Bedrooms not listed"}
+          {" — "}
+          {[listing.city, listing.state]
+            .filter(Boolean)
+            .join(", ")}
+        </option>
+      ))}
+    </select>
+  </label>
+
+  {selectedListingId && (
+    <div className="housing-match-preview">
+      {(() => {
+        const matchedListing =
+          housingListings.find(
+            (listing) =>
+              String(listing._id) ===
+              String(selectedListingId)
+          );
+
+        if (!matchedListing) {
+          return null;
+        }
+
+        return (
+          <>
+            <strong>
+              {matchedListing.title}
+            </strong>
+
+            <span>
+              {[
+                matchedListing.city,
+                matchedListing.state,
+              ]
+                .filter(Boolean)
+                .join(", ") ||
+                "Location not provided"}
+            </span>
+
+            <span>
+              {matchedListing.monthlyRent
+                ? `$${Number(
+                    matchedListing.monthlyRent
+                  ).toLocaleString()}/month`
+                : "Rent not listed"}
+              {" • "}
+              {matchedListing.bedrooms != null
+                ? `${matchedListing.bedrooms} bedroom`
+                : "Bedrooms not listed"}
+            </span>
+
+            <span>
+              {matchedListing.petsAllowed
+                ? "Pet-friendly"
+                : "Pet policy not confirmed"}
+              {" • "}
+              {matchedListing.availabilityStatus ||
+                "Availability not provided"}
+            </span>
+          </>
+        );
+      })()}
+    </div>
+  )}
+</div>
+
+  <label className="housing-assistance-notes">
+    Admin Assistance Notes
+
+    <textarea
+      rows="4"
+      value={adminAssistanceNotes}
+      onChange={(e) =>
+        setAdminAssistanceNotes(e.target.value)
+      }
+      placeholder="Add property leads, assistance resources, contact attempts, or next steps."
+    />
+  </label>
+
+  <div className="housing-assistance-actions">
+    {(selectedRequest.assistanceStatus || "New") ===
+      "New" && (
+      <button
+        type="button"
+        disabled={updatingAssistance}
+        onClick={() =>
+          updateAssistanceStatus("Reviewing")
+        }
+      >
+        Start Review
+      </button>
+    )}
+
+    {selectedRequest.assistanceStatus ===
+      "Reviewing" && (
+      <button
+        type="button"
+        disabled={updatingAssistance}
+        onClick={() =>
+          updateAssistanceStatus("Matched")
+        }
+      >
+        Mark Matched
+      </button>
+    )}
+
+    {selectedRequest.assistanceStatus ===
+      "Matched" && (
+      <button
+        type="button"
+        disabled={updatingAssistance}
+        onClick={() =>
+          updateAssistanceStatus("Referred")
+        }
+      >
+        Mark Referred
+      </button>
+    )}
+
+    {selectedRequest.assistanceStatus ===
+      "Referred" && (
+      <button
+        type="button"
+        disabled={updatingAssistance}
+        onClick={() =>
+          updateAssistanceStatus("Closed")
+        }
+      >
+        Close Assistance
+      </button>
+    )}
+
+    {selectedRequest.assistanceStatus ===
+      "Closed" && (
+      <span className="housing-assistance-final">
+        Assistance case closed
+      </span>
+    )}
+  </div>
+</section>
 
             <section className="housing-modal-section">
   <h3>Edit Housing Profile</h3>
