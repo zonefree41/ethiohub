@@ -225,3 +225,13 @@
     flex-direction: column;
   }
 }
+
+.sell-car-success {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  background: #ecfdf5;
+  color: #065f46;
+  font-weight: 700;
+}

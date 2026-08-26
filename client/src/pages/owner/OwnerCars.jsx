@@ -294,6 +294,15 @@ export default function OwnerCars() {
 
                   <div className="owner-car-actions">
 
+                    {vehicle.status !== "sold" &&
+  vehicle.status !== "expired" && (
+    <a
+      href={`/owner/my-cars/${vehicle._id}/edit`}
+    >
+      Edit Listing
+    </a>
+  )}
+
                     {vehicle.status ===
                       "payment_pending" &&
                       vehicle.paymentStatus !==

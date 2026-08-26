@@ -452,6 +452,264 @@ router.patch(
   }
 );
 
+router.get(
+  "/mine/:vehicleId",
+  requireOwner,
+  async (req, res) => {
+    try {
+      const { vehicleId } = req.params;
+
+      if (
+        !mongoose.Types.ObjectId.isValid(vehicleId)
+      ) {
+        return res.status(400).json({
+          message: "Invalid vehicle listing ID.",
+        });
+      }
+
+      const vehicle =
+        await VehicleListing.findOne({
+          _id: vehicleId,
+          sellerUserId: req.owner.id,
+        });
+
+      if (!vehicle) {
+        return res.status(404).json({
+          message:
+            "Vehicle listing not found or you do not own this vehicle.",
+        });
+      }
+
+      return res.json(vehicle);
+    } catch (err) {
+      console.error(
+        "Load seller vehicle failed:",
+        err.message
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to load vehicle listing.",
+      });
+    }
+  }
+);
+
+router.patch(
+  "/mine/:vehicleId",
+  requireOwner,
+  async (req, res) => {
+    try {
+      const { vehicleId } = req.params;
+
+      if (
+        !mongoose.Types.ObjectId.isValid(vehicleId)
+      ) {
+        return res.status(400).json({
+          message: "Invalid vehicle listing ID.",
+        });
+      }
+
+      const vehicle =
+        await VehicleListing.findOne({
+          _id: vehicleId,
+          sellerUserId: req.owner.id,
+        });
+
+      if (!vehicle) {
+        return res.status(404).json({
+          message:
+            "Vehicle listing not found or you do not own this vehicle.",
+        });
+      }
+
+      if (vehicle.status === "sold") {
+        return res.status(400).json({
+          message:
+            "Sold vehicle listings cannot be edited.",
+        });
+      }
+
+      if (vehicle.status === "expired") {
+        return res.status(400).json({
+          message:
+            "Expired vehicle listings cannot be edited.",
+        });
+      }
+
+      const allowedFields = [
+        "sellerType",
+        "sellerName",
+        "sellerEmail",
+        "sellerPhone",
+        "year",
+        "make",
+        "model",
+        "trim",
+        "price",
+        "mileage",
+        "vin",
+        "exteriorColor",
+        "interiorColor",
+        "transmission",
+        "drivetrain",
+        "fuelType",
+        "titleStatus",
+        "condition",
+        "description",
+        "city",
+        "state",
+        "photos",
+      ];
+
+      const updates = {};
+
+      for (const field of allowedFields) {
+        if (field in (req.body || {})) {
+          updates[field] = req.body[field];
+        }
+      }
+
+      // Normalize text fields.
+      const textFields = [
+        "sellerName",
+        "sellerPhone",
+        "make",
+        "model",
+        "trim",
+        "vin",
+        "exteriorColor",
+        "interiorColor",
+        "description",
+        "city",
+        "state",
+      ];
+
+      for (const field of textFields) {
+        if (field in updates) {
+          updates[field] = cleanText(
+            updates[field]
+          );
+        }
+      }
+
+      if ("sellerEmail" in updates) {
+        updates.sellerEmail = cleanText(
+          updates.sellerEmail
+        ).toLowerCase();
+      }
+
+      if ("vin" in updates) {
+        updates.vin =
+          updates.vin.toUpperCase();
+      }
+
+      if ("year" in updates) {
+        updates.year = Number(updates.year);
+
+        if (
+          !Number.isInteger(updates.year) ||
+          updates.year < 1900 ||
+          updates.year > 2100
+        ) {
+          return res.status(400).json({
+            message:
+              "Please enter a valid vehicle year.",
+          });
+        }
+      }
+
+      if ("price" in updates) {
+        updates.price = Number(updates.price);
+
+        if (
+          !Number.isFinite(updates.price) ||
+          updates.price <= 0
+        ) {
+          return res.status(400).json({
+            message:
+              "Please enter a valid vehicle price.",
+          });
+        }
+      }
+
+      if ("mileage" in updates) {
+        updates.mileage = Number(
+          updates.mileage
+        );
+
+        if (
+          !Number.isFinite(updates.mileage) ||
+          updates.mileage < 0
+        ) {
+          return res.status(400).json({
+            message:
+              "Please enter valid vehicle mileage.",
+          });
+        }
+      }
+
+      if ("photos" in updates) {
+        updates.photos = Array.isArray(
+          updates.photos
+        )
+          ? updates.photos
+              .filter(
+                (item) =>
+                  typeof item === "string"
+              )
+              .map((item) => item.trim())
+              .filter(Boolean)
+              .slice(0, 20)
+          : [];
+      }
+
+      /*
+       * If an already-approved public listing is
+       * edited, send it back to admin review.
+       *
+       * Payment remains PAID. The seller does NOT
+       * pay the $9.99 listing fee again.
+       */
+      const wasApproved =
+        vehicle.status === "approved";
+
+      Object.assign(vehicle, updates);
+
+      if (wasApproved) {
+        vehicle.status = "pending_review";
+        vehicle.approvedAt = null;
+      }
+
+      // Clear an old rejection after seller edits it.
+      if (vehicle.status === "rejected") {
+        vehicle.status = "pending_review";
+        vehicle.rejectedAt = null;
+        vehicle.rejectionReason = "";
+      }
+
+      await vehicle.save();
+
+      return res.json({
+        message: wasApproved
+          ? "Vehicle updated and sent for admin review."
+          : "Vehicle listing updated successfully.",
+        vehicle,
+      });
+    } catch (err) {
+      console.error(
+        "Seller update vehicle failed:",
+        err.message
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to update vehicle listing.",
+      });
+    }
+  }
+);
+
 router.get("/:vehicleId", async (req, res) => {
   try {
     const { vehicleId } = req.params;

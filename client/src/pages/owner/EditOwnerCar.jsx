@@ -1,6 +1,10 @@
 import React from "react";
-import { apiPost } from "../api/http.js";
-import "./SellCar.css";
+import {
+  apiGet,
+  apiPatch,
+} from "../../api/http.js";
+import { apiPost } from "../../api/http.js";
+import "../SellCar.css";
 
 const initialForm = {
   sellerType: "private",
@@ -32,7 +36,23 @@ const initialForm = {
   photos: [],
 };
 
-export default function SellCar() {
+export default function EditOwnerCar() {
+    const token =
+    localStorage.getItem("ownerToken");
+
+  const pathParts =
+  window.location.pathname
+    .split("/")
+    .filter(Boolean);
+
+const vehicleId =
+  pathParts[pathParts.length - 2];
+
+  const [loading, setLoading] =
+    React.useState(true);
+
+  const [message, setMessage] =
+    React.useState("");
   const [form, setForm] = React.useState(initialForm);
   const [uploadingPhotos, setUploadingPhotos] =
     React.useState(false);
@@ -41,8 +61,91 @@ export default function SellCar() {
   const [error, setError] = React.useState("");
 
   React.useEffect(() => {
-    document.title = "Sell Your Car | HubEthio";
-  }, []);
+  document.title = "Edit Car Listing | HubEthio";
+
+  if (!token) {
+    window.location.href =
+      `/owner/login?redirect=/owner/my-cars/${vehicleId}/edit`;
+    return;
+  }
+
+  async function loadVehicle() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const vehicle = await apiGet(
+        `/api/cars/mine/${vehicleId}`,
+        token
+      );
+
+      setForm({
+        sellerType: vehicle.sellerType || "private",
+        sellerName: vehicle.sellerName || "",
+        sellerEmail: vehicle.sellerEmail || "",
+        sellerPhone: vehicle.sellerPhone || "",
+
+        year: vehicle.year ?? "",
+        make: vehicle.make || "",
+        model: vehicle.model || "",
+        trim: vehicle.trim || "",
+
+        price: vehicle.price ?? "",
+        mileage: vehicle.mileage ?? "",
+        vin: vehicle.vin || "",
+
+        exteriorColor:
+          vehicle.exteriorColor || "",
+        interiorColor:
+          vehicle.interiorColor || "",
+        transmission:
+          vehicle.transmission || "",
+        drivetrain:
+          vehicle.drivetrain || "",
+        fuelType:
+          vehicle.fuelType || "",
+        titleStatus:
+          vehicle.titleStatus || "",
+        condition:
+          vehicle.condition || "",
+
+        description:
+          vehicle.description || "",
+        city: vehicle.city || "",
+        state: vehicle.state || "",
+
+        photos: Array.isArray(vehicle.photos)
+          ? vehicle.photos
+          : [],
+      });
+    } catch (err) {
+      const text =
+        err.message ||
+        "Unable to load vehicle listing.";
+
+      if (
+        text.toLowerCase().includes("login") ||
+        text.toLowerCase().includes("token") ||
+        text.includes("401")
+      ) {
+        localStorage.removeItem("ownerToken");
+        localStorage.removeItem("ownerUser");
+
+        window.location.href =
+          `/owner/login?redirect=/owner/my-cars/${vehicleId}/edit`;
+        return;
+      }
+
+      setError(text);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (vehicleId) {
+    loadVehicle();
+  }
+}, [token, vehicleId]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -134,92 +237,71 @@ export default function SellCar() {
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    setSubmitting(true);
-    setError("");
+  setSubmitting(true);
+  setError("");
+  setMessage("");
 
-    try {
-      const ownerToken = localStorage.getItem("ownerToken");
-      const vehicle = await apiPost(
-  "/api/cars",
-  {
-    ...form,
-    year: Number(form.year),
-    price: Number(form.price),
-    mileage: Number(form.mileage),
-  },
-  ownerToken
-);
+  try {
+    const result = await apiPatch(
+      `/api/cars/mine/${vehicleId}`,
+      {
+        ...form,
+        year: Number(form.year),
+        price: Number(form.price),
+        mileage: Number(form.mileage),
+      },
+      token
+    );
 
-      const vehicleId = vehicle?.vehicleId;
+    setMessage(
+      result?.message ||
+        "Vehicle listing updated successfully."
+    );
 
-      if (!vehicleId) {
-        throw new Error(
-          "Vehicle listing was created without an ID."
-        );
-      }
-
-      const checkout = await apiPost(
-  `/api/cars/${vehicleId}/create-checkout-session`,
-  {},
-  ownerToken
-);
-
-      if (!checkout?.url) {
-        throw new Error(
-          "Unable to start secure payment."
-        );
-      }
-
-      window.location.href = checkout.url;
-    } catch (err) {
-      setError(
-        err.message ||
-          "Unable to submit vehicle listing."
-      );
-    } finally {
-      setSubmitting(false);
-    }
+    window.setTimeout(() => {
+      window.location.href = "/owner/my-cars";
+    }, 900);
+  } catch (err) {
+    setError(
+      err.message ||
+        "Unable to update vehicle listing."
+    );
+  } finally {
+    setSubmitting(false);
   }
+}
 
   return (
     <main className="sell-car-page">
       <div className="sell-car-container">
         <header className="sell-car-hero">
           <a
-            href="/cars"
-            className="sell-car-back"
-          >
-            ← Cars Marketplace
-          </a>
+  href="/owner/my-cars"
+  className="sell-car-back"
+>
+  ← My Cars
+</a>
 
           <p className="sell-car-kicker">
             HubEthio Cars Marketplace
           </p>
 
-          <h1>Sell Your Car</h1>
+          <h1>Edit Car Listing</h1>
 
-          <p>
-            Create your vehicle listing and
-            continue to secure payment.
-          </p>
+<p>
+  Update your vehicle information.
+  Approved listings will return to
+  admin review after changes.
+</p>
         </header>
 
-        <section className="sell-car-payment-card">
-  <div>
-    <strong>
-      Vehicle Listing Fee
-    </strong>
-
-    <p>
-      One-time fee for a 90-day listing
-      after HubEthio admin approval.
-    </p>
+        {message && (
+  <div className="sell-car-success">
+    {message}
   </div>
-
-  <span>$9.99</span>
-</section>
+)}
 
         {error && (
           <div className="sell-car-error">
@@ -619,14 +701,15 @@ export default function SellCar() {
             }
           >
             {submitting
-              ? "Preparing Secure Payment..."
-              : "Continue to Secure Payment — $9.99"}
+  ? "Saving Changes..."
+  : "Save Changes"}
           </button>
 
           <p className="sell-car-disclaimer">
-  Payment is required before review.
-  Approval is not guaranteed. If approved,
-  your vehicle will be listed for 90 days.
+  You will not be charged another listing fee.
+  Changes to a live vehicle listing require
+  HubEthio admin review before the vehicle
+  appears publicly again.
 </p>
         </form>
       </div>
