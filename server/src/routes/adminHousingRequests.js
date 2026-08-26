@@ -164,7 +164,12 @@ router.get("/:id", requireAdmin, async (req, res) => {
       });
     }
 
-    const request = await HousingRequest.findById(id).lean();
+    const request =
+  await HousingRequest.findById(id)
+    .populate(
+      "assistanceTimeline.listingId",
+      "title city state monthlyRent bedrooms availabilityStatus petsAllowed"
+    );
 
     if (!request) {
       return res.status(404).json({
@@ -376,6 +381,26 @@ if (assistanceStatus === "Matched") {
         cleanText(adminAssistanceNotes);
 
       const now = new Date();
+
+      request.assistanceTimeline =
+  Array.isArray(request.assistanceTimeline)
+    ? request.assistanceTimeline
+    : [];
+
+request.assistanceTimeline.push({
+  status: assistanceStatus,
+
+  note:
+    cleanText(adminAssistanceNotes),
+
+  listingId:
+    assistanceStatus === "Matched" &&
+    matchedListing
+      ? matchedListing._id
+      : null,
+
+  createdAt: now,
+});
 
       if (assistanceStatus === "Reviewing") {
         request.reviewingAt = now;

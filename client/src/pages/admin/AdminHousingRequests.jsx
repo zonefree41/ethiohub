@@ -1329,6 +1329,65 @@ movingAssistanceNeeded:
       </span>
     )}
   </div>
+
+  <div className="housing-assistance-history">
+  <h4>Housing Assistance History</h4>
+
+  {Array.isArray(selectedRequest.assistanceTimeline) &&
+  selectedRequest.assistanceTimeline.length > 0 ? (
+    <div className="housing-assistance-history-list">
+      {[...selectedRequest.assistanceTimeline]
+        .reverse()
+        .map((entry, index) => (
+          <div
+            key={`${entry.createdAt || index}-${index}`}
+            className="housing-assistance-history-item"
+          >
+            <div className="housing-assistance-history-top">
+              <strong>
+                {entry.status || "Update"}
+              </strong>
+
+              <span>
+                {entry.createdAt
+                  ? new Date(
+                      entry.createdAt
+                    ).toLocaleString()
+                  : "Date unavailable"}
+              </span>
+            </div>
+
+            {entry.listingId?.title && (
+              <p>
+                <strong>Property:</strong>{" "}
+                {entry.listingId.title}
+                {entry.listingId.city ||
+                entry.listingId.state
+                  ? ` — ${[
+                      entry.listingId.city,
+                      entry.listingId.state,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}`
+                  : ""}
+              </p>
+            )}
+
+            {entry.note && (
+              <p>
+                <strong>Note:</strong>{" "}
+                {entry.note}
+              </p>
+            )}
+          </div>
+        ))}
+    </div>
+  ) : (
+    <p className="housing-assistance-history-empty">
+      No assistance history recorded yet.
+    </p>
+  )}
+</div>
 </section>
 
             <section className="housing-modal-section">

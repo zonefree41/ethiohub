@@ -206,6 +206,39 @@ assistanceClosedAt: {
   type: Date,
   default: null,
 },
+
+assistanceTimeline: [
+  {
+    status: {
+      type: String,
+      enum: [
+        "New",
+        "Reviewing",
+        "Matched",
+        "Referred",
+        "Closed",
+      ],
+      required: true,
+    },
+
+    note: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    listingId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Listing",
+      default: null,
+    },
+
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+],
   },
   {
     timestamps: true,

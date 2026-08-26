@@ -686,3 +686,64 @@
   font-size: 0.86rem;
   line-height: 1.4;
 }
+
+.housing-assistance-history {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #dbe3ef;
+}
+
+.housing-assistance-history h4 {
+  margin: 0 0 14px;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.housing-assistance-history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.housing-assistance-history-item {
+  padding: 13px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  background: #ffffff;
+}
+
+.housing-assistance-history-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.housing-assistance-history-top strong {
+  color: #1d4ed8;
+}
+
+.housing-assistance-history-top span {
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.housing-assistance-history-item p {
+  margin: 7px 0 0;
+  color: #475569;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.housing-assistance-history-empty {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 700px) {
+  .housing-assistance-history-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
