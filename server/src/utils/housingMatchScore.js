@@ -10,6 +10,7 @@ export function scoreHousingMatch(
 ) {
   let score = 0;
   const reasons = [];
+  const disqualifiers = [];
 
   /*
     BUDGET — 30 points
@@ -101,6 +102,49 @@ export function scoreHousingMatch(
 
   const listingState =
     normalize(listing.state);
+
+    /*
+  HARD ELIGIBILITY RULES
+*/
+
+if (
+  preferredState &&
+  listingState &&
+  listingState !== preferredState &&
+  !request.openToNearbyAreas
+) {
+  disqualifiers.push(
+    "Property is outside the requested state."
+  );
+}
+
+if (
+  Number.isFinite(bedroomsNeeded) &&
+  Number.isFinite(listingBedrooms) &&
+  listingBedrooms < bedroomsNeeded
+) {
+  disqualifiers.push(
+    "Property does not meet the minimum bedroom requirement."
+  );
+}
+
+if (
+  request.petFriendlyRequired &&
+  !listing.petsAllowed
+) {
+  disqualifiers.push(
+    "Pet-friendly housing is required, but this property does not allow pets."
+  );
+}
+
+if (
+  request.needsParking &&
+  !listing.parking
+) {
+  disqualifiers.push(
+    "Parking is required, but this property does not provide parking."
+  );
+}
 
   const preferredCities =
     Array.isArray(
@@ -257,14 +301,19 @@ export function scoreHousingMatch(
   }
 
   return {
-    score: Math.max(
-  0,
-  Math.min(
-    Math.round(score),
-    100
-  )
-),
+  eligible:
+    disqualifiers.length === 0,
 
-    reasons,
-  };
+  score: Math.max(
+    0,
+    Math.min(
+      Math.round(score),
+      100
+    )
+  ),
+
+  reasons,
+
+  disqualifiers,
+};
 }

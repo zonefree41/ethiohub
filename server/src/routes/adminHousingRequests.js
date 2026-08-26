@@ -357,34 +357,81 @@ router.get(
           )
           .lean();
 
-      const suggestions = listings
-        .map((listing) => {
-          const result =
-            scoreHousingMatch(
-              request,
-              listing
-            );
+      const scoredListings = listings.map(
+  (listing) => {
+    const result =
+      scoreHousingMatch(
+        request,
+        listing
+      );
 
-          return {
-            ...listing,
-            matchScore: result.score,
-            matchReasons:
-              result.reasons,
-          };
-        })
-        .sort(
-          (a, b) =>
-            b.matchScore -
-            a.matchScore
-        )
-        .slice(0, 5);
+    return {
+      ...listing,
+
+      eligible:
+        result.eligible,
+
+      matchScore:
+        result.score,
+
+      matchReasons:
+        result.reasons,
+
+      disqualifiers:
+        result.disqualifiers,
+    };
+  }
+);
+
+const eligibleListings =
+  scoredListings
+    .filter(
+      (listing) =>
+        listing.eligible
+    )
+    .sort(
+      (a, b) =>
+        b.matchScore -
+        a.matchScore
+    );
+
+const suggestions =
+  eligibleListings.slice(0, 5);
+
+const filteredOut =
+  scoredListings
+    .filter(
+      (listing) =>
+        !listing.eligible
+    )
+    .map((listing) => ({
+      _id: listing._id,
+      title: listing.title,
+      city: listing.city,
+      state: listing.state,
+      matchScore:
+        listing.matchScore,
+      disqualifiers:
+        listing.disqualifiers,
+    }));
 
       return res.json({
-        requestId: request._id,
-        totalCandidates:
-          listings.length,
-        suggestions,
-      });
+  requestId:
+    request._id,
+
+  totalCandidates:
+    listings.length,
+
+  eligibleCandidates:
+    eligibleListings.length,
+
+  filteredOutCount:
+    filteredOut.length,
+
+  suggestions,
+
+  filteredOut,
+});
     } catch (error) {
       console.error(
         "Housing match suggestions failed:",

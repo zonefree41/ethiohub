@@ -122,6 +122,16 @@ export default function AdminHousingRequests() {
 const [loadingMatchSuggestions, setLoadingMatchSuggestions] =
   React.useState(false);
 
+  const [filteredMatchListings, setFilteredMatchListings] =
+  React.useState([]);
+
+const [matchCandidateCounts, setMatchCandidateCounts] =
+  React.useState({
+    total: 0,
+    eligible: 0,
+    filteredOut: 0,
+  });
+
   const [page, setPage] = React.useState(1);
 
   const [pagination, setPagination] = React.useState({
@@ -222,6 +232,18 @@ const [loadingHousingListings, setLoadingHousingListings] =
         ? data.suggestions
         : []
     );
+
+    setFilteredMatchListings(
+  Array.isArray(data?.filteredOut)
+    ? data.filteredOut
+    : []
+);
+
+setMatchCandidateCounts({
+  total: Number(data?.totalCandidates || 0),
+  eligible: Number(data?.eligibleCandidates || 0),
+  filteredOut: Number(data?.filteredOutCount || 0),
+});
   } catch (err) {
     console.error(
       "Load automatic housing match suggestions failed:",
@@ -229,6 +251,13 @@ const [loadingHousingListings, setLoadingHousingListings] =
     );
 
     setMatchSuggestions([]);
+    setFilteredMatchListings([]);
+
+setMatchCandidateCounts({
+  total: 0,
+  eligible: 0,
+  filteredOut: 0,
+});
   } finally {
     setLoadingMatchSuggestions(false);
   }
@@ -463,6 +492,14 @@ setProfileMessage("");
 
   function closeModal() {
     setMatchSuggestions([]);
+
+    setFilteredMatchListings([]);
+
+setMatchCandidateCounts({
+  total: 0,
+  eligible: 0,
+  filteredOut: 0,
+});
     setAssistanceStatus("New");
 setAdminAssistanceNotes("");
     setSelectedRequest(null);
@@ -1210,11 +1247,67 @@ movingAssistanceNeeded:
       Finding the best available housing matches...
     </div>
   ) : matchSuggestions.length === 0 ? (
-    <div className="housing-match-suggestions-empty">
-      No available Housing listings were found for
-      automatic matching.
-    </div>
-  ) : (
+  <div className="housing-match-suggestions-empty">
+    <strong>
+      No eligible automatic matches found.
+    </strong>
+
+    <p>
+      HubEthio reviewed{" "}
+      {matchCandidateCounts.total} available{" "}
+      {matchCandidateCounts.total === 1
+        ? "property"
+        : "properties"}
+      , but none met this request&apos;s required
+      criteria.
+    </p>
+
+    {filteredMatchListings.length > 0 && (
+      <div className="housing-filtered-matches">
+        <h5>Properties Not Eligible</h5>
+
+        {filteredMatchListings.map((listing) => (
+          <div
+            key={listing._id}
+            className="housing-filtered-match-card"
+          >
+            <div className="housing-filtered-match-top">
+              <div>
+                <strong>{listing.title}</strong>
+
+                <span>
+                  {[listing.city, listing.state]
+                    .filter(Boolean)
+                    .join(", ") ||
+                    "Location not provided"}
+                </span>
+              </div>
+
+              <span className="housing-not-eligible-badge">
+                Not Eligible
+              </span>
+            </div>
+
+            {Array.isArray(listing.disqualifiers) &&
+              listing.disqualifiers.length > 0 && (
+                <div className="housing-disqualifiers">
+                  {listing.disqualifiers.map(
+                    (reason, index) => (
+                      <div
+                        key={`${listing._id}-disqualifier-${index}`}
+                      >
+                        • {reason}
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+) : (
     <div className="housing-match-suggestions-list">
       {matchSuggestions.map((listing) => (
         <article
@@ -1360,6 +1453,13 @@ movingAssistanceNeeded:
               String(selectedListingId)
           );
 
+          const ineligibleMatch =
+  filteredMatchListings.find(
+    (listing) =>
+      String(listing._id) ===
+      String(selectedListingId)
+  );
+
         if (!matchedListing) {
           return null;
         }
@@ -1400,6 +1500,32 @@ movingAssistanceNeeded:
               {matchedListing.availabilityStatus ||
                 "Availability not provided"}
             </span>
+
+            {ineligibleMatch && (
+  <div className="housing-selected-match-warning">
+    <strong>
+      ⚠️ Previously selected match — currently not
+      eligible under the automatic matching rules.
+    </strong>
+
+    {Array.isArray(
+      ineligibleMatch.disqualifiers
+    ) &&
+      ineligibleMatch.disqualifiers.length > 0 && (
+        <div>
+          {ineligibleMatch.disqualifiers.map(
+            (reason, index) => (
+              <span
+                key={`selected-warning-${index}`}
+              >
+                • {reason}
+              </span>
+            )
+          )}
+        </div>
+      )}
+  </div>
+)}
           </>
         );
       })()}

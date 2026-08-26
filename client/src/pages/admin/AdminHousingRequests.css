@@ -903,3 +903,103 @@
     justify-content: center;
   }
 }
+
+.housing-match-suggestions-empty > strong {
+  display: block;
+  color: #0f172a;
+  font-size: 0.95rem;
+}
+
+.housing-match-suggestions-empty > p {
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+.housing-filtered-matches {
+  margin-top: 16px;
+}
+
+.housing-filtered-matches h5 {
+  margin: 0 0 10px;
+  color: #334155;
+  font-size: 0.85rem;
+}
+
+.housing-filtered-match-card {
+  padding: 12px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.housing-filtered-match-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.housing-filtered-match-top strong {
+  display: block;
+  color: #0f172a;
+}
+
+.housing-filtered-match-top span {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.housing-not-eligible-badge {
+  flex: 0 0 auto;
+  margin-top: 0 !important;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #991b1b !important;
+  font-size: 0.74rem !important;
+  font-weight: 800;
+}
+
+.housing-disqualifiers {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+  color: #991b1b;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 700px) {
+  .housing-filtered-match-top {
+    flex-direction: column;
+  }
+}
+
+.housing-selected-match-warning {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  background: #fff7f7;
+}
+
+.housing-selected-match-warning > strong {
+  display: block;
+  color: #991b1b;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.housing-selected-match-warning > div {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.housing-selected-match-warning span {
+  color: #991b1b;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
