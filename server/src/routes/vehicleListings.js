@@ -1,7 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import VehicleListing from "../models/VehicleListing.js";
+import { requireOwner } from "../middleware/ownerAuth.js";
+import User from "../models/User.js";
 import Stripe from "stripe";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -13,7 +16,54 @@ const CLIENT_ORIGIN =
 const cleanText = (value) =>
   typeof value === "string" ? value.trim() : "";
 
-router.post("/", async (req, res) => {
+async function optionalOwner(req, res, next) {
+  try {
+    const authHeader =
+      req.headers.authorization || "";
+
+    if (!authHeader.startsWith("Bearer ")) {
+      return next();
+    }
+
+    const token = authHeader.slice(7);
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    if (
+      !decoded?.id ||
+      decoded.role !== "owner"
+    ) {
+      return next();
+    }
+
+    const user = await User.findOne({
+      _id: decoded.id,
+      role: "owner",
+      accountStatus: "active",
+    }).select("_id role accountStatus");
+
+    if (user) {
+      req.owner = {
+        id: String(user._id),
+        role: "owner",
+      };
+    }
+
+    return next();
+  } catch (err) {
+    // This endpoint also supports guest sellers.
+    // An invalid/expired optional token is ignored.
+    return next();
+  }
+}
+
+router.post(
+  "/",
+  optionalOwner,
+  async (req, res) => {
   try {
     const {
       sellerType = "private",
@@ -113,6 +163,14 @@ router.post("/", async (req, res) => {
       : [];
 
     const vehicle = await VehicleListing.create({
+  sellerUserId: req.owner?.id || null,
+
+  sellerType:
+    sellerType === "dealer"
+      ? "dealer"
+      : "private",
+
+  sellerName: cleanedSellerName,
       sellerType:
         sellerType === "dealer"
           ? "dealer"
@@ -312,6 +370,87 @@ router.get("/health", (req, res) => {
     service: "cars-marketplace",
   });
 });
+
+router.get(
+  "/mine",
+  requireOwner,
+  async (req, res) => {
+    try {
+      const vehicles =
+        await VehicleListing.find({
+          sellerUserId: req.owner.id,
+        }).sort({ createdAt: -1 });
+
+      return res.json(vehicles);
+    } catch (err) {
+      console.error(
+        "Load seller vehicles failed:",
+        err.message
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to load your vehicle listings.",
+      });
+    }
+  }
+);
+
+router.patch(
+  "/mine/:vehicleId/sold",
+  requireOwner,
+  async (req, res) => {
+    try {
+      const vehicle =
+        await VehicleListing.findOne({
+          _id: req.params.vehicleId,
+          sellerUserId: req.owner.id,
+        });
+
+      if (!vehicle) {
+        return res.status(404).json({
+          message:
+            "Vehicle listing not found or you do not own this vehicle.",
+        });
+      }
+
+      if (vehicle.paymentStatus !== "paid") {
+        return res.status(400).json({
+          message:
+            "Vehicle listing payment must be complete.",
+        });
+      }
+
+      if (vehicle.status !== "approved") {
+        return res.status(400).json({
+          message:
+            "Only approved vehicles can be marked as sold.",
+        });
+      }
+
+      vehicle.status = "sold";
+      vehicle.soldAt = new Date();
+
+      await vehicle.save();
+
+      return res.json({
+        message:
+          "Your vehicle has been marked as sold.",
+        vehicle,
+      });
+    } catch (err) {
+      console.error(
+        "Seller mark vehicle sold failed:",
+        err.message
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to mark vehicle as sold.",
+      });
+    }
+  }
+);
 
 router.get("/:vehicleId", async (req, res) => {
   try {

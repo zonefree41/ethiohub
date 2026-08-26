@@ -382,6 +382,42 @@ const ownerWorkspaces = React.useMemo(
           </div>
         )}
 
+        <section className="owner-dashboard-quick-actions">
+  <a
+    href="/owner/my-cars"
+    className="owner-dashboard-quick-action"
+  >
+    <span className="owner-dashboard-quick-action-icon">
+      🚗
+    </span>
+
+    <div>
+      <strong>My Cars</strong>
+      <span>
+        Manage your vehicle listings,
+        payments, and sold status.
+      </span>
+    </div>
+  </a>
+
+  <a
+    href="/sell-car"
+    className="owner-dashboard-quick-action"
+  >
+    <span className="owner-dashboard-quick-action-icon">
+      ➕
+    </span>
+
+    <div>
+      <strong>Sell a Car</strong>
+      <span>
+        Create a new Cars Marketplace
+        listing.
+      </span>
+    </div>
+  </a>
+</section>
+
         {!loading && listings.length > 0 && (
           <>
             <section className="owner-dashboard-summary">

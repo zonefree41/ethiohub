@@ -140,15 +140,17 @@ export default function SellCar() {
     setError("");
 
     try {
+      const ownerToken = localStorage.getItem("ownerToken");
       const vehicle = await apiPost(
-        "/api/cars",
-        {
-          ...form,
-          year: Number(form.year),
-          price: Number(form.price),
-          mileage: Number(form.mileage),
-        }
-      );
+  "/api/cars",
+  {
+    ...form,
+    year: Number(form.year),
+    price: Number(form.price),
+    mileage: Number(form.mileage),
+  },
+  ownerToken
+);
 
       const vehicleId = vehicle?.vehicleId;
 
@@ -159,9 +161,10 @@ export default function SellCar() {
       }
 
       const checkout = await apiPost(
-        `/api/cars/${vehicleId}/create-checkout-session`,
-        {}
-      );
+  `/api/cars/${vehicleId}/create-checkout-session`,
+  {},
+  ownerToken
+);
 
       if (!checkout?.url) {
         throw new Error(

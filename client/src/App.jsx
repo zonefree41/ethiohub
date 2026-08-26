@@ -60,6 +60,7 @@ import TransportationQuotePage
   import CarPaymentSuccess from "./pages/CarPaymentSuccess.jsx";
   import CarPaymentCancelled from "./pages/CarPaymentCancelled.jsx";
   import CarDetail from "./pages/CarDetail.jsx";
+  import OwnerCars from "./pages/owner/OwnerCars.jsx";
 
 function usePath() {
   const [path, setPath] = React.useState(
@@ -141,6 +142,9 @@ if (path.startsWith("/owner/forgot-password")) return <ForgotPassword />;
 if (path.startsWith("/owner/reset-password/")) return <ResetPassword />;
 if (path.startsWith("/owner/activate/")) return <ActivateOwner />;
 if (path.startsWith("/owner/listings/edit/")) return <EditListing />;
+if (path.startsWith("/owner/my-cars")) {
+  return <OwnerCars />;
+}
 if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
 if (path.startsWith("/owner/transportation")) {
   return <OwnerTransportationDashboard />;
