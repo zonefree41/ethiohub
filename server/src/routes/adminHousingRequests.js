@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import Listing from "../models/Listing.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { scoreHousingMatch } from "../utils/housingMatchScore.js";
+import Category from "../models/Category.js";
 
 import HousingRequest from "../models/HousingRequest.js";
 import { requireAdmin } from "../middleware/auth.js";
@@ -272,6 +274,126 @@ router.patch(
       return res.status(500).json({
         message:
           "Failed to update housing request status.",
+      });
+    }
+  }
+);
+
+/*
+|--------------------------------------------------------------------------
+| AUTOMATIC HOUSING MATCH SUGGESTIONS
+|--------------------------------------------------------------------------
+|
+| GET /api/admin/housing-requests/:id/match-suggestions
+|
+*/
+
+router.get(
+  "/:id/match-suggestions",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      if (
+        !mongoose.Types.ObjectId.isValid(id)
+      ) {
+        return res.status(400).json({
+          message:
+            "Invalid housing request ID.",
+        });
+      }
+
+      const request =
+        await HousingRequest.findById(id);
+
+      if (!request) {
+        return res.status(404).json({
+          message:
+            "Housing request not found.",
+        });
+      }
+
+      const housingCategory =
+  await Category.findOne({
+    slug: "housing-rentals",
+  }).select("_id");
+
+      if (!housingCategory) {
+        return res.status(404).json({
+          message:
+            "Housing & Rentals category not found.",
+        });
+      }
+
+      const listings =
+        await Listing.find({
+          categoryId:
+            housingCategory._id,
+
+          status: "approved",
+
+          availabilityStatus:
+            "available",
+        })
+          .select(
+            [
+              "title",
+              "city",
+              "state",
+              "monthlyRent",
+              "bedrooms",
+              "bathrooms",
+              "leaseTerm",
+              "parking",
+              "petsAllowed",
+              "utilitiesIncluded",
+              "furnished",
+              "availabilityStatus",
+              "availableFrom",
+              "subcategory",
+              "imageUrl",
+            ].join(" ")
+          )
+          .lean();
+
+      const suggestions = listings
+        .map((listing) => {
+          const result =
+            scoreHousingMatch(
+              request,
+              listing
+            );
+
+          return {
+            ...listing,
+            matchScore: result.score,
+            matchReasons:
+              result.reasons,
+          };
+        })
+        .sort(
+          (a, b) =>
+            b.matchScore -
+            a.matchScore
+        )
+        .slice(0, 5);
+
+      return res.json({
+        requestId: request._id,
+        totalCandidates:
+          listings.length,
+        suggestions,
+      });
+    } catch (error) {
+      console.error(
+        "Housing match suggestions failed:",
+        error
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to generate housing match suggestions.",
       });
     }
   }

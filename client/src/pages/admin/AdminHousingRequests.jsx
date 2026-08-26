@@ -116,6 +116,12 @@ export default function AdminHousingRequests() {
   const [housingType, setHousingType] =
     React.useState("All");
 
+    const [matchSuggestions, setMatchSuggestions] =
+  React.useState([]);
+
+const [loadingMatchSuggestions, setLoadingMatchSuggestions] =
+  React.useState(false);
+
   const [page, setPage] = React.useState(1);
 
   const [pagination, setPagination] = React.useState({
@@ -199,6 +205,34 @@ const [loadingHousingListings, setLoadingHousingListings] =
 
     loadHousingListings();
   }, [token]);
+
+  async function loadMatchSuggestions(requestId) {
+  if (!requestId) return;
+
+  try {
+    setLoadingMatchSuggestions(true);
+
+    const data = await apiGet(
+      `/api/admin/housing-requests/${requestId}/match-suggestions`,
+      token
+    );
+
+    setMatchSuggestions(
+      Array.isArray(data?.suggestions)
+        ? data.suggestions
+        : []
+    );
+  } catch (err) {
+    console.error(
+      "Load automatic housing match suggestions failed:",
+      err
+    );
+
+    setMatchSuggestions([]);
+  } finally {
+    setLoadingMatchSuggestions(false);
+  }
+}
 
   async function loadRequests(nextPage = 1) {
     try {
@@ -337,6 +371,7 @@ const [loadingHousingListings, setLoadingHousingListings] =
       }
 
       setSelectedRequest(request);
+      await loadMatchSuggestions(request._id);
       setEditableStatus(request.status || "pending");
       setAdminNote(request.adminNote || "");
 
@@ -427,6 +462,7 @@ setProfileMessage("");
   }
 
   function closeModal() {
+    setMatchSuggestions([]);
     setAssistanceStatus("New");
 setAdminAssistanceNotes("");
     setSelectedRequest(null);
@@ -1156,6 +1192,121 @@ movingAssistanceNeeded:
       </span>
     </div>
   </div>
+
+  <div className="housing-match-suggestions">
+  <div className="housing-match-suggestions-header">
+    <div>
+      <h4>✨ Automatic Housing Match Suggestions</h4>
+      <p>
+        HubEthio compares this request with available
+        Housing & Rentals listings and ranks the best
+        potential matches.
+      </p>
+    </div>
+  </div>
+
+  {loadingMatchSuggestions ? (
+    <div className="housing-match-suggestions-empty">
+      Finding the best available housing matches...
+    </div>
+  ) : matchSuggestions.length === 0 ? (
+    <div className="housing-match-suggestions-empty">
+      No available Housing listings were found for
+      automatic matching.
+    </div>
+  ) : (
+    <div className="housing-match-suggestions-list">
+      {matchSuggestions.map((listing) => (
+        <article
+          key={listing._id}
+          className="housing-match-suggestion-card"
+        >
+          <div className="housing-match-suggestion-top">
+            <div>
+              <strong>{listing.title}</strong>
+
+              <span>
+                {[listing.city, listing.state]
+                  .filter(Boolean)
+                  .join(", ") ||
+                  "Location not provided"}
+              </span>
+            </div>
+
+            <div
+              className={`housing-match-score ${
+                listing.matchScore >= 80
+                  ? "strong"
+                  : listing.matchScore >= 60
+                    ? "medium"
+                    : "weak"
+              }`}
+            >
+              {listing.matchScore}% Match
+            </div>
+          </div>
+
+          <div className="housing-match-suggestion-details">
+            <span>
+              {listing.monthlyRent != null
+                ? `$${Number(
+                    listing.monthlyRent
+                  ).toLocaleString()}/month`
+                : "Rent not listed"}
+            </span>
+
+            <span>
+              {listing.bedrooms != null
+                ? `${listing.bedrooms} BR`
+                : "Bedrooms not listed"}
+            </span>
+
+            <span>
+              {listing.leaseTerm ||
+                "Lease not listed"}
+            </span>
+          </div>
+
+          {Array.isArray(listing.matchReasons) &&
+            listing.matchReasons.length > 0 && (
+              <div className="housing-match-reasons">
+                {listing.matchReasons.map(
+                  (reason, index) => (
+                    <div
+                      key={`${listing._id}-${index}`}
+                    >
+                      • {reason}
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+
+          <div className="housing-match-suggestion-actions">
+            <button
+              type="button"
+              onClick={() =>
+                setSelectedListingId(
+                  String(listing._id)
+                )
+              }
+            >
+              Use This Match
+            </button>
+
+            <a
+              href={`/listing/${listing._id}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View Property
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  )}
+</div>
 
   <div className="housing-match-selector">
   <label>
