@@ -401,8 +401,12 @@ if (assistanceStatus === "Matched") {
   request.email
 ) {
   try {
-    const propertyUrl =
-      `https://www.hubethio.com/listing/${matchedListing._id}`;
+    const clientUrl =
+  process.env.CLIENT_URL ||
+  "https://www.hubethio.com";
+
+const propertyUrl =
+  `${clientUrl}/listing/${matchedListing._id}`;
 
     const location =
       [
