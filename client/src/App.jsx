@@ -214,6 +214,11 @@ if (path.startsWith("/listing/")) return <Listing />;
 if (path.startsWith("/listing/")) return <><Listing /><Footer /></>;
 if (path.startsWith("/location/")) return <><Location /><Footer /></>;
 if (path.startsWith("/sell-car")) {
+  if (isIOSBuild) {
+    window.location.replace("/cars");
+    return null;
+  }
+
   return (
     <>
       <SellCar />
@@ -222,6 +227,11 @@ if (path.startsWith("/sell-car")) {
   );
 }
 if (path.startsWith("/cars/payment-success")) {
+  if (isIOSBuild) {
+    window.location.replace("/cars");
+    return null;
+  }
+
   return (
     <>
       <CarPaymentSuccess />
@@ -230,6 +240,11 @@ if (path.startsWith("/cars/payment-success")) {
   );
 }
 if (path.startsWith("/cars/payment-cancelled")) {
+  if (isIOSBuild) {
+    window.location.replace("/cars");
+    return null;
+  }
+
   return (
     <>
       <CarPaymentCancelled />

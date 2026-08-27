@@ -25,6 +25,7 @@ function money(value) {
 }
 
 export default function OwnerCars() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [vehicles, setVehicles] = React.useState([]);
@@ -303,25 +304,21 @@ export default function OwnerCars() {
     </a>
   )}
 
-                    {vehicle.status ===
-                      "payment_pending" &&
-                      vehicle.paymentStatus !==
-                        "paid" && (
-                        <button
-                          type="button"
-                          disabled={
-                            processingId ===
-                            vehicle._id
-                          }
-                          onClick={() =>
-                            retryPayment(
-                              vehicle._id
-                            )
-                          }
-                        >
-                          Retry Payment — $9.99
-                        </button>
-                      )}
+                    {!isIOSBuild &&
+  vehicle.status === "payment_pending" &&
+  vehicle.paymentStatus !== "paid" && (
+    <button
+      type="button"
+      disabled={
+        processingId === vehicle._id
+      }
+      onClick={() =>
+        retryPayment(vehicle._id)
+      }
+    >
+      Retry Payment — $9.99
+    </button>
+  )}
 
                     {vehicle.status ===
                       "approved" && (

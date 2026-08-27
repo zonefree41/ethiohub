@@ -383,22 +383,24 @@ const ownerWorkspaces = React.useMemo(
         )}
 
         <section className="owner-dashboard-quick-actions">
+    {!isIOSBuild && (
   <a
-    href="/owner/my-cars"
+    href="/sell-car"
     className="owner-dashboard-quick-action"
   >
     <span className="owner-dashboard-quick-action-icon">
-      🚗
+      ➕
     </span>
 
     <div>
-      <strong>My Cars</strong>
+      <strong>Sell a Car</strong>
       <span>
-        Manage your vehicle listings,
-        payments, and sold status.
+        Create a new Cars Marketplace
+        listing.
       </span>
     </div>
   </a>
+)}
 
   <a
     href="/sell-car"
@@ -436,10 +438,12 @@ const ownerWorkspaces = React.useMemo(
                 <span>Pending</span>
               </div>
 
-              <div>
-                <strong>{featuredCount}</strong>
-                <span>Featured</span>
-              </div>
+              {!isIOSBuild && (
+  <div>
+    <strong>{featuredCount}</strong>
+    <span>Featured</span>
+  </div>
+)}
             </section>
 
             <WorkspaceLauncher
@@ -514,17 +518,21 @@ const ownerWorkspaces = React.useMemo(
                               {listing.status || "pending"}
                             </span>
 
-                            {listing.paymentStatus === "active" && listing.isFeatured && (
-                              <span className="owner-featured-badge">
-                                ⭐ Featured Active
-                              </span>
-                            )}
+                            {!isIOSBuild &&
+  listing.paymentStatus === "active" &&
+  listing.isFeatured && (
+    <span className="owner-featured-badge">
+      ⭐ Featured Active
+    </span>
+  )}
 
-                            {listing.paymentStatus === "active" && listing.isVerified && (
-                              <span className="owner-verified-badge">
-                                ✅ Verified
-                              </span>
-                            )}
+{!isIOSBuild &&
+  listing.paymentStatus === "active" &&
+  listing.isVerified && (
+    <span className="owner-verified-badge">
+      ✅ Verified
+    </span>
+  )}
                           </div>
                         </div>
                       </div>
@@ -598,122 +606,126 @@ const ownerWorkspaces = React.useMemo(
     )}
   </div>
                         )}
+                        {!isIOSBuild && (
+                          <div className="owner-subscription-card">
+                             {/* existing subscription card content */}
+                            <h3>Subscription Status</h3>
 
-                        <div className="owner-subscription-card">
-  <h3>Subscription Status</h3>
+                            <p>
+                              <strong>Plan:</strong>{" "}
+                              {listing.paymentStatus === "trial"
+                                ? "Free Featured Trial"
+                                : listing.paymentStatus === "active" && listing.isFeatured
+                                ? "Featured Monthly Plan"
+                                : "Free Basic Listing"}
+                            </p>
 
-  <p>
-    <strong>Plan:</strong>{" "}
-    {listing.paymentStatus === "trial"
-      ? "Free Featured Trial"
-      : listing.paymentStatus === "active" && listing.isFeatured
-      ? "Featured Monthly Plan"
-      : "Free Basic Listing"}
-  </p>
+                            <p>
+                              <strong>Status:</strong>{" "}
+                              {listing.paymentStatus === "trial"
+                                ? "Trial Active"
+                                : listing.paymentStatus === "active"
+                                ? "Active"
+                                : listing.paymentStatus || "Not Subscribed"}
+                            </p>
 
-  <p>
-    <strong>Status:</strong>{" "}
-    {listing.paymentStatus === "trial"
-      ? "Trial Active"
-      : listing.paymentStatus === "active"
-      ? "Active"
-      : listing.paymentStatus || "Not Subscribed"}
-  </p>
+                            {listing.paymentStatus === "trial" && (
+                              <>
+                                <p>
+                                  <strong>Trial Ends:</strong>{" "}
+                                  {formatDate(listing.trialEndsAt)}
+                                </p>
 
- {listing.paymentStatus === "trial" && (
-  <>
-    <p>
-      <strong>Trial Ends:</strong> {formatDate(listing.trialEndsAt)}
-    </p>
+                                <div className="owner-trial-banner">
+                                  <div className="owner-trial-header">
+                                    🎉 Premium Trial Active
+                                  </div>
 
-    <div className="owner-trial-banner">
-      <div className="owner-trial-header">
-        🎉 Premium Trial Active
-      </div>
+                                  <div className="owner-trial-days">
+                                    {getTrialDaysLeft(listing.trialEndsAt)} Days Remaining
+                                  </div>
 
-      <div className="owner-trial-days">
-        {getTrialDaysLeft(listing.trialEndsAt)} Days Remaining
-      </div>
+                                  <p className="owner-trial-text">
+                                    You're currently enjoying all Premium features at no cost.
+                                  </p>
 
-      <p className="owner-trial-text">
-        You're currently enjoying all Premium features at no cost.
-      </p>
+                                  <div className="owner-trial-benefits">
+                                    <span>⭐ Featured Placement</span>
+                                    <span>✅ Verified Business</span>
+                                    <span>📈 Premium Analytics</span>
+                                    <span>🚀 Higher Search Ranking</span>
+                                  </div>
 
-      <div className="owner-trial-benefits">
-        <span>⭐ Featured Placement</span>
-        <span>✅ Verified Business</span>
-        <span>📈 Premium Analytics</span>
-        <span>🚀 Higher Search Ranking</span>
-      </div>
+                                  {!isIOSBuild && (
+                                    <a
+                                      href={`/pricing?listingId=${listing._id}`}
+                                      className="owner-trial-upgrade-btn"
+                                    >
+                                      Upgrade Before Trial Ends
+                                    </a>
+                                  )}
+                                </div>
+                              </>
+                            )}
 
-      {!isIOSBuild && (
-  <a
-    href={`/pricing?listingId=${listing._id}`}
-    className="owner-trial-upgrade-btn"
-  >
-    Upgrade Before Trial Ends
-  </a>
-)}
-    </div>
-  </>
-)}
+                            {listing.subscriptionCancelAt && (
+                              <p>
+                                <strong>Subscription Cancels:</strong>{" "}
+                                {formatDate(listing.subscriptionCancelAt)}
+                              </p>
+                            )}
 
-  {listing.subscriptionCancelAt && (
-    <p>
-      <strong>Subscription Cancels:</strong>{" "}
-      {formatDate(listing.subscriptionCancelAt)}
-    </p>
-  )}
+                            <p>
+                              <strong>Featured:</strong> {listing.isFeatured ? "Yes" : "No"}
+                            </p>
 
-  <p>
-    <strong>Featured:</strong> {listing.isFeatured ? "Yes" : "No"}
-  </p>
+                            <p>
+                              <strong>Verified:</strong> {listing.isVerified ? "Yes" : "No"}
+                            </p>
 
-  <p>
-    <strong>Verified:</strong> {listing.isVerified ? "Yes" : "No"}
-  </p>
+                            {listing.status === "approved" &&
+                              listing.paymentStatus !== "active" &&
+                              listing.paymentStatus !== "trial" && (
+                                <div className="owner-premium-card">
+                                  <div className="owner-premium-card-header">
+                                    <div className="owner-premium-icon">🚀</div>
 
-  {listing.status === "approved" &&
-  listing.paymentStatus !== "active" &&
-  listing.paymentStatus !== "trial" && (
-    <div className="owner-premium-card">
-      <div className="owner-premium-card-header">
-        <div className="owner-premium-icon">🚀</div>
+                                    <div>
+                                      <p className="owner-premium-label">HubEthio Premium</p>
+                                      <h3>Grow Your Business Visibility</h3>
+                                    </div>
+                                  </div>
 
-        <div>
-          <p className="owner-premium-label">HubEthio Premium</p>
-          <h3>Grow Your Business Visibility</h3>
-        </div>
-      </div>
+                                  <p className="owner-premium-description">
+                                    Upgrade your listing to reach more customers and stand out across
+                                    HubEthio.
+                                  </p>
 
-      <p className="owner-premium-description">
-        Upgrade your listing to reach more customers and stand out across
-        HubEthio.
-      </p>
+                                  <div className="owner-premium-benefits">
+                                    <span>✓ Featured placement</span>
+                                    <span>✓ Verified business badge</span>
+                                    <span>✓ Higher search visibility</span>
+                                    <span>✓ Premium performance analytics</span>
+                                  </div>
 
-      <div className="owner-premium-benefits">
-        <span>✓ Featured placement</span>
-        <span>✓ Verified business badge</span>
-        <span>✓ Higher search visibility</span>
-        <span>✓ Premium performance analytics</span>
-      </div>
+                                  {!isIOSBuild && (
+                                    <a
+                                      href={`/pricing?listingId=${listing._id}`}
+                                      className="owner-premium-upgrade-btn"
+                                    >
+                                      Upgrade Now
+                                    </a>
+                                  )}
 
-      {!isIOSBuild && (
-  <a
-    href={`/pricing?listingId=${listing._id}`}
-    className="owner-premium-upgrade-btn"
-  >
-    Upgrade Now
-  </a>
-)}
-
-      <p className="owner-premium-note">
-        Your basic business listing will remain visible even without Premium.
-      </p>
-    </div>
-  )}
-</div>
+                                  <p className="owner-premium-note">
+                                    Your basic business listing will remain visible even without Premium.
+                                  </p>
+                                </div>
+                              )}
+                          </div>
+                        )}
                       </div>
+
 
                       <div className="owner-performance-section">
   <h3>📊 Business Performance</h3>
