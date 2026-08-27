@@ -800,15 +800,24 @@ transportVerification: {
   }
 
   try {
-    setSubmittingVerification(true);
-    setError("");
-    setMessage("");
+  setSubmittingVerification(true);
+  setError("");
+  setMessage("");
 
-    const result = await apiPost(
-      `/api/owner/listings/${id}/submit-transport-verification`,
-      {},
-      token
-    );
+  // Save all current transportation information,
+  // uploaded documents, vehicle photos, and video first.
+  await apiPatch(
+    `/api/owner/listings/${id}`,
+    form,
+    token
+  );
+
+  // Then submit the saved verification data for review.
+  const result = await apiPost(
+    `/api/owner/listings/${id}/submit-transport-verification`,
+    {},
+    token
+  );
 
     setMessage(
       result.message ||
