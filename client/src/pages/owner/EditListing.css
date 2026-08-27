@@ -396,3 +396,40 @@
 .edit-listing-photo-actions button:last-child {
   background: #dc2626;
 }
+
+.transport-certification-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.transport-certification-checkbox {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  flex: 0 0 20px;
+  margin: 3px 0 0 0 !important;
+  padding: 0 !important;
+  accent-color: #0f7a3b;
+}
+
+.transport-certification-text {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .transport-certification-label {
+    gap: 10px;
+  }
+
+  .transport-certification-text {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+}

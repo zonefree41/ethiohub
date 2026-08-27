@@ -1880,16 +1880,10 @@ const isBeautyListing =
 </p>
 
 <div className="edit-listing-upload-card">
-  <label
-    style={{
-      display: "flex",
-      alignItems: "flex-start",
-      gap: "12px",
-      cursor: "pointer",
-    }}
-  >
+  <label className="transport-certification-label">
     <input
       type="checkbox"
+      className="transport-certification-checkbox"
       checked={form.transportVerification.ownerCertification || false}
       onChange={(e) =>
         setForm({
@@ -1900,10 +1894,9 @@ const isBeautyListing =
           },
         })
       }
-      style={{ marginTop: "4px" }}
     />
 
-    <span>
+    <span className="transport-certification-text">
       I certify that all transportation, insurance, licensing, registration,
       and operating authority information submitted is accurate to the best of
       my knowledge. I understand that HubEthio may review these documents and
