@@ -984,23 +984,25 @@ const isBeautyListing =
   onChange={update}
 />
 
-<div className="edit-listing-two-col">
-  <select
-    name="availabilityStatus"
-    value={form.availabilityStatus}
-    onChange={update}
-  >
-    <option value="available">🟢 Available</option>
-    <option value="rented">🔴 Rented</option>
-  </select>
+{isHousingListing && (
+  <div className="edit-listing-two-col">
+    <select
+      name="availabilityStatus"
+      value={form.availabilityStatus}
+      onChange={update}
+    >
+      <option value="available">🟢 Available</option>
+      <option value="rented">🔴 Rented</option>
+    </select>
 
-  <input
-    type="date"
-    name="availableFrom"
-    value={form.availableFrom}
-    onChange={update}
-  />
-</div>
+    <input
+      type="date"
+      name="availableFrom"
+      value={form.availableFrom}
+      onChange={update}
+    />
+  </div>
+)}
             </section>
 
 {isHousingListing && (
@@ -2071,6 +2073,7 @@ const isBeautyListing =
 </section>
 )}
 
+{!isTransportationListing && (
 <section className="edit-listing-section">
   <h2>Coupons & Promotions</h2>
 
@@ -2153,6 +2156,7 @@ const isBeautyListing =
     + Add Promotion
   </button>
 </section>
+)}
             <section className="edit-listing-section">
               <h2>Location</h2>
 
@@ -2186,6 +2190,7 @@ const isBeautyListing =
                 />
               </div>
             </section>
+
 
             <section className="edit-listing-section">
               <h2>Descriptions</h2>
