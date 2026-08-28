@@ -114,48 +114,34 @@ export default function OwnerCars() {
   async function renewVehicle(vehicleId) {
   try {
     setProcessingId(vehicleId);
+    setError("");
+    setMessage("");
 
-    const token =
-      localStorage.getItem("ownerToken");
-
-    const response = await fetch(
-      `${API}/api/cars/mine/${vehicleId}/renew-checkout-session`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const result = await apiPost(
+      `/api/cars/mine/${vehicleId}/renew-checkout-session`,
+      {},
+      token
     );
 
-    const data = await response.json();
-
-    if (!response.ok) {
+    if (!result?.url) {
       throw new Error(
-        data.message ||
-          "Failed to start vehicle renewal."
+        "Unable to start vehicle renewal."
       );
     }
 
-    if (!data.url) {
-      throw new Error(
-        "Stripe checkout URL was not returned."
-      );
-    }
-
-    window.location.href = data.url;
+    window.location.href = result.url;
   } catch (err) {
     console.error(
       "Vehicle renewal failed:",
       err
     );
 
-    alert(
+    setError(
       err.message ||
-        "Failed to start vehicle renewal."
+        "Unable to start vehicle renewal."
     );
-  } finally {
-    setProcessingId(null);
+
+    setProcessingId("");
   }
 }
 
