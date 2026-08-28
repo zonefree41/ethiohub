@@ -117,19 +117,49 @@ const smsHref = sellerPhone
     );
   }
 
-  if (error || !vehicle) {
+    if (error || !vehicle) {
+    if (error) {
+      console.error(
+        "Car detail unavailable:",
+        error
+      );
+    }
+
     return (
       <main className="car-detail-page">
-        <section className="car-detail-state">
-          <h1>Vehicle not found</h1>
-          <p>
-            {error ||
-              "This vehicle is not currently available."}
+        <section className="car-detail-state car-detail-unavailable">
+          <div className="car-detail-unavailable-icon">
+            🚗
+          </div>
+
+          <p className="car-detail-unavailable-kicker">
+            HubEthio Cars Marketplace
           </p>
 
-          <a href="/cars">
-            Back to Cars Marketplace
-          </a>
+          <h1>
+            This Vehicle Is No Longer Available
+          </h1>
+
+          <p className="car-detail-unavailable-message">
+            This listing may have been sold, removed, expired,
+            or is currently unavailable.
+          </p>
+
+          <div className="car-detail-unavailable-actions">
+            <a
+              href="/sell-car"
+              className="car-detail-unavailable-primary"
+            >
+              Sell Your Car
+            </a>
+
+            <a
+              href="/cars"
+              className="car-detail-unavailable-secondary"
+            >
+              Browse Cars Marketplace
+            </a>
+          </div>
         </section>
       </main>
     );
