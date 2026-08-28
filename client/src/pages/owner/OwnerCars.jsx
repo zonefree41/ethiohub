@@ -111,6 +111,54 @@ export default function OwnerCars() {
     }
   }
 
+  async function renewVehicle(vehicleId) {
+  try {
+    setProcessingId(vehicleId);
+
+    const token =
+      localStorage.getItem("ownerToken");
+
+    const response = await fetch(
+      `${API}/api/cars/mine/${vehicleId}/renew-checkout-session`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to start vehicle renewal."
+      );
+    }
+
+    if (!data.url) {
+      throw new Error(
+        "Stripe checkout URL was not returned."
+      );
+    }
+
+    window.location.href = data.url;
+  } catch (err) {
+    console.error(
+      "Vehicle renewal failed:",
+      err
+    );
+
+    alert(
+      err.message ||
+        "Failed to start vehicle renewal."
+    );
+  } finally {
+    setProcessingId(null);
+  }
+}
+
   async function markSold(vehicleId) {
     const confirmed = window.confirm(
       "Mark this vehicle as sold? It will be removed from the public marketplace."
@@ -362,6 +410,33 @@ export default function OwnerCars() {
                           marked sold.
                         </span>
                       )}
+
+                      {vehicle.status ===
+  "expired" && (
+    <div className="owner-car-expired-actions">
+      <span className="owner-car-note">
+        This listing has expired after its
+        30-day marketplace period.
+      </span>
+
+      {!isIOSBuild && (
+        <button
+  type="button"
+  className="owner-car-renew"
+  onClick={() =>
+    renewVehicle(vehicle._id)
+  }
+  disabled={
+    processingId === vehicle._id
+  }
+>
+  {processingId === vehicle._id
+    ? "Opening Checkout..."
+    : "Renew Listing — $9.99"}
+</button>
+      )}
+    </div>
+  )}
 
                   </div>
                 </div>

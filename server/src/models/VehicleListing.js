@@ -229,6 +229,32 @@ const VehicleListingSchema = new mongoose.Schema(
   default: null,
 },
 
+renewalCount: {
+  type: Number,
+  default: 0,
+},
+
+lastRenewedAt: {
+  type: Date,
+  default: null,
+},
+
+renewalStripeSessionId: {
+  type: String,
+  default: "",
+  index: true,
+},
+
+renewalStripePaymentIntentId: {
+  type: String,
+  default: "",
+},
+
+renewalConfirmationEmailSentAt: {
+  type: Date,
+  default: null,
+},
+
     approvedAt: {
       type: Date,
       default: null,

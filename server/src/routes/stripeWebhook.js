@@ -202,6 +202,74 @@ async function sendVehiclePaymentConfirmationEmail(vehicle) {
   return true;
 }
 
+async function sendVehicleRenewalConfirmationEmail(
+  vehicle
+) {
+  const vehicleName =
+    `${vehicle.year} ${vehicle.make} ${vehicle.model}`.trim();
+
+  await sendEmail({
+    to: vehicle.sellerEmail,
+    subject:
+      `Renewal Payment Received — ${vehicleName} Is Under Review`,
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;">
+        <h2 style="color: #0f766e;">
+          HubEthio Cars Marketplace
+        </h2>
+
+        <p>
+          Hi ${vehicle.sellerName || "there"},
+        </p>
+
+        <p>
+          We received your renewal payment for:
+        </p>
+
+        <p>
+          <strong>${vehicleName}</strong>
+        </p>
+
+        <p>
+          Your vehicle listing has been submitted for HubEthio review again.
+        </p>
+
+        <p>
+          <strong>Renewal Fee:</strong> $9.99<br />
+          <strong>Payment:</strong> Paid<br />
+          <strong>Status:</strong> Pending Review<br />
+          <strong>Renewal Number:</strong> ${vehicle.renewalCount}
+        </p>
+
+        <p>
+          Once approved, your listing will be live for another 30 days.
+        </p>
+
+        <p style="margin-top: 24px;">
+          <a
+            href="https://www.hubethio.com/owner/my-cars"
+            style="
+              display: inline-block;
+              padding: 12px 18px;
+              background: #0f766e;
+              color: #ffffff;
+              text-decoration: none;
+              border-radius: 8px;
+              font-weight: 700;
+            "
+          >
+            View My Cars
+          </a>
+        </p>
+
+        <p>
+          Thank you for using HubEthio Cars Marketplace.
+        </p>
+      </div>
+    `,
+  });
+}
+
 router.post("/", async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
@@ -332,6 +400,130 @@ if (emailClaim) {
 }
 
 break;
+}
+
+if (checkoutType === "vehicle_listing_renewal") {
+  const vehicleId = session.metadata?.vehicleId;
+
+  if (!vehicleId) {
+    console.log(
+      "⚠️ Vehicle renewal checkout missing vehicleId metadata."
+    );
+    break;
+  }
+
+  if (session.payment_status !== "paid") {
+    console.log(
+      "⚠️ Vehicle renewal checkout completed without paid status."
+    );
+    break;
+  }
+
+  const renewedAt = new Date();
+
+  let vehicle =
+    await VehicleListing.findOneAndUpdate(
+      {
+        _id: vehicleId,
+        status: "expired",
+      },
+      {
+        $set: {
+          status: "pending_review",
+          approvedAt: null,
+          rejectedAt: null,
+          rejectionReason: "",
+          lastRenewedAt: renewedAt,
+          renewalStripeSessionId: session.id,
+          renewalStripePaymentIntentId:
+            session.payment_intent || "",
+          renewalConfirmationEmailSentAt: null,
+        },
+        $inc: {
+          renewalCount: 1,
+        },
+      },
+      { new: true }
+    );
+
+  if (vehicle) {
+    console.log(
+      `✅ Vehicle renewal payment confirmed. Renewal #${vehicle.renewalCount} moved to pending review.`
+    );
+  } else {
+    vehicle =
+      await VehicleListing.findById(vehicleId);
+
+    if (!vehicle) {
+      console.log(
+        "⚠️ No vehicle listing found for renewal checkout."
+      );
+      break;
+    }
+
+    console.log(
+      `ℹ️ Vehicle renewal already processed or vehicle is no longer expired. Preserving current status: ${vehicle.status}.`
+    );
+  }
+
+  const renewalEmailClaim =
+    await VehicleListing.findOneAndUpdate(
+      {
+        _id: vehicle._id,
+        renewalStripeSessionId: session.id,
+        renewalConfirmationEmailSentAt: null,
+      },
+      {
+        $set: {
+          renewalConfirmationEmailSentAt:
+            new Date(),
+        },
+      },
+      { new: true }
+    );
+
+  if (renewalEmailClaim) {
+    try {
+      await sendVehicleRenewalConfirmationEmail(
+        renewalEmailClaim
+      );
+
+      console.log(
+        "✅ Vehicle renewal confirmation email sent and recorded."
+      );
+    } catch (emailErr) {
+      console.error(
+        "⚠️ Vehicle renewal confirmation email failed:",
+        emailErr.message
+      );
+
+      await VehicleListing.updateOne(
+        {
+          _id: vehicle._id,
+          renewalStripeSessionId: session.id,
+          renewalConfirmationEmailSentAt:
+            renewalEmailClaim
+              .renewalConfirmationEmailSentAt,
+        },
+        {
+          $set: {
+            renewalConfirmationEmailSentAt:
+              null,
+          },
+        }
+      );
+
+      console.log(
+        "ℹ️ Vehicle renewal email claim released for retry."
+      );
+    }
+  } else {
+    console.log(
+      "ℹ️ Vehicle renewal confirmation email already sent or claimed."
+    );
+  }
+
+  break;
 }
         const listingId = session.metadata?.listingId;
 

@@ -547,6 +547,108 @@ router.post(
   }
 );
 
+router.post(
+  "/mine/:vehicleId/renew-checkout-session",
+  requireOwner,
+  async (req, res) => {
+    try {
+      const { vehicleId } = req.params;
+
+      if (
+        !mongoose.Types.ObjectId.isValid(vehicleId)
+      ) {
+        return res.status(400).json({
+          message: "Invalid vehicle listing ID.",
+        });
+      }
+
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({
+          message: "Stripe is not configured.",
+        });
+      }
+
+      const vehicle =
+        await VehicleListing.findOne({
+          _id: vehicleId,
+          sellerUserId: req.owner.id,
+        });
+
+      if (!vehicle) {
+        return res.status(404).json({
+          message:
+            "Vehicle listing not found or you do not own this vehicle.",
+        });
+      }
+
+      if (vehicle.status !== "expired") {
+        return res.status(400).json({
+          message:
+            "Only expired vehicle listings can be renewed.",
+        });
+      }
+
+      const stripe = new Stripe(
+        process.env.STRIPE_SECRET_KEY
+      );
+
+      const session =
+        await stripe.checkout.sessions.create({
+          mode: "payment",
+
+          line_items: [
+            {
+              price_data: {
+                currency: "usd",
+                unit_amount: 999,
+
+                product_data: {
+                  name: `HubEthio Car Listing Renewal — ${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+                  description:
+                    "Renew your HubEthio Cars Marketplace listing for another 30-day period, subject to admin approval.",
+                },
+              },
+
+              quantity: 1,
+            },
+          ],
+
+          metadata: {
+            type: "vehicle_listing_renewal",
+            vehicleId: String(vehicle._id),
+            sellerUserId: String(
+              vehicle.sellerUserId
+            ),
+          },
+
+          customer_email:
+            vehicle.sellerEmail || undefined,
+
+          success_url:
+            `${CLIENT_ORIGIN}/cars/payment-success?vehicleId=${vehicle._id}&renewal=1&session_id={CHECKOUT_SESSION_ID}`,
+
+          cancel_url:
+            `${CLIENT_ORIGIN}/owner/my-cars`,
+        });
+
+      return res.json({
+        url: session.url,
+        sessionId: session.id,
+      });
+    } catch (err) {
+      console.error(
+        "Create vehicle renewal checkout failed:",
+        err.message
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to create vehicle renewal checkout session.",
+      });
+    }
+  }
+);
+
 router.get("/", async (req, res) => {
   try {
     const now = new Date();
