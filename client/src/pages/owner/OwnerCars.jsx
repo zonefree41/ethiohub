@@ -28,7 +28,18 @@ export default function OwnerCars() {
   const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
-  const [vehicles, setVehicles] = React.useState([]);
+    const [vehicles, setVehicles] = React.useState([]);
+
+  const [inquiries, setInquiries] =
+    React.useState([]);
+
+  const [inquiriesLoading, setInquiriesLoading] =
+    React.useState(true);
+
+  const [
+    inquiryProcessingId,
+    setInquiryProcessingId,
+  ] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [processingId, setProcessingId] =
     React.useState("");
@@ -44,8 +55,91 @@ export default function OwnerCars() {
       return;
     }
 
-    loadCars();
+        loadCars();
+    loadInquiries();
   }, []);
+
+  async function loadInquiries() {
+    try {
+      setInquiriesLoading(true);
+
+      const data = await apiGet(
+        "/api/cars/mine/inquiries",
+        token
+      );
+
+      setInquiries(
+        Array.isArray(data?.inquiries)
+          ? data.inquiries
+          : []
+      );
+    } catch (err) {
+      console.error(
+        "Load vehicle inquiries failed:",
+        err
+      );
+
+      const text =
+        err.message ||
+        "Unable to load buyer inquiries.";
+
+      if (
+        text.toLowerCase().includes("login") ||
+        text.toLowerCase().includes("token") ||
+        text.includes("401")
+      ) {
+        localStorage.removeItem("ownerToken");
+        localStorage.removeItem("ownerUser");
+
+        window.location.href =
+          "/owner/login?redirect=/owner/my-cars";
+
+        return;
+      }
+
+      setError(text);
+    } finally {
+      setInquiriesLoading(false);
+    }
+  }
+
+    async function updateInquiryStatus(
+    inquiryId,
+    status
+  ) {
+    try {
+      setInquiryProcessingId(inquiryId);
+      setError("");
+      setMessage("");
+
+      const result = await apiPatch(
+        `/api/cars/mine/inquiries/${inquiryId}/status`,
+        {
+          status,
+        },
+        token
+      );
+
+      setMessage(
+        result?.message ||
+          "Buyer inquiry updated."
+      );
+
+      await loadInquiries();
+    } catch (err) {
+      console.error(
+        "Update vehicle inquiry failed:",
+        err
+      );
+
+      setError(
+        err.message ||
+          "Unable to update buyer inquiry."
+      );
+    } finally {
+      setInquiryProcessingId("");
+    }
+  }
 
   async function loadCars() {
     try {
@@ -223,6 +317,182 @@ export default function OwnerCars() {
             {error}
           </div>
         )}
+
+        <section className="owner-car-inquiries">
+  <div className="owner-car-inquiries-header">
+    <div>
+      <p className="owner-cars-kicker">
+        Buyer Leads
+      </p>
+
+      <h2>Buyer Inquiries</h2>
+
+      <p>
+        Review messages from people interested
+        in your vehicles and keep track of
+        your follow-up.
+      </p>
+    </div>
+
+    {!inquiriesLoading && (
+      <span className="owner-car-inquiry-count">
+        {inquiries.length}{" "}
+        {inquiries.length === 1
+          ? "Inquiry"
+          : "Inquiries"}
+      </span>
+    )}
+  </div>
+
+  {inquiriesLoading ? (
+    <div className="owner-car-inquiries-state">
+      Loading buyer inquiries...
+    </div>
+  ) : inquiries.length === 0 ? (
+    <div className="owner-car-inquiries-empty">
+      <span>💬</span>
+
+      <div>
+        <strong>No buyer inquiries yet</strong>
+
+        <p>
+          New buyer messages will appear here
+          when someone contacts you through
+          a HubEthio vehicle listing.
+        </p>
+      </div>
+    </div>
+  ) : (
+    <div className="owner-car-inquiry-list">
+      {inquiries.map((inquiry) => {
+        const inquiryVehicle =
+          inquiry.vehicleId;
+
+        const vehicleName =
+          inquiryVehicle &&
+          typeof inquiryVehicle === "object"
+            ? [
+                inquiryVehicle.year,
+                inquiryVehicle.make,
+                inquiryVehicle.model,
+                inquiryVehicle.trim,
+              ]
+                .filter(Boolean)
+                .join(" ")
+            : "Vehicle Listing";
+
+        return (
+          <article
+            key={inquiry._id}
+            className="owner-car-inquiry-card"
+          >
+            <div className="owner-car-inquiry-top">
+              <div>
+                <span className="owner-car-inquiry-vehicle">
+                  {vehicleName}
+                </span>
+
+                <h3>{inquiry.buyerName}</h3>
+              </div>
+
+              <span
+                className={`owner-car-inquiry-status status-${String(
+                  inquiry.status
+                ).toLowerCase()}`}
+              >
+                {inquiry.status}
+              </span>
+            </div>
+
+            <div className="owner-car-inquiry-contact">
+              <a
+                href={`mailto:${inquiry.buyerEmail}`}
+              >
+                ✉️ {inquiry.buyerEmail}
+              </a>
+
+              {inquiry.buyerPhone ? (
+                <a
+                  href={`tel:${String(
+                    inquiry.buyerPhone
+                  ).replace(/[^\d+]/g, "")}`}
+                >
+                  📞 {inquiry.buyerPhone}
+                </a>
+              ) : null}
+            </div>
+
+            <div className="owner-car-inquiry-message">
+              <strong>Buyer Message</strong>
+
+              <p>{inquiry.message}</p>
+            </div>
+
+            <div className="owner-car-inquiry-footer">
+              <span>
+                Received{" "}
+                {new Date(
+                  inquiry.createdAt
+                ).toLocaleString()}
+              </span>
+
+              <div className="owner-car-inquiry-actions">
+                {inquiry.status === "New" && (
+                  <button
+                    type="button"
+                    disabled={
+                      inquiryProcessingId ===
+                      inquiry._id
+                    }
+                    onClick={() =>
+                      updateInquiryStatus(
+                        inquiry._id,
+                        "Contacted"
+                      )
+                    }
+                  >
+                    {inquiryProcessingId ===
+                    inquiry._id
+                      ? "Updating..."
+                      : "Mark Contacted"}
+                  </button>
+                )}
+
+                {inquiry.status ===
+                  "Contacted" && (
+                  <button
+                    type="button"
+                    disabled={
+                      inquiryProcessingId ===
+                      inquiry._id
+                    }
+                    onClick={() =>
+                      updateInquiryStatus(
+                        inquiry._id,
+                        "Closed"
+                      )
+                    }
+                  >
+                    {inquiryProcessingId ===
+                    inquiry._id
+                      ? "Updating..."
+                      : "Close Inquiry"}
+                  </button>
+                )}
+
+                {inquiry.status === "Closed" && (
+                  <span className="owner-car-inquiry-done">
+                    ✓ Follow-up complete
+                  </span>
+                )}
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  )}
+</section>
 
         {loading && (
           <div className="owner-cars-state">
