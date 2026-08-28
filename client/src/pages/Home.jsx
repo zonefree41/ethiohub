@@ -19,6 +19,9 @@ export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [recentListings, setRecentListings] = React.useState([]);
+  const generalFeaturedListings = featuredListings.filter(
+  (listing) => listing.categoryId?.slug !== "transportation"
+);
 
   const [housingRequests, setHousingRequests] =
   React.useState([]);
@@ -558,7 +561,7 @@ function formatHousingPhone(value) {
               Promoted Ethiopian businesses and community services.
             </p>
 
-            {featuredListings.length === 0 ? (
+            {generalFeaturedListings.length === 0 ? (
               <div className="home-empty-state">
                 <h3>No featured businesses yet</h3>
                 <p>
@@ -574,7 +577,7 @@ function formatHousingPhone(value) {
               </div>
             ) : (
               <div className="home-grid">
-                {featuredListings.slice(0, 8).map((listing) => (
+                {generalFeaturedListings.slice(0, 8).map((listing) => (
                   <a
                     key={listing._id}
                     href={`/listing/${listing._id}`}
