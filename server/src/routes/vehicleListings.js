@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import VehicleListing from "../models/VehicleListing.js";
+import VehicleInquiry from "../models/VehicleInquiry.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
 import User from "../models/User.js";
 import Stripe from "stripe";
@@ -16,6 +17,153 @@ const CLIENT_ORIGIN =
 
 const cleanText = (value) =>
   typeof value === "string" ? value.trim() : "";
+
+const escapeHtml = (value = "") =>
+  String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+async function sendVehicleInquiryEmail(
+  vehicle,
+  inquiry
+) {
+  if (!vehicle?.sellerEmail) {
+    console.log(
+      "⚠️ No seller email found for vehicle inquiry."
+    );
+    return false;
+  }
+
+  const vehicleName = [
+    vehicle.year,
+    vehicle.make,
+    vehicle.model,
+    vehicle.trim,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  await sendEmail({
+    to: vehicle.sellerEmail,
+
+    subject:
+      `New Buyer Inquiry — ${vehicleName}`,
+
+    html: `
+      <div style="background:#f4f7fb;padding:40px 20px;font-family:Arial,sans-serif;">
+        <div style="max-width:650px;margin:auto;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;">
+
+          <div style="background:#0f172a;padding:35px 30px;text-align:center;">
+            <h1 style="color:#ffffff;margin:0;font-size:32px;">
+              HubEthio
+            </h1>
+
+            <p style="color:#cbd5e1;margin-top:10px;">
+              Cars Marketplace
+            </p>
+          </div>
+
+          <div style="padding:40px 32px;color:#111827;line-height:1.7;">
+            <h2 style="margin-top:0;">
+              You Have a New Buyer Inquiry
+            </h2>
+
+            <p>
+              Hi ${escapeHtml(
+                vehicle.sellerName || "Seller"
+              )},
+            </p>
+
+            <p>
+              A buyer is interested in your
+              <strong>${escapeHtml(
+                vehicleName
+              )}</strong>.
+            </p>
+
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:25px 0;">
+              <h3 style="margin-top:0;">
+                Buyer Information
+              </h3>
+
+              <p style="margin:6px 0;">
+                <strong>Name:</strong>
+                ${escapeHtml(inquiry.buyerName)}
+              </p>
+
+              <p style="margin:6px 0;">
+                <strong>Email:</strong>
+                ${escapeHtml(inquiry.buyerEmail)}
+              </p>
+
+              ${
+                inquiry.buyerPhone
+                  ? `
+                    <p style="margin:6px 0;">
+                      <strong>Phone:</strong>
+                      ${escapeHtml(
+                        inquiry.buyerPhone
+                      )}
+                    </p>
+                  `
+                  : ""
+              }
+            </div>
+
+            <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:20px;margin:25px 0;">
+              <h3 style="margin-top:0;">
+                Buyer Message
+              </h3>
+
+              <p style="white-space:pre-wrap;margin-bottom:0;">${escapeHtml(
+                inquiry.message
+              )}</p>
+            </div>
+
+            <p>
+              Contact the buyer directly using the
+              information above. You will also be
+              able to manage this inquiry from
+              HubEthio Cars.
+            </p>
+
+            <div style="text-align:center;margin:35px 0;">
+              <a
+                href="https://www.hubethio.com/owner/my-cars"
+                style="background:#f59e0b;color:white;text-decoration:none;padding:15px 28px;border-radius:10px;font-weight:bold;display:inline-block;"
+              >
+                View My Cars
+              </a>
+            </div>
+
+            <div style="border-top:1px solid #e5e7eb;margin-top:35px;padding-top:25px;">
+              <p style="color:#6b7280;">
+                For your safety, verify buyer information
+                independently and never share passwords,
+                verification codes, or sensitive financial
+                information.
+              </p>
+
+              <p style="color:#9ca3af;font-size:14px;">
+                — HubEthio Team<br/>
+                support@hubethio.com
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  });
+
+  console.log(
+    "✅ Vehicle buyer inquiry email sent."
+  );
+
+  return true;
+}
 
 async function sendVehicleChangesSubmittedEmail(vehicle) {
   const sellerEmail = vehicle?.sellerEmail;
@@ -1048,6 +1196,158 @@ if (wasApproved || wasRejected) {
     }
   }
 );
+
+router.post("/:vehicleId/inquiries", async (req, res) => {
+  try {
+    const { vehicleId } = req.params;
+
+    if (
+      !mongoose.Types.ObjectId.isValid(vehicleId)
+    ) {
+      return res.status(400).json({
+        message: "Invalid vehicle listing ID.",
+      });
+    }
+
+    const buyerName = cleanText(
+      req.body?.buyerName
+    );
+
+    const buyerEmail = cleanText(
+      req.body?.buyerEmail
+    ).toLowerCase();
+
+    const buyerPhone = cleanText(
+      req.body?.buyerPhone
+    );
+
+    const message = cleanText(
+      req.body?.message
+    );
+
+    if (
+      !buyerName ||
+      !buyerEmail ||
+      !message
+    ) {
+      return res.status(400).json({
+        message:
+          "Please provide your name, email, and message.",
+      });
+    }
+
+    const emailPattern =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(buyerEmail)) {
+      return res.status(400).json({
+        message:
+          "Please provide a valid email address.",
+      });
+    }
+
+    if (buyerName.length > 120) {
+      return res.status(400).json({
+        message:
+          "Buyer name is too long.",
+      });
+    }
+
+    if (buyerEmail.length > 200) {
+      return res.status(400).json({
+        message:
+          "Buyer email is too long.",
+      });
+    }
+
+    if (buyerPhone.length > 40) {
+      return res.status(400).json({
+        message:
+          "Buyer phone number is too long.",
+      });
+    }
+
+    if (message.length > 2000) {
+      return res.status(400).json({
+        message:
+          "Message is too long.",
+      });
+    }
+
+    const vehicle =
+      await VehicleListing.findOne({
+        _id: vehicleId,
+        status: "approved",
+        paymentStatus: "paid",
+        sellerUserId: {
+          $ne: null,
+        },
+        $or: [
+          {
+            expiresAt: null,
+          },
+          {
+            expiresAt: {
+              $gt: new Date(),
+            },
+          },
+        ],
+      });
+
+    if (!vehicle) {
+      return res.status(404).json({
+        message:
+          "This vehicle is not currently available for inquiries.",
+      });
+    }
+
+    const inquiry =
+      await VehicleInquiry.create({
+        vehicleId: vehicle._id,
+        sellerUserId:
+          vehicle.sellerUserId,
+
+        buyerName,
+        buyerEmail,
+        buyerPhone,
+        message,
+
+        status: "New",
+      });
+
+    try {
+      await sendVehicleInquiryEmail(
+        vehicle,
+        inquiry
+      );
+    } catch (emailErr) {
+      console.error(
+        "⚠️ Vehicle inquiry email failed:",
+        emailErr.message
+      );
+    }
+
+    return res.status(201).json({
+      message:
+        "Your inquiry was sent successfully.",
+      inquiry: {
+        _id: inquiry._id,
+        status: inquiry.status,
+        createdAt: inquiry.createdAt,
+      },
+    });
+  } catch (err) {
+    console.error(
+      "Create vehicle inquiry failed:",
+      err.message
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to send your vehicle inquiry.",
+    });
+  }
+});
 
 router.get("/:vehicleId", async (req, res) => {
   try {
