@@ -179,6 +179,13 @@ if (sortBy) qs.set("sortBy", sortBy);
   const selectedCategory =
   slug === "all" ? null : categories.find((c) => c.slug === slug);
 
+  const visibleListings =
+  slug === "all"
+    ? listings.filter(
+        (listing) => !isTransportationListing(listing)
+      )
+    : listings;
+
 const title =
   slug === "all"
     ? "Search Results"
@@ -401,7 +408,7 @@ const seoDescription =
           </div>
         )}
 
-        {!loading && !error && listings.length === 0 && (
+        {!loading && !error && visibleListings.length === 0 && (
           <div className="category-state-card">
             <h2>No businesses found</h2>
             <p>Try searching for a different service, city, or state.</p>
@@ -411,9 +418,9 @@ const seoDescription =
           </div>
         )}
 
-        {!loading && !error && listings.length > 0 && (
+        {!loading && !error && visibleListings.length > 0 && (
           <div className="category-grid">
-  {listings.map((listing) => {
+  {visibleListings.map((listing) => {
     const phone = listing.phone || "";
     const whatsapp = String(
       listing.whatsapp || listing.phone || ""
