@@ -1,8 +1,114 @@
 import express from "express";
 import VehicleListing from "../models/VehicleListing.js";
 import { requireAdmin } from "../middleware/auth.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const router = express.Router();
+
+async function sendVehicleApprovalEmail(vehicle) {
+  const sellerEmail = vehicle?.sellerEmail;
+
+  if (!sellerEmail) {
+    console.log(
+      "⚠️ No seller email found for approved vehicle listing."
+    );
+    return false;
+  }
+
+  const vehicleName = [
+    vehicle.year,
+    vehicle.make,
+    vehicle.model,
+    vehicle.trim,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  await sendEmail({
+    to: sellerEmail,
+    subject: `Your ${vehicleName} Is Now Live on HubEthio`,
+    html: `
+      <div style="background:#f4f7fb;padding:40px 20px;font-family:Arial,sans-serif;">
+        <div style="max-width:650px;margin:auto;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;">
+          <div style="background:#0f172a;padding:35px 30px;text-align:center;">
+            <h1 style="color:#ffffff;margin:0;font-size:32px;">HubEthio</h1>
+            <p style="color:#cbd5e1;margin-top:10px;">
+              Cars Marketplace
+            </p>
+          </div>
+
+          <div style="padding:40px 32px;color:#111827;line-height:1.7;">
+            <h2 style="margin-top:0;">
+              Your Vehicle Is Live! 🎉
+            </h2>
+
+            <p>
+              Hi ${vehicle.sellerName || "Seller"},
+            </p>
+
+            <p>
+              Great news! Your vehicle listing has been reviewed
+              and approved by HubEthio.
+            </p>
+
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:25px 0;">
+              <h3 style="margin-top:0;">Vehicle Listing</h3>
+
+              <p style="margin:6px 0;">
+                <strong>Vehicle:</strong> ${vehicleName}
+              </p>
+
+              <p style="margin:6px 0;">
+                <strong>Status:</strong> Live
+              </p>
+
+              <p style="margin:6px 0;">
+                <strong>Marketplace:</strong> HubEthio Cars
+              </p>
+            </div>
+
+            <p>
+              Buyers can now discover your vehicle in the
+              HubEthio Cars Marketplace and contact you using
+              the information provided with your listing.
+            </p>
+
+            <p>
+              Your listing will remain active according to the
+              current HubEthio Cars Marketplace listing period.
+            </p>
+
+            <div style="text-align:center;margin:35px 0;">
+              <a
+                href="https://www.hubethio.com/owner/my-cars"
+                style="background:#f59e0b;color:white;text-decoration:none;padding:15px 28px;border-radius:10px;font-weight:bold;display:inline-block;"
+              >
+                View My Cars
+              </a>
+            </div>
+
+            <div style="border-top:1px solid #e5e7eb;margin-top:35px;padding-top:25px;">
+              <p style="color:#6b7280;">
+                Thank you for using HubEthio Cars Marketplace.
+              </p>
+
+              <p style="color:#9ca3af;font-size:14px;">
+                — HubEthio Team<br/>
+                support@hubethio.com
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  });
+
+  console.log(
+    "✅ Vehicle approval email sent."
+  );
+
+  return true;
+}
 
 const allowedStatuses = new Set([
   "pending_review",
@@ -88,10 +194,19 @@ router.patch(
 
       await vehicle.save();
 
-      return res.json({
-        message: "Vehicle listing approved successfully.",
-        vehicle,
-      });
+try {
+  await sendVehicleApprovalEmail(vehicle);
+} catch (emailErr) {
+  console.error(
+    "⚠️ Vehicle approval email failed:",
+    emailErr.message
+  );
+}
+
+return res.json({
+  message: "Vehicle listing approved successfully.",
+  vehicle,
+});
     } catch (err) {
       console.error(
         "Approve vehicle listing failed:",
