@@ -85,6 +85,17 @@ const publicSubmissionLimiter = rateLimit({
   },
 });
 
+const vehicleInquiryLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message:
+      "Too many vehicle inquiries. Please wait a few minutes and try again.",
+  },
+});
+
 const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
@@ -251,6 +262,10 @@ app.use("/api/owner/listings", ownerListingRoutes);
 app.use("/api/stripe", stripeCheckoutRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
+app.post(
+  "/api/cars/:vehicleId/inquiries",
+  vehicleInquiryLimiter
+);
 app.use("/api/cars", vehicleListingRoutes);
 app.use("/api/admin/cars", adminVehicleListingRoutes);
 app.use("/api/admin/transportation-requests", adminTransportationRoutes);
