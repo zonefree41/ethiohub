@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { expireTrials } from "../utils/expireTrials.js";
 import { sendTrialReminderEmails } from "./sendTrialReminderEmails.js";
+import { expireVehicleListings } from "../utils/expireVehicleListings.js";
 
 export function startDailyJobs() {
   cron.schedule("0 9 * * *", async () => {
@@ -12,6 +13,7 @@ export function startDailyJobs() {
 
       // Then expire any trials that have ended
       await expireTrials();
+      await expireVehicleListings();
 
       console.log("✅ Daily HubEthio jobs finished.");
     } catch (err) {
