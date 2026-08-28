@@ -402,22 +402,6 @@ const ownerWorkspaces = React.useMemo(
   </a>
 )}
 
-  <a
-    href="/sell-car"
-    className="owner-dashboard-quick-action"
-  >
-    <span className="owner-dashboard-quick-action-icon">
-      ➕
-    </span>
-
-    <div>
-      <strong>Sell a Car</strong>
-      <span>
-        Create a new Cars Marketplace
-        listing.
-      </span>
-    </div>
-  </a>
 </section>
 
         {!loading && listings.length > 0 && (

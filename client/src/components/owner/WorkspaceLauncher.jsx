@@ -17,9 +17,19 @@ export default function WorkspaceLauncher({
     );
   }, [listings]);
 
-  if (availableWorkspaces.length === 0) {
-    return null;
-  }
+      const carsWorkspace = {
+    id: "cars",
+    title: "Cars Marketplace",
+    icon: "🚗",
+    route: "/owner/my-cars",
+    description:
+      "Manage your vehicle listings, listing status, buyers, and sales.",
+  };
+
+  const workspacesToShow = [
+    ...availableWorkspaces,
+    carsWorkspace,
+  ];
 
   return (
     <section className="owner-workspace-launcher">
@@ -38,7 +48,7 @@ export default function WorkspaceLauncher({
       </div>
 
       <div className="owner-workspace-launcher-grid">
-        {availableWorkspaces.map((workspace) => {
+        {workspacesToShow.map((workspace) => {
           const count =
             Number(requestCounts[workspace.id]) || 0;
 
