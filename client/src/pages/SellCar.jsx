@@ -213,12 +213,12 @@ export default function SellCar() {
     </strong>
 
     <p>
-      One-time fee for a 90-day listing
+      One-time fee for a 30-day listing
       after HubEthio admin approval.
     </p>
   </div>
 
-  <span>$9.99</span>
+  <span>$7.00</span>
 </section>
 
         {error && (
@@ -620,13 +620,13 @@ export default function SellCar() {
           >
             {submitting
               ? "Preparing Secure Payment..."
-              : "Continue to Secure Payment — $9.99"}
+              : "Continue to Secure Payment — $7.00"}
           </button>
 
           <p className="sell-car-disclaimer">
   Payment is required before review.
   Approval is not guaranteed. If approved,
-  your vehicle will be listed for 90 days.
+  your vehicle will be listed for 30 days.
 </p>
         </form>
       </div>

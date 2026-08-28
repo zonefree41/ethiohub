@@ -421,7 +421,7 @@ router.post(
 
       status: "payment_pending",
       paymentStatus: "unpaid",
-      listingFee: 9.99,
+      listingFee: 7,
     });
 
     return res.status(201).json({
@@ -499,7 +499,7 @@ router.post(
             {
               price_data: {
                 currency: "usd",
-                unit_amount: 999,
+                unit_amount: 700,
 
                 product_data: {
                   name: `HubEthio Car Listing — ${vehicle.year} ${vehicle.make} ${vehicle.model}`,
@@ -600,7 +600,7 @@ router.post(
             {
               price_data: {
                 currency: "usd",
-                unit_amount: 999,
+                unit_amount: 700,
 
                 product_data: {
                   name: `HubEthio Car Listing Renewal — ${vehicle.year} ${vehicle.make} ${vehicle.model}`,
@@ -994,7 +994,7 @@ router.patch(
        * edited, send it back to admin review.
        *
        * Payment remains PAID. The seller does NOT
-       * pay the $9.99 listing fee again.
+       * pay the $7.00 listing fee again.
        */
       const wasApproved =
   vehicle.status === "approved";

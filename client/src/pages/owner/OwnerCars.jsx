@@ -350,7 +350,7 @@ export default function OwnerCars() {
         retryPayment(vehicle._id)
       }
     >
-      Retry Payment — $9.99
+      Retry Payment — $7.00
     </button>
   )}
 
@@ -418,7 +418,7 @@ export default function OwnerCars() {
 >
   {processingId === vehicle._id
     ? "Opening Checkout..."
-    : "Renew Listing — $9.99"}
+    : "Renew Listing — $7.00"}
 </button>
       )}
     </div>

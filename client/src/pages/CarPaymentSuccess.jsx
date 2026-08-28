@@ -17,7 +17,7 @@ export default function CarPaymentSuccess() {
         <h1>Payment Successful!</h1>
 
         <p className="car-payment-success-lead">
-          Thank you. Your $9.99 vehicle listing payment
+          Thank you. Your $7.00 vehicle listing payment
           was received successfully.
         </p>
 

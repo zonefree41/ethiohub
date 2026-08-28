@@ -205,7 +205,7 @@ const VehicleListingSchema = new mongoose.Schema(
 
     listingFee: {
       type: Number,
-      default: 9.99,
+      default: 7,
     },
 
     stripeSessionId: {

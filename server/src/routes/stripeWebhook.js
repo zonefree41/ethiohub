@@ -116,7 +116,7 @@ async function sendVehiclePaymentConfirmationEmail(vehicle) {
     .filter(Boolean)
     .join(" ");
 
-  const listingFee = Number(vehicle.listingFee || 9.99).toFixed(2);
+  const listingFee = Number(vehicle.listingFee || 7).toFixed(2);
 
   await sendEmail({
     to: sellerEmail,
@@ -235,7 +235,7 @@ async function sendVehicleRenewalConfirmationEmail(
         </p>
 
         <p>
-          <strong>Renewal Fee:</strong> $9.99<br />
+          <strong>Renewal Fee:</strong> $7.00<br />
           <strong>Payment:</strong> Paid<br />
           <strong>Status:</strong> Pending Review<br />
           <strong>Renewal Number:</strong> ${vehicle.renewalCount}

@@ -78,7 +78,7 @@ export default function CarPaymentCancelled() {
           <p>
             Your vehicle information has been saved,
             but HubEthio will not review or publish
-            the listing until the $9.99 listing fee
+            the listing until the $7.00 listing fee
             has been successfully paid.
           </p>
         </div>
@@ -98,7 +98,7 @@ export default function CarPaymentCancelled() {
             >
               {retrying
                 ? "Opening Secure Payment..."
-                : "Retry Payment — $9.99"}
+                : "Retry Payment — $7.00"}
             </button>
           )}
 
