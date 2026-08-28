@@ -385,3 +385,144 @@
     width: 100%;
   }
 }
+
+/* Cars V2.2 — Buyer Inquiry */
+
+.car-detail-inquiry {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.car-detail-inquiry-heading {
+  margin-bottom: 20px;
+}
+
+.car-detail-inquiry-heading h3 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.car-detail-inquiry-heading p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.car-detail-inquiry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.car-detail-inquiry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.car-detail-inquiry-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.car-detail-inquiry-form input,
+.car-detail-inquiry-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  font-weight: 500;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.car-detail-inquiry-form textarea {
+  resize: vertical;
+  min-height: 130px;
+  line-height: 1.5;
+}
+
+.car-detail-inquiry-form input:focus,
+.car-detail-inquiry-form textarea:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+.car-detail-inquiry-submit {
+  min-height: 48px;
+  align-self: flex-start;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 22px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.car-detail-inquiry-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.car-detail-inquiry-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.car-detail-inquiry-error,
+.car-detail-inquiry-success {
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.car-detail-inquiry-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.car-detail-inquiry-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.car-detail-inquiry-privacy {
+  margin: -4px 0 0;
+  color: #64748b;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .car-detail-inquiry {
+    margin-top: 24px;
+    padding-top: 24px;
+  }
+
+  .car-detail-inquiry-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .car-detail-inquiry-submit {
+    width: 100%;
+  }
+}

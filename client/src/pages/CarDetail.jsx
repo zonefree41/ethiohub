@@ -1,5 +1,8 @@
 import React from "react";
-import { apiGet } from "../api/http.js";
+import {
+  apiGet,
+  apiPost,
+} from "../api/http.js";
 import "./CarDetail.css";
 
 function formatMoney(value) {
@@ -42,6 +45,23 @@ export default function CarDetail() {
   const [error, setError] =
     React.useState("");
 
+  const [inquiryForm, setInquiryForm] =
+    React.useState({
+      buyerName: "",
+      buyerEmail: "",
+      buyerPhone: "",
+      message: "",
+    });
+
+  const [inquirySubmitting, setInquirySubmitting] =
+    React.useState(false);
+
+  const [inquiryError, setInquiryError] =
+    React.useState("");
+
+  const [inquirySuccess, setInquirySuccess] =
+    React.useState("");
+
   React.useEffect(() => {
     async function loadVehicle() {
       try {
@@ -79,6 +99,45 @@ export default function CarDetail() {
       loadVehicle();
     }
   }, [vehicleId]);
+
+  async function submitInquiry(event) {
+    event.preventDefault();
+
+    try {
+      setInquirySubmitting(true);
+      setInquiryError("");
+      setInquirySuccess("");
+
+      const data = await apiPost(
+  `/api/cars/${vehicleId}/inquiries`,
+  inquiryForm
+);
+
+      setInquirySuccess(
+        data?.message ||
+          "Your inquiry was sent successfully."
+      );
+
+      setInquiryForm({
+        buyerName: "",
+        buyerEmail: "",
+        buyerPhone: "",
+        message: "",
+      });
+    } catch (err) {
+      console.error(
+        "Vehicle inquiry failed:",
+        err
+      );
+
+      setInquiryError(
+        err.message ||
+          "Unable to send your inquiry."
+      );
+    } finally {
+      setInquirySubmitting(false);
+    }
+  }
 
   const phoneHref = vehicle?.sellerPhone
     ? `tel:${String(vehicle.sellerPhone).replace(
@@ -306,6 +365,127 @@ const smsHref = sellerPhone
                   Seller phone number is not available.
                 </p>
               )}
+
+              <div className="car-detail-inquiry">
+  <div className="car-detail-inquiry-heading">
+    <h3>Send an Inquiry Through HubEthio</h3>
+
+    <p>
+      Prefer not to call or text? Send the
+      seller a message directly through
+      HubEthio.
+    </p>
+  </div>
+
+  <form
+    className="car-detail-inquiry-form"
+    onSubmit={submitInquiry}
+  >
+    <div className="car-detail-inquiry-grid">
+      <label>
+        Your Name *
+        <input
+          type="text"
+          value={inquiryForm.buyerName}
+          onChange={(event) =>
+            setInquiryForm((current) => ({
+              ...current,
+              buyerName: event.target.value,
+            }))
+          }
+          maxLength={120}
+          autoComplete="name"
+          required
+        />
+      </label>
+
+      <label>
+        Email *
+        <input
+          type="email"
+          value={inquiryForm.buyerEmail}
+          onChange={(event) =>
+            setInquiryForm((current) => ({
+              ...current,
+              buyerEmail: event.target.value,
+            }))
+          }
+          maxLength={200}
+          autoComplete="email"
+          required
+        />
+      </label>
+    </div>
+
+    <label>
+      Phone
+      <input
+        type="tel"
+        value={inquiryForm.buyerPhone}
+        onChange={(event) =>
+          setInquiryForm((current) => ({
+            ...current,
+            buyerPhone: event.target.value,
+          }))
+        }
+        maxLength={40}
+        autoComplete="tel"
+        placeholder="Optional"
+      />
+    </label>
+
+    <label>
+      Message *
+      <textarea
+        value={inquiryForm.message}
+        onChange={(event) =>
+          setInquiryForm((current) => ({
+            ...current,
+            message: event.target.value,
+          }))
+        }
+        maxLength={2000}
+        rows={5}
+        placeholder={`Hi, I'm interested in your ${vehicle.year} ${vehicle.make} ${vehicle.model}.`}
+        required
+      />
+    </label>
+
+    {inquiryError ? (
+      <div
+        className="car-detail-inquiry-error"
+        role="alert"
+      >
+        {inquiryError}
+      </div>
+    ) : null}
+
+    {inquirySuccess ? (
+      <div
+        className="car-detail-inquiry-success"
+        role="status"
+      >
+        ✅ {inquirySuccess}
+      </div>
+    ) : null}
+
+    <button
+      type="submit"
+      className="car-detail-inquiry-submit"
+      disabled={inquirySubmitting}
+    >
+      {inquirySubmitting
+        ? "Sending..."
+        : "✉️ Send Inquiry"}
+    </button>
+
+    <p className="car-detail-inquiry-privacy">
+      Your contact information will be shared
+      with this vehicle's seller so they can
+      respond to your inquiry.
+    </p>
+  </form>
+</div>
             </div>
           </aside>
         </section>
