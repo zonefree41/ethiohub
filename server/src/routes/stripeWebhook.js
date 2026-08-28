@@ -243,13 +243,17 @@ if (checkoutType === "vehicle_listing") {
     break;
   }
 
-  const vehicle =
-  await VehicleListing.findByIdAndUpdate(
-    vehicleId,
+  let vehicle =
+  await VehicleListing.findOneAndUpdate(
+    {
+      _id: vehicleId,
+      paymentStatus: { $ne: "paid" },
+    },
     {
       $set: {
         paymentStatus: "paid",
         status: "pending_review",
+        paidAt: new Date(),
         stripeSessionId: session.id,
         stripePaymentIntentId:
           session.payment_intent || "",
@@ -258,10 +262,13 @@ if (checkoutType === "vehicle_listing") {
     { new: true }
   );
 
-if (vehicle && !vehicle.paidAt) {
-  vehicle.paidAt = new Date();
-  await vehicle.save();
-}
+if (vehicle) {
+  console.log(
+    "✅ Vehicle listing payment confirmed and moved to pending review."
+  );
+} else {
+  vehicle =
+    await VehicleListing.findById(vehicleId);
 
   if (!vehicle) {
     console.log(
@@ -271,8 +278,9 @@ if (vehicle && !vehicle.paidAt) {
   }
 
   console.log(
-  "✅ Vehicle listing payment confirmed and moved to pending review."
-);
+    `ℹ️ Vehicle payment already processed. Preserving current status: ${vehicle.status}.`
+  );
+}
 
 const emailClaim = await VehicleListing.findOneAndUpdate(
   {
