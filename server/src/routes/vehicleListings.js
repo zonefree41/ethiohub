@@ -5,6 +5,7 @@ import { requireOwner } from "../middleware/ownerAuth.js";
 import User from "../models/User.js";
 import Stripe from "stripe";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const router = express.Router();
 
@@ -15,6 +16,112 @@ const CLIENT_ORIGIN =
 
 const cleanText = (value) =>
   typeof value === "string" ? value.trim() : "";
+
+async function sendVehicleChangesSubmittedEmail(vehicle) {
+  const sellerEmail = vehicle?.sellerEmail;
+
+  if (!sellerEmail) {
+    console.log(
+      "⚠️ No seller email found for updated vehicle listing."
+    );
+    return false;
+  }
+
+  const vehicleName = [
+    vehicle.year,
+    vehicle.make,
+    vehicle.model,
+    vehicle.trim,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  await sendEmail({
+    to: sellerEmail,
+    subject: `Changes Submitted — ${vehicleName} Is Under Review`,
+    html: `
+      <div style="background:#f4f7fb;padding:40px 20px;font-family:Arial,sans-serif;">
+        <div style="max-width:650px;margin:auto;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;">
+          <div style="background:#0f172a;padding:35px 30px;text-align:center;">
+            <h1 style="color:#ffffff;margin:0;font-size:32px;">
+              HubEthio
+            </h1>
+
+            <p style="color:#cbd5e1;margin-top:10px;">
+              Cars Marketplace
+            </p>
+          </div>
+
+          <div style="padding:40px 32px;color:#111827;line-height:1.7;">
+            <h2 style="margin-top:0;">
+              Changes Successfully Submitted
+            </h2>
+
+            <p>
+              Hi ${vehicle.sellerName || "Seller"},
+            </p>
+
+            <p>
+              We received the changes to your vehicle listing.
+              Your updated listing has been submitted to the
+              HubEthio team for review.
+            </p>
+
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:25px 0;">
+              <h3 style="margin-top:0;">
+                Vehicle Listing
+              </h3>
+
+              <p style="margin:6px 0;">
+                <strong>Vehicle:</strong> ${vehicleName}
+              </p>
+
+              <p style="margin:6px 0;">
+                <strong>Payment Status:</strong> Paid
+              </p>
+
+              <p style="margin:6px 0;">
+                <strong>Listing Status:</strong> Pending HubEthio Review
+              </p>
+            </div>
+
+            <p>
+              You do not need to pay the listing fee again.
+              We will notify you after the review is completed.
+            </p>
+
+            <div style="text-align:center;margin:35px 0;">
+              <a
+                href="https://www.hubethio.com/owner/my-cars"
+                style="background:#f59e0b;color:white;text-decoration:none;padding:15px 28px;border-radius:10px;font-weight:bold;display:inline-block;"
+              >
+                View My Cars
+              </a>
+            </div>
+
+            <div style="border-top:1px solid #e5e7eb;margin-top:35px;padding-top:25px;">
+              <p style="color:#6b7280;">
+                Thank you for keeping your vehicle information
+                up to date.
+              </p>
+
+              <p style="color:#9ca3af;font-size:14px;">
+                — HubEthio Team<br/>
+                support@hubethio.com
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  });
+
+  console.log(
+    "✅ Vehicle changes submitted email sent."
+  );
+
+  return true;
+}
 
 async function optionalOwner(req, res, next) {
   try {
@@ -672,23 +779,37 @@ router.patch(
        * pay the $9.99 listing fee again.
        */
       const wasApproved =
-        vehicle.status === "approved";
+  vehicle.status === "approved";
 
-      Object.assign(vehicle, updates);
+const wasRejected =
+  vehicle.status === "rejected";
 
-      if (wasApproved) {
-        vehicle.status = "pending_review";
-        vehicle.approvedAt = null;
-      }
+Object.assign(vehicle, updates);
 
-      // Clear an old rejection after seller edits it.
-      if (vehicle.status === "rejected") {
-        vehicle.status = "pending_review";
-        vehicle.rejectedAt = null;
-        vehicle.rejectionReason = "";
-      }
+if (wasApproved) {
+  vehicle.status = "pending_review";
+  vehicle.approvedAt = null;
+}
 
-      await vehicle.save();
+// Clear an old rejection after seller edits it.
+if (wasRejected) {
+  vehicle.status = "pending_review";
+  vehicle.rejectedAt = null;
+  vehicle.rejectionReason = "";
+}
+
+await vehicle.save();
+
+if (wasApproved || wasRejected) {
+  try {
+    await sendVehicleChangesSubmittedEmail(vehicle);
+  } catch (emailErr) {
+    console.error(
+      "⚠️ Vehicle changes submitted email failed:",
+      emailErr.message
+    );
+  }
+}
 
       return res.json({
         message: wasApproved
