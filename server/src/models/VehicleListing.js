@@ -224,6 +224,11 @@ const VehicleListingSchema = new mongoose.Schema(
       default: null,
     },
 
+    paymentConfirmationEmailSentAt: {
+  type: Date,
+  default: null,
+},
+
     approvedAt: {
       type: Date,
       default: null,

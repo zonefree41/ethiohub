@@ -99,6 +99,109 @@ async function sendFeaturedSubscriptionEmail(listing) {
  console.log("✅ Featured subscription email sent.");
 }
 
+async function sendVehiclePaymentConfirmationEmail(vehicle) {
+  const sellerEmail = vehicle?.sellerEmail;
+
+  if (!sellerEmail) {
+    console.log("⚠️ No seller email found for vehicle listing.");
+    return false;
+  }
+
+  const vehicleName = [
+    vehicle.year,
+    vehicle.make,
+    vehicle.model,
+    vehicle.trim,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const listingFee = Number(vehicle.listingFee || 9.99).toFixed(2);
+
+  await sendEmail({
+    to: sellerEmail,
+    subject: `Payment Received — ${vehicleName} Is Under Review`,
+    html: `
+      <div style="background:#f4f7fb;padding:40px 20px;font-family:Arial,sans-serif;">
+        <div style="max-width:650px;margin:auto;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;">
+          <div style="background:#0f172a;padding:35px 30px;text-align:center;">
+            <h1 style="color:#ffffff;margin:0;font-size:32px;">HubEthio</h1>
+            <p style="color:#cbd5e1;margin-top:10px;">
+              Cars Marketplace
+            </p>
+          </div>
+
+          <div style="padding:40px 32px;color:#111827;line-height:1.7;">
+            <h2 style="margin-top:0;">Payment Received</h2>
+
+            <p>
+              Hi ${vehicle.sellerName || "Seller"},
+            </p>
+
+            <p>
+              Thank you for listing your vehicle on HubEthio.
+              Your payment has been successfully received.
+            </p>
+
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:25px 0;">
+              <h3 style="margin-top:0;">Vehicle Listing</h3>
+
+              <p style="margin:6px 0;">
+                <strong>Vehicle:</strong> ${vehicleName}
+              </p>
+
+              <p style="margin:6px 0;">
+                <strong>Listing Fee:</strong> $${listingFee}
+              </p>
+
+              <p style="margin:6px 0;">
+                <strong>Payment Status:</strong> Paid
+              </p>
+
+              <p style="margin:6px 0;">
+                <strong>Listing Status:</strong> Pending HubEthio Review
+              </p>
+            </div>
+
+            <p>
+              No further action is required right now. The HubEthio team
+              will review your vehicle listing before it becomes publicly
+              available in the Cars Marketplace.
+            </p>
+
+            <p>
+              We will contact you again after the review is completed.
+            </p>
+
+            <div style="text-align:center;margin:35px 0;">
+              <a
+                href="https://www.hubethio.com/owner/my-cars"
+                style="background:#f59e0b;color:white;text-decoration:none;padding:15px 28px;border-radius:10px;font-weight:bold;display:inline-block;"
+              >
+                View My Cars
+              </a>
+            </div>
+
+            <div style="border-top:1px solid #e5e7eb;margin-top:35px;padding-top:25px;">
+              <p style="color:#6b7280;">
+                Thank you for using HubEthio Cars Marketplace.
+              </p>
+
+              <p style="color:#9ca3af;font-size:14px;">
+                — HubEthio Team<br/>
+                support@hubethio.com
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  });
+
+  console.log("✅ Vehicle payment confirmation email sent.");
+  return true;
+}
+
 router.post("/", async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
@@ -141,18 +244,24 @@ if (checkoutType === "vehicle_listing") {
   }
 
   const vehicle =
-    await VehicleListing.findByIdAndUpdate(
-      vehicleId,
-      {
+  await VehicleListing.findByIdAndUpdate(
+    vehicleId,
+    {
+      $set: {
         paymentStatus: "paid",
         status: "pending_review",
         stripeSessionId: session.id,
         stripePaymentIntentId:
           session.payment_intent || "",
-        paidAt: new Date(),
       },
-      { new: true }
-    );
+    },
+    { new: true }
+  );
+
+if (vehicle && !vehicle.paidAt) {
+  vehicle.paidAt = new Date();
+  await vehicle.save();
+}
 
   if (!vehicle) {
     console.log(
@@ -162,10 +271,59 @@ if (checkoutType === "vehicle_listing") {
   }
 
   console.log(
-    "✅ Vehicle listing payment confirmed and moved to pending review."
-  );
+  "✅ Vehicle listing payment confirmed and moved to pending review."
+);
 
-  break;
+const emailClaim = await VehicleListing.findOneAndUpdate(
+  {
+    _id: vehicle._id,
+    paymentConfirmationEmailSentAt: null,
+  },
+  {
+    $set: {
+      paymentConfirmationEmailSentAt: new Date(),
+    },
+  },
+  { new: true }
+);
+
+if (emailClaim) {
+  try {
+    await sendVehiclePaymentConfirmationEmail(emailClaim);
+
+    console.log(
+      "✅ Vehicle payment confirmation email sent and recorded."
+    );
+  } catch (emailErr) {
+    console.error(
+      "⚠️ Vehicle payment confirmation email failed:",
+      emailErr.message
+    );
+
+    await VehicleListing.updateOne(
+      {
+        _id: vehicle._id,
+        paymentConfirmationEmailSentAt:
+          emailClaim.paymentConfirmationEmailSentAt,
+      },
+      {
+        $set: {
+          paymentConfirmationEmailSentAt: null,
+        },
+      }
+    );
+
+    console.log(
+      "ℹ️ Vehicle payment email claim released for retry."
+    );
+  }
+} else {
+  console.log(
+    "ℹ️ Vehicle payment confirmation email already sent or claimed."
+  );
+}
+
+break;
 }
         const listingId = session.metadata?.listingId;
 
