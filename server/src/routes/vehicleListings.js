@@ -836,6 +836,132 @@ router.get("/health", (req, res) => {
 });
 
 router.get(
+  "/mine/inquiries",
+  requireOwner,
+  async (req, res) => {
+    try {
+      const inquiries =
+        await VehicleInquiry.find({
+          sellerUserId: req.owner.id,
+        })
+          .populate(
+            "vehicleId",
+            "year make model trim price status photos"
+          )
+          .sort({
+            createdAt: -1,
+          });
+
+      return res.json({
+        inquiries,
+      });
+    } catch (err) {
+      console.error(
+        "Load vehicle inquiries failed:",
+        err.message
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to load buyer inquiries.",
+      });
+    }
+  }
+);
+
+router.patch(
+  "/mine/inquiries/:inquiryId/status",
+  requireOwner,
+  async (req, res) => {
+    try {
+      const { inquiryId } = req.params;
+      const requestedStatus = cleanText(
+        req.body?.status
+      );
+
+      if (
+        !mongoose.Types.ObjectId.isValid(
+          inquiryId
+        )
+      ) {
+        return res.status(400).json({
+          message:
+            "Invalid vehicle inquiry ID.",
+        });
+      }
+
+      const inquiry =
+        await VehicleInquiry.findOne({
+          _id: inquiryId,
+          sellerUserId: req.owner.id,
+        });
+
+      if (!inquiry) {
+        return res.status(404).json({
+          message:
+            "Buyer inquiry not found.",
+        });
+      }
+
+      const allowedTransition = {
+        New: "Contacted",
+        Contacted: "Closed",
+      };
+
+      const expectedStatus =
+        allowedTransition[inquiry.status];
+
+      if (
+        !expectedStatus ||
+        requestedStatus !== expectedStatus
+      ) {
+        return res.status(400).json({
+          message:
+            inquiry.status === "Closed"
+              ? "This inquiry is already closed."
+              : `Inquiry must move from ${inquiry.status} to ${expectedStatus}.`,
+        });
+      }
+
+      inquiry.status = requestedStatus;
+
+      if (requestedStatus === "Contacted") {
+        inquiry.contactedAt = new Date();
+      }
+
+      if (requestedStatus === "Closed") {
+        inquiry.closedAt = new Date();
+      }
+
+      await inquiry.save();
+
+      await inquiry.populate(
+        "vehicleId",
+        "year make model trim price status photos"
+      );
+
+      return res.json({
+        message:
+          requestedStatus === "Contacted"
+            ? "Inquiry marked as contacted."
+            : "Inquiry closed successfully.",
+        inquiry,
+      });
+    } catch (err) {
+      console.error(
+        "Update vehicle inquiry status failed:",
+        err.message
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to update buyer inquiry.",
+      });
+    }
+  }
+);
+
+router.get(
   "/mine",
   requireOwner,
   async (req, res) => {
