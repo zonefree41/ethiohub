@@ -110,6 +110,122 @@ async function sendVehicleApprovalEmail(vehicle) {
   return true;
 }
 
+async function sendVehicleRejectionEmail(vehicle) {
+  const sellerEmail = vehicle?.sellerEmail;
+
+  if (!sellerEmail) {
+    console.log(
+      "⚠️ No seller email found for rejected vehicle listing."
+    );
+    return false;
+  }
+
+  const vehicleName = [
+    vehicle.year,
+    vehicle.make,
+    vehicle.model,
+    vehicle.trim,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const rejectionReason =
+    vehicle.rejectionReason ||
+    "Your vehicle listing needs changes before it can be approved.";
+
+  await sendEmail({
+    to: sellerEmail,
+    subject: `Action Needed — ${vehicleName} Needs Changes`,
+    html: `
+      <div style="background:#f4f7fb;padding:40px 20px;font-family:Arial,sans-serif;">
+        <div style="max-width:650px;margin:auto;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;">
+          <div style="background:#0f172a;padding:35px 30px;text-align:center;">
+            <h1 style="color:#ffffff;margin:0;font-size:32px;">
+              HubEthio
+            </h1>
+
+            <p style="color:#cbd5e1;margin-top:10px;">
+              Cars Marketplace
+            </p>
+          </div>
+
+          <div style="padding:40px 32px;color:#111827;line-height:1.7;">
+            <h2 style="margin-top:0;">
+              Your Vehicle Listing Needs Changes
+            </h2>
+
+            <p>
+              Hi ${vehicle.sellerName || "Seller"},
+            </p>
+
+            <p>
+              We reviewed your vehicle listing, but it cannot be approved yet.
+              Please review the reason below and update your listing.
+            </p>
+
+            <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:20px;margin:25px 0;">
+              <h3 style="margin-top:0;">
+                Vehicle Listing
+              </h3>
+
+              <p style="margin:6px 0;">
+                <strong>Vehicle:</strong> ${vehicleName}
+              </p>
+
+              <p style="margin:6px 0;">
+                <strong>Status:</strong> Changes Required
+              </p>
+            </div>
+
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:14px;padding:20px;margin:25px 0;">
+              <h3 style="margin-top:0;">
+                Review Reason
+              </h3>
+
+              <p style="margin-bottom:0;">
+                ${rejectionReason}
+              </p>
+            </div>
+
+            <p>
+              You can edit your vehicle listing from My Cars.
+              After you submit your changes, the listing will return
+              to HubEthio for another review.
+            </p>
+
+            <div style="text-align:center;margin:35px 0;">
+              <a
+                href="https://www.hubethio.com/owner/my-cars"
+                style="background:#f59e0b;color:white;text-decoration:none;padding:15px 28px;border-radius:10px;font-weight:bold;display:inline-block;"
+              >
+                Edit My Vehicle
+              </a>
+            </div>
+
+            <div style="border-top:1px solid #e5e7eb;margin-top:35px;padding-top:25px;">
+              <p style="color:#6b7280;">
+                Once your changes are submitted, our team will review
+                your vehicle again.
+              </p>
+
+              <p style="color:#9ca3af;font-size:14px;">
+                — HubEthio Team<br/>
+                support@hubethio.com
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  });
+
+  console.log(
+    "✅ Vehicle rejection email sent."
+  );
+
+  return true;
+}
+
 const allowedStatuses = new Set([
   "pending_review",
   "approved",
@@ -266,14 +382,23 @@ router.patch(
       vehicle.approvedAt = null;
       vehicle.expiresAt = null;
       vehicle.rejectionReason =
-        rejectionReason.slice(0, 1000);
+  rejectionReason.slice(0, 1000);
 
-      await vehicle.save();
+await vehicle.save();
 
-      return res.json({
-        message: "Vehicle listing rejected.",
-        vehicle,
-      });
+try {
+  await sendVehicleRejectionEmail(vehicle);
+} catch (emailErr) {
+  console.error(
+    "⚠️ Vehicle rejection email failed:",
+    emailErr.message
+  );
+}
+
+return res.json({
+  message: "Vehicle listing rejected.",
+  vehicle,
+});
     } catch (err) {
       console.error(
         "Reject vehicle listing failed:",
