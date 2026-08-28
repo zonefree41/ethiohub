@@ -1495,7 +1495,31 @@ router.get("/:vehicleId", async (req, res) => {
         { expiresAt: null },
         { expiresAt: { $gt: new Date() } },
       ],
-    });
+    }).select(
+      [
+        "_id",
+        "sellerType",
+        "sellerPhone",
+        "year",
+        "make",
+        "model",
+        "trim",
+        "price",
+        "mileage",
+        "exteriorColor",
+        "interiorColor",
+        "transmission",
+        "drivetrain",
+        "fuelType",
+        "titleStatus",
+        "condition",
+        "description",
+        "city",
+        "state",
+        "photos",
+        "createdAt",
+      ].join(" ")
+    );
 
     if (!vehicle) {
       return res.status(404).json({
