@@ -3,7 +3,10 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
 import User from "../models/User.js";
-import { requireAdmin } from "../middleware/auth.js";
+import {
+  requireAdmin,
+  requireRole,
+} from "../middleware/auth.js";
 import { sendEmail } from "../utils/sendEmail.js";
 
 const router = express.Router();
@@ -11,6 +14,10 @@ const router = express.Router();
 router.post(
   "/",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const {
@@ -270,6 +277,10 @@ return res.status(201).json({
 router.post(
   "/resend",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const { email } = req.body || {};

@@ -20,7 +20,16 @@ export async function requireAdmin(req, res, next) {
       process.env.JWT_SECRET
     );
 
-    if (!payload?.id || payload.role !== "admin") {
+    const allowedAdminRoles = [
+  "admin",
+  "super_admin",
+  "engineer",
+  "operations_admin",
+  "verification_agent",
+  "support_agent",
+];
+
+if (!payload?.id || !allowedAdminRoles.includes(payload.role)) {
       return res.status(403).json({
         message: "Administrator access required.",
       });
@@ -28,7 +37,7 @@ export async function requireAdmin(req, res, next) {
 
     const admin = await AdminUser.findOne({
   _id: payload.id,
-  role: "admin",
+  role: { $in: allowedAdminRoles },
 }).select("_id email role");
 
 if (!admin) {
@@ -50,4 +59,27 @@ if (!admin) {
       message: "Invalid or expired admin token.",
     });
   }
+}
+
+export function requireRole(...allowedRoles) {
+  return (req, res, next) => {
+    if (!req.admin) {
+      return res.status(401).json({
+        message: "Administrator authentication required.",
+      });
+    }
+
+    const effectiveRole =
+      req.admin.role === "admin"
+        ? "super_admin"
+        : req.admin.role;
+
+    if (!allowedRoles.includes(effectiveRole)) {
+      return res.status(403).json({
+        message: "You do not have permission to perform this action.",
+      });
+    }
+
+    return next();
+  };
 }

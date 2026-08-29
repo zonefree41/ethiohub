@@ -3,7 +3,10 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import AdminUser from "../models/AdminUser.js";
 import Listing from "../models/Listing.js";
-import { requireAdmin } from "../middleware/auth.js";
+import {
+  requireAdmin,
+  requireRole,
+} from "../middleware/auth.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import mongoose from "mongoose";
 
@@ -118,6 +121,11 @@ router.get(
 router.patch(
   "/transportation-verification/:id/approve",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "verification_agent"
+  ),
   async (req, res) => {
     try {
 
@@ -171,6 +179,11 @@ router.patch(
 router.patch(
   "/transportation-verification/:id/reject",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "verification_agent"
+  ),
   async (req, res) => {
     try {
 
@@ -223,7 +236,14 @@ router.patch(
 
 
 // Approve / reject / edit listing
-router.patch("/listings/:id", requireAdmin, async (req, res) => {
+router.patch(
+  "/listings/:id",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
+  async (req, res) => {
   try {
     if (!isValidObjectId(req.params.id)) {
   return res.status(400).json({
@@ -499,12 +519,14 @@ if (shouldSendApprovalEmail) {
     console.error("Admin listing update failed:", err);
     res.status(500).json({ message: "Failed to update listing" });
   }
-});
+  }
+);
 
 // Delete listing
 router.delete(
   "/listings/:id",
   requireAdmin,
+  requireRole("super_admin"),
   async (req, res) => {
     try {
       if (!isValidObjectId(req.params.id)) {
