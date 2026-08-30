@@ -2,7 +2,10 @@ import express from "express";
 import mongoose from "mongoose";
 
 import TravelRequest from "../models/TravelRequest.js";
-import { requireAdmin } from "../middleware/auth.js";
+import {
+  requireAdmin,
+  requireRole,
+} from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -1005,6 +1008,10 @@ router.get(
 router.patch(
   "/:id/status",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const {
@@ -1144,6 +1151,10 @@ router.patch(
 router.patch(
   "/:id/quote",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const { id } = req.params;

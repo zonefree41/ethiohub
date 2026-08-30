@@ -1,6 +1,9 @@
 import express from "express";
 import VehicleListing from "../models/VehicleListing.js";
-import { requireAdmin } from "../middleware/auth.js";
+import {
+  requireAdmin,
+  requireRole,
+} from "../middleware/auth.js";
 import { sendEmail } from "../utils/sendEmail.js";
 
 const router = express.Router();
@@ -270,6 +273,10 @@ router.get("/", requireAdmin, async (req, res) => {
 router.patch(
   "/:vehicleId/approve",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const { vehicleId } = req.params;
@@ -339,6 +346,10 @@ return res.json({
 router.patch(
   "/:vehicleId/reject",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const { vehicleId } = req.params;
@@ -415,6 +426,11 @@ return res.json({
 router.patch(
   "/:vehicleId/sold",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
   async (req, res) => {
     try {
       const { vehicleId } = req.params;

@@ -1,7 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import Review from "../models/Review.js";
-import { requireAdmin } from "../middleware/auth.js";
+import {
+  requireAdmin,
+  requireRole,
+} from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -107,6 +110,10 @@ router.get(
 router.patch(
   "/admin/:reviewId/approve",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const { reviewId } = req.params;
@@ -156,6 +163,7 @@ router.patch(
 router.delete(
   "/admin/:reviewId",
   requireAdmin,
+  requireRole("super_admin"),
   async (req, res) => {
     try {
       const { reviewId } = req.params;

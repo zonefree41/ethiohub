@@ -2,7 +2,10 @@ import express from "express";
 import mongoose from "mongoose";
 
 import TransportationRequest from "../models/TransportationRequest.js";
-import { requireAdmin } from "../middleware/auth.js";
+import {
+  requireAdmin,
+  requireRole,
+} from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -579,6 +582,10 @@ router.get(
 router.patch(
   "/:id/status",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const { status, note = "" } = req.body || {};
@@ -689,6 +696,10 @@ router.patch(
 router.patch(
   "/:id/driver",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const { id } = req.params;

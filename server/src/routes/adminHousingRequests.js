@@ -6,7 +6,10 @@ import { scoreHousingMatch } from "../utils/housingMatchScore.js";
 import Category from "../models/Category.js";
 
 import HousingRequest from "../models/HousingRequest.js";
-import { requireAdmin } from "../middleware/auth.js";
+import {
+  requireAdmin,
+  requireRole,
+} from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -211,6 +214,10 @@ router.get("/:id", requireAdmin, async (req, res) => {
 router.patch(
   "/:id/status",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -457,6 +464,10 @@ const filteredOut =
 router.patch(
   "/:id/assistance",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -788,7 +799,14 @@ const propertyUrl =
   }
 );
 
-router.patch("/:id", requireAdmin, async (req, res) => {
+router.patch(
+  "/:id",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
+  async (req, res) => {
   try {
     const { id } = req.params;
 

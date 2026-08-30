@@ -1,7 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import ClaimRequest from "../models/ClaimRequest.js";
-import { requireAdmin } from "../middleware/auth.js";
+import {
+  requireAdmin,
+  requireRole,
+} from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -93,7 +96,14 @@ router.get("/admin", requireAdmin, async (_req, res) => {
  * Admin: Update claim status
  * PATCH /api/claims/admin/:id
  */
-router.patch("/admin/:id", requireAdmin, async (req, res) => {
+router.patch(
+  "/admin/:id",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
+  async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;

@@ -1,6 +1,9 @@
 import express from "express";
 import BusinessRequest from "../models/BusinessRequest.js";
-import { requireAdmin } from "../middleware/auth.js";
+import {
+  requireAdmin,
+  requireRole,
+} from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -100,7 +103,14 @@ router.get(
  * Admin: Update request status
  * PATCH /api/business-requests/admin/:id
  */
-router.patch("/admin/:id", requireAdmin, async (req, res) => {
+router.patch(
+  "/admin/:id",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
+  async (req, res) => {
   try {
     const { status } = req.body;
 
@@ -138,7 +148,11 @@ router.patch("/admin/:id", requireAdmin, async (req, res) => {
  * Admin: Delete business request
  * DELETE /api/business-requests/admin/:id
  */
-router.delete("/admin/:id", requireAdmin, async (req, res) => {
+router.delete(
+  "/admin/:id",
+  requireAdmin,
+  requireRole("super_admin"),
+  async (req, res) => {
   try {
     const request = await BusinessRequest.findByIdAndDelete(req.params.id);
 
