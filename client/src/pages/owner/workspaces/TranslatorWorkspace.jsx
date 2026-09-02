@@ -5,6 +5,7 @@ import WorkspaceStats from "../../../components/owner/workspaces/WorkspaceStats.
 import "./TranslatorWorkspace.css";
 
 export default function TranslatorWorkspace() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -145,12 +146,16 @@ export default function TranslatorWorkspace() {
                   value:
                     approvedCount,
                 },
-                {
-                  label:
-                    "Featured Listings",
-                  value:
-                    featuredCount,
-                },
+                ...(!isIOSBuild
+                  ? [
+                      {
+                        label:
+                          "Featured Listings",
+                        value:
+                          featuredCount,
+                      },
+                    ]
+                  : []),
                 {
                   label:
                     "Total Views",

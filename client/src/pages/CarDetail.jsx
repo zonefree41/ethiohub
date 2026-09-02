@@ -30,6 +30,8 @@ function formatMileage(value) {
 }
 
 export default function CarDetail() {
+  const isIOSBuild = __IOS_BUILD__;
+
   const vehicleId =
     window.location.pathname.split("/").pop();
 
@@ -205,12 +207,14 @@ const smsHref = sellerPhone
           </p>
 
           <div className="car-detail-unavailable-actions">
-            <a
-              href="/sell-car"
-              className="car-detail-unavailable-primary"
-            >
-              Sell Your Car
-            </a>
+            {!isIOSBuild && (
+              <a
+                href="/sell-car"
+                className="car-detail-unavailable-primary"
+              >
+                Sell Your Car
+              </a>
+            )}
 
             <a
               href="/cars"

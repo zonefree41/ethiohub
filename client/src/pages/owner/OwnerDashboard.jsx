@@ -319,7 +319,11 @@ const ownerWorkspaces = React.useMemo(
 
             <p className="owner-dashboard-label">Business Portal</p>
             <h1>Business Owner Dashboard</h1>
-            <p>Manage your HubEthio business listings and subscriptions.</p>
+            <p>
+              {isIOSBuild
+                ? "Manage your HubEthio business listings and customer activity."
+                : "Manage your HubEthio business listings and subscriptions."}
+            </p>
           </div>
 
           <div className="owner-dashboard-header-actions">
@@ -371,8 +375,9 @@ const ownerWorkspaces = React.useMemo(
           <div className="owner-dashboard-empty">
             <h2>You do not own any listings yet</h2>
             <p>
-              Submit a business listing first. After admin approval, you can
-              edit it and upgrade it to Featured.
+              {isIOSBuild
+                ? "Submit a business listing first. After admin approval, you can manage it from your Owner Dashboard."
+                : "Submit a business listing first. After admin approval, you can edit it and upgrade it to Featured."}
             </p>
 
             <div className="owner-dashboard-empty-actions">

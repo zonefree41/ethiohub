@@ -5,6 +5,8 @@ export default function WorkspaceLauncher({
   listings = [],
   requestCounts = {},
 }) {
+  const isIOSBuild = __IOS_BUILD__;
+
   const availableWorkspaces = React.useMemo(() => {
     const ownedCategorySlugs = new Set(
       listings
@@ -17,7 +19,7 @@ export default function WorkspaceLauncher({
     );
   }, [listings]);
 
-      const carsWorkspace = {
+  const carsWorkspace = {
     id: "cars",
     title: "Cars Marketplace",
     icon: "🚗",
@@ -28,7 +30,7 @@ export default function WorkspaceLauncher({
 
   const workspacesToShow = [
     ...availableWorkspaces,
-    carsWorkspace,
+    ...(!isIOSBuild ? [carsWorkspace] : []),
   ];
 
   return (

@@ -5,6 +5,7 @@ import WorkspaceStats from "../../../components/owner/workspaces/WorkspaceStats.
 import "./ImmigrationWorkspace.css";
 
 export default function ImmigrationWorkspace() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -288,12 +289,16 @@ const scheduledConsultations =
                   value:
                     approvedCount,
                 },
-                {
-                  label:
-                    "Featured Listings",
-                  value:
-                    featuredCount,
-                },
+                ...(!isIOSBuild
+                  ? [
+                      {
+                        label:
+                          "Featured Listings",
+                        value:
+                          featuredCount,
+                      },
+                    ]
+                  : []),
                 {
                   label:
                     "Total Views",

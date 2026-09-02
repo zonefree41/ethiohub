@@ -3,6 +3,8 @@ import { apiGet } from "../api/http.js";
 import "./CarsMarketplace.css";
 
 export default function CarsMarketplace() {
+  const isIOSBuild = __IOS_BUILD__;
+
   const [vehicles, setVehicles] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
@@ -50,12 +52,14 @@ export default function CarsMarketplace() {
             </p>
           </div>
 
-          <a
-            href="/sell-car"
-            className="cars-sell-button"
-          >
-            🚗 Sell Your Car
-          </a>
+          {!isIOSBuild && (
+            <a
+              href="/sell-car"
+              className="cars-sell-button"
+            >
+              🚗 Sell Your Car
+            </a>
+          )}
         </header>
 
         {loading && (
@@ -82,9 +86,11 @@ export default function CarsMarketplace() {
                 vehicle on HubEthio.
               </p>
 
-              <a href="/sell-car">
-                Sell Your Car
-              </a>
+              {!isIOSBuild && (
+                <a href="/sell-car">
+                  Sell Your Car
+                </a>
+              )}
             </section>
           )}
 

@@ -5,6 +5,7 @@ import WorkspaceStats from "../../../components/owner/workspaces/WorkspaceStats.
 import "./TravelAirlineServicesWorkspace.css";
 
 export default function TravelAirlineServicesWorkspace() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -134,10 +135,14 @@ export default function TravelAirlineServicesWorkspace() {
                 label: "Approved Listings",
                 value: approvedCount,
               },
-              {
-                label: "Featured Listings",
-                value: featuredCount,
-              },
+              ...(!isIOSBuild
+                ? [
+                    {
+                      label: "Featured Listings",
+                      value: featuredCount,
+                    },
+                  ]
+                : []),
               {
                 label: "Total Views",
                 value: totalViews,

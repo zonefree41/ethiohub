@@ -5,6 +5,7 @@ import WorkspaceStats from "../../../components/owner/workspaces/WorkspaceStats.
 import "./RealEstateWorkspace.css";
 
 export default function RealEstateWorkspace() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -151,12 +152,16 @@ export default function RealEstateWorkspace() {
                   value:
                     approvedCount,
                 },
-                {
-                  label:
-                    "Featured Listings",
-                  value:
-                    featuredCount,
-                },
+                ...(!isIOSBuild
+                  ? [
+                      {
+                        label:
+                          "Featured Listings",
+                        value:
+                          featuredCount,
+                      },
+                    ]
+                  : []),
                 {
                   label:
                     "Total Views",

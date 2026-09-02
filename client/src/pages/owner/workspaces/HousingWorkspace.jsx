@@ -5,6 +5,7 @@ import WorkspaceStats from "../../../components/owner/workspaces/WorkspaceStats.
 import "./HousingWorkspace.css";
 
 export default function HousingWorkspace() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -324,10 +325,14 @@ const completedInquiries =
                 label: "Approved Listings",
                 value: approvedCount,
               },
-              {
-                label: "Featured Listings",
-                value: featuredCount,
-              },
+              ...(!isIOSBuild
+                ? [
+                    {
+                      label: "Featured Listings",
+                      value: featuredCount,
+                    },
+                  ]
+                : []),
               {
                 label: "Total Views",
                 value: totalViews,
@@ -870,12 +875,14 @@ const completedInquiries =
                     </p>
                   </div>
 
-                  <div>
-                    <strong>Featured</strong>
-                    <p>
-                      {listing.isFeatured ? "Yes" : "No"}
-                    </p>
-                  </div>
+                  {!isIOSBuild && (
+                    <div>
+                      <strong>Featured</strong>
+                      <p>
+                        {listing.isFeatured ? "Yes" : "No"}
+                      </p>
+                    </div>
+                  )}
 
                   <div>
   <strong>Availability</strong>

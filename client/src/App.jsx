@@ -92,7 +92,7 @@ export default function App() {
 
   const cargoShippingQuoteMatch =
   path.match(/^\/cargo-shipping-quote\/([^/]+)$/);
-  
+
   React.useEffect(() => {
   trackPageView(path);
 }, [path]);
@@ -147,13 +147,20 @@ if (
   path.startsWith("/owner/my-cars/") &&
   path.endsWith("/edit")
 ) {
+  if (isIOSBuild) {
+    window.location.replace("/owner/dashboard");
+    return null;
+  }
+
   return <EditOwnerCar />;
 }
 
 if (path.startsWith("/owner/my-cars")) {
-  return <OwnerCars />;
-}
-if (path.startsWith("/owner/my-cars")) {
+  if (isIOSBuild) {
+    window.location.replace("/owner/dashboard");
+    return null;
+  }
+
   return <OwnerCars />;
 }
 if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;

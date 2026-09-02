@@ -76,6 +76,7 @@ beautyServes: [],
 };
 
 export default function Submit() {
+  const isIOSBuild = __IOS_BUILD__;
   const [categories, setCategories] = React.useState([]);
   const [message, setMessage] = React.useState("");
   const [error, setError] = React.useState("");
@@ -441,7 +442,9 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
   <div className="submit-benefit">✅ Free Business Listing</div>
   <div className="submit-benefit">📍 Reach Ethiopian Customers</div>
   <div className="submit-benefit">📱 Mobile App Coming Soon</div>
-  <div className="submit-benefit">⭐ Featured Listings Available</div>
+  {!isIOSBuild && (
+            <div className="submit-benefit">⭐ Featured Listings Available</div>
+          )}
 </div>
 
 <div className="submit-stats">
@@ -469,7 +472,7 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
     <li>✓ Reach Ethiopian customers across the USA</li>
     <li>✓ Google Maps directions included</li>
     <li>✓ WhatsApp contact support</li>
-    <li>✓ Featured listing upgrades available</li>
+    {!isIOSBuild && <li>✓ Featured listing upgrades available</li>}
   </ul>
 </div>
 
@@ -817,7 +820,7 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
     <li>✅ Upload vehicle photos & videos</li>
     <li>✅ Show your service area</li>
     <li>✅ Receive customer calls directly</li>
-    <li>✅ Get featured across HubEthio</li>
+    {!isIOSBuild && <li>✅ Get featured across HubEthio</li>}
   </ul>
 </div>
 

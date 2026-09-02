@@ -5,6 +5,7 @@ import WorkspaceStats from "../../../components/owner/workspaces/WorkspaceStats.
 import "./RestaurantWorkspace.css";
 
 export default function RestaurantWorkspace() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -149,12 +150,16 @@ export default function RestaurantWorkspace() {
                   value:
                     approvedCount,
                 },
-                {
-                  label:
-                    "Featured Listings",
-                  value:
-                    featuredCount,
-                },
+                ...(!isIOSBuild
+                  ? [
+                      {
+                        label:
+                          "Featured Listings",
+                        value:
+                          featuredCount,
+                      },
+                    ]
+                  : []),
                 {
                   label:
                     "Total Views",

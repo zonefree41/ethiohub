@@ -5,6 +5,7 @@ import WorkspaceStats from "../../../components/owner/workspaces/WorkspaceStats.
 import "./AutoRepairWorkspace.css";
 
 export default function AutoRepairWorkspace() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -145,12 +146,16 @@ export default function AutoRepairWorkspace() {
                   value:
                     approvedCount,
                 },
-                {
-                  label:
-                    "Featured Listings",
-                  value:
-                    featuredCount,
-                },
+                ...(!isIOSBuild
+                  ? [
+                      {
+                        label:
+                          "Featured Listings",
+                        value:
+                          featuredCount,
+                      },
+                    ]
+                  : []),
                 {
                   label:
                     "Total Views",

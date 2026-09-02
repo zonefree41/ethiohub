@@ -24,8 +24,12 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>HubEthio uses your camera so you can take photos to upload with your listings.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>HubEthio uses your location to find businesses and services near you.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>HubEthio accesses your photo library so you can select photos to upload with your listings.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

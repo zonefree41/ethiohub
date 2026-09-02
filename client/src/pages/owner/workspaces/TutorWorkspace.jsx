@@ -5,6 +5,7 @@ import WorkspaceStats from "../../../components/owner/workspaces/WorkspaceStats.
 import "./TutorWorkspace.css";
 
 export default function TutorWorkspace() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -130,10 +131,14 @@ export default function TutorWorkspace() {
                 label: "Approved Listings",
                 value: approvedCount,
               },
-              {
-                label: "Featured Listings",
-                value: featuredCount,
-              },
+              ...(!isIOSBuild
+                ? [
+                    {
+                      label: "Featured Listings",
+                      value: featuredCount,
+                    },
+                  ]
+                : []),
               {
                 label: "Total Views",
                 value: totalViews,

@@ -8,6 +8,7 @@ import WorkspaceStats from "../../../components/owner/workspaces/WorkspaceStats.
 import "./InsuranceWorkspace.css";
 
 export default function InsuranceWorkspace() {
+  const isIOSBuild = __IOS_BUILD__;
   const token = localStorage.getItem("ownerToken");
 
   const [listings, setListings] = React.useState([]);
@@ -262,12 +263,16 @@ const closedCount = consultationRequests.filter(
                   value:
                     approvedCount,
                 },
-                {
-                  label:
-                    "Featured Listings",
-                  value:
-                    featuredCount,
-                },
+                ...(!isIOSBuild
+                  ? [
+                      {
+                        label:
+                          "Featured Listings",
+                        value:
+                          featuredCount,
+                      },
+                    ]
+                  : []),
                 {
                   label:
                     "Total Views",
