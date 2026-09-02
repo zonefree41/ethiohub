@@ -53,6 +53,7 @@ export default function CarDetail() {
       buyerEmail: "",
       buyerPhone: "",
       message: "",
+      website: "",
     });
 
   const [inquirySubmitting, setInquirySubmitting] =
@@ -125,6 +126,7 @@ export default function CarDetail() {
         buyerEmail: "",
         buyerPhone: "",
         message: "",
+        website: "",
       });
     } catch (err) {
       console.error(
@@ -385,6 +387,29 @@ const smsHref = sellerPhone
     className="car-detail-inquiry-form"
     onSubmit={submitInquiry}
   >
+
+    <input
+      type="text"
+      name="website"
+      value={inquiryForm.website}
+      onChange={(event) =>
+        setInquiryForm((current) => ({
+          ...current,
+          website: event.target.value,
+        }))
+      }
+      autoComplete="off"
+      tabIndex={-1}
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        left: "-9999px",
+        width: "1px",
+        height: "1px",
+        opacity: 0,
+        pointerEvents: "none",
+      }}
+    />
     <div className="car-detail-inquiry-grid">
       <label>
         Your Name *

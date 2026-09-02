@@ -1413,6 +1413,16 @@ router.post("/:vehicleId/inquiries", async (req, res) => {
       req.body?.message
     );
 
+    const website = cleanText(
+      req.body?.website
+    );
+
+    if (website) {
+      return res.status(200).json({
+        message: "Your inquiry was sent successfully.",
+      });
+    }
+
     if (
       !buyerName ||
       !buyerEmail ||
