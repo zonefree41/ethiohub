@@ -26,6 +26,37 @@ const escapeHtml = (value = "") =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
+async function getOpenCheckoutSession(
+  stripe,
+  sessionId
+) {
+  if (!sessionId) {
+    return null;
+  }
+
+  try {
+    const session =
+      await stripe.checkout.sessions.retrieve(
+        sessionId
+      );
+
+    if (
+      session.status === "open" &&
+      session.url
+    ) {
+      return session;
+    }
+
+    return null;
+  } catch (err) {
+    if (err?.code === "resource_missing") {
+      return null;
+    }
+
+    throw err;
+  }
+}
+
 async function sendVehicleInquiryEmail(
   vehicle,
   inquiry
@@ -639,6 +670,20 @@ router.post(
         process.env.STRIPE_SECRET_KEY
       );
 
+      const existingSession =
+        await getOpenCheckoutSession(
+          stripe,
+          vehicle.stripeSessionId
+        );
+
+      if (existingSession) {
+        return res.json({
+          url: existingSession.url,
+          sessionId: existingSession.id,
+          reused: true,
+        });
+      }
+
       const session =
         await stripe.checkout.sessions.create({
           mode: "payment",
@@ -740,6 +785,20 @@ router.post(
         process.env.STRIPE_SECRET_KEY
       );
 
+      const existingSession =
+        await getOpenCheckoutSession(
+          stripe,
+          vehicle.renewalStripeSessionId
+        );
+
+      if (existingSession) {
+        return res.json({
+          url: existingSession.url,
+          sessionId: existingSession.id,
+          reused: true,
+        });
+      }
+
       const session =
         await stripe.checkout.sessions.create({
           mode: "payment",
@@ -778,6 +837,9 @@ router.post(
           cancel_url:
             `${CLIENT_ORIGIN}/owner/my-cars`,
         });
+
+      vehicle.renewalStripeSessionId = session.id;
+      await vehicle.save();
 
       return res.json({
         url: session.url,
