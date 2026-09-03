@@ -435,6 +435,19 @@ async function handleCargoInsuranceDocumentUpload(e) {
   }
 }
 
+function clearTransportDocument(field) {
+  setForm((prev) => ({
+    ...prev,
+    transportVerification: {
+      ...prev.transportVerification,
+      [field]: "",
+    },
+  }));
+
+  setError("");
+  setMessage("");
+}
+
   async function handlePropertyPhotosUpload(e) {
   const files = Array.from(e.target.files || []);
 
@@ -1564,12 +1577,24 @@ const isBeautyListing =
   )}
 
   {form.transportVerification.vehicleRegistrationUrl && (
+  <>
     <img
       src={form.transportVerification.vehicleRegistrationUrl}
       alt="Vehicle Registration"
       className="edit-listing-logo-preview"
     />
-  )}
+
+    <button
+      type="button"
+      className="btn btn-secondary"
+      onClick={() =>
+        clearTransportDocument("vehicleRegistrationUrl")
+      }
+    >
+      Remove document
+    </button>
+  </>
+)}
 </div>
 
 <hr />
