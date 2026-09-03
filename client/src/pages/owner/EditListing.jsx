@@ -1419,12 +1419,24 @@ const isBeautyListing =
     )}
 
     {form.transportVerification.driverLicenseFrontUrl && (
-      <img
-        src={form.transportVerification.driverLicenseFrontUrl}
-        alt="Driver license front"
-        className="edit-listing-logo-preview"
-      />
-    )}
+  <>
+    <img
+      src={form.transportVerification.driverLicenseFrontUrl}
+      alt="Driver license front"
+      className="edit-listing-logo-preview"
+    />
+
+    <button
+      type="button"
+      className="btn btn-secondary"
+      onClick={() =>
+        clearTransportDocument("driverLicenseFrontUrl")
+      }
+    >
+      Remove document
+    </button>
+  </>
+)}
   </div>
 
   <div className="edit-listing-upload-card">
@@ -1443,11 +1455,23 @@ const isBeautyListing =
     )}
 
     {form.transportVerification.driverLicenseBackUrl && (
-      <img
-        src={form.transportVerification.driverLicenseBackUrl}
-        alt="Driver license back"
-        className="edit-listing-logo-preview"
-      />
+  <>
+    <img
+      src={form.transportVerification.driverLicenseBackUrl}
+      alt="Driver license back"
+      className="edit-listing-logo-preview"
+    />
+
+    <button
+      type="button"
+      className="btn btn-secondary"
+      onClick={() =>
+        clearTransportDocument("driverLicenseBackUrl")
+      }
+    >
+      Remove document
+    </button>
+  </>
     )}
   </div>
 </div>
@@ -1693,12 +1717,24 @@ const isBeautyListing =
   )}
 
   {form.transportVerification.insuranceDocumentUrl && (
+  <>
     <img
       src={form.transportVerification.insuranceDocumentUrl}
       alt="Insurance Document"
       className="edit-listing-logo-preview"
     />
-  )}
+
+    <button
+      type="button"
+      className="btn btn-secondary"
+      onClick={() =>
+        clearTransportDocument("insuranceDocumentUrl")
+      }
+    >
+      Remove document
+    </button>
+  </>
+)}
 </div>
 
 <hr />
@@ -1766,12 +1802,24 @@ const isBeautyListing =
       )}
 
       {form.transportVerification.cargoInsuranceDocumentUrl && (
-        <img
-          src={form.transportVerification.cargoInsuranceDocumentUrl}
-          alt="Cargo Insurance Document"
-          className="edit-listing-logo-preview"
-        />
-      )}
+  <>
+    <img
+      src={form.transportVerification.cargoInsuranceDocumentUrl}
+      alt="Cargo Insurance Document"
+      className="edit-listing-logo-preview"
+    />
+
+    <button
+      type="button"
+      className="btn btn-secondary"
+      onClick={() =>
+        clearTransportDocument("cargoInsuranceDocumentUrl")
+      }
+    >
+      Remove document
+    </button>
+  </>
+)}
     </div>
   </>
 )}
