@@ -871,6 +871,32 @@ router.get("/", async (req, res) => {
         { expiresAt: { $gt: now } },
       ],
     })
+      .select(
+        [
+          "_id",
+          "sellerType",
+          "sellerPhone",
+          "year",
+          "make",
+          "model",
+          "trim",
+          "price",
+          "mileage",
+          "exteriorColor",
+          "interiorColor",
+          "transmission",
+          "drivetrain",
+          "fuelType",
+          "titleStatus",
+          "condition",
+          "description",
+          "city",
+          "state",
+          "photos",
+          "isFeatured",
+          "createdAt",
+        ].join(" ")
+      )
       .sort({
         isFeatured: -1,
         createdAt: -1,
