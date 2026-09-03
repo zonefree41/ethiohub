@@ -1,4 +1,5 @@
 import React from "react";
+import { Preferences } from "@capacitor/preferences";
 import { apiGet } from "../api/http.js";
 import "./Saved.css";
 
@@ -10,41 +11,76 @@ export default function Saved() {
     document.title = "Saved Businesses | HubEthio";
 
     async function loadSaved() {
-      try {
-        const savedIds = JSON.parse(
-          localStorage.getItem("hubethioFavorites") || "[]"
-        );
+  try {
+    let savedIds = [];
 
-        if (savedIds.length === 0) {
-          setSavedListings([]);
-          return;
-        }
+    try {
+      const result = await Preferences.get({
+        key: "hubethioFavorites",
+      });
 
-        const results = await Promise.all(
-          savedIds.map((id) =>
-            apiGet(`/api/listings/${id}`).catch(() => null)
-          )
-        );
-
-        setSavedListings(results.filter(Boolean));
-      } finally {
-        setLoading(false);
-      }
+      savedIds = result.value
+        ? JSON.parse(result.value)
+        : [];
+    } catch {
+      savedIds = JSON.parse(
+        localStorage.getItem("hubethioFavorites") || "[]"
+      );
     }
+
+    if (savedIds.length === 0) {
+      setSavedListings([]);
+      return;
+    }
+
+    const results = await Promise.all(
+      savedIds.map((id) =>
+        apiGet(`/api/listings/${id}`).catch(() => null)
+      )
+    );
+
+    setSavedListings(results.filter(Boolean));
+  } finally {
+    setLoading(false);
+  }
+}
 
     loadSaved();
   }, []);
 
-  function removeSaved(id) {
-    const savedIds = JSON.parse(
-      localStorage.getItem("hubethioFavorites") || "[]"
+  async function removeSaved(id) {
+  let savedIds = [];
+
+  try {
+    const result = await Preferences.get({
+      key: "hubethioFavorites",
+    });
+
+    savedIds = result.value
+      ? JSON.parse(result.value)
+      : [];
+
+    const updated = savedIds.filter(
+      (itemId) => itemId !== id
     );
 
-    const updated = savedIds.filter((itemId) => itemId !== id);
-    localStorage.setItem("hubethioFavorites", JSON.stringify(updated));
+    await Preferences.set({
+      key: "hubethioFavorites",
+      value: JSON.stringify(updated),
+    });
 
-    setSavedListings((prev) => prev.filter((item) => item._id !== id));
+    localStorage.setItem(
+      "hubethioFavorites",
+      JSON.stringify(updated)
+    );
+
+    setSavedListings((prev) =>
+      prev.filter((item) => item._id !== id)
+    );
+  } catch (err) {
+    console.error("Failed to remove saved business:", err);
   }
+}
 
   return (
     <main className="saved-page">
