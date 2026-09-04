@@ -22,10 +22,27 @@ export default function AdminDashboard() {
 const [reviewsLoading, setReviewsLoading] = React.useState(false);
 const [editingListing, setEditingListing] = React.useState(null);
 
+const [adminUser, setAdminUser] = React.useState(null);
+const [adminUserLoading, setAdminUserLoading] = React.useState(true);
+
 
   React.useEffect(() => {
     document.title = "Admin Dashboard | HubEthio";
   }, []);
+
+  async function loadAdminUser() {
+    try {
+      setAdminUserLoading(true);
+      const data = await apiGet("/api/admin/me", token);
+      setAdminUser(data || null);
+      return data || null;
+    } catch (err) {
+      console.error("Failed to load admin identity:", err);
+      return null;
+    } finally {
+      setAdminUserLoading(false);
+    }
+  }
 
   async function load(nextStatus = status) {
     try {
@@ -116,10 +133,28 @@ async function deleteReview(id) {
       return;
     }
 
-    load(status);
-    loadClaims();
-    loadBusinessRequests();
-loadPendingReviews();
+    let cancelled = false;
+
+    async function initializeDashboard() {
+      const currentAdmin = await loadAdminUser();
+
+      if (cancelled || !currentAdmin) return;
+
+      if (currentAdmin.role === "engineer") {
+        return;
+      }
+
+      load(status);
+      loadClaims();
+      loadBusinessRequests();
+      loadPendingReviews();
+    }
+
+    initializeDashboard();
+
+    return () => {
+      cancelled = true;
+    };
   }, [status]);
 
   async function updateListing(id, patch) {
@@ -283,6 +318,45 @@ async function deleteBusinessRequest(id, businessName) {
   const filteredClaims = claims.filter(
   (claim) => claim.status === claimStatusFilter
 );
+
+  if (adminUserLoading) {
+    return (
+      <main className="admin-dashboard-page">
+        <div className="admin-dashboard-container">
+          <p>Loading dashboard...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (adminUser?.role === "engineer") {
+    return (
+      <main className="admin-dashboard-page">
+        <div className="admin-dashboard-container">
+          <header className="admin-dashboard-hero">
+            <div>
+              <a href="/" className="admin-dashboard-back">
+                ← Home
+              </a>
+
+              <p className="admin-dashboard-label">HubEthio Engineer</p>
+              <h1>Engineer Dashboard</h1>
+              <p>
+                You are signed in with technical access. Operational customer
+                and business management tools are not available to this role.
+              </p>
+            </div>
+
+            <div className="admin-dashboard-actions-top">
+              <button type="button" onClick={logout}>
+                Logout
+              </button>
+            </div>
+          </header>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="admin-dashboard-page">
