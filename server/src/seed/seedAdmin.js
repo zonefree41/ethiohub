@@ -22,7 +22,7 @@ try {
       name: "Admin",
       email,
       passwordHash,
-      role: "admin"
+      role: "super_admin"
     },
     { upsert: true, new: true }
   );
