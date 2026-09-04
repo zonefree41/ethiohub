@@ -1016,7 +1016,11 @@ function getOptionalOwnerId(req) {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    return decoded?.id || null;
+    if (!decoded?.id || decoded.role !== "owner") {
+      return null;
+    }
+
+    return decoded.id;
   } catch {
     return null;
   }
