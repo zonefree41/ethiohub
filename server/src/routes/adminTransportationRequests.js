@@ -92,8 +92,17 @@ function createDateRange(startDate, endDate) {
 | limit
 |
 */
-router.get("/", requireAdmin, async (req, res) => {
-  try {
+router.get(
+  "/",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "verification_agent",
+    "support_agent"
+  ),
+  async (req, res) => {
+    try {
     const {
       search,
       status,
@@ -258,6 +267,12 @@ router.get("/", requireAdmin, async (req, res) => {
 router.get(
   "/analytics",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "verification_agent",
+    "support_agent"
+  ),
   async (req, res) => {
     try {
       const now = new Date();
@@ -518,6 +533,12 @@ router.get(
 router.get(
   "/businesses",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "verification_agent",
+    "support_agent"
+  ),
   async (_req, res) => {
     try {
       const businesses =
@@ -799,6 +820,12 @@ router.patch(
 router.get(
   "/:id",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "verification_agent",
+    "support_agent"
+  ),
   async (req, res) => {
     try {
       if (
