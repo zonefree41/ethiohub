@@ -81,6 +81,11 @@ router.post("/", async (req, res) => {
 router.get(
   "/admin/pending",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
   async (_req, res) => {
     try {
       const reviews = await Review.find({

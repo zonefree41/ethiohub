@@ -238,7 +238,15 @@ const allowedStatuses = new Set([
 ]);
 
 // Admin: list vehicle marketplace submissions
-router.get("/", requireAdmin, async (req, res) => {
+router.get(
+  "/",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
+  async (req, res) => {
   try {
     const status = String(
       req.query.status || "pending_review"
