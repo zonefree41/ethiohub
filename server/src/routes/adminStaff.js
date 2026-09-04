@@ -121,4 +121,72 @@ router.post(
   }
 );
 
+// Promote the configured founder admin from legacy admin to super_admin.
+// This endpoint cannot promote arbitrary staff accounts.
+router.post(
+  "/promote-founder",
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const configuredAdminEmail =
+        process.env.ADMIN_EMAIL?.trim().toLowerCase();
+
+      if (
+        !configuredAdminEmail ||
+        req.admin.email !== configuredAdminEmail
+      ) {
+        return res.status(403).json({
+          message: "Founder account required.",
+        });
+      }
+
+      if (req.admin.role === "super_admin") {
+        return res.json({
+          message: "Founder account is already super admin.",
+          role: "super_admin",
+        });
+      }
+
+      if (req.admin.role !== "admin") {
+        return res.status(403).json({
+          message: "Only the legacy founder admin can be promoted.",
+        });
+      }
+
+      const admin = await AdminUser.findByIdAndUpdate(
+        req.admin.id,
+        {
+          $set: {
+            role: "super_admin",
+          },
+        },
+        {
+          new: true,
+        }
+      ).select("_id name email role");
+
+      if (!admin) {
+        return res.status(404).json({
+          message: "Founder account not found.",
+        });
+      }
+
+      res.json({
+        message: "Founder account promoted successfully.",
+        staff: {
+          id: admin._id,
+          name: admin.name,
+          email: admin.email,
+          role: admin.role,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to promote founder account:", err);
+      res.status(500).json({
+        message: "Failed to promote founder account.",
+      });
+    }
+  }
+);
+
 export default router;
