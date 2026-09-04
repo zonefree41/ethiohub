@@ -77,7 +77,15 @@ router.post("/", async (req, res) => {
  * Admin: Get all claim requests
  * GET /api/claims/admin
  */
-router.get("/admin", requireAdmin, async (_req, res) => {
+router.get(
+  "/admin",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
+  async (_req, res) => {
   try {
     const claims = await ClaimRequest.find()
       .populate("listingId")

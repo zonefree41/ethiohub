@@ -86,6 +86,11 @@ if (blockedPhrases.some((phrase) => spamText.includes(phrase))) {
 router.get(
   "/admin",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
   async (req, res) => {
   try {
     const requests = await BusinessRequest.find().sort({ createdAt: -1 });
