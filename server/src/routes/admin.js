@@ -57,7 +57,15 @@ router.post("/login", async (req, res) => {
 });
 
 // Pending / approved / rejected submissions
-router.get("/submissions", requireAdmin, async (req, res) => {
+router.get(
+  "/submissions",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
+  async (req, res) => {
   try {
     const allowedStatuses = [
   "pending",
@@ -91,6 +99,11 @@ const items = await Listing.find({ status })
 router.get(
   "/transportation-verification",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "verification_agent"
+  ),
   async (req, res) => {
     try {
       const requests = await Listing.find({
