@@ -121,4 +121,49 @@ router.post(
   }
 );
 
+
+// Reset staff password — Super Admin only
+router.patch(
+  "/:id/password",
+  requireAdmin,
+  requireRole("super_admin"),
+  async (req, res) => {
+    try {
+      const { password } = req.body || {};
+
+      if (typeof password !== "string" || password.length < 10) {
+        return res.status(400).json({
+          message: "Password must be at least 10 characters.",
+        });
+      }
+
+      const staff = await AdminUser.findById(req.params.id);
+
+      if (!staff) {
+        return res.status(404).json({
+          message: "Staff account not found.",
+        });
+      }
+
+      if (staff.role === "super_admin") {
+        return res.status(400).json({
+          message: "Super Admin password cannot be reset from this endpoint.",
+        });
+      }
+
+      staff.passwordHash = await bcrypt.hash(password, 12);
+      await staff.save();
+
+      res.json({
+        message: "Staff password reset successfully.",
+      });
+    } catch (err) {
+      console.error("Failed to reset staff password:", err);
+      res.status(500).json({
+        message: "Failed to reset staff password.",
+      });
+    }
+  }
+);
+
 export default router;
