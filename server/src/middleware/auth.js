@@ -37,7 +37,11 @@ if (!payload?.id || !allowedAdminRoles.includes(payload.role)) {
     const admin = await AdminUser.findOne({
   _id: payload.id,
   role: { $in: allowedAdminRoles },
-}).select("_id email role");
+  $or: [
+    { isActive: true },
+    { isActive: { $exists: false } },
+  ],
+}).select("_id email role isActive");
 
 if (!admin) {
   return res.status(401).json({

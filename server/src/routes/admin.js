@@ -31,6 +31,12 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    if (admin.isActive === false) {
+      return res.status(403).json({
+        message: "Administrator account is disabled.",
+      });
+    }
+
     const ok = await bcrypt.compare(password, admin.passwordHash);
 
     if (!ok) {

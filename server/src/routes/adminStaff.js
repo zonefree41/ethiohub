@@ -23,7 +23,7 @@ router.get(
   async (_req, res) => {
     try {
       const staff = await AdminUser.find({})
-        .select("_id name email role createdAt updatedAt")
+        .select("_id name email role isActive createdAt updatedAt")
         .sort({ createdAt: -1 });
 
       res.json(staff);
@@ -116,6 +116,104 @@ router.post(
 
       res.status(500).json({
         message: "Failed to create staff account.",
+      });
+    }
+  }
+);
+
+
+
+// Enable or disable staff account — Super Admin only
+router.patch(
+  "/:id/status",
+  requireAdmin,
+  requireRole("super_admin"),
+  async (req, res) => {
+    try {
+      const { isActive } = req.body || {};
+
+      if (typeof isActive !== "boolean") {
+        return res.status(400).json({
+          message: "isActive must be true or false.",
+        });
+      }
+
+      const staff = await AdminUser.findById(req.params.id);
+
+      if (!staff) {
+        return res.status(404).json({
+          message: "Staff account not found.",
+        });
+      }
+
+      if (staff.role === "super_admin") {
+        return res.status(400).json({
+          message: "Super Admin account status cannot be changed.",
+        });
+      }
+
+      staff.isActive = isActive;
+      await staff.save();
+
+      res.json({
+        message: isActive
+          ? "Staff account enabled successfully."
+          : "Staff account disabled successfully.",
+        staff: {
+          id: staff._id,
+          name: staff.name,
+          email: staff.email,
+          role: staff.role,
+          isActive: staff.isActive,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to update staff account status:", err);
+      res.status(500).json({
+        message: "Failed to update staff account status.",
+      });
+    }
+  }
+);
+
+
+
+// Delete staff account — Super Admin only
+router.delete(
+  "/:id",
+  requireAdmin,
+  requireRole("super_admin"),
+  async (req, res) => {
+    try {
+      const staff = await AdminUser.findById(req.params.id);
+
+      if (!staff) {
+        return res.status(404).json({
+          message: "Staff account not found.",
+        });
+      }
+
+      if (staff.role === "super_admin") {
+        return res.status(400).json({
+          message: "Super Admin account cannot be deleted.",
+        });
+      }
+
+      if (String(staff._id) === String(req.admin.id)) {
+        return res.status(400).json({
+          message: "You cannot delete your own account.",
+        });
+      }
+
+      await staff.deleteOne();
+
+      res.json({
+        message: "Staff account deleted successfully.",
+      });
+    } catch (err) {
+      console.error("Failed to delete staff account:", err);
+      res.status(500).json({
+        message: "Failed to delete staff account.",
       });
     }
   }
