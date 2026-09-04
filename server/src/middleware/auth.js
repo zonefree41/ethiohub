@@ -21,7 +21,6 @@ export async function requireAdmin(req, res, next) {
     );
 
     const allowedAdminRoles = [
-  "admin",
   "super_admin",
   "engineer",
   "operations_admin",
@@ -69,12 +68,7 @@ export function requireRole(...allowedRoles) {
       });
     }
 
-    const effectiveRole =
-      req.admin.role === "admin"
-        ? "super_admin"
-        : req.admin.role;
-
-    if (!allowedRoles.includes(effectiveRole)) {
+    if (!allowedRoles.includes(req.admin.role)) {
       return res.status(403).json({
         message: "You do not have permission to perform this action.",
       });
