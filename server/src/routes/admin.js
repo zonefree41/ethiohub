@@ -56,6 +56,15 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Current authenticated admin/staff identity
+router.get("/me", requireAdmin, (req, res) => {
+  res.json({
+    id: req.admin.id,
+    email: req.admin.email,
+    role: req.admin.role,
+  });
+});
+
 // Pending / approved / rejected submissions
 router.get(
   "/submissions",
