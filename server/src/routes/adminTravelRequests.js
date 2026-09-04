@@ -201,6 +201,11 @@ async function populateTravelRequest(id) {
 router.get(
   "/",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
   async (req, res) => {
     try {
       const {
@@ -498,6 +503,11 @@ router.get(
 router.get(
   "/analytics",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
   async (_req, res) => {
     try {
       const now = new Date();
@@ -925,6 +935,11 @@ router.get(
 router.get(
   "/businesses",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
   async (_req, res) => {
     try {
       const businesses =
@@ -1337,6 +1352,11 @@ router.patch(
 router.get(
   "/:id",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
   async (req, res) => {
     try {
       if (
