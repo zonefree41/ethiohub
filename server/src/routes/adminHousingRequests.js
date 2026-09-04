@@ -63,7 +63,15 @@ function parsePositiveInteger(value, fallback, maximum) {
 | limit
 |
 */
-router.get("/", requireAdmin, async (req, res) => {
+router.get(
+  "/",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
+  async (req, res) => {
   try {
     const {
       search = "",
@@ -159,7 +167,15 @@ router.get("/", requireAdmin, async (req, res) => {
 | GET /api/admin/housing-requests/:id
 |
 */
-router.get("/:id", requireAdmin, async (req, res) => {
+router.get(
+  "/:id",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
+  async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -298,6 +314,11 @@ router.patch(
 router.get(
   "/:id/match-suggestions",
   requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "support_agent"
+  ),
   async (req, res) => {
     try {
       const { id } = req.params;
