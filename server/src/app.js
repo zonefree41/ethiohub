@@ -21,6 +21,8 @@ import claimRoutes from "./routes/claimRoutes.js";
 import businessRequestRoutes from "./routes/businessRequestRoutes.js";
 import { startMonthlyPerformanceCron } from "./jobs/monthlyPerformanceCron.js";
 import transportationRequestsRoutes from "./routes/transportationRequests.js";
+
+import ownerTransportationDriverRoutes from "./routes/ownerTransportationDrivers.js";
 import { expireTrials } from "./utils/expireTrials.js";
 import { sendTrialReminderEmails } from "./jobs/sendTrialReminderEmails.js";
 import { startDailyJobs } from "./jobs/dailyJobs.js";
@@ -261,6 +263,10 @@ app.use(
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/owner/auth", authLimiter, ownerAuthRoutes);
 app.use("/api/owner/listings", ownerListingRoutes);
+app.use(
+  "/api/owner/transportation-drivers",
+  ownerTransportationDriverRoutes
+);
 app.use("/api/stripe", stripeCheckoutRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/business-requests", businessRequestRoutes);
