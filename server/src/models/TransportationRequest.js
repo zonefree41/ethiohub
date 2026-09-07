@@ -150,6 +150,18 @@ cancelledAt: {
   default: null,
 },
 
+driverId: {
+
+  type: mongoose.Schema.Types.ObjectId,
+
+  ref: "TransportationDriver",
+
+  default: null,
+
+  index: true,
+
+},
+
 driverName: {
   type: String,
   trim: true,
