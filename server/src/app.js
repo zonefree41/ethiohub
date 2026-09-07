@@ -28,6 +28,7 @@ import { sendTrialReminderEmails } from "./jobs/sendTrialReminderEmails.js";
 import { startDailyJobs } from "./jobs/dailyJobs.js";
 import sitemapRoutes from "./routes/sitemap.js";
 import adminTransportationRoutes from "./routes/adminTransportationRequests.js";
+import adminTransportationDriverRoutes from "./routes/adminTransportationDrivers.js";
 import housingRequestRoutes from "./routes/housingRequests.js";
 import travelRequestRoutes from "./routes/travelRequests.js";
 import adminHousingRequestRoutes from "./routes/adminHousingRequests.js";
@@ -277,6 +278,7 @@ app.post(
 app.use("/api/cars", vehicleListingRoutes);
 app.use("/api/admin/cars", adminVehicleListingRoutes);
 app.use("/api/admin/transportation-requests", adminTransportationRoutes);
+app.use("/api/admin/transportation-drivers", adminTransportationDriverRoutes);
 app.use("/api/housing-requests", housingRequestRoutes);
 app.use(
   "/api/beauty-appointment-requests",
