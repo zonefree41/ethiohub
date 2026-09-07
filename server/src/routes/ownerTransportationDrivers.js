@@ -161,6 +161,86 @@ router.post("/", async (req, res) => {
 /*
 OWNER
 
+Deactivate or reactivate one owned Transportation driver
+*/
+
+router.patch("/:driverId/status", async (req, res) => {
+  try {
+    const driverId = cleanText(req.params.driverId);
+    const action = cleanText(req.body?.action).toLowerCase();
+
+    if (
+      !driverId ||
+      !mongoose.Types.ObjectId.isValid(driverId)
+    ) {
+      return res.status(400).json({
+        message: "Valid Transportation driver ID is required.",
+      });
+    }
+
+    if (!["deactivate", "reactivate"].includes(action)) {
+      return res.status(400).json({
+        message:
+          "Driver status action must be deactivate or reactivate.",
+      });
+    }
+
+    const driver = await TransportationDriver.findOne({
+      _id: driverId,
+      ownerId: req.owner.id,
+    });
+
+    if (!driver) {
+      return res.status(404).json({
+        message:
+          "Transportation driver not found or you do not own this driver.",
+      });
+    }
+
+    if (driver.status === "suspended") {
+      return res.status(403).json({
+        message:
+          "A suspended driver status cannot be changed by the business owner.",
+      });
+    }
+
+    if (action === "deactivate") {
+      driver.status = "inactive";
+      driver.availabilityStatus = "offline";
+
+      await driver.save();
+
+      return res.json(driver);
+    }
+
+    if (driver.verificationStatus !== "approved") {
+      return res.status(400).json({
+        message:
+          "Driver verification must be approved before reactivation.",
+      });
+    }
+
+    driver.status = "active";
+    driver.availabilityStatus = "offline";
+
+    await driver.save();
+
+    return res.json(driver);
+  } catch (err) {
+    console.error(
+      "Update Transportation driver status error:",
+      err
+    );
+
+    return res.status(500).json({
+      message: "Failed to update Transportation driver status.",
+    });
+  }
+});
+
+/*
+OWNER
+
 Update basic information for one owned Transportation driver
 */
 
