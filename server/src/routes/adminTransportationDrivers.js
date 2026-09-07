@@ -272,6 +272,12 @@ router.patch(
 
       const note = cleanText(req.body?.note);
 
+      if (note.length > 2000) {
+        return res.status(400).json({
+          message: "Admin note is too long.",
+        });
+      }
+
       if (
         !["approved", "rejected"].includes(
           verificationStatus
@@ -414,6 +420,12 @@ router.patch(
       ).toLowerCase();
 
       const note = cleanText(req.body?.note);
+
+      if (note.length > 2000) {
+        return res.status(400).json({
+          message: "Admin note is too long.",
+        });
+      }
 
       if (
         !["suspend", "unsuspend"].includes(action)
