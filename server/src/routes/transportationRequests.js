@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import Listing from "../models/Listing.js";
 import TransportationRequest from "../models/TransportationRequest.js";
+import TransportationDriver from "../models/TransportationDriver.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
 import crypto from "crypto";
@@ -369,6 +370,7 @@ router.patch("/:id/status", requireOwner, async (req, res) => {
   quoteAmount,
   estimatedArrival,
   ownerNotes,
+  driverId,
   driverName,
   driverPhone,
   vehicleDescription,
@@ -459,12 +461,54 @@ const statusChanged =
     };
 
     if (status === "In Progress") {
+  let assignedDriver = null;
+
+  if (driverId) {
+    if (
+      typeof driverId !== "string" ||
+      !mongoose.Types.ObjectId.isValid(driverId.trim())
+    ) {
+      return res.status(400).json({
+        message: "Valid transportation driver ID is required.",
+      });
+    }
+
+    assignedDriver = await TransportationDriver.findOne({
+      _id: driverId.trim(),
+      ownerId: req.owner.id,
+      businessListingId: existingRequest.listingId,
+    });
+
+    if (!assignedDriver) {
+      return res.status(404).json({
+        message: "Transportation driver not found for this business.",
+      });
+    }
+
+    if (
+      assignedDriver.status !== "active" ||
+      assignedDriver.verificationStatus !== "approved"
+    ) {
+      return res.status(400).json({
+        message:
+          "Transportation driver must be active and approved before assignment.",
+      });
+    }
+  }
+
   if (!existingRequest.inProgressAt) {
     updateData.inProgressAt = new Date();
   }
 
-  updateData.driverName = driverName || "";
-  updateData.driverPhone = driverPhone || "";
+  if (assignedDriver) {
+    updateData.driverId = assignedDriver._id;
+    updateData.driverName = assignedDriver.fullName;
+    updateData.driverPhone = assignedDriver.phone;
+  } else {
+    updateData.driverName = driverName || "";
+    updateData.driverPhone = driverPhone || "";
+  }
+
   updateData.vehicleDescription =
     vehicleDescription || "";
   updateData.licensePlate =
