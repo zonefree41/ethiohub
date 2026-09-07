@@ -241,7 +241,86 @@ router.patch("/:driverId/status", async (req, res) => {
 /*
 OWNER
 
+Update availability for one owned Transportation driver
+
+*/
+router.patch("/:driverId/availability", async (req, res) => {
+  try {
+    const driverId = cleanText(req.params.driverId);
+    const availabilityStatus = cleanText(
+      req.body?.availabilityStatus
+    ).toLowerCase();
+
+    if (
+      !driverId ||
+      !mongoose.Types.ObjectId.isValid(driverId)
+    ) {
+      return res.status(400).json({
+        message: "Valid Transportation driver ID is required.",
+      });
+    }
+
+    if (!["available", "offline"].includes(availabilityStatus)) {
+      return res.status(400).json({
+        message:
+          "Driver availability must be available or offline.",
+      });
+    }
+
+    const driver = await TransportationDriver.findOne({
+      _id: driverId,
+      ownerId: req.owner.id,
+    });
+
+    if (!driver) {
+      return res.status(404).json({
+        message:
+          "Transportation driver not found or you do not own this driver.",
+      });
+    }
+
+    if (availabilityStatus === "offline") {
+      driver.availabilityStatus = "offline";
+      await driver.save();
+      return res.json(driver);
+    }
+
+    if (driver.status !== "active") {
+      return res.status(400).json({
+        message:
+          "Driver must be active before becoming available.",
+      });
+    }
+
+    if (driver.verificationStatus !== "approved") {
+      return res.status(400).json({
+        message:
+          "Driver verification must be approved before becoming available.",
+      });
+    }
+
+    driver.availabilityStatus = "available";
+    await driver.save();
+
+    return res.json(driver);
+  } catch (err) {
+    console.error(
+      "Update Transportation driver availability error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to update Transportation driver availability.",
+    });
+  }
+});
+
+/*
+OWNER
+
 Update basic information for one owned Transportation driver
+
 */
 
 router.patch("/:driverId", async (req, res) => {
