@@ -161,6 +161,151 @@ router.post("/", async (req, res) => {
 /*
 OWNER
 
+Update basic information for one owned Transportation driver
+*/
+
+router.patch("/:driverId", async (req, res) => {
+  try {
+    const driverId = cleanText(req.params.driverId);
+
+    if (
+      !driverId ||
+      !mongoose.Types.ObjectId.isValid(driverId)
+    ) {
+      return res.status(400).json({
+        message: "Valid Transportation driver ID is required.",
+      });
+    }
+
+    const {
+      fullName,
+      email,
+      phone,
+      serviceTypes,
+    } = req.body || {};
+
+    const updates = {};
+
+    if (fullName !== undefined) {
+      const cleanedFullName = cleanText(fullName);
+
+      if (!cleanedFullName) {
+        return res.status(400).json({
+          message: "Driver name is required.",
+        });
+      }
+
+      if (cleanedFullName.length > 120) {
+        return res.status(400).json({
+          message: "Driver name is too long.",
+        });
+      }
+
+      updates.fullName = cleanedFullName;
+    }
+
+    if (email !== undefined) {
+      const cleanedEmail = cleanText(email).toLowerCase();
+
+      if (cleanedEmail.length > 160) {
+        return res.status(400).json({
+          message: "Driver email is too long.",
+        });
+      }
+
+      if (
+        cleanedEmail &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanedEmail)
+      ) {
+        return res.status(400).json({
+          message: "Please enter a valid driver email address.",
+        });
+      }
+
+      updates.email = cleanedEmail;
+    }
+
+    if (phone !== undefined) {
+      const cleanedPhone = cleanText(phone);
+
+      if (!cleanedPhone) {
+        return res.status(400).json({
+          message: "Driver phone number is required.",
+        });
+      }
+
+      if (cleanedPhone.length > 40) {
+        return res.status(400).json({
+          message: "Driver phone number is too long.",
+        });
+      }
+
+      updates.phone = cleanedPhone;
+    }
+
+    if (serviceTypes !== undefined) {
+      if (!Array.isArray(serviceTypes)) {
+        return res.status(400).json({
+          message: "Driver service types must be an array.",
+        });
+      }
+
+      const cleanedServiceTypes = [
+        ...new Set(serviceTypes.map(cleanText).filter(Boolean)),
+      ];
+
+      if (
+        cleanedServiceTypes.some(
+          (serviceType) =>
+            !allowedServiceTypes.includes(serviceType)
+        )
+      ) {
+        return res.status(400).json({
+          message: "Invalid driver service type.",
+        });
+      }
+
+      updates.serviceTypes = cleanedServiceTypes;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        message: "No driver fields to update.",
+      });
+    }
+
+    const driver = await TransportationDriver.findOne({
+      _id: driverId,
+      ownerId: req.owner.id,
+    });
+
+    if (!driver) {
+      return res.status(404).json({
+        message:
+          "Transportation driver not found or you do not own this driver.",
+      });
+    }
+
+    Object.assign(driver, updates);
+
+    await driver.save();
+
+    return res.json(driver);
+  } catch (err) {
+    console.error(
+      "Update Transportation driver error:",
+      err
+    );
+
+    return res.status(500).json({
+      message: "Failed to update Transportation driver.",
+    });
+  }
+});
+
+/*
+OWNER
+
 Get drivers for one owned Transportation listing
 */
 
