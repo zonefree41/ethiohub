@@ -383,4 +383,166 @@ router.patch(
   }
 );
 
+/*
+|--------------------------------------------------------------------------
+| UPDATE DRIVER OPERATIONAL STATUS
+|--------------------------------------------------------------------------
+*/
+
+router.patch(
+  "/:driverId/status",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin"
+  ),
+  async (req, res) => {
+    try {
+      const { driverId } = req.params;
+
+      if (
+        !mongoose.Types.ObjectId.isValid(driverId)
+      ) {
+        return res.status(400).json({
+          message:
+            "Invalid transportation driver ID.",
+        });
+      }
+
+      const action = cleanText(
+        req.body?.action
+      ).toLowerCase();
+
+      const note = cleanText(req.body?.note);
+
+      if (
+        !["suspend", "unsuspend"].includes(action)
+      ) {
+        return res.status(400).json({
+          message:
+            "Driver status action must be suspend or unsuspend.",
+        });
+      }
+
+      const driver =
+        await TransportationDriver.findById(
+          driverId
+        ).populate({
+          path: "businessListingId",
+          select: "categoryId",
+          populate: {
+            path: "categoryId",
+            select: "slug",
+          },
+        });
+
+      if (!driver) {
+        return res.status(404).json({
+          message:
+            "Transportation driver not found.",
+        });
+      }
+
+      if (
+        driver.businessListingId?.categoryId?.slug !==
+        "transportation"
+      ) {
+        return res.status(400).json({
+          message:
+            "Driver is not associated with a Transportation business.",
+        });
+      }
+
+      const previousStatus = driver.status;
+
+      if (action === "suspend") {
+  if (driver.status === "suspended") {
+    return res.status(400).json({
+      message:
+        "Transportation driver is already suspended.",
+    });
+  }
+
+  driver.status = "suspended";
+  driver.availabilityStatus = "offline";
+} else {
+        if (driver.status !== "suspended") {
+          return res.status(400).json({
+            message:
+              "Only a suspended driver can be unsuspended.",
+          });
+        }
+
+        driver.status = "inactive";
+        driver.availabilityStatus = "offline";
+      }
+
+      driver.lastAdminUpdatedBy =
+        req.admin.id;
+      driver.lastAdminUpdatedAt =
+        new Date();
+
+      driver.adminAuditLog.push({
+        action:
+          action === "suspend"
+            ? "Driver Suspended"
+            : "Driver Unsuspended",
+        previousStatus,
+        newStatus: driver.status,
+        note,
+        adminId: req.admin.id,
+        adminEmail:
+          req.admin.email || "",
+      });
+
+      await driver.save();
+
+      const updatedDriver =
+        await TransportationDriver.findById(
+          driver._id
+        )
+          .populate({
+            path: "businessListingId",
+            select:
+              "title categoryId ownerId city state status",
+            populate: {
+              path: "categoryId",
+              select: "name_en slug",
+            },
+          })
+          .populate(
+            "ownerId",
+            "name email phone role"
+          )
+          .populate(
+            "lastAdminUpdatedBy",
+            "email role"
+          )
+          .populate(
+            "adminAuditLog.adminId",
+            "email role"
+          )
+          .lean();
+
+      res.json({
+        message:
+          action === "suspend"
+            ? "Transportation driver suspended successfully."
+            : "Transportation driver unsuspended successfully.",
+        driver: updatedDriver,
+      });
+    } catch (error) {
+      console.error(
+        "Update transportation driver operational status failed:",
+        error
+      );
+
+      res.status(500).json({
+        message:
+          "Failed to update transportation driver operational status.",
+      });
+    }
+  }
+);
+
 export default router;
