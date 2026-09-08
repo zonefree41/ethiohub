@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 
 import TransportationRequest from "../models/TransportationRequest.js";
+import TransportationDriver from "../models/TransportationDriver.js";
 import {
   requireAdmin,
   requireRole,
@@ -741,14 +742,58 @@ router.patch(
       }
 
       const {
+        driverId,
         driverName,
         driverPhone,
         vehicleDescription,
         licensePlate,
       } = req.body || {};
 
-      request.driverName = cleanText(driverName);
-      request.driverPhone = cleanText(driverPhone);
+      let assignedDriver = null;
+
+      if (driverId) {
+        if (
+          typeof driverId !== "string" ||
+          !mongoose.Types.ObjectId.isValid(driverId.trim())
+        ) {
+          return res.status(400).json({
+            message: "Valid transportation driver ID is required.",
+          });
+        }
+
+        assignedDriver = await TransportationDriver.findOne({
+          _id: driverId.trim(),
+          ownerId: request.ownerId,
+          businessListingId: request.listingId,
+        });
+
+        if (!assignedDriver) {
+          return res.status(404).json({
+            message: "Transportation driver not found for this business.",
+          });
+        }
+
+        if (
+          assignedDriver.status !== "active" ||
+          assignedDriver.verificationStatus !== "approved"
+        ) {
+          return res.status(400).json({
+            message:
+              "Transportation driver must be active and approved before assignment.",
+          });
+        }
+      }
+
+      if (assignedDriver) {
+        request.driverId = assignedDriver._id;
+        request.driverName = assignedDriver.fullName;
+        request.driverPhone = assignedDriver.phone;
+      } else {
+        request.driverId = null;
+        request.driverName = cleanText(driverName);
+        request.driverPhone = cleanText(driverPhone);
+      }
+
       request.vehicleDescription = cleanText(
         vehicleDescription
       );
