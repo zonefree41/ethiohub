@@ -8,6 +8,10 @@ export default function OwnerTransportationDashboard() {
   const token = localStorage.getItem("ownerToken");
 
   const [requests, setRequests] = React.useState([]);
+  const [drivers, setDrivers] = React.useState([]);
+  const [driversLoading, setDriversLoading] = React.useState(false);
+  const [driversError, setDriversError] = React.useState("");
+  const [selectedDriverId, setSelectedDriverId] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
   const [selectedStatus, setSelectedStatus] = React.useState("All");
@@ -16,8 +20,45 @@ export default function OwnerTransportationDashboard() {
   const [sortOption, setSortOption] =
   React.useState("Newest");
   const [selectedRequest, setSelectedRequest] = React.useState(null);
+  async function loadDriversForRequest(request) {
+    const businessListingId =
+      typeof request?.listingId === "string"
+        ? request.listingId
+        : request?.listingId?._id;
+
+    setDrivers([]);
+    setDriversError("");
+
+    if (!businessListingId) {
+      setDriversError("Transportation business could not be identified.");
+      return;
+    }
+
+    try {
+      setDriversLoading(true);
+
+      const data = await apiGet(
+        `/api/owner/transportation-drivers?businessListingId=${encodeURIComponent(
+          businessListingId
+        )}`,
+        token
+      );
+
+      setDrivers(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setDrivers([]);
+      setDriversError(
+        err.message || "Failed to load transportation drivers."
+      );
+    } finally {
+      setDriversLoading(false);
+    }
+  }
+
   const openRequest = (request) => {
   setSelectedRequest(request);
+  setSelectedDriverId(request.driverId?._id || request.driverId || "");
+  loadDriversForRequest(request);
   setDriverName(request.driverName || "");
   setDriverPhone(request.driverPhone || "");
   setVehicleDescription(request.vehicleDescription || "");
@@ -728,6 +769,51 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
     <div className="owner-driver-grid">
 
     <div className="owner-transport-modal-field">
+      <label>Registered Driver</label>
+
+      <select
+        value={selectedDriverId}
+        onChange={(e) => {
+          const nextDriverId = e.target.value;
+          setSelectedDriverId(nextDriverId);
+
+          const selectedDriver = drivers.find(
+            (driver) => driver._id === nextDriverId
+          );
+
+          if (selectedDriver) {
+            setDriverName(selectedDriver.fullName || "");
+            setDriverPhone(selectedDriver.phone || "");
+          }
+        }}
+        disabled={driversLoading}
+      >
+        <option value="">
+          {driversLoading
+            ? "Loading drivers..."
+            : "Use manual driver information"}
+        </option>
+
+        {drivers.map((driver) => (
+          <option
+            key={driver._id}
+            value={driver._id}
+            disabled={
+              driver.status !== "active" ||
+              driver.verificationStatus !== "approved"
+            }
+          >
+            {driver.fullName} — {driver.status} / {driver.verificationStatus}
+          </option>
+        ))}
+      </select>
+
+      {driversError && (
+        <small>{driversError}</small>
+      )}
+    </div>
+
+    <div className="owner-transport-modal-field">
       <label>Driver Name</label>
 
       <input
@@ -916,6 +1002,7 @@ if (
     quoteAmount,
     estimatedArrival,
     ownerNotes,
+    driverId: selectedDriverId || undefined,
     driverName,
     driverPhone,
     vehicleDescription,
