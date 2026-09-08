@@ -18,6 +18,10 @@ export default function OwnerTransportationDashboard() {
   const [selectedRequest, setSelectedRequest] = React.useState(null);
   const openRequest = (request) => {
   setSelectedRequest(request);
+  setDriverName(request.driverName || "");
+  setDriverPhone(request.driverPhone || "");
+  setVehicleDescription(request.vehicleDescription || "");
+  setLicensePlate(request.licensePlate || "");
 };
   const [modalStatus, setModalStatus] = React.useState("New");
 
