@@ -47,6 +47,11 @@ const [driverForm, setDriverForm] = React.useState({
 const [savingDriver, setSavingDriver] = React.useState(false);
 const [driverMessage, setDriverMessage] = React.useState("");
 
+const [drivers, setDrivers] = React.useState([]);
+const [driversLoading, setDriversLoading] = React.useState(false);
+const [driversError, setDriversError] = React.useState("");
+const [selectedDriverId, setSelectedDriverId] = React.useState("");
+
 const [loading, setLoading] = React.useState(false);
 const [detailsLoading, setDetailsLoading] = React.useState(false);
 const [error, setError] = React.useState("");
@@ -115,6 +120,49 @@ const [error, setError] = React.useState("");
     }
   }
 
+  async function loadDriversForRequest(request) {
+    const businessListingId =
+      typeof request?.listingId === "string"
+        ? request.listingId
+        : request?.listingId?._id;
+
+    setDrivers([]);
+    setDriversError("");
+
+    if (!businessListingId) {
+      setDriversError(
+        "Transportation business could not be identified."
+      );
+      return;
+    }
+
+    try {
+      setDriversLoading(true);
+
+      const data = await apiGet(
+        `/api/admin/transportation-drivers?businessListingId=${encodeURIComponent(
+          businessListingId
+        )}&limit=100`,
+        token
+      );
+
+      setDrivers(
+        Array.isArray(data?.drivers) ? data.drivers : []
+      );
+    } catch (err) {
+      console.error(
+        "Admin transportation drivers load error:",
+        err
+      );
+      setDriversError(
+        err.message ||
+          "Failed to load transportation drivers."
+      );
+    } finally {
+      setDriversLoading(false);
+    }
+  }
+
   async function openRequest(requestId) {
     try {
       setDetailsLoading(true);
@@ -127,6 +175,8 @@ const [error, setError] = React.useState("");
 
       setSelectedRequest(data);
 setEditableStatus(data.status || "New");
+setSelectedDriverId(data.driverId?._id || data.driverId || "");
+loadDriversForRequest(data);
 setDriverForm({
   driverName: data.driverName || "",
   driverPhone: data.driverPhone || "",
@@ -204,6 +254,7 @@ async function saveDriverAssignment() {
     const data = await apiPatch(
       `/api/admin/transportation-requests/${selectedRequest._id}/driver`,
       {
+        driverId: selectedDriverId || undefined,
         driverName: driverForm.driverName.trim(),
         driverPhone: driverForm.driverPhone.trim(),
         vehicleDescription:
@@ -214,6 +265,9 @@ async function saveDriverAssignment() {
     );
 
     setSelectedRequest(data.request);
+    setSelectedDriverId(
+      data.request.driverId?._id || data.request.driverId || ""
+    );
 
     setRequests((currentRequests) =>
       currentRequests.map((request) =>
@@ -277,7 +331,13 @@ async function saveDriverAssignment() {
   function driverInformationChanged() {
   if (!selectedRequest) return false;
 
+  const currentDriverId =
+    selectedRequest.driverId?._id ||
+    selectedRequest.driverId ||
+    "";
+
   return (
+    selectedDriverId !== currentDriverId ||
     driverForm.driverName.trim() !==
       (selectedRequest.driverName || "").trim() ||
     driverForm.driverPhone.trim() !==
@@ -739,6 +799,59 @@ function getStatusClass(status) {
 
                 <section>
   <h3>🚚 Driver Assignment</h3>
+
+  <label>Registered Driver</label>
+
+  <select
+    value={selectedDriverId}
+    onChange={(e) => {
+      const driverId = e.target.value;
+      setSelectedDriverId(driverId);
+      setDriverMessage("");
+
+      if (!driverId) {
+        return;
+      }
+
+      const selectedDriver = drivers.find(
+        (driver) => driver._id === driverId
+      );
+
+      if (selectedDriver) {
+        setDriverForm((current) => ({
+          ...current,
+          driverName: selectedDriver.fullName || "",
+          driverPhone: selectedDriver.phone || "",
+        }));
+      }
+    }}
+    disabled={driversLoading}
+  >
+    <option value="">
+      {driversLoading
+        ? "Loading drivers..."
+        : "Use manual driver information"}
+    </option>
+
+    {drivers.map((driver) => {
+      const assignable =
+        driver.status === "active" &&
+        driver.verificationStatus === "approved";
+
+      return (
+        <option
+          key={driver._id}
+          value={driver._id}
+          disabled={!assignable}
+        >
+          {driver.fullName} — {driver.status} /{" "}
+          {driver.verificationStatus}
+        </option>
+      );
+    })}
+  </select>
+
+  {driversError && <small>{driversError}</small>}
 
   <label>Driver Name</label>
 
