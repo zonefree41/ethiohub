@@ -794,6 +794,15 @@ router.patch(
         request.driverPhone = cleanText(driverPhone);
       }
 
+      if (
+        !request.driverAssignedAt &&
+        (request.driverId ||
+          request.driverName ||
+          request.driverPhone)
+      ) {
+        request.driverAssignedAt = new Date();
+      }
+
       request.vehicleDescription = cleanText(
         vehicleDescription
       );
