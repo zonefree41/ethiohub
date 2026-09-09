@@ -9,6 +9,7 @@ import AdminTransportationVerification from "./pages/admin/AdminTransportationVe
 import AdminTransportationDashboard from "./pages/admin/AdminTransportationDashboard.jsx";
 import AdminHousingRequests from "./pages/admin/AdminHousingRequests.jsx";
 import OwnerTransportationDashboard from "./pages/owner/OwnerTransportationDashboard.jsx";
+import OwnerTransportationDrivers from "./pages/owner/OwnerTransportationDrivers.jsx";
 import OwnerTravelDashboard from "./pages/owner/OwnerTravelDashboard.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PaymentCancelled from "./pages/PaymentCancelled.jsx";
@@ -164,6 +165,10 @@ if (path.startsWith("/owner/my-cars")) {
   return <OwnerCars />;
 }
 if (path.startsWith("/owner/dashboard")) return <OwnerDashboard />;
+if (path.startsWith("/owner/transportation-drivers")) {
+  return <OwnerTransportationDrivers />;
+}
+
 if (path.startsWith("/owner/transportation")) {
   return <OwnerTransportationDashboard />;
 }
