@@ -270,12 +270,18 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
     icon="🚚"
     description="Review customer requests and manage transportation jobs."
     actions={
-      <button
-        type="button"
-        onClick={logout}
-      >
-        Logout
-      </button>
+      <>
+        <a href="/owner/transportation-drivers">
+          Manage Drivers
+        </a>
+
+        <button
+          type="button"
+          onClick={logout}
+        >
+          Logout
+        </button>
+      </>
     }
   >
 
