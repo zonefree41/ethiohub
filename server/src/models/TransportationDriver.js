@@ -38,6 +38,19 @@ const transportationDriverSchema = new mongoose.Schema(
       maxlength: 40,
     },
 
+    passwordHash: {
+      type: String,
+      select: false,
+      default: "",
+    },
+
+    driverAccountStatus: {
+      type: String,
+      enum: ["not_activated", "active", "disabled"],
+      default: "not_activated",
+      index: true,
+    },
+
     status: {
       type: String,
       enum: ["pending", "active", "suspended", "inactive"],
