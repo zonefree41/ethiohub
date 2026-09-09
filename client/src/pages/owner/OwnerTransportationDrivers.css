@@ -284,3 +284,13 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.owner-driver-card > .owner-driver-status-button {
+  margin-right: 10px;
+  background: #dc2626;
+}
+
+.owner-driver-card > .owner-driver-status-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
