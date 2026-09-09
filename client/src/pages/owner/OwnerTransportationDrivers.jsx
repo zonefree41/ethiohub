@@ -3,6 +3,7 @@ import React from "react";
 import { apiGet, apiPost } from "../../api/http.js";
 
 import WorkspaceLayout from "../../components/owner/workspaces/WorkspaceLayout.jsx";
+import "./OwnerTransportationDrivers.css";
 
 const DRIVER_SERVICE_TYPES = [
   "Furniture Delivery",
@@ -223,7 +224,7 @@ export default function OwnerTransportationDrivers() {
         </p>
       ) : (
         <>
-          <section>
+          <section className="owner-driver-business-card">
             <label htmlFor="transportation-driver-listing">
               Transportation Business
             </label>
@@ -253,10 +254,10 @@ export default function OwnerTransportationDrivers() {
             </select>
           </section>
 
-          <section>
+          <section className="owner-driver-form-card">
             <h2>Add Driver</h2>
 
-            <form onSubmit={createDriver}>
+            <form className="owner-driver-form" onSubmit={createDriver}>
               <div>
                 <label htmlFor="driver-full-name">
                   Full Name
@@ -313,7 +314,7 @@ export default function OwnerTransportationDrivers() {
                 />
               </div>
 
-              <fieldset>
+              <fieldset className="owner-driver-service-types">
                 <legend>Service Types</legend>
 
                 {DRIVER_SERVICE_TYPES.map((serviceType) => (
@@ -352,7 +353,7 @@ export default function OwnerTransportationDrivers() {
             </form>
           </section>
 
-          <section>
+          <section className="owner-driver-list-card">
             <h2>Registered Drivers</h2>
 
             {driversError && <p>{driversError}</p>}
@@ -365,9 +366,9 @@ export default function OwnerTransportationDrivers() {
                 business yet.
               </p>
             ) : (
-              <div>
+              <div className="owner-driver-grid">
                 {drivers.map((driver) => (
-                  <article key={driver._id}>
+                  <article className="owner-driver-card" key={driver._id}>
                     <h3>{driver.fullName}</h3>
                     <p>
                       <strong>Phone:</strong>{" "}
