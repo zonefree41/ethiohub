@@ -1,8 +1,17 @@
 import React from "react";
 
-import { apiGet } from "../../api/http.js";
+import { apiGet, apiPost } from "../../api/http.js";
 
 import WorkspaceLayout from "../../components/owner/workspaces/WorkspaceLayout.jsx";
+
+const DRIVER_SERVICE_TYPES = [
+  "Furniture Delivery",
+  "Package Delivery",
+  "Moving Service",
+  "Airport Transportation",
+  "Freight Delivery",
+  "Other",
+];
 
 export default function OwnerTransportationDrivers() {
   const token = localStorage.getItem("ownerToken");
@@ -20,6 +29,19 @@ export default function OwnerTransportationDrivers() {
 
   const [error, setError] = React.useState("");
   const [driversError, setDriversError] =
+    React.useState("");
+
+  const [driverForm, setDriverForm] = React.useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    serviceTypes: [],
+  });
+  const [creatingDriver, setCreatingDriver] =
+    React.useState(false);
+  const [createDriverError, setCreateDriverError] =
+    React.useState("");
+  const [createDriverSuccess, setCreateDriverSuccess] =
     React.useState("");
 
   React.useEffect(() => {
@@ -92,6 +114,92 @@ export default function OwnerTransportationDrivers() {
     loadDrivers();
   }, [selectedListingId, token]);
 
+  function updateDriverField(field, value) {
+    setDriverForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  function toggleDriverServiceType(serviceType) {
+    setDriverForm((current) => ({
+      ...current,
+      serviceTypes: current.serviceTypes.includes(serviceType)
+        ? current.serviceTypes.filter(
+            (item) => item !== serviceType
+          )
+        : [...current.serviceTypes, serviceType],
+    }));
+  }
+
+  async function createDriver(event) {
+    event.preventDefault();
+
+    const fullName = driverForm.fullName.trim();
+    const phone = driverForm.phone.trim();
+    const email = driverForm.email.trim();
+
+    setCreateDriverError("");
+    setCreateDriverSuccess("");
+
+    if (!selectedListingId) {
+      setCreateDriverError(
+        "Please select a Transportation business."
+      );
+      return;
+    }
+
+    if (!fullName) {
+      setCreateDriverError("Driver name is required.");
+      return;
+    }
+
+    if (!phone) {
+      setCreateDriverError(
+        "Driver phone number is required."
+      );
+      return;
+    }
+
+    try {
+      setCreatingDriver(true);
+
+      const createdDriver = await apiPost(
+        "/api/owner/transportation-drivers",
+        {
+          businessListingId: selectedListingId,
+          fullName,
+          email,
+          phone,
+          serviceTypes: driverForm.serviceTypes,
+        },
+        token
+      );
+
+      setDrivers((current) => [
+        createdDriver,
+        ...current,
+      ]);
+
+      setDriverForm({
+        fullName: "",
+        email: "",
+        phone: "",
+        serviceTypes: [],
+      });
+
+      setCreateDriverSuccess(
+        "Driver added successfully. Verification is required before the driver can become active."
+      );
+    } catch (err) {
+      setCreateDriverError(
+        err.message || "Failed to add Transportation driver."
+      );
+    } finally {
+      setCreatingDriver(false);
+    }
+  }
+
   return (
     <WorkspaceLayout
       label="Transportation Workspace"
@@ -143,6 +251,105 @@ export default function OwnerTransportationDrivers() {
                 </option>
               ))}
             </select>
+          </section>
+
+          <section>
+            <h2>Add Driver</h2>
+
+            <form onSubmit={createDriver}>
+              <div>
+                <label htmlFor="driver-full-name">
+                  Full Name
+                </label>
+                <input
+                  id="driver-full-name"
+                  type="text"
+                  value={driverForm.fullName}
+                  onChange={(event) =>
+                    updateDriverField(
+                      "fullName",
+                      event.target.value
+                    )
+                  }
+                  maxLength={120}
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="driver-phone">
+                  Phone
+                </label>
+                <input
+                  id="driver-phone"
+                  type="tel"
+                  value={driverForm.phone}
+                  onChange={(event) =>
+                    updateDriverField(
+                      "phone",
+                      event.target.value
+                    )
+                  }
+                  maxLength={40}
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="driver-email">
+                  Email
+                </label>
+                <input
+                  id="driver-email"
+                  type="email"
+                  value={driverForm.email}
+                  onChange={(event) =>
+                    updateDriverField(
+                      "email",
+                      event.target.value
+                    )
+                  }
+                  maxLength={160}
+                />
+              </div>
+
+              <fieldset>
+                <legend>Service Types</legend>
+
+                {DRIVER_SERVICE_TYPES.map((serviceType) => (
+                  <label key={serviceType}>
+                    <input
+                      type="checkbox"
+                      checked={driverForm.serviceTypes.includes(
+                        serviceType
+                      )}
+                      onChange={() =>
+                        toggleDriverServiceType(serviceType)
+                      }
+                    />
+                    {" "}
+                    {serviceType}
+                  </label>
+                ))}
+              </fieldset>
+
+              {createDriverError && (
+                <p>{createDriverError}</p>
+              )}
+
+              {createDriverSuccess && (
+                <p>{createDriverSuccess}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={creatingDriver}
+              >
+                {creatingDriver
+                  ? "Adding Driver..."
+                  : "Add Driver"}
+              </button>
+            </form>
           </section>
 
           <section>
