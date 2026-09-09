@@ -1,6 +1,6 @@
 import React from "react";
 
-import { apiGet, apiPost } from "../../api/http.js";
+import { apiGet, apiPatch, apiPost } from "../../api/http.js";
 
 import WorkspaceLayout from "../../components/owner/workspaces/WorkspaceLayout.jsx";
 import "./OwnerTransportationDrivers.css";
@@ -43,6 +43,18 @@ export default function OwnerTransportationDrivers() {
   const [createDriverError, setCreateDriverError] =
     React.useState("");
   const [createDriverSuccess, setCreateDriverSuccess] =
+    React.useState("");
+  const [editingDriverId, setEditingDriverId] =
+    React.useState("");
+  const [editDriverForm, setEditDriverForm] = React.useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    serviceTypes: [],
+  });
+  const [savingDriver, setSavingDriver] =
+    React.useState(false);
+  const [editDriverError, setEditDriverError] =
     React.useState("");
 
   React.useEffect(() => {
@@ -131,6 +143,103 @@ export default function OwnerTransportationDrivers() {
           )
         : [...current.serviceTypes, serviceType],
     }));
+  }
+
+  function startEditingDriver(driver) {
+    setEditingDriverId(driver._id);
+    setEditDriverError("");
+    setEditDriverForm({
+      fullName: driver.fullName || "",
+      email: driver.email || "",
+      phone: driver.phone || "",
+      serviceTypes: Array.isArray(driver.serviceTypes)
+        ? driver.serviceTypes
+        : [],
+    });
+  }
+
+  function cancelEditingDriver() {
+    setEditingDriverId("");
+    setEditDriverError("");
+    setEditDriverForm({
+      fullName: "",
+      email: "",
+      phone: "",
+      serviceTypes: [],
+    });
+  }
+
+  function updateEditDriverField(field, value) {
+    setEditDriverForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  function toggleEditDriverServiceType(serviceType) {
+    setEditDriverForm((current) => ({
+      ...current,
+      serviceTypes: current.serviceTypes.includes(serviceType)
+        ? current.serviceTypes.filter(
+            (item) => item !== serviceType
+          )
+        : [...current.serviceTypes, serviceType],
+    }));
+  }
+
+  async function saveDriver(event) {
+    event.preventDefault();
+
+    if (!editingDriverId) {
+      return;
+    }
+
+    const fullName = editDriverForm.fullName.trim();
+    const phone = editDriverForm.phone.trim();
+    const email = editDriverForm.email.trim();
+
+    setEditDriverError("");
+
+    if (!fullName) {
+      setEditDriverError("Driver name is required.");
+      return;
+    }
+
+    if (!phone) {
+      setEditDriverError("Driver phone number is required.");
+      return;
+    }
+
+    try {
+      setSavingDriver(true);
+
+      const updatedDriver = await apiPatch(
+        `/api/owner/transportation-drivers/${editingDriverId}`,
+        {
+          fullName,
+          email,
+          phone,
+          serviceTypes: editDriverForm.serviceTypes,
+        },
+        token
+      );
+
+      setDrivers((current) =>
+        current.map((driver) =>
+          driver._id === updatedDriver._id
+            ? updatedDriver
+            : driver
+        )
+      );
+
+      cancelEditingDriver();
+    } catch (err) {
+      setEditDriverError(
+        err.message || "Failed to update Transportation driver."
+      );
+    } finally {
+      setSavingDriver(false);
+    }
   }
 
   async function createDriver(event) {
@@ -372,27 +481,146 @@ export default function OwnerTransportationDrivers() {
               <div className="owner-driver-grid">
                 {drivers.map((driver) => (
                   <article className="owner-driver-card" key={driver._id}>
-                    <h3>{driver.fullName}</h3>
-                    <p>
-                      <strong>Phone:</strong>{" "}
-                      {driver.phone || "Not provided"}
-                    </p>
-                    <p>
-                      <strong>Email:</strong>{" "}
-                      {driver.email || "Not provided"}
-                    </p>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      {driver.status}
-                    </p>
-                    <p>
-                      <strong>Verification:</strong>{" "}
-                      {driver.verificationStatus}
-                    </p>
-                    <p>
-                      <strong>Availability:</strong>{" "}
-                      {driver.availabilityStatus}
-                    </p>
+                    {editingDriverId === driver._id ? (
+                      <form
+                        className="owner-driver-edit-form"
+                        onSubmit={saveDriver}
+                      >
+                        <div>
+                          <label htmlFor={`edit-driver-name-${driver._id}`}>
+                            Full Name
+                          </label>
+                          <input
+                            id={`edit-driver-name-${driver._id}`}
+                            type="text"
+                            value={editDriverForm.fullName}
+                            onChange={(event) =>
+                              updateEditDriverField(
+                                "fullName",
+                                event.target.value
+                              )
+                            }
+                            maxLength={120}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor={`edit-driver-phone-${driver._id}`}>
+                            Phone
+                          </label>
+                          <input
+                            id={`edit-driver-phone-${driver._id}`}
+                            type="tel"
+                            value={editDriverForm.phone}
+                            onChange={(event) =>
+                              updateEditDriverField(
+                                "phone",
+                                event.target.value
+                              )
+                            }
+                            maxLength={40}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor={`edit-driver-email-${driver._id}`}>
+                            Email
+                          </label>
+                          <input
+                            id={`edit-driver-email-${driver._id}`}
+                            type="email"
+                            value={editDriverForm.email}
+                            onChange={(event) =>
+                              updateEditDriverField(
+                                "email",
+                                event.target.value
+                              )
+                            }
+                            maxLength={160}
+                          />
+                        </div>
+
+                        <fieldset className="owner-driver-service-types">
+                          <legend>Service Types</legend>
+                          {DRIVER_SERVICE_TYPES.map((serviceType) => (
+                            <label key={serviceType}>
+                              <input
+                                type="checkbox"
+                                checked={editDriverForm.serviceTypes.includes(
+                                  serviceType
+                                )}
+                                onChange={() =>
+                                  toggleEditDriverServiceType(serviceType)
+                                }
+                              />
+                              {" "}
+                              {serviceType}
+                            </label>
+                          ))}
+                        </fieldset>
+
+                        {editDriverError && (
+                          <p>{editDriverError}</p>
+                        )}
+
+                        <div className="owner-driver-edit-actions">
+                          <button
+                            type="submit"
+                            disabled={savingDriver}
+                          >
+                            {savingDriver
+                              ? "Saving..."
+                              : "Save Driver"}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={cancelEditingDriver}
+                            disabled={savingDriver}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <>
+                        <h3>{driver.fullName}</h3>
+
+                        <p>
+                          <strong>Phone:</strong>{" "}
+                          {driver.phone || "Not provided"}
+                        </p>
+
+                        <p>
+                          <strong>Email:</strong>{" "}
+                          {driver.email || "Not provided"}
+                        </p>
+
+                        <p>
+                          <strong>Status:</strong>{" "}
+                          {driver.status}
+                        </p>
+
+                        <p>
+                          <strong>Verification:</strong>{" "}
+                          {driver.verificationStatus}
+                        </p>
+
+                        <p>
+                          <strong>Availability:</strong>{" "}
+                          {driver.availabilityStatus}
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={() => startEditingDriver(driver)}
+                        >
+                          Edit Driver
+                        </button>
+                      </>
+                    )}
                   </article>
                 ))}
               </div>
