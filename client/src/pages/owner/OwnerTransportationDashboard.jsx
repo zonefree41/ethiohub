@@ -57,6 +57,7 @@ export default function OwnerTransportationDashboard() {
 
   const openRequest = (request) => {
   setSelectedRequest(request);
+  setModalStatus(request.status || "New");
   setSelectedDriverId(request.driverId?._id || request.driverId || "");
   loadDriversForRequest(request);
   setDriverName(request.driverName || "");
