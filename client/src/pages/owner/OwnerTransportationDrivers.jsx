@@ -57,6 +57,11 @@ export default function OwnerTransportationDrivers() {
   const [editDriverError, setEditDriverError] =
     React.useState("");
 
+  const [updatingAvailabilityDriverId, setUpdatingAvailabilityDriverId] =
+    React.useState("");
+  const [availabilityError, setAvailabilityError] =
+    React.useState("");
+
   React.useEffect(() => {
     async function loadTransportationListings() {
       try {
@@ -239,6 +244,34 @@ export default function OwnerTransportationDrivers() {
       );
     } finally {
       setSavingDriver(false);
+    }
+  }
+
+  async function updateDriverAvailability(driver, availabilityStatus) {
+    setAvailabilityError("");
+
+    try {
+      setUpdatingAvailabilityDriverId(driver._id);
+
+      const updatedDriver = await apiPatch(
+        `/api/owner/transportation-drivers/${driver._id}/availability`,
+        { availabilityStatus },
+        token
+      );
+
+      setDrivers((current) =>
+        current.map((item) =>
+          item._id === updatedDriver._id
+            ? updatedDriver
+            : item
+        )
+      );
+    } catch (err) {
+      setAvailabilityError(
+        err.message || "Failed to update driver availability."
+      );
+    } finally {
+      setUpdatingAvailabilityDriverId("");
     }
   }
 
@@ -470,6 +503,8 @@ export default function OwnerTransportationDrivers() {
 
             {driversError && <p>{driversError}</p>}
 
+            {availabilityError && <p>{availabilityError}</p>}
+
             {loadingDrivers ? (
               <p>Loading drivers...</p>
             ) : drivers.length === 0 ? (
@@ -612,6 +647,31 @@ export default function OwnerTransportationDrivers() {
                           <strong>Availability:</strong>{" "}
                           {driver.availabilityStatus}
                         </p>
+
+                        {driver.status === "active" &&
+                          driver.verificationStatus === "approved" && (
+                            <button
+                              type="button"
+                              className="owner-driver-availability-button"
+                              onClick={() =>
+                                updateDriverAvailability(
+                                  driver,
+                                  driver.availabilityStatus === "available"
+                                    ? "offline"
+                                    : "available"
+                                )
+                              }
+                              disabled={
+                                updatingAvailabilityDriverId === driver._id
+                              }
+                            >
+                              {updatingAvailabilityDriverId === driver._id
+                                ? "Updating..."
+                                : driver.availabilityStatus === "available"
+                                  ? "Go Offline"
+                                  : "Go Available"}
+                            </button>
+                          )}
 
                         <button
                           type="button"

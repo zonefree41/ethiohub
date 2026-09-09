@@ -274,3 +274,13 @@
     width: 100%;
   }
 }
+
+.owner-driver-card > .owner-driver-availability-button {
+  margin-right: 10px;
+  background: #16a34a;
+}
+
+.owner-driver-card > .owner-driver-availability-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
