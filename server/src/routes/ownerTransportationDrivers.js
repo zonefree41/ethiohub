@@ -133,6 +133,18 @@ router.post("/", async (req, res) => {
       });
     }
 
+    if (cleanedEmail) {
+      const existingDriver = await TransportationDriver.findOne({
+        email: cleanedEmail,
+      }).select("_id");
+
+      if (existingDriver) {
+        return res.status(409).json({
+          message: "A Transportation driver with this email already exists.",
+        });
+      }
+    }
+
     const driver = await TransportationDriver.create({
       ownerId: req.owner.id,
       businessListingId: listing._id,
@@ -443,6 +455,19 @@ router.patch("/:driverId", async (req, res) => {
         message:
           "Transportation driver not found or you do not own this driver.",
       });
+    }
+
+    if (updates.email) {
+      const existingDriver = await TransportationDriver.findOne({
+        email: updates.email,
+        _id: { $ne: driver._id },
+      }).select("_id");
+
+      if (existingDriver) {
+        return res.status(409).json({
+          message: "A Transportation driver with this email already exists.",
+        });
+      }
     }
 
     Object.assign(driver, updates);
