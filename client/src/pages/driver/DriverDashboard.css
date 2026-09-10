@@ -230,3 +230,25 @@
     padding: 20px;
   }
 }
+
+.driver-availability-button {
+  width: 100%;
+  margin-top: 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 700;
+  color: #344054;
+  cursor: pointer;
+}
+
+.driver-availability-button:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.driver-availability-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

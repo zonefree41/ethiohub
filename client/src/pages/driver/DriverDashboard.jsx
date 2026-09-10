@@ -1,6 +1,6 @@
 import React from "react";
 
-import { apiGet } from "../../api/http.js";
+import { apiGet, apiPatch } from "../../api/http.js";
 
 import "./DriverDashboard.css";
 
@@ -11,6 +11,11 @@ export default function DriverDashboard() {
   const [jobs, setJobs] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
+
+  const [
+    availabilityUpdating,
+    setAvailabilityUpdating,
+  ] = React.useState(false);
 
   React.useEffect(() => {
     document.title = "Driver Dashboard | HubEthio";
@@ -60,6 +65,42 @@ export default function DriverDashboard() {
     localStorage.removeItem("driverToken");
     localStorage.removeItem("driverUser");
     window.location.href = "/";
+  }
+
+  async function toggleAvailability() {
+    if (!driver || availabilityUpdating) return;
+
+    const nextStatus =
+      driver.availabilityStatus === "available"
+        ? "offline"
+        : "available";
+
+    try {
+      setAvailabilityUpdating(true);
+      setError("");
+
+      const data = await apiPatch(
+        "/api/driver/availability",
+        { availabilityStatus: nextStatus },
+        token
+      );
+
+      setDriver(data?.driver || driver);
+    } catch (err) {
+      if (err?.status === 401) {
+        localStorage.removeItem("driverToken");
+        localStorage.removeItem("driverUser");
+        window.location.href = "/driver/login";
+        return;
+      }
+
+      setError(
+        err.message ||
+          "Failed to update Driver availability."
+      );
+    } finally {
+      setAvailabilityUpdating(false);
+    }
   }
 
   function formatStatus(value) {
@@ -151,6 +192,31 @@ export default function DriverDashboard() {
                     driver.availabilityStatus
                   )}
                 </strong>
+
+                <button
+                  type="button"
+                  className="driver-availability-button"
+                  onClick={toggleAvailability}
+                  disabled={
+                    availabilityUpdating ||
+                    (
+                      driver.availabilityStatus !==
+                        "available" &&
+                      (
+                        driver.status !== "active" ||
+                        driver.verificationStatus !==
+                          "approved"
+                      )
+                    )
+                  }
+                >
+                  {availabilityUpdating
+                    ? "Updating..."
+                    : driver.availabilityStatus ===
+                        "available"
+                      ? "Go Offline"
+                      : "Go Available"}
+                </button>
               </article>
             </section>
 
