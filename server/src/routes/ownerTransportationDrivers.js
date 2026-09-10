@@ -1,9 +1,11 @@
 import express from "express";
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 import TransportationDriver from "../models/TransportationDriver.js";
 import Listing from "../models/Listing.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const router = express.Router();
 
@@ -166,6 +168,133 @@ router.post("/", async (req, res) => {
 
     return res.status(500).json({
       message: "Failed to create Transportation driver.",
+    });
+  }
+});
+
+/*
+OWNER
+
+Send an account activation invitation to one owned Transportation driver
+*/
+
+router.post("/:driverId/send-activation", async (req, res) => {
+  try {
+    const driverId = cleanText(req.params.driverId);
+
+    if (
+      !driverId ||
+      !mongoose.Types.ObjectId.isValid(driverId)
+    ) {
+      return res.status(400).json({
+        message: "Valid Transportation driver ID is required.",
+      });
+    }
+
+    const driver = await TransportationDriver.findOne({
+      _id: driverId,
+      ownerId: req.owner.id,
+    }).select(
+      "+activationTokenHash +activationExpires"
+    );
+
+    if (!driver) {
+      return res.status(404).json({
+        message:
+          "Transportation driver not found or you do not own this driver.",
+      });
+    }
+
+    if (!driver.email) {
+      return res.status(400).json({
+        message:
+          "Driver email is required before sending an activation invitation.",
+      });
+    }
+
+    if (driver.driverAccountStatus === "active") {
+      return res.status(409).json({
+        message: "This driver account is already active.",
+      });
+    }
+
+    if (driver.driverAccountStatus === "disabled") {
+      return res.status(403).json({
+        message: "This driver account is disabled.",
+      });
+    }
+
+    const rawActivationToken = crypto
+      .randomBytes(32)
+      .toString("hex");
+
+    const activationTokenHash = crypto
+      .createHash("sha256")
+      .update(rawActivationToken)
+      .digest("hex");
+
+    const activationExpires = new Date(
+      Date.now() + 24 * 60 * 60 * 1000
+    );
+
+    const activationUrl = `${
+      process.env.CLIENT_URL ||
+      "https://www.hubethio.com"
+    }/driver/activate?token=${rawActivationToken}`;
+
+    driver.activationTokenHash = activationTokenHash;
+    driver.activationExpires = activationExpires;
+
+    await driver.save();
+
+    const emailResult = await sendEmail({
+      to: driver.email,
+      subject: "Activate your HubEthio Driver account",
+      html: `
+        <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#111827;">
+          <h2>Activate Your HubEthio Driver Account</h2>
+          <p>Hello ${driver.fullName},</p>
+          <p>
+            Your Transportation business has created a HubEthio Driver profile for you.
+          </p>
+          <p>
+            Use the link below to activate your Driver account and create your password.
+          </p>
+          <p>
+            <a href="${activationUrl}">Activate Driver Account</a>
+          </p>
+          <p>This activation link expires in 24 hours.</p>
+          <p>
+            If you were not expecting this invitation, you can ignore this email.
+          </p>
+        </div>
+      `,
+    });
+
+    if (!emailResult) {
+      driver.activationTokenHash = "";
+      driver.activationExpires = null;
+
+      await driver.save();
+
+      return res.status(502).json({
+        message:
+          "Driver activation email could not be sent. Please try again.",
+      });
+    }
+
+    return res.json({
+      message: "Driver activation invitation sent.",
+    });
+  } catch (err) {
+    console.error(
+      "Send Transportation driver activation error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to send Transportation driver activation invitation.",
     });
   }
 });
