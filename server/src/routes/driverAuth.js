@@ -11,13 +11,18 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
 
-    if (!email || !password) {
+    if (
+      typeof email !== "string" ||
+      typeof password !== "string" ||
+      !email.trim() ||
+      !password
+    ) {
       return res.status(400).json({
         message: "Email and password are required.",
       });
     }
 
-    const cleanedEmail = String(email).trim().toLowerCase();
+    const cleanedEmail = email.trim().toLowerCase();
 
     const driver = await TransportationDriver.findOne({
       email: cleanedEmail,
