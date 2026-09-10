@@ -51,6 +51,18 @@ const transportationDriverSchema = new mongoose.Schema(
       index: true,
     },
 
+    activationTokenHash: {
+      type: String,
+      select: false,
+      default: "",
+    },
+
+    activationExpires: {
+      type: Date,
+      select: false,
+      default: null,
+    },
+
     status: {
       type: String,
       enum: ["pending", "active", "suspended", "inactive"],
