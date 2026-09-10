@@ -11,6 +11,7 @@ import AdminHousingRequests from "./pages/admin/AdminHousingRequests.jsx";
 import OwnerTransportationDashboard from "./pages/owner/OwnerTransportationDashboard.jsx";
 import OwnerTransportationDrivers from "./pages/owner/OwnerTransportationDrivers.jsx";
 import DriverActivate from "./pages/driver/DriverActivate.jsx";
+import DriverLogin from "./pages/driver/DriverLogin.jsx";
 import OwnerTravelDashboard from "./pages/owner/OwnerTravelDashboard.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PaymentCancelled from "./pages/PaymentCancelled.jsx";
@@ -140,6 +141,7 @@ if (path.startsWith("/admin/cars")) {
 if (path.startsWith("/admin")) return <AdminDashboard />;
 
   if (path.startsWith("/driver/activate")) return <DriverActivate />;
+if (path.startsWith("/driver/login")) return <DriverLogin />;
 if (path.startsWith("/owner/login")) return <OwnerLogin />;
 if (path.startsWith("/owner/register")) return <OwnerRegister />;
 if (path.startsWith("/owner/forgot-password")) return <ForgotPassword />;
