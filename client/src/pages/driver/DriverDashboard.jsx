@@ -261,7 +261,10 @@ export default function DriverDashboard() {
                             {job.requestedDate
                               ? new Date(
                                   job.requestedDate
-                                ).toLocaleDateString()
+                                ).toLocaleDateString(
+                                  undefined,
+                                  { timeZone: "UTC" }
+                                )
                               : "Not provided"}
                           </strong>
                         </div>
