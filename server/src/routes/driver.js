@@ -80,6 +80,8 @@ router.patch("/availability", async (req, res) => {
 
     const driver = await TransportationDriver.findById(
       req.driver.id
+    ).select(
+      "_id ownerId businessListingId fullName email phone serviceTypes driverAccountStatus status verificationStatus availabilityStatus createdAt updatedAt"
     );
 
     if (!driver) {
