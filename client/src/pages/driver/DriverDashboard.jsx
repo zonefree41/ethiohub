@@ -8,6 +8,7 @@ export default function DriverDashboard() {
   const token = localStorage.getItem("driverToken");
 
   const [driver, setDriver] = React.useState(null);
+  const [jobs, setJobs] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
 
@@ -26,12 +27,15 @@ export default function DriverDashboard() {
         setLoading(true);
         setError("");
 
-        const data = await apiGet(
-          "/api/driver/me",
-          token
-        );
+        const [data, jobsData] = await Promise.all([
+          apiGet("/api/driver/me", token),
+          apiGet("/api/driver/jobs", token),
+        ]);
 
         setDriver(data?.driver || null);
+        setJobs(
+          Array.isArray(jobsData) ? jobsData : []
+        );
       } catch (err) {
         if (err?.status === 401 || err?.status === 403) {
           localStorage.removeItem("driverToken");
@@ -189,10 +193,114 @@ export default function DriverDashboard() {
             <section className="driver-dashboard-card">
               <h2>Assigned Jobs</h2>
 
-              <p className="driver-empty-state">
-                Your assigned transportation jobs will
-                appear here.
-              </p>
+              {jobs.length === 0 ? (
+                <p className="driver-empty-state">
+                  You do not have any assigned
+                  transportation jobs yet.
+                </p>
+              ) : (
+                <div className="driver-jobs-list">
+                  {jobs.map((job) => (
+                    <article
+                      key={job._id}
+                      className="driver-job-card"
+                    >
+                      <div className="driver-job-header">
+                        <div>
+                          <span className="driver-job-label">
+                            {job.serviceType ||
+                              "Transportation"}
+                          </span>
+                          <h3>
+                            {job.listingId?.title ||
+                              "Assigned Job"}
+                          </h3>
+                        </div>
+
+                        <strong className="driver-job-status">
+                          {formatStatus(job.status)}
+                        </strong>
+                      </div>
+
+                      <div className="driver-job-grid">
+                        <div>
+                          <span>Customer</span>
+                          <strong>
+                            {job.customerName ||
+                              "Not provided"}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>Phone</span>
+                          <strong>
+                            {job.customerPhone ||
+                              "Not provided"}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>Pickup</span>
+                          <strong>
+                            {job.pickupAddress ||
+                              "Not provided"}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>Delivery</span>
+                          <strong>
+                            {job.deliveryAddress ||
+                              "Not provided"}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>Requested Date</span>
+                          <strong>
+                            {job.requestedDate
+                              ? new Date(
+                                  job.requestedDate
+                                ).toLocaleDateString()
+                              : "Not provided"}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>Requested Time</span>
+                          <strong>
+                            {job.requestedTime ||
+                              "Not provided"}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>Vehicle</span>
+                          <strong>
+                            {job.vehicleDescription ||
+                              "Not provided"}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>Plate</span>
+                          <strong>
+                            {job.licensePlate ||
+                              "Not provided"}
+                          </strong>
+                        </div>
+                      </div>
+
+                      {job.cargoDetails && (
+                        <div className="driver-job-details">
+                          <span>Cargo Details</span>
+                          <p>{job.cargoDetails}</p>
+                        </div>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              )}
             </section>
           </>
         )}
