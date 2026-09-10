@@ -251,22 +251,56 @@ router.post("/:driverId/send-activation", async (req, res) => {
       to: driver.email,
       subject: "Activate your HubEthio Driver account",
       html: `
-        <div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#111827;">
-          <h2>Activate Your HubEthio Driver Account</h2>
-          <p>Hello ${driver.fullName},</p>
-          <p>
-            Your Transportation business has created a HubEthio Driver profile for you.
-          </p>
-          <p>
-            Use the link below to activate your Driver account and create your password.
-          </p>
-          <p>
-            <a href="${activationUrl}">Activate Driver Account</a>
-          </p>
-          <p>This activation link expires in 24 hours.</p>
-          <p>
-            If you were not expecting this invitation, you can ignore this email.
-          </p>
+        <div style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+          <div style="max-width:600px;margin:0 auto;padding:32px 16px;">
+            <div style="background:#ffffff;border-radius:16px;padding:32px;box-shadow:0 4px 18px rgba(0,0,0,0.06);">
+              <div style="text-align:center;margin-bottom:28px;">
+                <div style="font-size:28px;font-weight:700;letter-spacing:-0.5px;">
+                  HubEthio
+                </div>
+                <div style="margin-top:6px;font-size:14px;color:#6b7280;">
+                  Driver Account Activation
+                </div>
+              </div>
+
+              <h2 style="margin:0 0 20px;font-size:24px;line-height:1.3;text-align:center;">
+                Activate Your HubEthio Driver Account
+              </h2>
+
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.7;">
+                Hello,
+              </p>
+
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.7;">
+                Your Transportation business has created a HubEthio Driver profile for you.
+              </p>
+
+              <p style="margin:0 0 24px;font-size:16px;line-height:1.7;">
+                Activate your account to create your password and access your Driver workspace.
+              </p>
+
+              <div style="text-align:center;margin:30px 0;">
+                <a
+                  href="${activationUrl}"
+                  style="display:inline-block;padding:14px 26px;border-radius:10px;background:#111827;color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;"
+                >
+                  Activate Driver Account
+                </a>
+              </div>
+
+              <div style="margin:24px 0;padding:14px 16px;background:#f9fafb;border-radius:10px;font-size:14px;line-height:1.6;color:#4b5563;">
+                This activation link expires in 24 hours for your security.
+              </div>
+
+              <p style="margin:0;font-size:14px;line-height:1.6;color:#6b7280;">
+                If you were not expecting this invitation, you can safely ignore this email.
+              </p>
+            </div>
+
+            <p style="margin:18px 0 0;text-align:center;font-size:12px;color:#9ca3af;">
+              © HubEthio
+            </p>
+          </div>
         </div>
       `,
     });
