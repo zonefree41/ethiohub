@@ -13,6 +13,7 @@ import webhookRoutes from "./routes/stripeWebhook.js";
 import uploadRoutes from "./routes/upload.js";
 import reviewRoutes from "./routes/reviews.js";
 import ownerAuthRoutes from "./routes/ownerAuth.js";
+import driverAuthRoutes from "./routes/driverAuth.js";
 import ownerListingRoutes from "./routes/ownerListings.js";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -263,6 +264,7 @@ app.use(
 );
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/owner/auth", authLimiter, ownerAuthRoutes);
+app.use("/api/driver/auth", authLimiter, driverAuthRoutes);
 app.use("/api/owner/listings", ownerListingRoutes);
 app.use(
   "/api/owner/transportation-drivers",
