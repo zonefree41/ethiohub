@@ -63,4 +63,61 @@ router.get("/jobs", async (req, res) => {
   }
 });
 
+router.patch("/availability", async (req, res) => {
+  try {
+    const { availabilityStatus } = req.body || {};
+
+    if (
+      !["available", "offline"].includes(
+        availabilityStatus
+      )
+    ) {
+      return res.status(400).json({
+        message:
+          "Availability must be available or offline.",
+      });
+    }
+
+    const driver = await TransportationDriver.findById(
+      req.driver.id
+    );
+
+    if (!driver) {
+      return res.status(404).json({
+        message: "Transportation driver not found.",
+      });
+    }
+
+    if (
+      availabilityStatus === "available" &&
+      (
+        driver.status !== "active" ||
+        driver.verificationStatus !== "approved"
+      )
+    ) {
+      return res.status(403).json({
+        message:
+          "Driver must be active and approved to go available.",
+      });
+    }
+
+    driver.availabilityStatus = availabilityStatus;
+    await driver.save();
+
+    return res.json({
+      driver,
+    });
+  } catch (err) {
+    console.error(
+      "Update Transportation driver availability error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to update Transportation driver availability.",
+    });
+  }
+});
+
 export default router;
