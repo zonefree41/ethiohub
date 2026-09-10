@@ -1,6 +1,7 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 import TransportationDriver from "../models/TransportationDriver.js";
 
@@ -75,6 +76,69 @@ router.post("/login", async (req, res) => {
 
     return res.status(500).json({
       message: "Driver login failed.",
+    });
+  }
+});
+
+
+router.post("/activate", async (req, res) => {
+  try {
+    const { token, password } = req.body || {};
+
+    if (
+      typeof token !== "string" ||
+      !/^[a-f0-9]{64}$/i.test(token.trim())
+    ) {
+      return res.status(400).json({
+        message: "Valid driver activation token is required.",
+      });
+    }
+
+    if (
+      typeof password !== "string" ||
+      password.length < 8
+    ) {
+      return res.status(400).json({
+        message:
+          "Password must be at least 8 characters.",
+      });
+    }
+
+    const activationTokenHash = crypto
+      .createHash("sha256")
+      .update(token.trim())
+      .digest("hex");
+
+    const driver = await TransportationDriver.findOne({
+      activationTokenHash,
+      activationExpires: { $gt: new Date() },
+      driverAccountStatus: "not_activated",
+    }).select(
+      "+passwordHash +activationTokenHash +activationExpires"
+    );
+
+    if (!driver) {
+      return res.status(400).json({
+        message:
+          "Driver activation link is invalid or expired.",
+      });
+    }
+
+    driver.passwordHash = await bcrypt.hash(password, 10);
+    driver.driverAccountStatus = "active";
+    driver.activationTokenHash = "";
+    driver.activationExpires = null;
+
+    await driver.save();
+
+    return res.json({
+      message: "Driver account activated successfully.",
+    });
+  } catch (err) {
+    console.error("Driver activation error:", err);
+
+    return res.status(500).json({
+      message: "Driver account activation failed.",
     });
   }
 });
