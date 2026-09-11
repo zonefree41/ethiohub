@@ -17,6 +17,9 @@ export default function DriverDashboard() {
     setAvailabilityUpdating,
   ] = React.useState(false);
 
+  const [completingJobId, setCompletingJobId] =
+    React.useState("");
+
   React.useEffect(() => {
     document.title = "Driver Dashboard | HubEthio";
   }, []);
@@ -100,6 +103,45 @@ export default function DriverDashboard() {
       );
     } finally {
       setAvailabilityUpdating(false);
+    }
+  }
+
+  async function completeJob(jobId) {
+    if (!jobId || completingJobId) return;
+
+    try {
+      setCompletingJobId(jobId);
+      setError("");
+
+      const data = await apiPatch(
+        `/api/driver/jobs/${jobId}/complete`,
+        {},
+        token
+      );
+
+      if (data?.request) {
+        setJobs((currentJobs) =>
+          currentJobs.map((job) =>
+            job._id === data.request._id
+              ? { ...job, ...data.request }
+              : job
+          )
+        );
+      }
+    } catch (err) {
+      if (err?.status === 401) {
+        localStorage.removeItem("driverToken");
+        localStorage.removeItem("driverUser");
+        window.location.href = "/driver/login";
+        return;
+      }
+
+      setError(
+        err.message ||
+          "Failed to complete Transportation job."
+      );
+    } finally {
+      setCompletingJobId("");
     }
   }
 
@@ -365,6 +407,19 @@ export default function DriverDashboard() {
                           <span>Cargo Details</span>
                           <p>{job.cargoDetails}</p>
                         </div>
+                      )}
+
+                      {job.status === "In Progress" && (
+                        <button
+                          type="button"
+                          className="driver-job-complete-button"
+                          onClick={() => completeJob(job._id)}
+                          disabled={completingJobId === job._id}
+                        >
+                          {completingJobId === job._id
+                            ? "Completing..."
+                            : "Mark Completed"}
+                        </button>
                       )}
                     </article>
                   ))}

@@ -252,3 +252,25 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+.driver-job-complete-button {
+  width: 100%;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #172033;
+  padding: 11px 16px;
+  font: inherit;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+
+.driver-job-complete-button:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.driver-job-complete-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
