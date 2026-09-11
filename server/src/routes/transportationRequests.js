@@ -269,6 +269,15 @@ router.get("/owner", requireOwner, async (req, res) => {
     const requests = await TransportationRequest.find({
       ownerId: req.owner.id,
     })
+      .select(
+        "_id listingId customerName customerEmail customerPhone " +
+          "pickupAddress deliveryAddress requestedDate requestedTime " +
+          "cargoDetails cargoPhotos serviceType status quoteAmount " +
+          "estimatedArrival ownerNotes quotedAt customerRespondedAt " +
+          "inProgressAt completedAt cancelledAt driverId driverName " +
+          "driverPhone vehicleDescription licensePlate driverAssignedAt " +
+          "createdAt updatedAt"
+      )
       .sort({ createdAt: -1 })
       .populate("listingId", "title");
 
