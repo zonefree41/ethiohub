@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 import TransportationDriver from "../models/TransportationDriver.js";
 import TransportationRequest from "../models/TransportationRequest.js";
+import { sendTransportationStatusEmail } from "../utils/sendTransportationStatusEmail.js";
 import { requireDriver } from "../middleware/driverAuth.js";
 
 const router = express.Router();
@@ -103,6 +104,15 @@ router.patch("/jobs/:requestId/complete", async (req, res) => {
     }
 
     await request.save();
+
+    try {
+      await sendTransportationStatusEmail(request);
+    } catch (err) {
+      console.error(
+        "Transportation driver completion email failed:",
+        err
+      );
+    }
 
     return res.json({
       request: {
