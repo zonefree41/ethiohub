@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 
 import TransportationDriver from "../models/TransportationDriver.js";
 import TransportationRequest from "../models/TransportationRequest.js";
@@ -63,6 +64,65 @@ router.get("/jobs", async (req, res) => {
   }
 });
 
+
+router.patch("/jobs/:requestId/complete", async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    if (
+      typeof requestId !== "string" ||
+      !mongoose.Types.ObjectId.isValid(requestId)
+    ) {
+      return res.status(400).json({
+        message: "Valid Transportation request ID is required.",
+      });
+    }
+
+    const request = await TransportationRequest.findOne({
+      _id: requestId,
+      driverId: req.driver.id,
+    });
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Assigned Transportation job not found.",
+      });
+    }
+
+    if (request.status !== "In Progress") {
+      return res.status(400).json({
+        message:
+          "Only an In Progress Transportation job can be completed.",
+      });
+    }
+
+    request.status = "Completed";
+
+    if (!request.completedAt) {
+      request.completedAt = new Date();
+    }
+
+    await request.save();
+
+    return res.json({
+      request: {
+        _id: request._id,
+        status: request.status,
+        completedAt: request.completedAt,
+      },
+    });
+  } catch (err) {
+    console.error(
+      "Complete Transportation driver job error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to complete assigned Transportation job.",
+    });
+  }
+});
 router.patch("/availability", async (req, res) => {
   try {
     const { availabilityStatus } = req.body || {};
