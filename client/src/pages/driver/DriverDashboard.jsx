@@ -20,6 +20,22 @@ export default function DriverDashboard() {
   const [completingJobId, setCompletingJobId] =
     React.useState("");
 
+  const [jobFilter, setJobFilter] =
+    React.useState("active");
+
+  const activeJobs = jobs.filter(
+    (job) => job.status === "In Progress"
+  );
+
+  const completedJobs = jobs.filter(
+    (job) => job.status === "Completed"
+  );
+
+  const filteredJobs =
+    jobFilter === "completed"
+      ? completedJobs
+      : activeJobs;
+
   React.useEffect(() => {
     document.title = "Driver Dashboard | HubEthio";
   }, []);
@@ -301,14 +317,50 @@ export default function DriverDashboard() {
             <section className="driver-dashboard-card">
               <h2>Assigned Jobs</h2>
 
+              <div
+                className="driver-job-filters"
+                role="group"
+                aria-label="Filter assigned jobs"
+              >
+                <button
+                  type="button"
+                  className={
+                    jobFilter === "active"
+                      ? "driver-job-filter-button active"
+                      : "driver-job-filter-button"
+                  }
+                  onClick={() => setJobFilter("active")}
+                >
+                  Active ({activeJobs.length})
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    jobFilter === "completed"
+                      ? "driver-job-filter-button active"
+                      : "driver-job-filter-button"
+                  }
+                  onClick={() => setJobFilter("completed")}
+                >
+                  Completed ({completedJobs.length})
+                </button>
+              </div>
+
               {jobs.length === 0 ? (
                 <p className="driver-empty-state">
                   You do not have any assigned
                   transportation jobs yet.
                 </p>
+              ) : filteredJobs.length === 0 ? (
+                <p className="driver-empty-state">
+                  {jobFilter === "completed"
+                    ? "You do not have any completed jobs yet."
+                    : "You do not have any active jobs right now."}
+                </p>
               ) : (
                 <div className="driver-jobs-list">
-                  {jobs.map((job) => (
+                  {filteredJobs.map((job) => (
                     <article
                       key={job._id}
                       className="driver-job-card"

@@ -274,3 +274,31 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+.driver-job-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.driver-job-filter-button {
+  border: 1px solid #d0d5dd;
+  border-radius: 999px;
+  background: #fff;
+  padding: 8px 14px;
+  font: inherit;
+  font-weight: 700;
+  color: #344054;
+  cursor: pointer;
+}
+
+.driver-job-filter-button:hover {
+  background: #f9fafb;
+}
+
+.driver-job-filter-button.active {
+  background: #172033;
+  border-color: #172033;
+  color: #fff;
+}
