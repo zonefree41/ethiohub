@@ -257,6 +257,7 @@ export default function DriverDashboard() {
                   onClick={toggleAvailability}
                   disabled={
                     availabilityUpdating ||
+                    driver.availabilityStatus === "busy" ||
                     (
                       driver.availabilityStatus !==
                         "available" &&
@@ -271,9 +272,12 @@ export default function DriverDashboard() {
                   {availabilityUpdating
                     ? "Updating..."
                     : driver.availabilityStatus ===
-                        "available"
-                      ? "Go Offline"
-                      : "Go Available"}
+                        "busy"
+                      ? "Busy"
+                      : driver.availabilityStatus ===
+                          "available"
+                        ? "Go Offline"
+                        : "Go Available"}
                 </button>
               </article>
             </section>

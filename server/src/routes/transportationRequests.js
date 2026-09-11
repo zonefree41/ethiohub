@@ -616,6 +616,31 @@ if (trackingStatuses.includes(status)) {
       });
     }
 
+    if (
+      statusChanged &&
+      request.status === "In Progress" &&
+      request.driverId
+    ) {
+      try {
+        await TransportationDriver.updateOne(
+          {
+            _id: request.driverId,
+            availabilityStatus: "available",
+          },
+          {
+            $set: {
+              availabilityStatus: "busy",
+            },
+          }
+        );
+      } catch (err) {
+        console.error(
+          "Transportation driver busy update failed:",
+          err
+        );
+      }
+    }
+
     const quoteUrl =
   `${process.env.CLIENT_ORIGIN}/transportation-quote/` +
   request.quoteAccessToken;

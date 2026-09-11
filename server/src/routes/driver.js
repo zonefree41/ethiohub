@@ -106,6 +106,25 @@ router.patch("/jobs/:requestId/complete", async (req, res) => {
     await request.save();
 
     try {
+      await TransportationDriver.updateOne(
+        {
+          _id: req.driver.id,
+          availabilityStatus: "busy",
+        },
+        {
+          $set: {
+            availabilityStatus: "available",
+          },
+        }
+      );
+    } catch (err) {
+      console.error(
+        "Transportation driver available update failed:",
+        err
+      );
+    }
+
+    try {
       await sendTransportationStatusEmail(request);
     } catch (err) {
       console.error(
@@ -157,6 +176,13 @@ router.patch("/availability", async (req, res) => {
     if (!driver) {
       return res.status(404).json({
         message: "Transportation driver not found.",
+      });
+    }
+
+    if (driver.availabilityStatus === "busy") {
+      return res.status(409).json({
+        message:
+          "Availability cannot be changed while a Transportation job is in progress.",
       });
     }
 
