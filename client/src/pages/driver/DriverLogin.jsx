@@ -119,6 +119,12 @@ export default function DriverLogin() {
             autoComplete="current-password"
           />
 
+          <div className="driver-auth-links">
+            <a href="/driver/forgot-password">
+              Forgot Password?
+            </a>
+          </div>
+
           <button type="submit">
             Driver Login
           </button>

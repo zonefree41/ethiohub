@@ -63,6 +63,18 @@ const transportationDriverSchema = new mongoose.Schema(
       default: null,
     },
 
+    passwordResetTokenHash: {
+      type: String,
+      select: false,
+      default: "",
+    },
+
+    passwordResetExpires: {
+      type: Date,
+      select: false,
+      default: null,
+    },
+
     status: {
       type: String,
       enum: ["pending", "active", "suspended", "inactive"],
