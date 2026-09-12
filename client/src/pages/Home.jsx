@@ -404,22 +404,22 @@ function formatHousingPhone(value) {
               Home
             </a>
             <a href="/category/all">Categories</a>
-            <a href="/location/silver-spring-md">Silver Spring</a>
             {!isIOS && <a href="/pricing">Pricing</a>}
             {!isIOS && (
   <a
     href="https://play.google.com/store/apps/details?id=com.hubethio.app"
     target="_blank"
     rel="noopener noreferrer"
+    className="home-nav-app"
   >
     📱 Get App
   </a>
 )}
-            <a href="/saved">Saved ❤️</a>
+            <a href="/saved" className="home-nav-saved">Saved ❤️</a>
             <a href="/submit">Submit Business</a>
             <a href="/contact">Contact</a>
             {!isIOS && (
-              <a href="/driver/login" className="home-nav-login">
+              <a href="/driver/login" className="home-nav-driver">
                 Driver Login
               </a>
             )}
@@ -545,10 +545,6 @@ function formatHousingPhone(value) {
           <div className="home-hero-actions">
   <a href="/submit" className="home-list-free-btn">
     🚀 Own a Business? List It Free
-  </a>
-
-  <a href="/owner/login" className="home-owner-btn">
-    Business Owner Login
   </a>
 </div>
         </div>
