@@ -27,6 +27,22 @@ export default function Navbar() {
 
       <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
         {!isIOS && (
+          <a
+            href="/driver/login"
+            style={{
+              background: "#2563eb",
+              color: "#fff",
+              padding: "9px 14px",
+              borderRadius: "10px",
+              textDecoration: "none",
+              fontWeight: 800,
+            }}
+          >
+            🚗 Driver Login
+          </a>
+        )}
+
+        {!isIOS && (
   <a
     href={GOOGLE_PLAY_URL}
     target="_blank"
