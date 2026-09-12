@@ -66,6 +66,12 @@ export default function OwnerTransportationDrivers() {
     React.useState("");
   const [statusError, setStatusError] =
     React.useState("");
+  const [sendingActivationDriverId, setSendingActivationDriverId] =
+    React.useState("");
+  const [activationError, setActivationError] =
+    React.useState("");
+  const [activationSuccess, setActivationSuccess] =
+    React.useState("");
 
   React.useEffect(() => {
     async function loadTransportationListings() {
@@ -308,6 +314,31 @@ export default function OwnerTransportationDrivers() {
     }
   }
 
+  async function sendDriverActivation(driver) {
+    setActivationError("");
+    setActivationSuccess("");
+
+    try {
+      setSendingActivationDriverId(driver._id);
+
+      const result = await apiPost(
+        `/api/owner/transportation-drivers/${driver._id}/send-activation`,
+        {},
+        token
+      );
+
+      setActivationSuccess(
+        result?.message || "Driver activation invitation sent."
+      );
+    } catch (err) {
+      setActivationError(
+        err.message || "Failed to send driver activation invitation."
+      );
+    } finally {
+      setSendingActivationDriverId("");
+    }
+  }
+
   async function createDriver(event) {
     event.preventDefault();
 
@@ -540,6 +571,10 @@ export default function OwnerTransportationDrivers() {
 
             {statusError && <p>{statusError}</p>}
 
+            {activationError && <p>{activationError}</p>}
+
+            {activationSuccess && <p>{activationSuccess}</p>}
+
             {loadingDrivers ? (
               <p>Loading drivers...</p>
             ) : drivers.length === 0 ? (
@@ -731,6 +766,22 @@ export default function OwnerTransportationDrivers() {
                                 : driver.status === "active"
                                   ? "Deactivate Driver"
                                   : "Reactivate Driver"}
+                            </button>
+                          )}
+
+                        {driver.email &&
+                          driver.driverAccountStatus === "not_activated" && (
+                            <button
+                              type="button"
+                              className="owner-driver-activation-button"
+                              onClick={() => sendDriverActivation(driver)}
+                              disabled={
+                                sendingActivationDriverId === driver._id
+                              }
+                            >
+                              {sendingActivationDriverId === driver._id
+                                ? "Sending..."
+                                : "Send Activation Invitation"}
                             </button>
                           )}
 

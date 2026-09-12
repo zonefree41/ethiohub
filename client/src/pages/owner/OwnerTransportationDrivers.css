@@ -294,3 +294,13 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.owner-driver-card > .owner-driver-activation-button {
+  margin-right: 10px;
+  background: #7c3aed;
+}
+
+.owner-driver-card > .owner-driver-activation-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
