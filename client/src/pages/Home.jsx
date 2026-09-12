@@ -416,7 +416,7 @@ function formatHousingPhone(value) {
   </a>
 )}
             <a href="/saved" className="home-nav-saved">Saved ❤️</a>
-            <a href="/submit">Submit Business</a>
+            <a href="/submit" className="home-nav-submit">Submit Business</a>
             <a href="/contact">Contact</a>
             {!isIOS && (
               <a href="/driver/login" className="home-nav-driver">
