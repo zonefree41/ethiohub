@@ -418,6 +418,11 @@ function formatHousingPhone(value) {
             <a href="/saved">Saved ❤️</a>
             <a href="/submit">Submit Business</a>
             <a href="/contact">Contact</a>
+            {!isIOS && (
+              <a href="/driver/login" className="home-nav-login">
+                Driver Login
+              </a>
+            )}
             <a href="/owner/login" className="home-nav-login">
               Business Owner Login
             </a>
