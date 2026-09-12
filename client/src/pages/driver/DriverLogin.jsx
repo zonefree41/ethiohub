@@ -2,7 +2,7 @@ import React from "react";
 
 import { apiPost } from "../../api/http.js";
 
-import "../owner/OwnerAuth.css";
+import "./DriverAuth.css";
 
 export default function DriverLogin() {
   const [form, setForm] = React.useState({
@@ -61,17 +61,17 @@ export default function DriverLogin() {
   }
 
   return (
-    <main className="owner-auth-page">
-      <div className="owner-auth-card">
+    <main className="driver-auth-page">
+      <div className="driver-auth-card">
         <a
           href="/"
-          className="owner-auth-back"
+          className="driver-auth-back"
         >
           ‹ Back to HubEthio
         </a>
 
-        <div className="owner-auth-header">
-          <p className="owner-auth-label">
+        <div className="driver-auth-header">
+          <p className="driver-auth-label">
             Driver Portal
           </p>
 
@@ -84,20 +84,20 @@ export default function DriverLogin() {
         </div>
 
         {message && (
-          <div className="owner-auth-success">
+          <div className="driver-auth-success">
             {message}
           </div>
         )}
 
         {error && (
-          <div className="owner-auth-error">
+          <div className="driver-auth-error">
             Error: {error}
           </div>
         )}
 
         <form
           onSubmit={submit}
-          className="owner-auth-form"
+          className="driver-auth-form"
         >
           <input
             name="email"

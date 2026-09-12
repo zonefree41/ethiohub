@@ -83,7 +83,7 @@ export default function DriverDashboard() {
   function logout() {
     localStorage.removeItem("driverToken");
     localStorage.removeItem("driverUser");
-    window.location.href = "/";
+    window.location.href = "/driver/login";
   }
 
   async function toggleAvailability() {

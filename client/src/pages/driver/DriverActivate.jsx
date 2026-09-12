@@ -2,7 +2,7 @@ import React from "react";
 
 import { apiPost } from "../../api/http.js";
 
-import "../owner/OwnerAuth.css";
+import "./DriverAuth.css";
 
 export default function DriverActivate() {
   const token =
@@ -65,17 +65,17 @@ export default function DriverActivate() {
   }
 
   return (
-    <main className="owner-auth-page">
-      <div className="owner-auth-card">
+    <main className="driver-auth-page">
+      <div className="driver-auth-card">
         <a
           href="/driver/login"
-          className="owner-auth-back"
+          className="driver-auth-back"
         >
           ← Back to Driver Login
         </a>
 
-        <div className="owner-auth-header">
-          <p className="owner-auth-label">
+        <div className="driver-auth-header">
+          <p className="driver-auth-label">
             Driver Invitation
           </p>
 
@@ -88,13 +88,13 @@ export default function DriverActivate() {
         </div>
 
         {message && (
-          <div className="owner-auth-success">
+          <div className="driver-auth-success">
             {message}
           </div>
         )}
 
         {error && (
-          <div className="owner-auth-error">
+          <div className="driver-auth-error">
             Error: {error}
           </div>
         )}
@@ -102,7 +102,7 @@ export default function DriverActivate() {
         {!message && (
           <form
             onSubmit={submit}
-            className="owner-auth-form"
+            className="driver-auth-form"
           >
             <input
               type="password"
@@ -137,7 +137,7 @@ export default function DriverActivate() {
         )}
 
         {message && (
-          <div className="owner-auth-links">
+          <div className="driver-auth-links">
             <a href="/driver/login">
               Continue to Driver Login
             </a>
