@@ -442,6 +442,15 @@ async function deleteBusinessRequest(id, businessName) {
     </a>
 
     <a
+      href="/admin/transportation-driver-verification"
+      className="admin-tool-card"
+    >
+      <span className="admin-tool-icon">🪪</span>
+      <strong>Driver Verification</strong>
+      <span>Review individual driver license verification submissions.</span>
+    </a>
+
+    <a
   href="/admin/cars"
   className="admin-tool-card"
 >

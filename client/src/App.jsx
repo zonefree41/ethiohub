@@ -6,6 +6,7 @@ import Listing from "./pages/Listing.jsx";
 import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import AdminTransportationVerification from "./pages/admin/AdminTransportationVerification.jsx";
+import AdminTransportationDriverVerification from "./pages/admin/AdminTransportationDriverVerification.jsx";
 import AdminTransportationDashboard from "./pages/admin/AdminTransportationDashboard.jsx";
 import AdminHousingRequests from "./pages/admin/AdminHousingRequests.jsx";
 import OwnerTransportationDashboard from "./pages/owner/OwnerTransportationDashboard.jsx";
@@ -104,6 +105,12 @@ export default function App() {
 }, [path]);
 
   if (path.startsWith("/admin/login")) return <AdminLogin />;
+
+if (path.startsWith("/admin/transportation-driver-verification")) {
+
+  return <AdminTransportationDriverVerification />;
+
+}
 
 if (path.startsWith("/admin/transportation-verification")) {
   return <AdminTransportationVerification />;

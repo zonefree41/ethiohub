@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import TransportationDriver from "../models/TransportationDriver.js";
 import Listing from "../models/Listing.js";
 import Category from "../models/Category.js";
+import cloudinary from "../config/cloudinary.js";
 import {
   requireAdmin,
   requireRole,
@@ -182,6 +183,9 @@ router.get(
 
       const [drivers, total] = await Promise.all([
         TransportationDriver.find(query)
+          .select(
+            "-driverLicenseNumber -driverLicenseState -driverLicenseExpirationDate -driverLicenseFrontPublicId -driverLicenseBackPublicId -verificationSubmittedAt -verificationRejectionReason"
+          )
           .populate({
             path: "businessListingId",
             select:
@@ -234,6 +238,171 @@ router.get(
       res.status(500).json({
         message:
           "Failed to load transportation drivers.",
+      });
+    }
+  }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| GET DRIVER VERIFICATION QUEUE
+|--------------------------------------------------------------------------
+*/
+router.get(
+  "/verification-queue",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "verification_agent"
+  ),
+  async (req, res) => {
+    try {
+      const drivers = await TransportationDriver.find({
+        verificationStatus: "pending",
+      })
+        .select(
+          "_id fullName email phone status verificationStatus businessListingId driverLicenseNumber driverLicenseState driverLicenseExpirationDate driverLicenseFrontPublicId driverLicenseBackPublicId verificationSubmittedAt"
+        )
+        .populate({
+          path: "businessListingId",
+          select: "title categoryId",
+          populate: {
+            path: "categoryId",
+            select: "slug",
+          },
+        })
+        .sort({
+          verificationSubmittedAt: 1,
+          createdAt: 1,
+        })
+        .limit(100)
+        .lean();
+
+      const transportationDrivers = drivers.filter(
+        (driver) =>
+          driver.businessListingId?.categoryId?.slug ===
+          "transportation"
+      );
+
+      return res.json({
+        drivers: transportationDrivers,
+      });
+    } catch (error) {
+      console.error(
+        "Admin driver verification queue load failed:",
+        error
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to load driver verification queue.",
+      });
+    }
+  }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| GET DRIVER VERIFICATION DOCUMENT
+|--------------------------------------------------------------------------
+*/
+router.get(
+  "/:driverId/verification-document/:side",
+  requireAdmin,
+  requireRole(
+    "super_admin",
+    "operations_admin",
+    "verification_agent"
+  ),
+  async (req, res) => {
+    try {
+      const { driverId, side } = req.params;
+
+      if (!mongoose.Types.ObjectId.isValid(driverId)) {
+        return res.status(400).json({
+          message: "Invalid transportation driver ID.",
+        });
+      }
+
+      if (!["front", "back"].includes(side)) {
+        return res.status(400).json({
+          message: "Verification document side must be front or back.",
+        });
+      }
+
+      const driver = await TransportationDriver.findById(driverId)
+        .select(
+          "businessListingId driverLicenseFrontPublicId driverLicenseBackPublicId"
+        )
+        .populate({
+          path: "businessListingId",
+          select: "categoryId",
+          populate: {
+            path: "categoryId",
+            select: "slug",
+          },
+        });
+
+      if (!driver) {
+        return res.status(404).json({
+          message: "Transportation driver not found.",
+        });
+      }
+
+      if (
+        driver.businessListingId?.categoryId?.slug !== "transportation"
+      ) {
+        return res.status(400).json({
+          message:
+            "Driver is not associated with a Transportation business.",
+        });
+      }
+
+      const publicId =
+        side === "front"
+          ? driver.driverLicenseFrontPublicId
+          : driver.driverLicenseBackPublicId;
+
+      if (!publicId) {
+        return res.status(404).json({
+          message: "Driver verification document not found.",
+        });
+      }
+
+      const resource = await cloudinary.api.resource(publicId, {
+        resource_type: "image",
+        type: "authenticated",
+      });
+
+      const expiresAt = Math.floor(Date.now() / 1000) + 300;
+
+      const url = cloudinary.utils.private_download_url(
+        publicId,
+        resource.format,
+        {
+          resource_type: "image",
+          type: "authenticated",
+          expires_at: expiresAt,
+          attachment: false,
+        }
+      );
+
+      return res.json({
+        url,
+        expiresAt,
+      });
+    } catch (error) {
+      console.error(
+        "Load transportation driver verification document failed:",
+        error
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to load transportation driver verification document.",
       });
     }
   }
@@ -318,13 +487,50 @@ router.patch(
         });
       }
 
+      if (
+
+        verificationStatus === "rejected" &&
+
+        !note
+
+      ) {
+
+        return res.status(400).json({
+
+          message:
+
+            "A rejection reason is required.",
+
+        });
+
+      }
+
       const previousVerificationStatus =
+
         driver.verificationStatus;
 
       driver.verificationStatus =
+
         verificationStatus;
 
+      if (verificationStatus === "approved") {
+
+        driver.verificationRejectionReason = "";
+
+        if (driver.status === "pending") {
+
+          driver.status = "active";
+
+        }
+
+      } else {
+
+        driver.verificationRejectionReason = note;
+
+      }
+
       driver.lastAdminUpdatedBy =
+
         req.admin.id;
 
       driver.lastAdminUpdatedAt =
