@@ -1,6 +1,6 @@
 import React from "react";
 
-import { apiGet, apiPatch } from "../../api/http.js";
+import { apiGet, apiPatch, apiUpload } from "../../api/http.js";
 
 import "./DriverDashboard.css";
 
@@ -22,6 +22,24 @@ export default function DriverDashboard() {
 
   const [jobFilter, setJobFilter] =
     React.useState("active");
+
+  const [verificationForm, setVerificationForm] =
+    React.useState({
+      driverLicenseNumber: "",
+      driverLicenseState: "",
+      driverLicenseExpirationDate: "",
+      driverLicenseFrontPublicId: "",
+      driverLicenseBackPublicId: "",
+    });
+
+  const [verificationUploading, setVerificationUploading] =
+    React.useState("");
+
+  const [verificationSubmitting, setVerificationSubmitting] =
+    React.useState(false);
+
+  const [verificationMessage, setVerificationMessage] =
+    React.useState("");
 
   const activeJobs = jobs.filter(
     (job) => job.status === "In Progress"
@@ -56,7 +74,26 @@ export default function DriverDashboard() {
           apiGet("/api/driver/jobs", token),
         ]);
 
-        setDriver(data?.driver || null);
+        const loadedDriver = data?.driver || null;
+
+        setDriver(loadedDriver);
+
+        if (loadedDriver) {
+          setVerificationForm({
+            driverLicenseNumber:
+              loadedDriver.driverLicenseNumber || "",
+            driverLicenseState:
+              loadedDriver.driverLicenseState || "",
+            driverLicenseExpirationDate:
+              loadedDriver.driverLicenseExpirationDate
+                ? loadedDriver.driverLicenseExpirationDate.slice(0, 10)
+                : "",
+            driverLicenseFrontPublicId:
+              loadedDriver.driverLicenseFrontPublicId || "",
+            driverLicenseBackPublicId:
+              loadedDriver.driverLicenseBackPublicId || "",
+          });
+        }
         setJobs(
           Array.isArray(jobsData) ? jobsData : []
         );
@@ -84,6 +121,123 @@ export default function DriverDashboard() {
     localStorage.removeItem("driverToken");
     localStorage.removeItem("driverUser");
     window.location.href = "/driver/login";
+  }
+
+  function updateVerificationField(event) {
+    const { name, value } = event.target;
+
+    setVerificationForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  }
+
+  async function uploadVerificationImage(event, side) {
+    const file = event.target.files?.[0];
+
+    if (!file || verificationUploading) return;
+
+    try {
+      setVerificationUploading(side);
+      setError("");
+      setVerificationMessage("");
+
+      const data = await apiUpload(
+        "/api/driver/verification/document",
+        file,
+        token
+      );
+
+      if (!data?.publicId) {
+        throw new Error(
+          "Verification document upload did not return an asset ID."
+        );
+      }
+
+      setVerificationForm((current) => ({
+        ...current,
+        [side === "front"
+          ? "driverLicenseFrontPublicId"
+          : "driverLicenseBackPublicId"]: data.publicId,
+      }));
+    } catch (err) {
+      if (err?.status === 401 || err?.status === 403) {
+        localStorage.removeItem("driverToken");
+        localStorage.removeItem("driverUser");
+        window.location.href = "/driver/login";
+        return;
+      }
+
+      setError(
+        err.message ||
+          "Failed to upload verification document."
+      );
+    } finally {
+      setVerificationUploading("");
+      event.target.value = "";
+    }
+  }
+
+  async function submitVerification(event) {
+    event.preventDefault();
+
+    if (verificationSubmitting) return;
+
+    try {
+      setVerificationSubmitting(true);
+      setError("");
+      setVerificationMessage("");
+
+      const data = await apiPatch(
+        "/api/driver/verification",
+        verificationForm,
+        token
+      );
+
+      if (data?.driver) {
+        setDriver((current) => ({
+          ...current,
+          ...data.driver,
+        }));
+
+        setVerificationForm({
+          driverLicenseNumber:
+            data.driver.driverLicenseNumber || "",
+          driverLicenseState:
+            data.driver.driverLicenseState || "",
+          driverLicenseExpirationDate:
+            data.driver.driverLicenseExpirationDate
+              ? data.driver.driverLicenseExpirationDate.slice(
+                  0,
+                  10
+                )
+              : "",
+          driverLicenseFrontPublicId:
+            data.driver.driverLicenseFrontPublicId || "",
+          driverLicenseBackPublicId:
+            data.driver.driverLicenseBackPublicId || "",
+        });
+      }
+
+      setVerificationMessage(
+        data?.message ||
+          "Driver verification submitted for review."
+      );
+    } catch (err) {
+      if (err?.status === 401 || err?.status === 403) {
+        localStorage.removeItem("driverToken");
+        localStorage.removeItem("driverUser");
+        window.location.href = "/driver/login";
+        return;
+      }
+
+      setError(
+        err.message ||
+          "Failed to submit driver verification."
+      );
+    } finally {
+      setVerificationSubmitting(false);
+    }
   }
 
   async function toggleAvailability() {
@@ -316,6 +470,188 @@ export default function DriverDashboard() {
                   </strong>
                 </div>
               </div>
+            </section>
+
+            <section className="driver-dashboard-card">
+              <h2>Driver Verification</h2>
+
+              <p className="driver-verification-description">
+                Submit your driver license information for review.
+                You must be approved before you can become
+                available for transportation jobs.
+              </p>
+
+              {driver.verificationStatus === "rejected" &&
+                driver.verificationRejectionReason && (
+                  <div className="driver-verification-rejection">
+                    <strong>Verification rejected</strong>
+                    <p>
+                      {driver.verificationRejectionReason}
+                    </p>
+                  </div>
+                )}
+
+              {driver.verificationStatus === "pending" && (
+                <div className="driver-verification-notice">
+                  Your verification has been submitted and is
+                  waiting for review.
+                </div>
+              )}
+
+              {driver.verificationStatus === "approved" && (
+                <div className="driver-verification-success">
+                  Your driver verification has been approved.
+                </div>
+              )}
+
+              {verificationMessage && (
+                <div className="driver-verification-success">
+                  {verificationMessage}
+                </div>
+              )}
+
+              <form
+                className="driver-verification-form"
+                onSubmit={submitVerification}
+              >
+                <div className="driver-verification-grid">
+                  <label>
+                    Driver License Number
+                    <input
+                      type="text"
+                      name="driverLicenseNumber"
+                      value={
+                        verificationForm.driverLicenseNumber
+                      }
+                      onChange={updateVerificationField}
+                      maxLength={80}
+                      required
+                      disabled={
+                        driver.verificationStatus ===
+                          "pending" ||
+                        driver.verificationStatus ===
+                          "approved"
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    License State
+                    <input
+                      type="text"
+                      name="driverLicenseState"
+                      value={
+                        verificationForm.driverLicenseState
+                      }
+                      onChange={updateVerificationField}
+                      maxLength={40}
+                      required
+                      disabled={
+                        driver.verificationStatus ===
+                          "pending" ||
+                        driver.verificationStatus ===
+                          "approved"
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    License Expiration Date
+                    <input
+                      type="date"
+                      name="driverLicenseExpirationDate"
+                      value={
+                        verificationForm.driverLicenseExpirationDate
+                      }
+                      onChange={updateVerificationField}
+                      required
+                      disabled={
+                        driver.verificationStatus ===
+                          "pending" ||
+                        driver.verificationStatus ===
+                          "approved"
+                      }
+                    />
+                  </label>
+                </div>
+
+                <div className="driver-verification-documents">
+                  <label>
+                    Driver License Front
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                      onChange={(event) =>
+                        uploadVerificationImage(
+                          event,
+                          "front"
+                        )
+                      }
+                      disabled={
+                        verificationUploading !== "" ||
+                        driver.verificationStatus ===
+                          "pending" ||
+                        driver.verificationStatus ===
+                          "approved"
+                      }
+                    />
+                    {verificationUploading === "front" ? (
+                      <span>Uploading...</span>
+                    ) : verificationForm.driverLicenseFrontPublicId ? (
+                      <span>Front image uploaded</span>
+                    ) : (
+                      <span>Front image required</span>
+                    )}
+                  </label>
+
+                  <label>
+                    Driver License Back
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                      onChange={(event) =>
+                        uploadVerificationImage(
+                          event,
+                          "back"
+                        )
+                      }
+                      disabled={
+                        verificationUploading !== "" ||
+                        driver.verificationStatus ===
+                          "pending" ||
+                        driver.verificationStatus ===
+                          "approved"
+                      }
+                    />
+                    {verificationUploading === "back" ? (
+                      <span>Uploading...</span>
+                    ) : verificationForm.driverLicenseBackPublicId ? (
+                      <span>Back image uploaded</span>
+                    ) : (
+                      <span>Back image required</span>
+                    )}
+                  </label>
+                </div>
+
+                {driver.verificationStatus !== "pending" &&
+                  driver.verificationStatus !== "approved" && (
+                    <button
+                      type="submit"
+                      className="driver-verification-submit"
+                      disabled={
+                        verificationSubmitting ||
+                        verificationUploading !== ""
+                      }
+                    >
+                      {verificationSubmitting
+                        ? "Submitting..."
+                        : driver.verificationStatus ===
+                            "rejected"
+                          ? "Resubmit for Review"
+                          : "Submit for Review"}
+                    </button>
+                  )}
+              </form>
             </section>
 
             <section className="driver-dashboard-card">

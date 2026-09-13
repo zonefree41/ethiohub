@@ -302,3 +302,122 @@
   border-color: #172033;
   color: #fff;
 }
+
+.driver-verification-description {
+  margin: 0 0 18px;
+  color: #475467;
+  line-height: 1.6;
+}
+
+.driver-verification-form {
+  display: grid;
+  gap: 18px;
+}
+
+.driver-verification-grid,
+.driver-verification-documents {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.driver-verification-grid label,
+.driver-verification-documents label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+  color: #344054;
+}
+
+.driver-verification-grid input,
+.driver-verification-documents input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  padding: 11px 12px;
+  font: inherit;
+  color: #101828;
+  background: #fff;
+}
+
+.driver-verification-grid input:focus,
+.driver-verification-documents input:focus {
+  outline: none;
+  border-color: #667085;
+}
+
+.driver-verification-grid input:disabled,
+.driver-verification-documents input:disabled {
+  background: #f2f4f7;
+  color: #667085;
+  cursor: not-allowed;
+}
+
+.driver-verification-documents span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #667085;
+}
+
+.driver-verification-notice,
+.driver-verification-success,
+.driver-verification-rejection {
+  margin-bottom: 18px;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.driver-verification-notice {
+  background: #fffaeb;
+  border: 1px solid #fedf89;
+  color: #93370d;
+}
+
+.driver-verification-success {
+  background: #ecfdf3;
+  border: 1px solid #abefc6;
+  color: #067647;
+}
+
+.driver-verification-rejection {
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  color: #b42318;
+}
+
+.driver-verification-rejection p {
+  margin: 6px 0 0;
+}
+
+.driver-verification-submit {
+  justify-self: start;
+  border: 0;
+  border-radius: 10px;
+  background: #172033;
+  padding: 11px 18px;
+  font: inherit;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+
+.driver-verification-submit:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.driver-verification-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 560px) {
+  .driver-verification-grid,
+  .driver-verification-documents {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-verification-submit {
+    width: 100%;
+  }
+}

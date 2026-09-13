@@ -1,6 +1,12 @@
 import express from "express";
 import mongoose from "mongoose";
 
+import multer from "multer";
+
+import { fileTypeFromBuffer } from "file-type";
+
+import cloudinary from "../config/cloudinary.js";
+
 import TransportationDriver from "../models/TransportationDriver.js";
 import TransportationRequest from "../models/TransportationRequest.js";
 import { sendTransportationStatusEmail } from "../utils/sendTransportationStatusEmail.js";
@@ -8,14 +14,128 @@ import { requireDriver } from "../middleware/driverAuth.js";
 
 const router = express.Router();
 
+const driverVerificationUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
+  fileFilter: (_req, file, cb) => {
+    const allowedImageTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/heic",
+      "image/heif",
+    ];
+
+    if (!allowedImageTypes.includes(file.mimetype)) {
+      return cb(
+        new Error(
+          "Only JPEG, PNG, WebP, HEIC, and HEIF images are allowed"
+        )
+      );
+    }
+
+    return cb(null, true);
+  },
+});
+
+function uploadDriverVerificationDocument(buffer, driverId) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: `hubethio/driver-verification/${driverId}`,
+        resource_type: "image",
+        type: "authenticated",
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        return resolve(result);
+      }
+    );
+
+    stream.end(buffer);
+  });
+}
+
 router.use(requireDriver);
+
+router.post(
+  "/verification/document",
+  (req, res, next) => {
+    if (
+      ["pending", "approved"].includes(
+        req.driver.verificationStatus
+      )
+    ) {
+      return res.status(409).json({
+        message:
+          "Verification documents cannot be uploaded while verification is pending or already approved.",
+      });
+    }
+
+    return next();
+  },
+  driverVerificationUpload.single("image"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          message: "No verification document uploaded.",
+        });
+      }
+
+      const detectedType = await fileTypeFromBuffer(
+        req.file.buffer
+      );
+
+      const allowedImageTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/heic",
+        "image/heif",
+      ];
+
+      if (
+        !detectedType ||
+        !allowedImageTypes.includes(detectedType.mime)
+      ) {
+        return res.status(400).json({
+          message:
+            "Uploaded file content is not a supported image.",
+        });
+      }
+
+      const result =
+        await uploadDriverVerificationDocument(
+          req.file.buffer,
+          req.driver.id
+        );
+
+      return res.json({
+        publicId: result.public_id,
+      });
+    } catch (err) {
+      console.error(
+        "Driver verification document upload error:",
+        err
+      );
+
+      return res.status(500).json({
+        message:
+          "Failed to upload driver verification document.",
+      });
+    }
+  }
+);
 
 router.get("/me", async (req, res) => {
   try {
     const driver = await TransportationDriver.findById(
       req.driver.id
     ).select(
-      "_id ownerId businessListingId fullName email phone serviceTypes driverAccountStatus status verificationStatus availabilityStatus createdAt updatedAt"
+      "_id ownerId businessListingId fullName email phone serviceTypes driverAccountStatus status verificationStatus driverLicenseNumber driverLicenseState driverLicenseExpirationDate driverLicenseFrontPublicId driverLicenseBackPublicId verificationSubmittedAt verificationRejectionReason availabilityStatus createdAt updatedAt"
     );
 
     if (!driver) {
@@ -36,6 +156,170 @@ router.get("/me", async (req, res) => {
     return res.status(500).json({
       message:
         "Failed to load Transportation driver profile.",
+    });
+  }
+});
+
+router.patch("/verification", async (req, res) => {
+  try {
+    const {
+      driverLicenseNumber,
+      driverLicenseState,
+      driverLicenseExpirationDate,
+      driverLicenseFrontPublicId,
+      driverLicenseBackPublicId,
+    } = req.body || {};
+
+    const cleanLicenseNumber =
+      typeof driverLicenseNumber === "string"
+        ? driverLicenseNumber.trim()
+        : "";
+
+    const cleanLicenseState =
+      typeof driverLicenseState === "string"
+        ? driverLicenseState.trim()
+        : "";
+
+    const cleanFrontPublicId =
+      typeof driverLicenseFrontPublicId === "string"
+        ? driverLicenseFrontPublicId.trim()
+        : "";
+
+    const cleanBackPublicId =
+      typeof driverLicenseBackPublicId === "string"
+        ? driverLicenseBackPublicId.trim()
+        : "";
+
+    if (
+      !cleanLicenseNumber ||
+      !cleanLicenseState ||
+      !driverLicenseExpirationDate ||
+      !cleanFrontPublicId ||
+      !cleanBackPublicId
+    ) {
+      return res.status(400).json({
+        message:
+          "Driver license number, state, expiration date, and front/back images are required.",
+      });
+    }
+
+    const expectedDocumentPrefix =
+      `hubethio/driver-verification/${req.driver.id}/`;
+
+    if (
+      !cleanFrontPublicId.startsWith(expectedDocumentPrefix) ||
+      !cleanBackPublicId.startsWith(expectedDocumentPrefix)
+    ) {
+      return res.status(400).json({
+        message:
+          "Verification documents must belong to the signed-in driver.",
+      });
+    }
+
+    if (cleanLicenseNumber.length > 80) {
+      return res.status(400).json({
+        message:
+          "Driver license number must be 80 characters or fewer.",
+      });
+    }
+
+    if (cleanLicenseState.length > 40) {
+      return res.status(400).json({
+        message:
+          "Driver license state must be 40 characters or fewer.",
+      });
+    }
+
+    const expirationDate = new Date(
+      driverLicenseExpirationDate
+    );
+
+    if (Number.isNaN(expirationDate.getTime())) {
+      return res.status(400).json({
+        message:
+          "A valid driver license expiration date is required.",
+      });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const expirationDay = new Date(expirationDate);
+    expirationDay.setHours(0, 0, 0, 0);
+
+    if (expirationDay < today) {
+      return res.status(400).json({
+        message:
+          "Driver license must not be expired.",
+      });
+    }
+
+    const driver =
+      await TransportationDriver.findById(
+        req.driver.id
+      );
+
+    if (!driver) {
+      return res.status(404).json({
+        message: "Transportation driver not found.",
+      });
+    }
+
+    if (
+      ["pending", "approved"].includes(
+        driver.verificationStatus
+      )
+    ) {
+      return res.status(409).json({
+        message:
+          "Driver verification cannot be resubmitted while pending or already approved.",
+      });
+    }
+
+    driver.driverLicenseNumber = cleanLicenseNumber;
+    driver.driverLicenseState = cleanLicenseState;
+    driver.driverLicenseExpirationDate =
+      expirationDate;
+    driver.driverLicenseFrontPublicId = cleanFrontPublicId;
+    driver.driverLicenseBackPublicId = cleanBackPublicId;
+    driver.verificationStatus = "pending";
+    driver.verificationSubmittedAt = new Date();
+    driver.verificationRejectionReason = "";
+
+    await driver.save();
+
+    return res.json({
+      message:
+        "Driver verification submitted for review.",
+      driver: {
+        _id: driver._id,
+        verificationStatus:
+          driver.verificationStatus,
+        driverLicenseNumber:
+          driver.driverLicenseNumber,
+        driverLicenseState:
+          driver.driverLicenseState,
+        driverLicenseExpirationDate:
+          driver.driverLicenseExpirationDate,
+        driverLicenseFrontPublicId:
+          driver.driverLicenseFrontPublicId,
+        driverLicenseBackPublicId:
+          driver.driverLicenseBackPublicId,
+        verificationSubmittedAt:
+          driver.verificationSubmittedAt,
+        verificationRejectionReason:
+          driver.verificationRejectionReason,
+      },
+    });
+  } catch (err) {
+    console.error(
+      "Submit Transportation driver verification error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to submit driver verification.",
     });
   }
 });
@@ -216,6 +500,33 @@ router.patch("/availability", async (req, res) => {
         "Failed to update Transportation driver availability.",
     });
   }
+});
+
+
+router.use((err, _req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(413).json({
+        message: "Uploaded verification document is too large.",
+      });
+    }
+
+    return res.status(400).json({
+      message: err.message || "Verification upload failed.",
+    });
+  }
+
+  if (
+    err?.message?.includes(
+      "Only JPEG, PNG, WebP, HEIC, and HEIF images are allowed"
+    )
+  ) {
+    return res.status(400).json({
+      message: err.message,
+    });
+  }
+
+  return next(err);
 });
 
 export default router;

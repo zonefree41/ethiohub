@@ -189,3 +189,48 @@ export async function apiDelete(path, token) {
     handleRequestError(err, "DELETE", path);
   }
 }
+
+export async function apiUpload(path, file, token) {
+  const url = buildUrl(path);
+
+  try {
+    console.log("UPLOAD:", url);
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...(token
+          ? { Authorization: `Bearer ${token}` }
+          : {}),
+      },
+      body: formData,
+    });
+
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (!response.ok) {
+      const error = new Error(
+        data?.message ||
+          data?.error ||
+          `Request failed with status ${response.status}`
+      );
+
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
+
+    return data;
+  } catch (err) {
+    handleRequestError(err, "POST", path);
+  }
+}

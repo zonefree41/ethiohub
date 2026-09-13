@@ -89,6 +89,78 @@ const transportationDriverSchema = new mongoose.Schema(
       index: true,
     },
 
+    driverLicenseNumber: {
+
+      type: String,
+
+      trim: true,
+
+      maxlength: 80,
+
+      default: "",
+
+    },
+
+    driverLicenseState: {
+
+      type: String,
+
+      trim: true,
+
+      maxlength: 40,
+
+      default: "",
+
+    },
+
+    driverLicenseExpirationDate: {
+
+      type: Date,
+
+      default: null,
+
+    },
+
+    driverLicenseFrontPublicId: {
+
+      type: String,
+
+      trim: true,
+
+      default: "",
+
+    },
+
+    driverLicenseBackPublicId: {
+
+      type: String,
+
+      trim: true,
+
+      default: "",
+
+    },
+
+    verificationSubmittedAt: {
+
+      type: Date,
+
+      default: null,
+
+    },
+
+    verificationRejectionReason: {
+
+      type: String,
+
+      trim: true,
+
+      maxlength: 2000,
+
+      default: "",
+
+    },
+
     availabilityStatus: {
       type: String,
       enum: ["offline", "available", "busy"],
