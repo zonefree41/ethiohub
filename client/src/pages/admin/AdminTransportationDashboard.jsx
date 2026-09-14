@@ -858,7 +858,10 @@ function getStatusClass(status) {
           disabled={!assignable}
         >
           {driver.fullName} — {driver.status} /{" "}
-          {driver.verificationStatus}
+{driver.verificationStatus}
+{!supportsService
+  ? ` — Does not support ${selectedRequest?.serviceType || "this service"}`
+  : ""}
         </option>
       );
     })}
