@@ -298,6 +298,14 @@ export default function DriverDashboard() {
           )
         );
       }
+      setDriver((currentDriver) =>
+  currentDriver
+    ? {
+        ...currentDriver,
+        availabilityStatus: "available",
+      }
+    : currentDriver
+);
     } catch (err) {
       if (err?.status === 401) {
         localStorage.removeItem("driverToken");
