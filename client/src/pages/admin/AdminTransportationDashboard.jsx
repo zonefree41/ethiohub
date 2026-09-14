@@ -871,8 +871,7 @@ function getStatusClass(status) {
     (driver) =>
       !driver.serviceTypes?.includes(selectedRequest.serviceType)
   ) && (
-    <small>
-      Drivers marked “Not eligible” do not support{" "}
+    <small className="transport-driver-eligibility-note">
       {selectedRequest.serviceType}.
     </small>
   )}

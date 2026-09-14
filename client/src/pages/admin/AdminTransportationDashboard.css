@@ -545,3 +545,9 @@
     flex-direction: column;
   }
 }
+
+.transport-driver-eligibility-note {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.4;
+}
