@@ -857,15 +857,25 @@ function getStatusClass(status) {
           value={driver._id}
           disabled={!assignable}
         >
-          {driver.fullName} — {driver.status} /{" "}
-{driver.verificationStatus}
-{!supportsService
-  ? ` — Does not support ${selectedRequest?.serviceType || "this service"}`
-  : ""}
+          {driver.fullName} —{" "}
+{supportsService
+  ? `${driver.status} / ${driver.verificationStatus}`
+  : "Not eligible"}
         </option>
       );
     })}
   </select>
+
+  {selectedRequest?.serviceType &&
+  drivers.some(
+    (driver) =>
+      !driver.serviceTypes?.includes(selectedRequest.serviceType)
+  ) && (
+    <small>
+      Drivers marked “Not eligible” do not support{" "}
+      {selectedRequest.serviceType}.
+    </small>
+  )}
 
   {driversError && <small>{driversError}</small>}
 
