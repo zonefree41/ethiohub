@@ -349,6 +349,163 @@ router.get("/jobs", async (req, res) => {
   }
 });
 
+router.patch("/jobs/:requestId/accept", async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    if (
+      typeof requestId !== "string" ||
+      !mongoose.Types.ObjectId.isValid(requestId)
+    ) {
+      return res.status(400).json({
+        message: "Valid Transportation request ID is required.",
+      });
+    }
+
+    const request = await TransportationRequest.findOne({
+      _id: requestId,
+      driverId: req.driver.id,
+    });
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Assigned Transportation job not found.",
+      });
+    }
+
+    if (request.status !== "Accepted") {
+      return res.status(400).json({
+        message:
+          "Only an Accepted Transportation job can be accepted by the driver.",
+      });
+    }
+
+    request.status = "In Progress";
+
+    if (!request.inProgressAt) {
+      request.inProgressAt = new Date();
+    }
+
+    await request.save();
+
+    await TransportationDriver.updateOne(
+      {
+        _id: req.driver.id,
+      },
+      {
+        $set: {
+          availabilityStatus: "busy",
+        },
+      }
+    );
+
+    try {
+  if (request.customerEmail) {
+    await sendTransportationStatusEmail(request);
+  }
+} catch (err) {
+  console.error(
+    "Transportation status email failed:",
+    err
+  );
+}
+
+    return res.json({
+      request: {
+        _id: request._id,
+        status: request.status,
+        inProgressAt: request.inProgressAt,
+      },
+    });
+  } catch (err) {
+    console.error(
+      "Accept Transportation driver job error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to accept assigned Transportation job.",
+    });
+  }
+});
+
+router.patch("/jobs/:requestId/decline", async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    if (
+      typeof requestId !== "string" ||
+      !mongoose.Types.ObjectId.isValid(requestId)
+    ) {
+      return res.status(400).json({
+        message: "Valid Transportation request ID is required.",
+      });
+    }
+
+    const request = await TransportationRequest.findOne({
+      _id: requestId,
+      driverId: req.driver.id,
+    });
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Assigned Transportation job not found.",
+      });
+    }
+
+    if (request.status !== "Accepted") {
+      return res.status(400).json({
+        message:
+          "Only an Accepted Transportation job can be declined by the driver.",
+      });
+    }
+
+    request.driverId = null;
+    request.driverName = "";
+    request.driverPhone = "";
+    request.vehicleDescription = "";
+    request.licensePlate = "";
+    request.driverAssignedAt = null;
+
+    await request.save();
+
+    await TransportationDriver.updateOne(
+      {
+        _id: req.driver.id,
+      },
+      {
+        $set: {
+          availabilityStatus: "available",
+        },
+      }
+    );
+
+    return res.json({
+      request: {
+        _id: request._id,
+        status: request.status,
+        driverId: request.driverId,
+        driverName: request.driverName,
+        driverPhone: request.driverPhone,
+        vehicleDescription: request.vehicleDescription,
+        licensePlate: request.licensePlate,
+        driverAssignedAt: request.driverAssignedAt,
+      },
+    });
+  } catch (err) {
+    console.error(
+      "Decline Transportation driver job error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to decline assigned Transportation job.",
+    });
+  }
+});
+
 
 router.patch("/jobs/:requestId/complete", async (req, res) => {
   try {
