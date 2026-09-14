@@ -841,10 +841,15 @@ function getStatusClass(status) {
         : "Use manual driver information"}
     </option>
 
-    {drivers.map((driver) => {
+        {drivers.map((driver) => {
+      const supportsService =
+        !selectedRequest?.serviceType ||
+        driver.serviceTypes?.includes(selectedRequest.serviceType);
+
       const assignable =
         driver.status === "active" &&
-        driver.verificationStatus === "approved";
+        driver.verificationStatus === "approved" &&
+        supportsService;
 
       return (
         <option

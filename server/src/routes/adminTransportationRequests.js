@@ -782,6 +782,16 @@ router.patch(
               "Transportation driver must be active and approved before assignment.",
           });
         }
+
+        if (
+          request.serviceType &&
+          !assignedDriver.serviceTypes?.includes(request.serviceType)
+        ) {
+          return res.status(400).json({
+            message:
+              "Transportation driver does not support this service type.",
+          });
+        }
       }
 
       if (assignedDriver) {
