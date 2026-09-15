@@ -445,6 +445,11 @@ function getStatusClass(status) {
       eligibleUnavailable.push(driver);
     });
 
+    recommended.sort(
+      (a, b) =>
+        (a.activeJobCount || 0) - (b.activeJobCount || 0)
+    );
+
     return {
       recommended,
       eligibleUnavailable,

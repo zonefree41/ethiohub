@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import TransportationDriver from "../models/TransportationDriver.js";
+import TransportationRequest from "../models/TransportationRequest.js";
 import Listing from "../models/Listing.js";
 import Category from "../models/Category.js";
 import cloudinary from "../config/cloudinary.js";
@@ -215,8 +216,43 @@ router.get(
         TransportationDriver.countDocuments(query),
       ]);
 
+      const driverIds = drivers.map((driver) => driver._id);
+
+      const workloadCounts =
+        driverIds.length > 0
+          ? await TransportationRequest.aggregate([
+              {
+                $match: {
+                  driverId: { $in: driverIds },
+                  status: {
+                    $in: ["Accepted", "In Progress"],
+                  },
+                },
+              },
+              {
+                $group: {
+                  _id: "$driverId",
+                  activeJobCount: { $sum: 1 },
+                },
+              },
+            ])
+          : [];
+
+      const workloadByDriverId = new Map(
+        workloadCounts.map((item) => [
+          String(item._id),
+          item.activeJobCount,
+        ])
+      );
+
+      const driversWithWorkload = drivers.map((driver) => ({
+        ...driver,
+        activeJobCount:
+          workloadByDriverId.get(String(driver._id)) || 0,
+      }));
+
       res.json({
-        drivers,
+        drivers: driversWithWorkload,
         pagination: {
           page,
           limit,
