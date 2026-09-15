@@ -789,9 +789,12 @@ router.patch("/quote/:token/respond", async (req, res) => {
 
     await request.save();
 
+    let automaticallyAssignedDriver = null;
+
     if (decision === "Accepted") {
       try {
-        await autoDispatchTransportationDriver(request);
+        automaticallyAssignedDriver =
+          await autoDispatchTransportationDriver(request);
       } catch (dispatchError) {
         console.error(
           "Automatic transportation driver dispatch failed:",
@@ -822,6 +825,21 @@ router.patch("/quote/:token/respond", async (req, res) => {
                   <strong>${decision}</strong>
                   your transportation quote.
                 </p>
+
+                ${
+                  decision === "Accepted" &&
+                  !automaticallyAssignedDriver
+                    ? `
+                      <div style="background:#fff3cd;padding:16px;border-radius:8px;margin:20px 0;">
+                        <strong>Driver assignment needed</strong>
+                        <p style="margin-bottom:0;">
+                          No eligible available driver was found automatically.
+                          Please open your Transportation Dashboard and assign a driver manually.
+                        </p>
+                      </div>
+                    `
+                    : ""
+                }
 
                 <table style="width:100%;border-collapse:collapse;margin-top:25px">
 
@@ -890,6 +908,14 @@ router.patch("/quote/:token/respond", async (req, res) => {
               </div>
             `,
           });
+
+          if (
+            decision === "Accepted" &&
+            !automaticallyAssignedDriver
+          ) {
+            request.dispatchFallbackEmailSentAt = new Date();
+            await request.save();
+          }
         }
       } catch (emailError) {
         console.error(

@@ -212,6 +212,11 @@ customerRespondedAt: {
   default: null,
 },
 
+dispatchFallbackEmailSentAt: {
+  type: Date,
+  default: null,
+},
+
 adminNotes: {
   type: String,
   trim: true,
