@@ -416,6 +416,42 @@ function getStatusClass(status) {
     return types.map((item) => item.serviceType).filter(Boolean);
   }, [analytics]);
 
+  const matchedDrivers = React.useMemo(() => {
+    const requestServiceType = selectedRequest?.serviceType;
+
+    const recommended = [];
+    const eligibleUnavailable = [];
+    const notEligible = [];
+
+    drivers.forEach((driver) => {
+      const activeAndApproved =
+        driver.status === "active" &&
+        driver.verificationStatus === "approved";
+
+      const supportsService =
+        !requestServiceType ||
+        driver.serviceTypes?.includes(requestServiceType);
+
+      if (!activeAndApproved || !supportsService) {
+        notEligible.push(driver);
+        return;
+      }
+
+      if (driver.availabilityStatus === "available") {
+        recommended.push(driver);
+        return;
+      }
+
+      eligibleUnavailable.push(driver);
+    });
+
+    return {
+      recommended,
+      eligibleUnavailable,
+      notEligible,
+    };
+  }, [drivers, selectedRequest?.serviceType]);
+
   return (
     <main className="transport-admin-page">
       <div className="transport-admin-container">
@@ -841,37 +877,40 @@ function getStatusClass(status) {
         : "Use manual driver information"}
     </option>
 
-        {drivers.map((driver) => {
-      const supportsService =
-        !selectedRequest?.serviceType ||
-        driver.serviceTypes?.includes(selectedRequest.serviceType);
+    {matchedDrivers.recommended.length > 0 && (
+      <optgroup label="Recommended">
+    {matchedDrivers.recommended.map((driver) => (
+          <option key={driver._id} value={driver._id}>
+            {driver.fullName} — Available
+          </option>
+        ))}
+      </optgroup>
+    )}
 
-      const assignable =
-        driver.status === "active" &&
-        driver.verificationStatus === "approved" &&
-        supportsService;
+    {matchedDrivers.eligibleUnavailable.length > 0 && (
+      <optgroup label="Other Eligible Drivers">
+        {matchedDrivers.eligibleUnavailable.map((driver) => (
+          <option key={driver._id} value={driver._id}>
+            {driver.fullName} — {driver.availabilityStatus}
+          </option>
+        ))}
+      </optgroup>
+    )}
 
-      return (
-        <option
-          key={driver._id}
-          value={driver._id}
-          disabled={!assignable}
-        >
-          {driver.fullName} —{" "}
-{supportsService
-  ? `${driver.status} / ${driver.verificationStatus}`
-  : "Not eligible"}
-        </option>
-      );
-    })}
+    {matchedDrivers.notEligible.length > 0 && (
+      <optgroup label="Not Eligible">
+        {matchedDrivers.notEligible.map((driver) => (
+          <option key={driver._id} value={driver._id} disabled>
+            {driver.fullName} — Not eligible
+          </option>
+        ))}
+      </optgroup>
+    )}
   </select>
 
-  {selectedRequest?.serviceType &&
-  drivers.some(
-    (driver) =>
-      !driver.serviceTypes?.includes(selectedRequest.serviceType)
-  ) && (
+    {selectedRequest?.serviceType && (
     <small className="transport-driver-eligibility-note">
+      Recommended drivers are active, approved, available, and support{" "}
       {selectedRequest.serviceType}.
     </small>
   )}
