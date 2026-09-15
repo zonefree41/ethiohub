@@ -16,7 +16,10 @@ export async function autoDispatchTransportationDriver(
     return null;
   }
 
-  const excludedDriverIds = excludeDriverIds.map(String);
+  const excludedDriverIds = [
+    ...(request.declinedDriverIds || []).map(String),
+    ...excludeDriverIds.map(String),
+  ];
 
   const eligibleDrivers = await TransportationDriver.find({
     ownerId: request.ownerId,

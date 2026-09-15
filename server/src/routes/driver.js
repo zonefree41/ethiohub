@@ -462,6 +462,14 @@ router.patch("/jobs/:requestId/decline", async (req, res) => {
       });
     }
 
+    if (
+      !request.declinedDriverIds.some(
+        (driverId) => String(driverId) === String(req.driver.id)
+      )
+    ) {
+      request.declinedDriverIds.push(req.driver.id);
+    }
+
     request.driverId = null;
     request.driverName = "";
     request.driverPhone = "";

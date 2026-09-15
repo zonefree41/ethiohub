@@ -191,6 +191,11 @@ driverAssignedAt: {
   default: null,
 },
 
+declinedDriverIds: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "TransportationDriver",
+}],
+
 quoteAccessToken: {
   type: String,
   default: "",
