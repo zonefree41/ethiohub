@@ -5,6 +5,7 @@ import TransportationRequest from "../models/TransportationRequest.js";
 import TransportationDriver from "../models/TransportationDriver.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { sendTransportationStatusEmail } from "../utils/sendTransportationStatusEmail.js";
+import { autoDispatchTransportationDriver } from "../utils/autoDispatchTransportationDriver.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
 import crypto from "crypto";
 
@@ -787,6 +788,17 @@ router.patch("/quote/:token/respond", async (req, res) => {
     request.customerRespondedAt = new Date();
 
     await request.save();
+
+    if (decision === "Accepted") {
+      try {
+        await autoDispatchTransportationDriver(request);
+      } catch (dispatchError) {
+        console.error(
+          "Automatic transportation driver dispatch failed:",
+          dispatchError
+        );
+      }
+    }
 
     if (request.ownerId) {
       try {
