@@ -42,7 +42,9 @@ export default function DriverDashboard() {
     React.useState("");
 
   const activeJobs = jobs.filter(
-    (job) => job.status === "In Progress"
+    (job) =>
+      job.status === "Accepted" ||
+      job.status === "In Progress"
   );
 
   const completedJobs = jobs.filter(
