@@ -20,6 +20,12 @@ export default function DriverDashboard() {
   const [completingJobId, setCompletingJobId] =
     React.useState("");
 
+  const [acceptingJobId, setAcceptingJobId] =
+    React.useState("");
+
+  const [decliningJobId, setDecliningJobId] =
+    React.useState("");
+
   const [jobFilter, setJobFilter] =
     React.useState("active");
 
@@ -275,6 +281,100 @@ export default function DriverDashboard() {
       );
     } finally {
       setAvailabilityUpdating(false);
+    }
+  }
+
+  async function acceptJob(jobId) {
+    if (!jobId || acceptingJobId) return;
+
+    try {
+      setAcceptingJobId(jobId);
+      setError("");
+
+      const data = await apiPatch(
+        `/api/driver/jobs/${jobId}/accept`,
+        {},
+        token
+      );
+
+      if (data?.request) {
+        setJobs((currentJobs) =>
+          currentJobs.map((job) =>
+            job._id === data.request._id
+              ? { ...job, ...data.request }
+              : job
+          )
+        );
+      }
+
+      setDriver((currentDriver) =>
+        currentDriver
+          ? {
+              ...currentDriver,
+              availabilityStatus: "busy",
+            }
+          : currentDriver
+      );
+    } catch (err) {
+      if (err?.status === 401) {
+        localStorage.removeItem("driverToken");
+        localStorage.removeItem("driverUser");
+        window.location.href = "/driver/login";
+        return;
+      }
+
+      setError(
+        err.message ||
+          "Failed to accept Transportation job."
+      );
+    } finally {
+      setAcceptingJobId("");
+    }
+  }
+
+  async function declineJob(jobId) {
+    if (!jobId || decliningJobId) return;
+
+    try {
+      setDecliningJobId(jobId);
+      setError("");
+
+      const data = await apiPatch(
+        `/api/driver/jobs/${jobId}/decline`,
+        {},
+        token
+      );
+
+      if (data?.request) {
+        setJobs((currentJobs) =>
+          currentJobs.filter(
+            (job) => job._id !== data.request._id
+          )
+        );
+      }
+
+      setDriver((currentDriver) =>
+        currentDriver
+          ? {
+              ...currentDriver,
+              availabilityStatus: "available",
+            }
+          : currentDriver
+      );
+    } catch (err) {
+      if (err?.status === 401) {
+        localStorage.removeItem("driverToken");
+        localStorage.removeItem("driverUser");
+        window.location.href = "/driver/login";
+        return;
+      }
+
+      setError(
+        err.message ||
+          "Failed to decline Transportation job."
+      );
+    } finally {
+      setDecliningJobId("");
     }
   }
 
@@ -809,6 +909,38 @@ export default function DriverDashboard() {
                           <span>Cargo Details</span>
                           <p>{job.cargoDetails}</p>
                         </div>
+                      )}
+
+                      {job.status === "Accepted" && (
+                        <>
+                          <button
+                            type="button"
+                            className="driver-job-complete-button"
+                            onClick={() => acceptJob(job._id)}
+                            disabled={
+                              acceptingJobId === job._id ||
+                              decliningJobId === job._id
+                            }
+                          >
+                            {acceptingJobId === job._id
+                              ? "Accepting..."
+                              : "Accept Job"}
+                          </button>
+
+                          <button
+                            type="button"
+                            className="driver-job-complete-button"
+                            onClick={() => declineJob(job._id)}
+                            disabled={
+                              acceptingJobId === job._id ||
+                              decliningJobId === job._id
+                            }
+                          >
+                            {decliningJobId === job._id
+                              ? "Declining..."
+                              : "Decline Job"}
+                          </button>
+                        </>
                       )}
 
                       {job.status === "In Progress" && (
