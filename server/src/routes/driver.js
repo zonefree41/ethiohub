@@ -10,6 +10,7 @@ import cloudinary from "../config/cloudinary.js";
 import TransportationDriver from "../models/TransportationDriver.js";
 import TransportationRequest from "../models/TransportationRequest.js";
 import { sendTransportationStatusEmail } from "../utils/sendTransportationStatusEmail.js";
+import { autoDispatchTransportationDriver } from "../utils/autoDispatchTransportationDriver.js";
 import { requireDriver } from "../middleware/driverAuth.js";
 
 const router = express.Router();
@@ -480,6 +481,17 @@ router.patch("/jobs/:requestId/decline", async (req, res) => {
         },
       }
     );
+
+    try {
+      await autoDispatchTransportationDriver(request, {
+        excludeDriverIds: [req.driver.id],
+      });
+    } catch (dispatchError) {
+      console.error(
+        "Transportation driver redispatch failed:",
+        dispatchError
+      );
+    }
 
     return res.json({
       request: {

@@ -1,7 +1,10 @@
 import TransportationDriver from "../models/TransportationDriver.js";
 import TransportationRequest from "../models/TransportationRequest.js";
 
-export async function autoDispatchTransportationDriver(request) {
+export async function autoDispatchTransportationDriver(
+  request,
+  { excludeDriverIds = [] } = {}
+) {
   if (
     !request ||
     !request._id ||
@@ -13,6 +16,8 @@ export async function autoDispatchTransportationDriver(request) {
     return null;
   }
 
+  const excludedDriverIds = excludeDriverIds.map(String);
+
   const eligibleDrivers = await TransportationDriver.find({
     ownerId: request.ownerId,
     businessListingId: request.listingId,
@@ -20,6 +25,9 @@ export async function autoDispatchTransportationDriver(request) {
     verificationStatus: "approved",
     availabilityStatus: "available",
     serviceTypes: request.serviceType,
+    ...(excludedDriverIds.length > 0
+      ? { _id: { $nin: excludedDriverIds } }
+      : {}),
   }).lean();
 
   if (eligibleDrivers.length === 0) {
