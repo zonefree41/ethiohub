@@ -778,16 +778,37 @@ router.patch("/quote/:token/respond", async (req, res) => {
     }
 
     if (request.customerRespondedAt) {
-  return res.status(400).json({
-    message:
-      "This transportation quote has already been responded to.",
-  });
-}
+      return res.status(400).json({
+        message:
+          "This transportation quote has already been responded to.",
+      });
+    }
+
+    const customerRespondedAt = new Date();
+
+    const responseClaim =
+      await TransportationRequest.updateOne(
+        {
+          _id: request._id,
+          customerRespondedAt: null,
+        },
+        {
+          $set: {
+            status: decision,
+            customerRespondedAt,
+          },
+        }
+      );
+
+    if (responseClaim.modifiedCount !== 1) {
+      return res.status(400).json({
+        message:
+          "This transportation quote has already been responded to.",
+      });
+    }
 
     request.status = decision;
-    request.customerRespondedAt = new Date();
-
-    await request.save();
+    request.customerRespondedAt = customerRespondedAt;
 
     let automaticallyAssignedDriver = null;
 
