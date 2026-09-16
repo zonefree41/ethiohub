@@ -831,7 +831,7 @@ router.patch("/quote/:token/respond", async (req, res) => {
           .populate("ownerId", "email name");
 
         if (listing?.ownerId?.email) {
-          await sendEmail({
+          const emailResult = await sendEmail({
             to: listing.ownerId.email,
             subject: `Customer ${decision} Your Transportation Quote`,
             html: `
@@ -931,6 +931,7 @@ router.patch("/quote/:token/respond", async (req, res) => {
           });
 
           if (
+            emailResult &&
             decision === "Accepted" &&
             !automaticallyAssignedDriver
           ) {
