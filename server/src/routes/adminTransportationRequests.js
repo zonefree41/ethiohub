@@ -1,4 +1,5 @@
 import express from "express";
+import { randomUUID } from "node:crypto";
 import mongoose from "mongoose";
 
 import TransportationRequest from "../models/TransportationRequest.js";
@@ -750,6 +751,7 @@ router.patch(
       } = req.body || {};
 
       let assignedDriver = null;
+      let dispatchLockToken = null;
 
       if (driverId) {
         if (
@@ -792,45 +794,110 @@ router.patch(
               "Transportation driver does not support this service type.",
           });
         }
+
+        dispatchLockToken = randomUUID();
+
+        const dispatchLockExpiresAt = new Date(
+          Date.now() + 30_000
+        );
+
+        assignedDriver =
+          await TransportationDriver.findOneAndUpdate(
+            {
+              _id: assignedDriver._id,
+              ownerId: request.ownerId,
+              businessListingId: request.listingId,
+              status: "active",
+              verificationStatus: "approved",
+              $or: [
+                { dispatchLockExpiresAt: null },
+                {
+                  dispatchLockExpiresAt: {
+                    $lte: new Date(),
+                  },
+                },
+              ],
+            },
+            {
+              $set: {
+                dispatchLockToken,
+                dispatchLockExpiresAt,
+              },
+            },
+            {
+              new: true,
+            }
+          );
+
+        if (!assignedDriver) {
+          return res.status(409).json({
+            message:
+              "Transportation driver is currently being assigned. Please try again.",
+          });
+        }
       }
 
-      if (assignedDriver) {
-        request.driverId = assignedDriver._id;
-        request.driverName = assignedDriver.fullName;
-        request.driverPhone = assignedDriver.phone;
-      } else {
-        request.driverId = null;
-        request.driverName = cleanText(driverName);
-        request.driverPhone = cleanText(driverPhone);
+      try {
+        if (assignedDriver) {
+          request.driverId = assignedDriver._id;
+          request.driverName = assignedDriver.fullName;
+          request.driverPhone = assignedDriver.phone;
+        } else {
+          request.driverId = null;
+          request.driverName = cleanText(driverName);
+          request.driverPhone = cleanText(driverPhone);
+        }
+
+        if (
+          !request.driverAssignedAt &&
+          (request.driverId ||
+            request.driverName ||
+            request.driverPhone)
+        ) {
+          request.driverAssignedAt = new Date();
+        }
+
+        request.vehicleDescription = cleanText(
+          vehicleDescription
+        );
+        request.licensePlate = cleanText(licensePlate);
+
+        request.lastAdminUpdatedBy = req.admin.id;
+        request.lastAdminUpdatedAt = new Date();
+
+        request.adminAuditLog.push({
+          action: "Driver Assigned",
+          note: request.driverName
+            ? `Driver assigned: ${request.driverName}`
+            : "Driver information cleared.",
+          adminId: req.admin.id,
+          adminEmail: req.admin.email || "",
+        });
+
+        await request.save();
+      } finally {
+        if (assignedDriver && dispatchLockToken) {
+          try {
+            await TransportationDriver.updateOne(
+              {
+                _id: assignedDriver._id,
+                dispatchLockToken,
+              },
+              {
+                $set: {
+                  dispatchLockToken: "",
+                  dispatchLockExpiresAt: null,
+                },
+              }
+            );
+          } catch (releaseError) {
+            console.error(
+              "Admin transportation driver dispatch lock release failed:",
+              releaseError
+            );
+          }
+        }
       }
-
-      if (
-        !request.driverAssignedAt &&
-        (request.driverId ||
-          request.driverName ||
-          request.driverPhone)
-      ) {
-        request.driverAssignedAt = new Date();
-      }
-
-      request.vehicleDescription = cleanText(
-        vehicleDescription
-      );
-      request.licensePlate = cleanText(licensePlate);
-
-      request.lastAdminUpdatedBy = req.admin.id;
-      request.lastAdminUpdatedAt = new Date();
-
-      request.adminAuditLog.push({
-        action: "Driver Assigned",
-        note: request.driverName
-          ? `Driver assigned: ${request.driverName}`
-          : "Driver information cleared.",
-        adminId: req.admin.id,
-        adminEmail: req.admin.email || "",
-      });
-
-      await request.save();
 
       const updatedRequest =
         await TransportationRequest.findById(
