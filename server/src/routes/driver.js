@@ -11,6 +11,7 @@ import TransportationDriver from "../models/TransportationDriver.js";
 import TransportationRequest from "../models/TransportationRequest.js";
 import { sendTransportationStatusEmail } from "../utils/sendTransportationStatusEmail.js";
 import { autoDispatchTransportationDriver } from "../utils/autoDispatchTransportationDriver.js";
+import { sendTransportationDispatchFallbackEmail } from "../utils/sendTransportationDispatchFallbackEmail.js";
 import { requireDriver } from "../middleware/driverAuth.js";
 
 const router = express.Router();
@@ -491,9 +492,21 @@ router.patch("/jobs/:requestId/decline", async (req, res) => {
     );
 
     try {
-      await autoDispatchTransportationDriver(request, {
-        excludeDriverIds: [req.driver.id],
-      });
+      const reassignedDriver =
+        await autoDispatchTransportationDriver(request, {
+          excludeDriverIds: [req.driver.id],
+        });
+
+      if (!reassignedDriver) {
+        try {
+          await sendTransportationDispatchFallbackEmail(request);
+        } catch (emailError) {
+          console.error(
+            "Transportation dispatch fallback email failed:",
+            emailError
+          );
+        }
+      }
     } catch (dispatchError) {
       console.error(
         "Transportation driver redispatch failed:",
