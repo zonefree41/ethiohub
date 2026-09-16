@@ -168,6 +168,18 @@ const transportationDriverSchema = new mongoose.Schema(
       index: true,
     },
 
+    dispatchLockToken: {
+      type: String,
+      default: "",
+      select: false,
+    },
+
+    dispatchLockExpiresAt: {
+      type: Date,
+      default: null,
+      select: false,
+    },
+
     serviceTypes: {
       type: [String],
       enum: [

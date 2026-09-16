@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import TransportationDriver from "../models/TransportationDriver.js";
 import TransportationRequest from "../models/TransportationRequest.js";
 
@@ -78,14 +80,81 @@ export async function autoDispatchTransportationDriver(
     return String(a._id).localeCompare(String(b._id));
   });
 
-  const selectedDriver = eligibleDrivers[0];
+  const dispatchLockToken = randomUUID();
+  const dispatchLockExpiresAt = new Date(
+    Date.now() + 30_000
+  );
 
-  request.driverId = selectedDriver._id;
-  request.driverName = selectedDriver.fullName;
-  request.driverPhone = selectedDriver.phone;
-  request.driverAssignedAt = new Date();
+  let selectedDriver = null;
 
-  await request.save();
+  for (const candidate of eligibleDrivers) {
+    selectedDriver =
+      await TransportationDriver.findOneAndUpdate(
+        {
+          _id: candidate._id,
+          ownerId: request.ownerId,
+          businessListingId: request.listingId,
+          status: "active",
+          verificationStatus: "approved",
+          availabilityStatus: "available",
+          serviceTypes: request.serviceType,
+          $or: [
+            { dispatchLockExpiresAt: null },
+            {
+              dispatchLockExpiresAt: {
+                $lte: new Date(),
+              },
+            },
+          ],
+        },
+        {
+          $set: {
+            dispatchLockToken,
+            dispatchLockExpiresAt,
+          },
+        },
+        {
+          new: true,
+        }
+      );
 
-  return selectedDriver;
+    if (selectedDriver) {
+      break;
+    }
+  }
+
+  if (!selectedDriver) {
+    return null;
+  }
+
+  try {
+    request.driverId = selectedDriver._id;
+    request.driverName = selectedDriver.fullName;
+    request.driverPhone = selectedDriver.phone;
+    request.driverAssignedAt = new Date();
+
+    await request.save();
+
+    return selectedDriver;
+  } finally {
+    try {
+      await TransportationDriver.updateOne(
+        {
+          _id: selectedDriver._id,
+          dispatchLockToken,
+        },
+        {
+          $set: {
+            dispatchLockToken: "",
+            dispatchLockExpiresAt: null,
+          },
+        }
+      );
+    } catch (releaseError) {
+      console.error(
+        "Transportation driver dispatch lock release failed:",
+        releaseError
+      );
+    }
+  }
 }
