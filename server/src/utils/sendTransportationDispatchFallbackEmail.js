@@ -6,7 +6,7 @@ export async function sendTransportationDispatchFallbackEmail(request) {
     !request ||
     !request._id ||
     !request.ownerId ||
-    request.dispatchFallbackEmailSentAt
+    request.redispatchFallbackEmailSentAt
   ) {
     return false;
   }
@@ -65,7 +65,7 @@ export async function sendTransportationDispatchFallbackEmail(request) {
     return false;
   }
 
-  request.dispatchFallbackEmailSentAt = new Date();
+  request.redispatchFallbackEmailSentAt = new Date();
   await request.save();
 
   return true;

@@ -222,6 +222,11 @@ dispatchFallbackEmailSentAt: {
   default: null,
 },
 
+redispatchFallbackEmailSentAt: {
+  type: Date,
+  default: null,
+},
+
 adminNotes: {
   type: String,
   trim: true,
