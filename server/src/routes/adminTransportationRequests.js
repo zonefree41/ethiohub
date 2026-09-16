@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 
 import TransportationRequest from "../models/TransportationRequest.js";
 import TransportationDriver from "../models/TransportationDriver.js";
+import { sendTransportationDriverAssignmentEmail } from "../utils/sendTransportationDriverAssignmentEmail.js";
 import {
   requireAdmin,
   requireRole,
@@ -896,6 +897,20 @@ router.patch(
               releaseError
             );
           }
+        }
+      }
+
+      if (assignedDriver) {
+        try {
+          await sendTransportationDriverAssignmentEmail(
+            request,
+            assignedDriver
+          );
+        } catch (emailError) {
+          console.error(
+            "Admin transportation driver assignment email failed:",
+            emailError
+          );
         }
       }
 

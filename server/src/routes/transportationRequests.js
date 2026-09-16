@@ -6,6 +6,7 @@ import TransportationDriver from "../models/TransportationDriver.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { sendTransportationStatusEmail } from "../utils/sendTransportationStatusEmail.js";
 import { autoDispatchTransportationDriver } from "../utils/autoDispatchTransportationDriver.js";
+import { sendTransportationDriverAssignmentEmail } from "../utils/sendTransportationDriverAssignmentEmail.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
 import crypto from "crypto";
 
@@ -816,6 +817,20 @@ router.patch("/quote/:token/respond", async (req, res) => {
       try {
         automaticallyAssignedDriver =
           await autoDispatchTransportationDriver(request);
+
+        if (automaticallyAssignedDriver) {
+          try {
+            await sendTransportationDriverAssignmentEmail(
+              request,
+              automaticallyAssignedDriver
+            );
+          } catch (emailError) {
+            console.error(
+              "Transportation driver assignment email failed:",
+              emailError
+            );
+          }
+        }
       } catch (dispatchError) {
         console.error(
           "Automatic transportation driver dispatch failed:",
