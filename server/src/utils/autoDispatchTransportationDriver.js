@@ -87,45 +87,60 @@ export async function autoDispatchTransportationDriver(
 
   let selectedDriver = null;
 
-  for (const candidate of eligibleDrivers) {
-    selectedDriver =
-      await TransportationDriver.findOneAndUpdate(
-        {
-          _id: candidate._id,
-          ownerId: request.ownerId,
-          businessListingId: request.listingId,
-          status: "active",
-          verificationStatus: "approved",
-          availabilityStatus: "available",
-          serviceTypes: request.serviceType,
-          $or: [
-            { dispatchLockExpiresAt: null },
-            {
-              dispatchLockExpiresAt: {
-                $lte: new Date(),
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+
+    for (const candidate of eligibleDrivers) {
+
+      selectedDriver =
+        await TransportationDriver.findOneAndUpdate(
+          {
+            _id: candidate._id,
+            ownerId: request.ownerId,
+            businessListingId: request.listingId,
+            status: "active",
+            verificationStatus: "approved",
+            availabilityStatus: "available",
+            serviceTypes: request.serviceType,
+            $or: [
+              { dispatchLockExpiresAt: null },
+              {
+                dispatchLockExpiresAt: {
+                  $lte: new Date(),
+                },
               },
-            },
-          ],
-        },
-        {
-          $set: {
-            dispatchLockToken,
-            dispatchLockExpiresAt,
+            ],
           },
-        },
-        {
-          new: true,
-        }
-      );
+          {
+            $set: {
+              dispatchLockToken,
+              dispatchLockExpiresAt,
+            },
+          },
+          {
+            new: true,
+          }
+        );
+
+      if (selectedDriver) {
+        break;
+      }
+    }
 
     if (selectedDriver) {
       break;
+    }
+
+    if (attempt === 0) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, 100)
+      );
     }
   }
 
   if (!selectedDriver) {
     return null;
   }
+
 
   try {
     request.driverId = selectedDriver._id;
