@@ -660,7 +660,11 @@ const seoDescription =
   )}
 
   <a
-    href={`/listing/${listing._id}`}
+    href={
+      subcategory
+        ? `/listing/${listing._id}?service=${encodeURIComponent(subcategory)}`
+        : `/listing/${listing._id}`
+    }
     className="category-action-btn category-action-main"
   >
     View Details

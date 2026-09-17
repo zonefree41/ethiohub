@@ -21,6 +21,10 @@ export default function Listing() {
   const id = pathParts[1];
   const isValidListingId = /^[a-f\d]{24}$/i.test(id);
 
+  const requestedService = new URLSearchParams(
+    window.location.search
+  ).get("service");
+
   const [listing, setListing] = React.useState(null);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(true);
@@ -4936,18 +4940,37 @@ document.title = seoTitle;
   setQuoteMessage("");
   setQuoteError("");
 
-  setQuoteForm((prev) => ({
-    ...prev,
-    serviceType: [
-      "Furniture Delivery",
-      "Package Delivery",
-      "Moving Service",
-      "Airport Transportation",
-      "Freight Delivery",
-    ].includes(listing.subcategory)
-      ? listing.subcategory
-      : "Other",
-  }));
+  setQuoteForm((prev) => {
+    const offeredServices = Array.isArray(listing.transportServiceTypes)
+      ? listing.transportServiceTypes
+      : [];
+
+    const requestedServiceIsOffered =
+      requestedService &&
+      (
+        offeredServices.includes(requestedService) ||
+        listing.subcategory === requestedService
+      );
+
+    const selectedService = requestedServiceIsOffered
+      ? requestedService
+      : listing.subcategory === "Ethiopian Movers"
+        ? "Moving Service"
+        : [
+            "Furniture Delivery",
+            "Package Delivery",
+            "Moving Service",
+            "Airport Transportation",
+            "Freight Delivery",
+          ].includes(listing.subcategory)
+          ? listing.subcategory
+          : "Other";
+
+    return {
+      ...prev,
+      serviceType: selectedService,
+    };
+  });
 
   setIsQuoteModalOpen(true);
 }}
