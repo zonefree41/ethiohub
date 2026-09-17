@@ -1128,6 +1128,27 @@ const isBeautyListing =
   <section className="edit-listing-section">
     <h2>Transportation Information</h2>
 
+    <label>
+      Transportation Service
+      <select
+        name="subcategory"
+        value={form.subcategory}
+        onChange={update}
+      >
+        <option value="">Select Transportation Service</option>
+        <option value="Airport Transportation">Airport Transportation</option>
+        <option value="Ethiopian Movers">Moving Service</option>
+        <option value="Furniture Delivery">Furniture Delivery</option>
+        <option value="Package Delivery">Package Delivery</option>
+        <option value="Cargo & Freight (Sprinter Van)">
+          Cargo & Freight (Sprinter Van)
+        </option>
+        <option value="Charter & Group Transportation">
+          Charter & Group Transportation
+        </option>
+      </select>
+    </label>
+
     <div className="edit-listing-two-col">
       <input
         name="transportServiceArea"
@@ -1183,12 +1204,6 @@ const isBeautyListing =
 )}
 
 <select
-  name="transportLocalLongDistance"
-  value={form.transportLocalLongDistance}
-  onChange={update}
-></select>
-
-    <select
       name="transportLocalLongDistance"
       value={form.transportLocalLongDistance}
       onChange={update}

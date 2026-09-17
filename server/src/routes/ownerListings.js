@@ -1,5 +1,6 @@
 import express from "express";
 import Listing from "../models/Listing.js";
+import Category from "../models/Category.js";
 import { requireOwner } from "../middleware/ownerAuth.js";
 
 const router = express.Router();
@@ -63,6 +64,7 @@ router.patch("/:id", async (req, res) => {
 
     const allowedFields = [
       "title",
+      "subcategory",
       "phone",
       "whatsapp",
       "website",
@@ -188,6 +190,31 @@ if (
           typeof req.body[field] === "string"
             ? req.body[field].trim()
             : req.body[field];
+      }
+    }
+
+    if ("subcategory" in updates) {
+      const category = await Category.findById(listing.categoryId).select(
+        "subcategories"
+      );
+
+      if (!category) {
+        return res.status(400).json({
+          message: "Listing category could not be found.",
+        });
+      }
+
+      const validSubcategories = Array.isArray(category.subcategories)
+        ? category.subcategories
+        : [];
+
+      if (
+        updates.subcategory &&
+        !validSubcategories.includes(updates.subcategory)
+      ) {
+        return res.status(400).json({
+          message: "Invalid subcategory for this listing category.",
+        });
       }
     }
 
@@ -420,6 +447,7 @@ if ("beautyServes" in updates) {
 
     const sensitiveFields = [
       "title",
+      "subcategory",
       "address",
       "city",
       "state",
