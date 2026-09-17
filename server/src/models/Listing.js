@@ -428,6 +428,11 @@ transportVehicleTypes: {
   default: [],
 },
 
+transportServiceTypes: {
+  type: [String],
+  default: [],
+},
+
 transportServiceArea: {
   type: String,
   default: "",

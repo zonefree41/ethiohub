@@ -103,6 +103,7 @@ router.patch("/:id", async (req, res) => {
 "furnished",
 
 "transportVehicleTypes",
+"transportServiceTypes",
 "transportServiceArea",
 "transportAvailable24_7",
 "transportAirportService",
@@ -193,7 +194,10 @@ if (
       }
     }
 
-    if ("subcategory" in updates) {
+    if (
+      "subcategory" in updates ||
+      "transportServiceTypes" in updates
+    ) {
       const category = await Category.findById(listing.categoryId).select(
         "subcategories"
       );
@@ -209,12 +213,40 @@ if (
         : [];
 
       if (
+        "subcategory" in updates &&
         updates.subcategory &&
         !validSubcategories.includes(updates.subcategory)
       ) {
         return res.status(400).json({
           message: "Invalid subcategory for this listing category.",
         });
+      }
+
+      if ("transportServiceTypes" in updates) {
+        if (!Array.isArray(updates.transportServiceTypes)) {
+          return res.status(400).json({
+            message: "Transportation services must be an array.",
+          });
+        }
+
+        updates.transportServiceTypes = [
+          ...new Set(
+            updates.transportServiceTypes
+              .filter((service) => typeof service === "string")
+              .map((service) => service.trim())
+              .filter(Boolean)
+          ),
+        ];
+
+        const hasInvalidService = updates.transportServiceTypes.some(
+          (service) => !validSubcategories.includes(service)
+        );
+
+        if (hasInvalidService) {
+          return res.status(400).json({
+            message: "Invalid transportation service for this listing category.",
+          });
+        }
       }
     }
 
@@ -448,6 +480,7 @@ if ("beautyServes" in updates) {
     const sensitiveFields = [
       "title",
       "subcategory",
+      "transportServiceTypes",
       "address",
       "city",
       "state",
@@ -459,9 +492,19 @@ if ("beautyServes" in updates) {
     const hasSensitiveChange = sensitiveFields.some((field) => {
       if (!(field in updates)) return false;
 
+      if (field === "transportServiceTypes") {
+        const oldServices = Array.isArray(listing[field])
+          ? [...listing[field]].sort()
+          : [];
+        const newServices = Array.isArray(updates[field])
+          ? [...updates[field]].sort()
+          : [];
+
+        return JSON.stringify(oldServices) !== JSON.stringify(newServices);
+      }
+
       const oldValue = String(listing[field] || "").trim();
       const newValue = String(updates[field] || "").trim();
-
       return oldValue !== newValue;
     });
 

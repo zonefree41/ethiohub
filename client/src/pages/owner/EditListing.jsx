@@ -79,6 +79,7 @@ petsAllowed: false,
 utilitiesIncluded: false,
 furnished: false,
 transportVehicleTypes: [],
+transportServiceTypes: [],
 transportServiceArea: "",
 transportAvailable24_7: false,
 transportAirportService: false,
@@ -698,6 +699,13 @@ beautyServes: Array.isArray(data.beautyServes) ? data.beautyServes : [],
 transportVehicleTypes: Array.isArray(data.transportVehicleTypes)
   ? data.transportVehicleTypes
   : [],
+transportServiceTypes:
+  Array.isArray(data.transportServiceTypes) &&
+  data.transportServiceTypes.length > 0
+    ? data.transportServiceTypes
+    : data.subcategory
+      ? [data.subcategory]
+      : [],
 transportServiceArea: data.transportServiceArea || "",
 transportAvailable24_7: Boolean(data.transportAvailable24_7),
 transportAirportService: Boolean(data.transportAirportService),
@@ -1128,26 +1136,39 @@ const isBeautyListing =
   <section className="edit-listing-section">
     <h2>Transportation Information</h2>
 
-    <label>
-      Transportation Service
-      <select
-        name="subcategory"
-        value={form.subcategory}
-        onChange={update}
-      >
-        <option value="">Select Transportation Service</option>
-        <option value="Airport Transportation">Airport Transportation</option>
-        <option value="Ethiopian Movers">Moving Service</option>
-        <option value="Furniture Delivery">Furniture Delivery</option>
-        <option value="Package Delivery">Package Delivery</option>
-        <option value="Cargo & Freight (Sprinter Van)">
-          Cargo & Freight (Sprinter Van)
-        </option>
-        <option value="Charter & Group Transportation">
-          Charter & Group Transportation
-        </option>
-      </select>
-    </label>
+    <div>
+      <strong>Transportation Services Offered</strong>
+      <p>Select all services this business provides.</p>
+
+      <div className="edit-listing-checkboxes">
+        {[
+          ["Airport Transportation", "Airport Transportation"],
+          ["Ethiopian Movers", "Moving Service"],
+          ["Furniture Delivery", "Furniture Delivery"],
+          ["Package Delivery", "Package Delivery"],
+          ["Cargo & Freight (Sprinter Van)", "Cargo & Freight (Sprinter Van)"],
+          ["Charter & Group Transportation", "Charter & Group Transportation"],
+        ].map(([value, label]) => (
+          <label key={value}>
+            <input
+              type="checkbox"
+              checked={form.transportServiceTypes.includes(value)}
+              onChange={(e) => {
+                setForm((prev) => ({
+                  ...prev,
+                  transportServiceTypes: e.target.checked
+                    ? [...new Set([...prev.transportServiceTypes, value])]
+                    : prev.transportServiceTypes.filter(
+                        (service) => service !== value
+                      ),
+                }));
+              }}
+            />
+            {label}
+          </label>
+        ))}
+      </div>
+    </div>
 
     <div className="edit-listing-two-col">
       <input
@@ -1160,7 +1181,10 @@ const isBeautyListing =
       <input
         name="transportMaxLoad"
         placeholder={
-          form.subcategory === "Cargo & Freight (Sprinter Van)"
+          (
+            form.subcategory === "Cargo & Freight (Sprinter Van)" ||
+            form.transportServiceTypes.includes("Cargo & Freight (Sprinter Van)")
+          )
             ? "Maximum Payload (lbs)"
             : "Vehicle Capacity"
         }
@@ -1169,7 +1193,10 @@ const isBeautyListing =
       />
     </div>
 
-    {form.subcategory === "Cargo & Freight (Sprinter Van)" && (
+    {(
+            form.subcategory === "Cargo & Freight (Sprinter Van)" ||
+            form.transportServiceTypes.includes("Cargo & Freight (Sprinter Van)")
+          ) && (
   <>
     <div className="edit-listing-three-col">
       <input
@@ -1214,7 +1241,10 @@ const isBeautyListing =
       <option value="Both">Both</option>
     </select>
 
-    {form.subcategory === "Cargo & Freight (Sprinter Van)" && (
+    {(
+            form.subcategory === "Cargo & Freight (Sprinter Van)" ||
+            form.transportServiceTypes.includes("Cargo & Freight (Sprinter Van)")
+          ) && (
   <>
     <h3>🚚 Delivery Services</h3>
 
