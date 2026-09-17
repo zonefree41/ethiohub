@@ -205,6 +205,10 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
     "Roommates",
   ].includes(subcategory);
 
+  const isTransportationCategory =
+    selectedCategory?.name_en === "Transportation" ||
+    selectedCategory?.slug === "transportation";
+
   function applyHousingFilters(e) {
     e.preventDefault();
 
@@ -269,6 +273,49 @@ const seoDescription =
               {state && <span>State: {state}</span>}
             </p>
           )}
+
+        {isTransportationCategory && (
+          <section className="transportation-service-picker">
+            <div className="transportation-service-picker-header">
+              <h2>What transportation service do you need?</h2>
+              <p>Choose a service, then select a provider to request a quote.</p>
+            </div>
+
+            <div className="transportation-service-grid">
+              <a
+                href={`/category/${slug}?subcategory=${encodeURIComponent("Airport Transportation")}`}
+                className="transportation-service-card"
+              >
+                <span className="transportation-service-icon">✈️</span>
+                <span>Airport Transportation</span>
+              </a>
+
+              <a
+                href={`/category/${slug}?subcategory=${encodeURIComponent("Furniture Delivery")}`}
+                className="transportation-service-card"
+              >
+                <span className="transportation-service-icon">🛋️</span>
+                <span>Furniture Delivery</span>
+              </a>
+
+              <a
+                href={`/category/${slug}?subcategory=${encodeURIComponent("Package Delivery")}`}
+                className="transportation-service-card"
+              >
+                <span className="transportation-service-icon">📦</span>
+                <span>Package Delivery</span>
+              </a>
+
+              <a
+                href={`/category/${slug}?subcategory=${encodeURIComponent("Ethiopian Movers")}`}
+                className="transportation-service-card"
+              >
+                <span className="transportation-service-icon">🚚</span>
+                <span>Moving Service</span>
+              </a>
+            </div>
+          </section>
+        )}
 
         {availableSubcategories.length > 0 && (
   <div className="category-subcategory-filters">

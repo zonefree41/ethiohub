@@ -367,6 +367,11 @@ const [quoteForm, setQuoteForm] = React.useState({
   requestedDate: "",
   requestedTime: "",
   serviceType: "Other",
+  itemName: "",
+  itemQuantity: "1",
+  pickupFloor: "",
+  deliveryFloor: "",
+  loadingHelp: "",
   cargoDetails: "",
   cargoPhotos: [],
 });
@@ -1375,6 +1380,28 @@ async function submitEventServiceRequest(e) {
   setQuoteError("");
 
   try {
+    const cargoDetails =
+      quoteForm.serviceType === "Furniture Delivery"
+        ? [
+            `Furniture / Item: ${quoteForm.itemName}`,
+            `Quantity: ${quoteForm.itemQuantity}`,
+            quoteForm.pickupFloor
+              ? `Pickup Floor: ${quoteForm.pickupFloor}`
+              : null,
+            quoteForm.deliveryFloor
+              ? `Delivery Floor: ${quoteForm.deliveryFloor}`
+              : null,
+            quoteForm.loadingHelp
+              ? `Loading / Unloading Help: ${quoteForm.loadingHelp}`
+              : null,
+            quoteForm.cargoDetails
+              ? `Additional Details: ${quoteForm.cargoDetails}`
+              : null,
+          ]
+            .filter(Boolean)
+            .join("\n")
+        : quoteForm.cargoDetails;
+
     await apiPost("/api/transportation-requests", {
       listingId: listing._id,
 
@@ -1389,7 +1416,7 @@ async function submitEventServiceRequest(e) {
       requestedTime: quoteForm.requestedTime,
 
       serviceType: quoteForm.serviceType,
-      cargoDetails: quoteForm.cargoDetails,
+      cargoDetails,
 
       cargoPhotos: [],
     });
@@ -1407,6 +1434,11 @@ async function submitEventServiceRequest(e) {
       requestedDate: "",
       requestedTime: "",
       serviceType: "Other",
+      itemName: "",
+      itemQuantity: "1",
+      pickupFloor: "",
+      deliveryFloor: "",
+      loadingHelp: "",
       cargoDetails: "",
       cargoPhotos: [],
     });
@@ -5285,6 +5317,69 @@ document.title = seoTitle;
                       <option value="Other">Other</option>
                     </select>
                   </label>
+
+                  {quoteForm.serviceType === "Furniture Delivery" && (
+                    <>
+                      <label>
+                        Furniture / Item Name
+                        <input
+                          type="text"
+                          name="itemName"
+                          value={quoteForm.itemName}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. Sofa, Mattress, Dining Table"
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Quantity
+                        <input
+                          type="number"
+                          name="itemQuantity"
+                          value={quoteForm.itemQuantity}
+                          onChange={updateQuoteForm}
+                          min="1"
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Pickup Floor
+                        <input
+                          type="text"
+                          name="pickupFloor"
+                          value={quoteForm.pickupFloor}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. Ground floor, 3rd floor"
+                        />
+                      </label>
+
+                      <label>
+                        Delivery Floor
+                        <input
+                          type="text"
+                          name="deliveryFloor"
+                          value={quoteForm.deliveryFloor}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. 1st floor, 4th floor"
+                        />
+                      </label>
+
+                      <label className="listing-quote-full-width">
+                        Need Loading / Unloading Help?
+                        <select
+                          name="loadingHelp"
+                          value={quoteForm.loadingHelp}
+                          onChange={updateQuoteForm}
+                        >
+                          <option value="">Select an option</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                      </label>
+                    </>
+                  )}
 
                   <label className="listing-quote-full-width">
                     Pickup Address
