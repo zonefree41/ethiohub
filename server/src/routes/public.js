@@ -208,8 +208,15 @@ router.get("/listings", async (req, res) => {
     }
 
     if (subcategory) {
-  filter.subcategory = subcategory;
-}
+      filter.$and = [
+        {
+          $or: [
+            { subcategory },
+            { transportServiceTypes: subcategory },
+          ],
+        },
+      ];
+    }
 
     if (city) {
       filter.city = new RegExp(`^${escapeRegex(city.trim())}$`, "i");
