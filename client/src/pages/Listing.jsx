@@ -384,6 +384,8 @@ const [quoteForm, setQuoteForm] = React.useState({
   packageQuantity: "1",
   packageWeight: "",
   packageSize: "",
+  moveSize: "",
+  elevatorAvailable: "",
   cargoDetails: "",
   cargoPhotos: [],
 });
@@ -1442,7 +1444,28 @@ async function submitEventServiceRequest(e) {
               ]
                 .filter(Boolean)
                 .join("\n")
-            : quoteForm.cargoDetails;
+            : quoteForm.serviceType === "Moving Service"
+              ? [
+                  `Move Size: ${quoteForm.moveSize}`,
+                  quoteForm.pickupFloor
+                    ? `Pickup Floor: ${quoteForm.pickupFloor}`
+                    : null,
+                  quoteForm.deliveryFloor
+                    ? `Delivery Floor: ${quoteForm.deliveryFloor}`
+                    : null,
+                  quoteForm.elevatorAvailable
+                    ? `Elevator Available: ${quoteForm.elevatorAvailable}`
+                    : null,
+                  quoteForm.loadingHelp
+                    ? `Loading / Unloading Help: ${quoteForm.loadingHelp}`
+                    : null,
+                  quoteForm.cargoDetails
+                    ? `Additional Details: ${quoteForm.cargoDetails}`
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join("\n")
+              : quoteForm.cargoDetails;
 
     await apiPost("/api/transportation-requests", {
       listingId: listing._id,
@@ -1489,6 +1512,8 @@ async function submitEventServiceRequest(e) {
       packageQuantity: "1",
       packageWeight: "",
       packageSize: "",
+      moveSize: "",
+      elevatorAvailable: "",
       cargoDetails: "",
       cargoPhotos: [],
     });
@@ -5555,6 +5580,78 @@ document.title = seoTitle;
                     </>
                   )}
 
+                  {quoteForm.serviceType === "Moving Service" && (
+                    <>
+                      <label>
+                        Move Size
+                        <select
+                          name="moveSize"
+                          value={quoteForm.moveSize}
+                          onChange={updateQuoteForm}
+                          required
+                        >
+                          <option value="">Select move size</option>
+                          <option value="Studio">Studio</option>
+                          <option value="1 Bedroom">1 Bedroom</option>
+                          <option value="2 Bedrooms">2 Bedrooms</option>
+                          <option value="3+ Bedrooms">3+ Bedrooms</option>
+                          <option value="Office / Commercial">
+                            Office / Commercial
+                          </option>
+                        </select>
+                      </label>
+
+                      <label>
+                        Pickup Floor (Optional)
+                        <input
+                          type="text"
+                          name="pickupFloor"
+                          value={quoteForm.pickupFloor}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. Ground floor, 3rd floor"
+                        />
+                      </label>
+
+                      <label>
+                        Delivery Floor (Optional)
+                        <input
+                          type="text"
+                          name="deliveryFloor"
+                          value={quoteForm.deliveryFloor}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. 1st floor, 4th floor"
+                        />
+                      </label>
+
+                      <label>
+                        Elevator Available?
+                        <select
+                          name="elevatorAvailable"
+                          value={quoteForm.elevatorAvailable}
+                          onChange={updateQuoteForm}
+                        >
+                          <option value="">Select an option</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                          <option value="Not Applicable">Not Applicable</option>
+                        </select>
+                      </label>
+
+                      <label className="listing-quote-full-width">
+                        Need Loading / Unloading Help?
+                        <select
+                          name="loadingHelp"
+                          value={quoteForm.loadingHelp}
+                          onChange={updateQuoteForm}
+                        >
+                          <option value="">Select an option</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                      </label>
+                    </>
+                  )}
+
                   <label className="listing-quote-full-width">
                     Pickup Address
                     <AddressAutocomplete
@@ -5610,6 +5707,7 @@ document.title = seoTitle;
                       "Furniture Delivery",
                       "Airport Transportation",
                       "Package Delivery",
+                      "Moving Service",
                     ].includes(quoteForm.serviceType)
                       ? "Additional Details (Optional)"
                       : "Cargo Details"}
@@ -5625,13 +5723,16 @@ document.title = seoTitle;
                             ? "Add terminal, pickup instructions, child seat needs, or anything else the driver should know."
                             : quoteForm.serviceType === "Package Delivery"
                               ? "Add handling instructions, fragile items, access details, or anything else the provider should know."
-                              : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
+                              : quoteForm.serviceType === "Moving Service"
+                                ? "Add large items, stairs, parking or access details, fragile items, or anything else the mover should know."
+                                : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
                       }
                       required={
                         ![
                           "Furniture Delivery",
                           "Airport Transportation",
                           "Package Delivery",
+                          "Moving Service",
                         ].includes(quoteForm.serviceType)
                       }
                     />

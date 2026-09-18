@@ -335,7 +335,7 @@ const seoDescription =
       href={`/category/${slug}?subcategory=${encodeURIComponent(value)}`}
       className={subcategory === value ? "active" : ""}
     >
-      {sub}
+      {value === "Ethiopian Movers" ? "Movers" : sub}
     </a>
   );
 })}
