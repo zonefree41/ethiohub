@@ -174,6 +174,8 @@ router.post("/", async (req, res) => {
       "Moving Service",
       "Airport Transportation",
       "Freight Delivery",
+      "Cargo & Freight (Sprinter Van)",
+      "Charter & Group Transportation",
       "Other",
     ];
 
