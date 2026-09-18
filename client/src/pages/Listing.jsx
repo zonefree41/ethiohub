@@ -386,6 +386,10 @@ const [quoteForm, setQuoteForm] = React.useState({
   packageSize: "",
   moveSize: "",
   elevatorAvailable: "",
+  freightDescription: "",
+  freightQuantity: "1",
+  freightWeight: "",
+  freightDimensions: "",
   cargoDetails: "",
   cargoPhotos: [],
 });
@@ -1465,7 +1469,26 @@ async function submitEventServiceRequest(e) {
                 ]
                   .filter(Boolean)
                   .join("\n")
-              : quoteForm.cargoDetails;
+              : quoteForm.serviceType === "Cargo & Freight (Sprinter Van)"
+                ? [
+                    `Cargo / Item: ${quoteForm.freightDescription}`,
+                    `Quantity: ${quoteForm.freightQuantity}`,
+                    quoteForm.freightWeight
+                      ? `Approx. Weight: ${quoteForm.freightWeight}`
+                      : null,
+                    quoteForm.freightDimensions
+                      ? `Dimensions: ${quoteForm.freightDimensions}`
+                      : null,
+                    quoteForm.loadingHelp
+                      ? `Loading / Unloading Help: ${quoteForm.loadingHelp}`
+                      : null,
+                    quoteForm.cargoDetails
+                      ? `Additional Details: ${quoteForm.cargoDetails}`
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join("\n")
+                : quoteForm.cargoDetails;
 
     await apiPost("/api/transportation-requests", {
       listingId: listing._id,
@@ -1514,6 +1537,10 @@ async function submitEventServiceRequest(e) {
       packageSize: "",
       moveSize: "",
       elevatorAvailable: "",
+      freightDescription: "",
+      freightQuantity: "1",
+      freightWeight: "",
+      freightDimensions: "",
       cargoDetails: "",
       cargoPhotos: [],
     });
@@ -5032,7 +5059,7 @@ document.title = seoTitle;
             "Package Delivery",
             "Moving Service",
             "Airport Transportation",
-            "Freight Delivery",
+            "Cargo & Freight (Sprinter Van)",
           ].includes(listing.subcategory)
           ? listing.subcategory
           : "Other";
@@ -5405,8 +5432,8 @@ document.title = seoTitle;
                       <option value="Airport Transportation">
                         Airport Transportation
                       </option>
-                      <option value="Freight Delivery">
-                        Freight Delivery
+                      <option value="Cargo & Freight (Sprinter Van)">
+                        Cargo & Freight
                       </option>
                       <option value="Other">Other</option>
                     </select>
@@ -5652,6 +5679,69 @@ document.title = seoTitle;
                     </>
                   )}
 
+                  {quoteForm.serviceType === "Cargo & Freight (Sprinter Van)" && (
+                    <>
+                      <label>
+                        Cargo / Item Description
+                        <input
+                          type="text"
+                          name="freightDescription"
+                          value={quoteForm.freightDescription}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. Pallets, equipment, boxes"
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Quantity
+                        <input
+                          type="number"
+                          name="freightQuantity"
+                          value={quoteForm.freightQuantity}
+                          onChange={updateQuoteForm}
+                          min="1"
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Approx. Weight (Optional)
+                        <input
+                          type="text"
+                          name="freightWeight"
+                          value={quoteForm.freightWeight}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. 800 lbs"
+                        />
+                      </label>
+
+                      <label>
+                        Dimensions (Optional)
+                        <input
+                          type="text"
+                          name="freightDimensions"
+                          value={quoteForm.freightDimensions}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. 48 x 40 x 60 in"
+                        />
+                      </label>
+
+                      <label className="listing-quote-full-width">
+                        Need Loading / Unloading Help?
+                        <select
+                          name="loadingHelp"
+                          value={quoteForm.loadingHelp}
+                          onChange={updateQuoteForm}
+                        >
+                          <option value="">Select an option</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                      </label>
+                    </>
+                  )}
+
                   <label className="listing-quote-full-width">
                     Pickup Address
                     <AddressAutocomplete
@@ -5708,6 +5798,7 @@ document.title = seoTitle;
                       "Airport Transportation",
                       "Package Delivery",
                       "Moving Service",
+                      "Cargo & Freight (Sprinter Van)",
                     ].includes(quoteForm.serviceType)
                       ? "Additional Details (Optional)"
                       : "Cargo Details"}
@@ -5725,7 +5816,9 @@ document.title = seoTitle;
                               ? "Add handling instructions, fragile items, access details, or anything else the provider should know."
                               : quoteForm.serviceType === "Moving Service"
                                 ? "Add large items, stairs, parking or access details, fragile items, or anything else the mover should know."
-                                : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
+                                : quoteForm.serviceType === "Cargo & Freight (Sprinter Van)"
+                                  ? "Add handling instructions, dock or access details, special equipment needs, or anything else the provider should know."
+                                  : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
                       }
                       required={
                         ![
@@ -5733,6 +5826,7 @@ document.title = seoTitle;
                           "Airport Transportation",
                           "Package Delivery",
                           "Moving Service",
+                          "Cargo & Freight (Sprinter Van)",
                         ].includes(quoteForm.serviceType)
                       }
                     />
