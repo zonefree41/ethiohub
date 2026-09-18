@@ -5449,14 +5449,20 @@ document.title = seoTitle;
                   </label>
 
                   <label className="listing-quote-full-width">
-                    Cargo Details
+                    {quoteForm.serviceType === "Furniture Delivery"
+                      ? "Additional Details (Optional)"
+                      : "Cargo Details"}
                     <textarea
                       name="cargoDetails"
                       value={quoteForm.cargoDetails}
                       onChange={updateQuoteForm}
                       rows="5"
-                      placeholder="Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
-                      required
+                      placeholder={
+                        quoteForm.serviceType === "Furniture Delivery"
+                          ? "Add size, weight, special instructions, access details, or anything else the provider should know."
+                          : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
+                      }
+                      required={quoteForm.serviceType !== "Furniture Delivery"}
                     />
                   </label>
                 </div>
