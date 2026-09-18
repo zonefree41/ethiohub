@@ -617,6 +617,12 @@ const seoDescription =
       {listing.transportAirportService && <span>✈️ Airport</span>}
       {listing.transportSameDayService && <span>⚡ Same-Day</span>}
     </div>
+
+    <div className="category-badges category-transport-status-badges">
+      <span className="category-available-badge">🟢 Available</span>
+      {listing.isFeatured && <span>⭐ Featured</span>}
+      {listing.isVerified && <span>✅ Verified</span>}
+    </div>
   </div>
 )}
 
@@ -642,7 +648,7 @@ const seoDescription =
   </div>
 
     <div className="category-badges">
-  {!isHousingListing(listing) && (
+  {!isHousingListing(listing) && !isTransportationListing(listing) && (
     <span className="category-available-badge">🟢 Available</span>
   )}
 
