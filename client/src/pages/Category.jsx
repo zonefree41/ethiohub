@@ -284,7 +284,11 @@ const seoDescription =
             <div className="transportation-service-grid">
               <a
                 href={`/category/${slug}?subcategory=${encodeURIComponent("Airport Transportation")}`}
-                className="transportation-service-card"
+                className={
+                  subcategory === "Airport Transportation"
+                    ? "transportation-service-card active"
+                    : "transportation-service-card"
+                }
               >
                 <span className="transportation-service-icon">✈️</span>
                 <span>Airport Transportation</span>
@@ -292,7 +296,11 @@ const seoDescription =
 
               <a
                 href={`/category/${slug}?subcategory=${encodeURIComponent("Furniture Delivery")}`}
-                className="transportation-service-card"
+                className={
+                  subcategory === "Furniture Delivery"
+                    ? "transportation-service-card active"
+                    : "transportation-service-card"
+                }
               >
                 <span className="transportation-service-icon">🛋️</span>
                 <span>Furniture Delivery</span>
@@ -300,7 +308,11 @@ const seoDescription =
 
               <a
                 href={`/category/${slug}?subcategory=${encodeURIComponent("Package Delivery")}`}
-                className="transportation-service-card"
+                className={
+                  subcategory === "Package Delivery"
+                    ? "transportation-service-card active"
+                    : "transportation-service-card"
+                }
               >
                 <span className="transportation-service-icon">📦</span>
                 <span>Package Delivery</span>
@@ -308,16 +320,44 @@ const seoDescription =
 
               <a
                 href={`/category/${slug}?subcategory=${encodeURIComponent("Ethiopian Movers")}`}
-                className="transportation-service-card"
+                className={
+                  subcategory === "Ethiopian Movers"
+                    ? "transportation-service-card active"
+                    : "transportation-service-card"
+                }
               >
                 <span className="transportation-service-icon">🚚</span>
                 <span>Moving Service</span>
+              </a>
+
+              <a
+                href={`/category/${slug}?subcategory=${encodeURIComponent("Cargo & Freight (Sprinter Van)")}`}
+                className={
+                  subcategory === "Cargo & Freight (Sprinter Van)"
+                    ? "transportation-service-card active"
+                    : "transportation-service-card"
+                }
+              >
+                <span className="transportation-service-icon">🚐</span>
+                <span>Cargo & Freight</span>
+              </a>
+
+              <a
+                href={`/category/${slug}?subcategory=${encodeURIComponent("Charter & Group Transportation")}`}
+                className={
+                  subcategory === "Charter & Group Transportation"
+                    ? "transportation-service-card active"
+                    : "transportation-service-card"
+                }
+              >
+                <span className="transportation-service-icon">🚌</span>
+                <span>Charter & Group Transportation</span>
               </a>
             </div>
           </section>
         )}
 
-        {availableSubcategories.length > 0 && (
+        {!isTransportationCategory && availableSubcategories.length > 0 && (
   <div className="category-subcategory-filters">
     <a
       href={`/category/${slug}`}
