@@ -376,6 +376,10 @@ const [quoteForm, setQuoteForm] = React.useState({
   pickupFloor: "",
   deliveryFloor: "",
   loadingHelp: "",
+  airportName: "",
+  flightNumber: "",
+  passengerCount: "1",
+  bagCount: "0",
   cargoDetails: "",
   cargoPhotos: [],
 });
@@ -1404,7 +1408,21 @@ async function submitEventServiceRequest(e) {
           ]
             .filter(Boolean)
             .join("\n")
-        : quoteForm.cargoDetails;
+        : quoteForm.serviceType === "Airport Transportation"
+          ? [
+              `Airport / Airline: ${quoteForm.airportName}`,
+              quoteForm.flightNumber
+                ? `Flight Number: ${quoteForm.flightNumber}`
+                : null,
+              `Passengers: ${quoteForm.passengerCount}`,
+              `Bags: ${quoteForm.bagCount}`,
+              quoteForm.cargoDetails
+                ? `Additional Details: ${quoteForm.cargoDetails}`
+                : null,
+            ]
+              .filter(Boolean)
+              .join("\n")
+          : quoteForm.cargoDetails;
 
     await apiPost("/api/transportation-requests", {
       listingId: listing._id,
@@ -1443,6 +1461,10 @@ async function submitEventServiceRequest(e) {
       pickupFloor: "",
       deliveryFloor: "",
       loadingHelp: "",
+      airportName: "",
+      flightNumber: "",
+      passengerCount: "1",
+      bagCount: "0",
       cargoDetails: "",
       cargoPhotos: [],
     });
@@ -5404,6 +5426,57 @@ document.title = seoTitle;
                     </>
                   )}
 
+                  {quoteForm.serviceType === "Airport Transportation" && (
+                    <>
+                      <label>
+                        Airport / Airline
+                        <input
+                          type="text"
+                          name="airportName"
+                          value={quoteForm.airportName}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. IAD - United Airlines"
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Flight Number (Optional)
+                        <input
+                          type="text"
+                          name="flightNumber"
+                          value={quoteForm.flightNumber}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. UA1234"
+                        />
+                      </label>
+
+                      <label>
+                        Number of Passengers
+                        <input
+                          type="number"
+                          name="passengerCount"
+                          value={quoteForm.passengerCount}
+                          onChange={updateQuoteForm}
+                          min="1"
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Number of Bags
+                        <input
+                          type="number"
+                          name="bagCount"
+                          value={quoteForm.bagCount}
+                          onChange={updateQuoteForm}
+                          min="0"
+                          required
+                        />
+                      </label>
+                    </>
+                  )}
+
                   <label className="listing-quote-full-width">
                     Pickup Address
                     <AddressAutocomplete
@@ -5449,7 +5522,10 @@ document.title = seoTitle;
                   </label>
 
                   <label className="listing-quote-full-width">
-                    {quoteForm.serviceType === "Furniture Delivery"
+                    {[
+                      "Furniture Delivery",
+                      "Airport Transportation",
+                    ].includes(quoteForm.serviceType)
                       ? "Additional Details (Optional)"
                       : "Cargo Details"}
                     <textarea
@@ -5460,9 +5536,16 @@ document.title = seoTitle;
                       placeholder={
                         quoteForm.serviceType === "Furniture Delivery"
                           ? "Add size, weight, special instructions, access details, or anything else the provider should know."
-                          : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
+                          : quoteForm.serviceType === "Airport Transportation"
+                            ? "Add terminal, pickup instructions, child seat needs, or anything else the driver should know."
+                            : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
                       }
-                      required={quoteForm.serviceType !== "Furniture Delivery"}
+                      required={
+                        ![
+                          "Furniture Delivery",
+                          "Airport Transportation",
+                        ].includes(quoteForm.serviceType)
+                      }
                     />
                   </label>
                 </div>
