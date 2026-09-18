@@ -659,8 +659,12 @@ const seoDescription =
     <span className="category-available-badge">🟢 Available</span>
   ))}
 
-      {listing.isFeatured && <span>⭐ Featured</span>}
-      {listing.isVerified && <span>✅ Verified</span>}
+      {!isTransportationListing(listing) && listing.isFeatured && (
+        <span>⭐ Featured</span>
+      )}
+      {!isTransportationListing(listing) && listing.isVerified && (
+        <span>✅ Verified</span>
+      )}
     </div>
   </div>
 
