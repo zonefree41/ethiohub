@@ -390,6 +390,8 @@ const [quoteForm, setQuoteForm] = React.useState({
   freightQuantity: "1",
   freightWeight: "",
   freightDimensions: "",
+  charterTripType: "",
+  charterVehiclePreference: "",
   cargoDetails: "",
   cargoPhotos: [],
 });
@@ -1488,7 +1490,20 @@ async function submitEventServiceRequest(e) {
                   ]
                     .filter(Boolean)
                     .join("\n")
-                : quoteForm.cargoDetails;
+                : quoteForm.serviceType === "Charter & Group Transportation"
+                  ? [
+                      `Trip Type: ${quoteForm.charterTripType}`,
+                      `Passengers: ${quoteForm.passengerCount}`,
+                      quoteForm.charterVehiclePreference
+                        ? `Vehicle Preference: ${quoteForm.charterVehiclePreference}`
+                        : null,
+                      quoteForm.cargoDetails
+                        ? `Additional Details: ${quoteForm.cargoDetails}`
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join("\n")
+                  : quoteForm.cargoDetails;
 
     await apiPost("/api/transportation-requests", {
       listingId: listing._id,
@@ -1541,6 +1556,8 @@ async function submitEventServiceRequest(e) {
       freightQuantity: "1",
       freightWeight: "",
       freightDimensions: "",
+      charterTripType: "",
+      charterVehiclePreference: "",
       cargoDetails: "",
       cargoPhotos: [],
     });
@@ -5060,6 +5077,7 @@ document.title = seoTitle;
             "Moving Service",
             "Airport Transportation",
             "Cargo & Freight (Sprinter Van)",
+            "Charter & Group Transportation",
           ].includes(listing.subcategory)
           ? listing.subcategory
           : "Other";
@@ -5435,6 +5453,9 @@ document.title = seoTitle;
                       <option value="Cargo & Freight (Sprinter Van)">
                         Cargo & Freight
                       </option>
+                      <option value="Charter & Group Transportation">
+                        Charter & Group Transportation
+                      </option>
                       <option value="Other">Other</option>
                     </select>
                   </label>
@@ -5742,6 +5763,58 @@ document.title = seoTitle;
                     </>
                   )}
 
+                  {quoteForm.serviceType === "Charter & Group Transportation" && (
+                    <>
+                      <label>
+                        Trip Type
+                        <select
+                          name="charterTripType"
+                          value={quoteForm.charterTripType}
+                          onChange={updateQuoteForm}
+                          required
+                        >
+                          <option value="">Select trip type</option>
+                          <option value="One Way">One Way</option>
+                          <option value="Round Trip">Round Trip</option>
+                          <option value="Hourly Charter">Hourly Charter</option>
+                          <option value="Event Transportation">
+                            Event Transportation
+                          </option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </label>
+
+                      <label>
+                        Number of Passengers
+                        <input
+                          type="number"
+                          name="passengerCount"
+                          value={quoteForm.passengerCount}
+                          onChange={updateQuoteForm}
+                          min="1"
+                          required
+                        />
+                      </label>
+
+                      <label className="listing-quote-full-width">
+                        Vehicle Preference (Optional)
+                        <select
+                          name="charterVehiclePreference"
+                          value={quoteForm.charterVehiclePreference}
+                          onChange={updateQuoteForm}
+                        >
+                          <option value="">No preference</option>
+                          <option value="SUV">SUV</option>
+                          <option value="Passenger Van">Passenger Van</option>
+                          <option value="Sprinter Van">Sprinter Van</option>
+                          <option value="Minibus">Minibus</option>
+                          <option value="Bus / Motorcoach">Bus / Motorcoach</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </label>
+                    </>
+                  )}
+
                   <label className="listing-quote-full-width">
                     Pickup Address
                     <AddressAutocomplete
@@ -5799,6 +5872,7 @@ document.title = seoTitle;
                       "Package Delivery",
                       "Moving Service",
                       "Cargo & Freight (Sprinter Van)",
+                      "Charter & Group Transportation",
                     ].includes(quoteForm.serviceType)
                       ? "Additional Details (Optional)"
                       : "Cargo Details"}
@@ -5818,7 +5892,9 @@ document.title = seoTitle;
                                 ? "Add large items, stairs, parking or access details, fragile items, or anything else the mover should know."
                                 : quoteForm.serviceType === "Cargo & Freight (Sprinter Van)"
                                   ? "Add handling instructions, dock or access details, special equipment needs, or anything else the provider should know."
-                                  : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
+                                  : quoteForm.serviceType === "Charter & Group Transportation"
+                                    ? "Add event details, stops, return-trip information, accessibility needs, or anything else the provider should know."
+                                    : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
                       }
                       required={
                         ![
@@ -5827,6 +5903,7 @@ document.title = seoTitle;
                           "Package Delivery",
                           "Moving Service",
                           "Cargo & Freight (Sprinter Van)",
+                          "Charter & Group Transportation",
                         ].includes(quoteForm.serviceType)
                       }
                     />
