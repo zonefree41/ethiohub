@@ -284,6 +284,10 @@
   color: #0f172a;
 }
 
+.owner-transport-request-notes {
+  white-space: pre-line;
+}
+
 .owner-transport-banner {
   margin: 16px 0;
   padding: 14px 16px;

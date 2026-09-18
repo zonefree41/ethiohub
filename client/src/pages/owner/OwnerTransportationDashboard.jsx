@@ -875,7 +875,7 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
     </div>
 )}
 
-    <p>
+    <p className="owner-transport-request-notes">
       <strong>Notes:</strong>{" "}
       {selectedRequest.cargoDetails || "No additional notes"}
     </p>
