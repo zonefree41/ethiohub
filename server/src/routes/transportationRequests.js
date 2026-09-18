@@ -111,7 +111,18 @@ router.post("/", async (req, res) => {
       });
     }
 
-    const parsedRequestedDate = new Date(requestedDate);
+    const requestedDateParts = String(requestedDate)
+      .split("-")
+      .map(Number);
+
+    const parsedRequestedDate =
+      requestedDateParts.length === 3
+        ? new Date(
+            requestedDateParts[0],
+            requestedDateParts[1] - 1,
+            requestedDateParts[2]
+          )
+        : new Date(NaN);
 
     if (Number.isNaN(parsedRequestedDate.getTime())) {
       return res.status(400).json({
