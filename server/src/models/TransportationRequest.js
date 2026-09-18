@@ -90,6 +90,8 @@ const transportationRequestSchema = new mongoose.Schema(
         "Moving Service",
         "Airport Transportation",
         "Freight Delivery",
+        "Cargo & Freight (Sprinter Van)",
+        "Charter & Group Transportation",
         "Other",
       ],
       default: "Other",
