@@ -651,12 +651,14 @@ const seoDescription =
     </div>
   </div>
 
-                  <p className="category-description">
-  {listing.description_en
-    ? listing.description_en.slice(0, 160) +
-      (listing.description_en.length > 160 ? "..." : "")
-    : "No description available."}
-</p>
+                  {listing.description_en ? (
+  <p className="category-description">
+    {listing.description_en.slice(0, 160) +
+      (listing.description_en.length > 160 ? "..." : "")}
+  </p>
+) : !isTransportationListing(listing) ? (
+  <p className="category-description">No description available.</p>
+) : null}
 
                   <div className="category-actions">
   {phone && (
