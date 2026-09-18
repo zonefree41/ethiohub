@@ -380,6 +380,10 @@ const [quoteForm, setQuoteForm] = React.useState({
   flightNumber: "",
   passengerCount: "1",
   bagCount: "0",
+  packageDescription: "",
+  packageQuantity: "1",
+  packageWeight: "",
+  packageSize: "",
   cargoDetails: "",
   cargoPhotos: [],
 });
@@ -1422,7 +1426,23 @@ async function submitEventServiceRequest(e) {
             ]
               .filter(Boolean)
               .join("\n")
-          : quoteForm.cargoDetails;
+          : quoteForm.serviceType === "Package Delivery"
+            ? [
+                `Package / Item: ${quoteForm.packageDescription}`,
+                `Number of Packages: ${quoteForm.packageQuantity}`,
+                quoteForm.packageWeight
+                  ? `Approx. Weight: ${quoteForm.packageWeight}`
+                  : null,
+                quoteForm.packageSize
+                  ? `Package Size: ${quoteForm.packageSize}`
+                  : null,
+                quoteForm.cargoDetails
+                  ? `Additional Details: ${quoteForm.cargoDetails}`
+                  : null,
+              ]
+                .filter(Boolean)
+                .join("\n")
+            : quoteForm.cargoDetails;
 
     await apiPost("/api/transportation-requests", {
       listingId: listing._id,
@@ -1465,6 +1485,10 @@ async function submitEventServiceRequest(e) {
       flightNumber: "",
       passengerCount: "1",
       bagCount: "0",
+      packageDescription: "",
+      packageQuantity: "1",
+      packageWeight: "",
+      packageSize: "",
       cargoDetails: "",
       cargoPhotos: [],
     });
@@ -5477,6 +5501,60 @@ document.title = seoTitle;
                     </>
                   )}
 
+                  {quoteForm.serviceType === "Package Delivery" && (
+                    <>
+                      <label>
+                        Package / Item Description
+                        <input
+                          type="text"
+                          name="packageDescription"
+                          value={quoteForm.packageDescription}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. Box of clothes, documents, electronics"
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Number of Packages
+                        <input
+                          type="number"
+                          name="packageQuantity"
+                          value={quoteForm.packageQuantity}
+                          onChange={updateQuoteForm}
+                          min="1"
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Approx. Weight (Optional)
+                        <input
+                          type="text"
+                          name="packageWeight"
+                          value={quoteForm.packageWeight}
+                          onChange={updateQuoteForm}
+                          placeholder="e.g. 25 lbs"
+                        />
+                      </label>
+
+                      <label>
+                        Package Size (Optional)
+                        <select
+                          name="packageSize"
+                          value={quoteForm.packageSize}
+                          onChange={updateQuoteForm}
+                        >
+                          <option value="">Select size</option>
+                          <option value="Small">Small</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Large">Large</option>
+                          <option value="Oversized">Oversized</option>
+                        </select>
+                      </label>
+                    </>
+                  )}
+
                   <label className="listing-quote-full-width">
                     Pickup Address
                     <AddressAutocomplete
@@ -5531,6 +5609,7 @@ document.title = seoTitle;
                     {[
                       "Furniture Delivery",
                       "Airport Transportation",
+                      "Package Delivery",
                     ].includes(quoteForm.serviceType)
                       ? "Additional Details (Optional)"
                       : "Cargo Details"}
@@ -5544,12 +5623,15 @@ document.title = seoTitle;
                           ? "Add size, weight, special instructions, access details, or anything else the provider should know."
                           : quoteForm.serviceType === "Airport Transportation"
                             ? "Add terminal, pickup instructions, child seat needs, or anything else the driver should know."
-                            : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
+                            : quoteForm.serviceType === "Package Delivery"
+                              ? "Add handling instructions, fragile items, access details, or anything else the provider should know."
+                              : "Describe the cargo, quantity, size, weight, stairs, loading help, or any special instructions."
                       }
                       required={
                         ![
                           "Furniture Delivery",
                           "Airport Transportation",
+                          "Package Delivery",
                         ].includes(quoteForm.serviceType)
                       }
                     />
