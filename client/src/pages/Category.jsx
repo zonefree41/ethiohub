@@ -514,7 +514,14 @@ const seoDescription =
     ).replace(/\D/g, "");
 
     return (
-                <article key={listing._id} className="category-card">
+                <article
+  key={listing._id}
+  className={
+    isTransportationListing(listing)
+      ? "category-card category-card-transportation"
+      : "category-card"
+  }
+>
   <div className="category-card-top">
     <div className="category-card-identity">
       <div className="category-badges">

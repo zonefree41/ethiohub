@@ -656,3 +656,49 @@
     font-size: 30px;
   }
 }
+
+/* Transportation provider card */
+.category-card-transportation .category-card-top {
+  align-items: center;
+}
+
+.category-card-transportation .category-card-identity {
+  min-width: 220px;
+}
+
+.category-card-transportation .category-housing-details {
+  margin-top: 0;
+  min-width: 210px;
+}
+
+.category-card-transportation .category-transport-details {
+  display: grid;
+  gap: 6px;
+}
+
+.category-card-transportation .category-transport-details p {
+  margin: 0;
+}
+
+.category-card-transportation .category-transport-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.category-card-transportation .category-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .category-card-transportation .category-card-identity,
+  .category-card-transportation .category-housing-details {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .category-card-transportation .category-actions {
+    justify-content: stretch;
+  }
+}
