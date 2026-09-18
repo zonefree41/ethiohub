@@ -206,50 +206,90 @@ router.post("/", async (req, res) => {
           to: ownerEmail,
           subject: `New transportation quote request: ${listing.title}`,
           html: `
-            <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;padding:24px;color:#111827;">
-              <h1 style="color:#0f172a;">New Transportation Request</h1>
+            <div style="margin:0;padding:24px;background:#f1f5f9;font-family:Arial,sans-serif;color:#0f172a;">
+              <div style="max-width:640px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;">
 
-              <p>
-                You received a new quote request for
-                <strong>${escapeHtml(listing.title)}</strong>.
-              </p>
+                <div style="background:#0f172a;padding:24px 28px;">
+                  <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#f59e0b;text-transform:uppercase;">
+                    HubEthio Transportation
+                  </div>
+                  <h1 style="margin:8px 0 0;font-size:26px;line-height:1.3;color:#ffffff;">
+                    New Quote Request
+                  </h1>
+                </div>
 
-              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:24px 0;">
-                <p><strong>Customer:</strong> ${escapeHtml(cleanedCustomerName)}</p>
-                <p><strong>Phone:</strong> ${escapeHtml(cleanedCustomerPhone)}</p>
-                <p><strong>Email:</strong> ${
-                  cleanedCustomerEmail
-                    ? escapeHtml(cleanedCustomerEmail)
-                    : "Not provided"
-                }</p>
-                <p><strong>Service:</strong> ${escapeHtml(selectedServiceType)}</p>
-                <p><strong>Pickup:</strong> ${escapeHtml(cleanedPickupAddress)}</p>
-                <p><strong>Delivery:</strong> ${escapeHtml(cleanedDeliveryAddress)}</p>
-                <p><strong>Date:</strong> ${escapeHtml(
-                  parsedRequestedDate.toLocaleDateString()
-                )}</p>
-                <p><strong>Time:</strong> ${
-                  cleanedRequestedTime
-                    ? escapeHtml(cleanedRequestedTime)
-                    : "Not specified"
-                }</p>
-                <p><strong>Cargo details:</strong><br/>${escapeHtml(
-                  cleanedCargoDetails
-                ).replaceAll("\n", "<br/>")}</p>
+                <div style="padding:28px;">
+                  <p style="margin:0 0 22px;font-size:16px;line-height:1.6;color:#475569;">
+                    You received a new transportation request for
+                    <strong style="color:#0f172a;">${escapeHtml(listing.title)}</strong>.
+                  </p>
+
+                  <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:16px 18px;margin-bottom:24px;">
+                    <div style="font-size:12px;color:#9a3412;font-weight:700;text-transform:uppercase;">
+                      Requested Service
+                    </div>
+                    <div style="margin-top:5px;font-size:18px;font-weight:700;color:#0f172a;">
+                      ${escapeHtml(selectedServiceType)}
+                    </div>
+                    <div style="margin-top:6px;font-size:14px;color:#475569;">
+                      ${escapeHtml(parsedRequestedDate.toLocaleDateString())}
+                      ${cleanedRequestedTime ? ` • ${escapeHtml(cleanedRequestedTime)}` : ""}
+                    </div>
+                  </div>
+
+                  <h2 style="font-size:16px;margin:0 0 10px;color:#0f172a;">
+                    Customer
+                  </h2>
+                  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:22px;line-height:1.8;">
+                    <div><strong>Name:</strong> ${escapeHtml(cleanedCustomerName)}</div>
+                    <div><strong>Phone:</strong> ${escapeHtml(cleanedCustomerPhone)}</div>
+                    <div><strong>Email:</strong> ${
+                      cleanedCustomerEmail
+                        ? escapeHtml(cleanedCustomerEmail)
+                        : "Not provided"
+                    }</div>
+                  </div>
+
+                  <h2 style="font-size:16px;margin:0 0 10px;color:#0f172a;">
+                    Trip Details
+                  </h2>
+                  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:22px;line-height:1.8;">
+                    <div><strong>Pickup:</strong> ${escapeHtml(cleanedPickupAddress)}</div>
+                    <div><strong>Delivery:</strong> ${escapeHtml(cleanedDeliveryAddress)}</div>
+                    <div><strong>Date:</strong> ${escapeHtml(
+                      parsedRequestedDate.toLocaleDateString()
+                    )}</div>
+                    <div><strong>Time:</strong> ${
+                      cleanedRequestedTime
+                        ? escapeHtml(cleanedRequestedTime)
+                        : "Not specified"
+                    }</div>
+                  </div>
+
+                  <h2 style="font-size:16px;margin:0 0 10px;color:#0f172a;">
+                    Request Details
+                  </h2>
+                  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:28px;line-height:1.8;">
+                    ${escapeHtml(cleanedCargoDetails).replaceAll("\n", "<br/>")}
+                  </div>
+
+                  <div style="text-align:center;">
+                    <a
+                      href="${process.env.CLIENT_ORIGIN}/owner/transportation"
+                      style="background:#f59e0b;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:9px;display:inline-block;font-size:15px;font-weight:700;"
+                    >
+                      View Request in Transportation Dashboard
+                    </a>
+                  </div>
+                </div>
+
+                <div style="border-top:1px solid #e2e8f0;padding:18px 28px;text-align:center;font-size:13px;line-height:1.6;color:#64748b;">
+                  This notification was sent because a customer requested a transportation quote from your business on HubEthio.
+                  <br/>
+                  <strong style="color:#475569;">HubEthio</strong>
+                </div>
+
               </div>
-
-              <div style="text-align:center;margin:30px 0;">
-                <a
-                  href="https://www.hubethio.com/owner/dashboard"
-                  style="background:#f59e0b;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:8px;display:inline-block;font-weight:bold;"
-                >
-                  View Request in Owner Dashboard
-                </a>
-              </div>
-
-              <p style="color:#6b7280;">
-                — HubEthio Team
-              </p>
             </div>
           `,
         });
