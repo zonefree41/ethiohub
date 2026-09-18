@@ -132,6 +132,28 @@ const quoteLocked =
     });
   }
 
+  function formatTime(value) {
+    if (!value) return "Not specified";
+
+    const [hours, minutes] = value.split(":").map(Number);
+
+    if (
+      !Number.isInteger(hours) ||
+      !Number.isInteger(minutes) ||
+      hours < 0 ||
+      hours > 23 ||
+      minutes < 0 ||
+      minutes > 59
+    ) {
+      return value;
+    }
+
+    return new Date(2000, 0, 1, hours, minutes).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  }
+
   const newCount = requests.filter(
   (request) => request.status === "New"
 ).length;
@@ -517,7 +539,7 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
     <p>
       <span>🕒</span>
       <strong>Time:</strong>{" "}
-      {request.requestedTime || "Not specified"}
+      {formatTime(request.requestedTime)}
     </p>
 
     <p>
@@ -621,7 +643,7 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
 
 <p>
   🕒 <strong>Requested Time:</strong>{" "}
-  {selectedRequest.requestedTime || "Not specified"}
+  {formatTime(selectedRequest.requestedTime)}
 </p>
   </div>
 
