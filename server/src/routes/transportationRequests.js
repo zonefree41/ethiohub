@@ -47,6 +47,17 @@ router.post("/", async (req, res) => {
     const cleanedPickupAddress = cleanText(pickupAddress);
     const cleanedDeliveryAddress = cleanText(deliveryAddress);
     const cleanedRequestedTime = cleanText(requestedTime);
+
+    const requestedTimeText = cleanedRequestedTime
+      ? new Date(`2000-01-01T${cleanedRequestedTime}:00`).toLocaleTimeString(
+          "en-US",
+          {
+            hour: "numeric",
+            minute: "2-digit",
+          }
+        )
+      : "";
+
     const cleanedCargoDetails = cleanText(cargoDetails);
 
     if (!listingId) {
@@ -233,7 +244,7 @@ router.post("/", async (req, res) => {
                     </div>
                     <div style="margin-top:6px;font-size:14px;color:#475569;">
                       ${escapeHtml(parsedRequestedDate.toLocaleDateString())}
-                      ${cleanedRequestedTime ? ` • ${escapeHtml(cleanedRequestedTime)}` : ""}
+                      ${requestedTimeText ? ` • ${escapeHtml(requestedTimeText)}` : ""}
                     </div>
                   </div>
 
@@ -260,8 +271,8 @@ router.post("/", async (req, res) => {
                       parsedRequestedDate.toLocaleDateString()
                     )}</div>
                     <div><strong>Time:</strong> ${
-                      cleanedRequestedTime
-                        ? escapeHtml(cleanedRequestedTime)
+                      requestedTimeText
+                        ? escapeHtml(requestedTimeText)
                         : "Not specified"
                     }</div>
                   </div>
