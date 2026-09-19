@@ -929,7 +929,7 @@ export default function DriverDashboard() {
 
                           <button
                             type="button"
-                            className="driver-job-complete-button"
+                            className="driver-job-complete-button driver-job-decline-button"
                             onClick={() => declineJob(job._id)}
                             disabled={
                               acceptingJobId === job._id ||

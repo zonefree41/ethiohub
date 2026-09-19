@@ -421,3 +421,9 @@
     width: 100%;
   }
 }
+
+.driver-job-decline-button {
+  background: transparent;
+  border: 1px solid #172033;
+  color: #172033;
+}
