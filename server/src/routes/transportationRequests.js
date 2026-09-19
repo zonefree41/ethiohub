@@ -988,22 +988,6 @@ router.patch("/quote/:token/respond", async (req, res) => {
   </a>
 </div>
 
-<div style="text-align:center;margin:30px 0;">
-  <a
-    href="${process.env.CLIENT_ORIGIN}/owner/transportation"
-    style="
-      display:inline-block;
-      background:#00843d;
-      color:#ffffff;
-      text-decoration:none;
-      padding:14px 24px;
-      border-radius:8px;
-      font-weight:bold;
-    "
-  >
-    Open Owner Dashboard
-  </a>
-</div>
 
               </div>
             `,
