@@ -203,6 +203,7 @@ router.get(
 
     const [requests, total] = await Promise.all([
       TransportationRequest.find(query)
+        .select("-quoteAccessToken -quoteAccessTokenExpiresAt")
         .populate(
           "listingId",
           "title logoUrl imageUrl phone city state status ownerId"
