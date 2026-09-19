@@ -251,13 +251,6 @@ async function saveDriverAssignment() {
   try {
     const token = localStorage.getItem("adminToken");
 
-    console.log("DRIVER SAVE PAYLOAD:", {
-  selectedDriverId,
-  driverName: driverForm.driverName.trim(),
-  driverPhone: driverForm.driverPhone.trim(),
-  vehicleDescription: driverForm.vehicleDescription.trim(),
-  licensePlate: driverForm.licensePlate.trim(),
-});
 
     const data = await apiPatch(
       `/api/admin/transportation-requests/${selectedRequest._id}/driver`,
