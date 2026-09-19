@@ -511,22 +511,6 @@ if (
   });
 }
 
-if (
-  existingRequest.customerRespondedAt &&
-  status === "Quoted"
-) {
-  return res.status(400).json({
-    message:
-      "This quote has already been accepted or declined and can no longer be modified.",
-  });
-}
-
-if (!existingRequest) {
-  return res.status(404).json({
-    message: "Transportation request not found.",
-  });
-}
-
 const previousStatus = existingRequest.status;
 
 const statusChanged =
