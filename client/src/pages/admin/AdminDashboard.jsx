@@ -263,8 +263,6 @@ async function deleteBusinessRequest(id, businessName) {
   async function uploadImage(file, fieldName) {
   if (!file) return;
 
-  console.log("Uploading file:", file);
-  console.log("Upload URL:", `${import.meta.env.VITE_API_URL}/api/upload`);
 
   const formData = new FormData();
   formData.append("image", file);
@@ -276,7 +274,6 @@ async function deleteBusinessRequest(id, businessName) {
 
   const data = await res.json();
 
-  console.log("Upload response:", data);
 
   if (!res.ok) {
     throw new Error(data.message || "Image upload failed");
@@ -288,7 +285,6 @@ async function deleteBusinessRequest(id, businessName) {
       [fieldName]: data.url,
     };
 
-    console.log("Updated editingListing:", next);
 
     return next;
   });
@@ -639,10 +635,6 @@ async function deleteBusinessRequest(id, businessName) {
         type="button"
         className="admin-btn-approve"
         onClick={async () => {
-          console.log("Saving listing payload:", {
-  logoUrl: editingListing.logoUrl,
-  imageUrl: editingListing.imageUrl,
-});
           await updateListing(editingListing._id, {
             title: editingListing.title,
             phone: editingListing.phone,
