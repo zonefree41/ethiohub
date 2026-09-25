@@ -25,5 +25,4 @@ export function trackEvent(eventName, params = {}) {
     transport_type: "beacon",
   });
 
-  console.log("GA event:", eventName, params);
 }
