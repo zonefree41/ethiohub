@@ -991,13 +991,6 @@ const sortedRequests = [...filteredRequests].sort((a, b) => {
   disabled={quoteEditingLocked}
   onClick={async () => {
     try {
-      console.log({
-  status: modalStatus,
-  quoteAmount,
-  estimatedArrival,
-  ownerNotes,
-});
-
 if (
   modalStatus === "Quoted" &&
   (
