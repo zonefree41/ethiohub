@@ -447,23 +447,6 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
           )}
 </div>
 
-<div className="submit-stats">
-  <div className="submit-stat">
-    <strong>7+</strong>
-    <span>Businesses Listed</span>
-  </div>
-
-  <div className="submit-stat">
-    <strong>10+</strong>
-    <span>Business Owners</span>
-  </div>
-
-  <div className="submit-stat">
-    <strong>30K+</strong>
-    <span>People Reached</span>
-  </div>
-</div>
-
 <div className="submit-trust">
   <h3>Why List on HubEthio?</h3>
 

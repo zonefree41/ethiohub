@@ -280,40 +280,6 @@
   }
 }
 
-.submit-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin: 0 0 32px;
-}
-
-.submit-stat {
-  background: #111827;
-  color: #ffffff;
-  border-radius: 16px;
-  padding: 22px 18px;
-  text-align: center;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
-}
-
-.submit-stat strong {
-  display: block;
-  font-size: 30px;
-  color: #f59e0b;
-  margin-bottom: 6px;
-}
-
-.submit-stat span {
-  font-weight: 700;
-  color: #e5e7eb;
-}
-
-@media (max-width: 768px) {
-  .submit-stats {
-    grid-template-columns: 1fr;
-  }
-}
-
 .submit-trust {
   background: #ffffff;
   border-radius: 18px;
