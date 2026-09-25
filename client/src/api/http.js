@@ -4,8 +4,6 @@ const ENV_API = import.meta.env.VITE_API_URL?.trim();
 
 const API = ENV_API || "https://ethiohub.onrender.com";
 
-console.log("HubEthio mode:", import.meta.env.MODE);
-console.log("HubEthio API:", API);
 
 function buildUrl(path) {
   if (!path) {
@@ -89,7 +87,6 @@ export async function apiGet(path, token) {
   const url = buildUrl(path);
 
   try {
-    console.log("GET:", url);
 
     // Android/iOS: use native HTTP
     if (Capacitor.isNativePlatform()) {
@@ -135,7 +132,6 @@ export async function apiPost(path, body, token) {
   const url = buildUrl(path);
 
   try {
-    console.log("POST:", url);
 
     const response = await CapacitorHttp.post({
       url,
@@ -155,7 +151,6 @@ export async function apiPatch(path, body, token) {
   const url = buildUrl(path);
 
   try {
-    console.log("PATCH:", url);
 
     const response = await CapacitorHttp.patch({
       url,
@@ -175,7 +170,6 @@ export async function apiDelete(path, token) {
   const url = buildUrl(path);
 
   try {
-    console.log("DELETE:", url);
 
     const response = await CapacitorHttp.delete({
       url,
@@ -194,7 +188,6 @@ export async function apiUpload(path, file, token) {
   const url = buildUrl(path);
 
   try {
-    console.log("UPLOAD:", url);
 
     const formData = new FormData();
     formData.append("image", file);
