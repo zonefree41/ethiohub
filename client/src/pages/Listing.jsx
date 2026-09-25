@@ -286,6 +286,32 @@ const [beautyAppointmentForm, setBeautyAppointmentForm] =
     notes: "",
   });
 
+const [tailoringAppointmentForm, setTailoringAppointmentForm] =
+  React.useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    service: "",
+    preferredDate: "",
+    preferredTime: "",
+    notes: "",
+  });
+
+const [
+  submittingTailoringAppointment,
+  setSubmittingTailoringAppointment,
+] = React.useState(false);
+
+const [
+  tailoringAppointmentMessage,
+  setTailoringAppointmentMessage,
+] = React.useState("");
+
+const [
+  tailoringAppointmentError,
+  setTailoringAppointmentError,
+] = React.useState("");
+
   const [eventServiceRequestForm, setEventServiceRequestForm] =
   React.useState({
     customerName: "",
@@ -1231,6 +1257,63 @@ async function submitCargoShippingRequest(e) {
     );
   } finally {
     setSubmittingBeautyAppointment(false);
+  }
+}
+
+async function submitTailoringAppointment(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingTailoringAppointment(true);
+    setTailoringAppointmentMessage("");
+    setTailoringAppointmentError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/tailoring-appointment-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...tailoringAppointmentForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit appointment request."
+      );
+    }
+
+    setTailoringAppointmentMessage(
+      "Appointment request submitted successfully!"
+    );
+
+    setTailoringAppointmentForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      service: "",
+      preferredDate: "",
+      preferredTime: "",
+      notes: "",
+    });
+  } catch (err) {
+    setTailoringAppointmentError(
+      err.message ||
+        "Failed to submit appointment request."
+    );
+  } finally {
+    setSubmittingTailoringAppointment(false);
   }
 }
 
@@ -5001,6 +5084,161 @@ document.title = seoTitle;
         disabled={submittingBeautyAppointment}
       >
         {submittingBeautyAppointment
+          ? "Sending Request..."
+          : "Request Appointment"}
+      </button>
+
+      <p className="listing-beauty-request-disclaimer">
+        This is an appointment request. The business
+        must confirm your requested date and time.
+      </p>
+    </form>
+  </section>
+)}
+
+{listing.categoryId?.slug === "tailoring-alterations" && (
+  <section className="listing-beauty-request">
+    <div className="listing-beauty-request-header">
+      <h3>🧵 Request a Tailoring Appointment</h3>
+      <p>
+        Send an appointment request directly to{" "}
+        {listing.title}.
+      </p>
+    </div>
+
+    {tailoringAppointmentMessage && (
+      <div className="listing-beauty-request-success">
+        {tailoringAppointmentMessage}
+      </div>
+    )}
+
+    {tailoringAppointmentError && (
+      <div className="listing-beauty-request-error">
+        {tailoringAppointmentError}
+      </div>
+    )}
+
+    <form
+      className="listing-beauty-request-form"
+      onSubmit={submitTailoringAppointment}
+    >
+      <div className="listing-beauty-request-grid">
+        <label>
+          Your Name
+          <input
+            type="text"
+            required
+            value={tailoringAppointmentForm.customerName}
+            onChange={(e) =>
+              setTailoringAppointmentForm((current) => ({
+                ...current,
+                customerName: e.target.value,
+              }))
+            }
+            placeholder="Full name"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            required
+            value={tailoringAppointmentForm.customerEmail}
+            onChange={(e) =>
+              setTailoringAppointmentForm((current) => ({
+                ...current,
+                customerEmail: e.target.value,
+              }))
+            }
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label>
+          Phone
+          <input
+            type="tel"
+            required
+            value={tailoringAppointmentForm.customerPhone}
+            onChange={(e) =>
+              setTailoringAppointmentForm((current) => ({
+                ...current,
+                customerPhone: e.target.value,
+              }))
+            }
+            placeholder="Phone number"
+          />
+        </label>
+
+        <label>
+          Service
+          <input
+            type="text"
+            required
+            value={tailoringAppointmentForm.service}
+            onChange={(e) =>
+              setTailoringAppointmentForm((current) => ({
+                ...current,
+                service: e.target.value,
+              }))
+            }
+            placeholder="Hemming, alterations, clothing repair..."
+          />
+        </label>
+
+        <label>
+          Preferred Date
+          <input
+            type="date"
+            required
+            value={tailoringAppointmentForm.preferredDate}
+            onChange={(e) =>
+              setTailoringAppointmentForm((current) => ({
+                ...current,
+                preferredDate: e.target.value,
+              }))
+            }
+          />
+        </label>
+
+        <label>
+          Preferred Time
+          <input
+            type="time"
+            required
+            value={tailoringAppointmentForm.preferredTime}
+            onChange={(e) =>
+              setTailoringAppointmentForm((current) => ({
+                ...current,
+                preferredTime: e.target.value,
+              }))
+            }
+          />
+        </label>
+      </div>
+
+      <label className="listing-beauty-request-notes">
+        Additional Notes
+        <textarea
+          rows="4"
+          value={tailoringAppointmentForm.notes}
+          onChange={(e) =>
+            setTailoringAppointmentForm((current) => ({
+              ...current,
+              notes: e.target.value,
+            }))
+          }
+          placeholder="Describe the alteration, garment, measurements, or anything the tailor should know."
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-beauty-request-submit"
+        disabled={submittingTailoringAppointment}
+      >
+        {submittingTailoringAppointment
           ? "Sending Request..."
           : "Request Appointment"}
       </button>

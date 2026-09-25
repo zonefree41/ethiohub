@@ -28,6 +28,15 @@ export const OWNER_WORKSPACES = [
     description:
       "Manage beauty services, booking options, gallery, and appointments.",
   },
+  {
+    id: "tailoring",
+    categorySlug: "tailoring-alterations",
+    title: "Tailoring & Alterations",
+    icon: "🧵",
+    route: "/owner/workspaces/tailoring",
+    description:
+      "Manage tailoring services, appointment requests, customer details, and business activity.",
+  },
 
   {
   id: "housing",

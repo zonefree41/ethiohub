@@ -49,6 +49,7 @@ import TransportationQuotePage
   import SubmitTravelRequest from "./pages/SubmitTravelRequest";
   import AdminTravelDashboard from "./pages/admin/AdminTravelDashboard.jsx";
   import BeautyWorkspace from "./pages/owner/workspaces/BeautyWorkspace.jsx";
+import TailoringWorkspace from "./pages/owner/workspaces/TailoringWorkspace.jsx";
   import HousingWorkspace from "./pages/owner/workspaces/HousingWorkspace.jsx";
   import ImmigrationWorkspace from "./pages/owner/workspaces/ImmigrationWorkspace.jsx";
   import InsuranceWorkspace from "./pages/owner/workspaces/InsuranceWorkspace.jsx";
@@ -198,6 +199,9 @@ if (path.startsWith("/owner/transportation")) {
 }
 if (path.startsWith("/owner/workspaces/beauty")) {
   return <BeautyWorkspace />;
+}
+if (path.startsWith("/owner/workspaces/tailoring")) {
+  return <TailoringWorkspace />;
 }
 if (path.startsWith("/owner/workspaces/housing")) {
   return <HousingWorkspace />;
