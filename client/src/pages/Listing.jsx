@@ -14,7 +14,6 @@ import "./Listing.css";
 import { useEffect, useState } from "react";
 import AddressAutocomplete from "../components/AddressAutocomplete.jsx";
 
-console.log("Listing component loaded");
 
 export default function Listing() {
   const pathParts = window.location.pathname.split("/").filter(Boolean);
@@ -1719,7 +1718,6 @@ function hasRentalDetails(item) {
   }
 
   if (!listing) {
-    console.log("PUBLIC LISTING:", listing);
     return (
       <main className="listing-page">
         <div className="listing-state-card">
@@ -1839,7 +1837,6 @@ const isEventsEntertainmentListing =
         : undefined,
   };
 
-  console.log("SEO TITLE SHOULD BE:", seoTitle);
 document.title = seoTitle;
 
   return (
