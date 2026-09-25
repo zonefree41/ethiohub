@@ -441,7 +441,7 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
 <div className="submit-benefits">
   <div className="submit-benefit">✅ Free Business Listing</div>
   <div className="submit-benefit">📍 Reach Ethiopian Customers</div>
-  <div className="submit-benefit">📱 Mobile App Coming Soon</div>
+  <div className="submit-benefit">📱 Built for Web & Mobile</div>
   {!isIOSBuild && (
             <div className="submit-benefit">⭐ Featured Listings Available</div>
           )}
