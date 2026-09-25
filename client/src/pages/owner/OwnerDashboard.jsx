@@ -56,13 +56,6 @@ const [loadingTravelRequests, setLoadingTravelRequests] =
       ? data
       : [];
 
-      ownerListings.forEach((listing) => {
-  console.log(
-    listing.title,
-    listing.categoryId?.slug
-  );
-});
-
     setListings(ownerListings);
 
     const ownsTransportation =
