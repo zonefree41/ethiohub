@@ -3,7 +3,6 @@ import { apiGet, apiPatch, apiPost } from "../../api/http.js";
 import "./EditListing.css";
 
 export default function EditListing() {
-  console.log("✅ EditListing component loaded");
   const token = localStorage.getItem("ownerToken");
   const id = window.location.pathname.split("/").pop();
 
@@ -145,7 +144,6 @@ beautyServes: [],
   function update(e) {
   const { name, value } = e.target;
 
-  console.log("FIELD CHANGED:", name, value);
 
   setForm((prev) => ({
     ...prev,
@@ -553,7 +551,6 @@ async function handleBeautyPhotosUpload(e) {
         beautyPhotos: [...(prev.beautyPhotos || []), ...uploadedUrls].slice(0, 20),
       };
 
-      console.log("UPDATED BEAUTY PHOTOS:", next.beautyPhotos);
 
       return next;
     });
@@ -871,7 +868,6 @@ transportVerification: {
     setError("");
     setMessage("");
 
-    console.log("Saving owner listing form:", form);
 
     const result = await apiPatch(`/api/owner/listings/${id}`, form, token);
 
