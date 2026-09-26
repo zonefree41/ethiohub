@@ -16,6 +16,60 @@ function escapeHtml(value = "") {
     .replaceAll("'", "&#039;");
 }
 
+
+function tailoringEmailLayout({
+  title,
+  subtitle = "",
+  badge = "",
+  content = "",
+}) {
+  return `
+    <div style="margin:0;padding:0;background:#f6f3f5;font-family:Arial,sans-serif;color:#1f2937;">
+      <div style="max-width:640px;margin:0 auto;padding:32px 16px;">
+        <div style="background:#7a2459;border-radius:18px 18px 0 0;padding:28px 24px;text-align:center;">
+          <div style="font-size:14px;font-weight:700;letter-spacing:1.5px;color:#fce7f3;text-transform:uppercase;">
+            HubEthio
+          </div>
+
+          <h1 style="margin:10px 0 6px;font-size:27px;line-height:1.25;color:#ffffff;">
+            ${title}
+          </h1>
+
+          ${
+            subtitle
+              ? `
+                <p style="margin:0;color:#fce7f3;font-size:15px;line-height:1.5;">
+                  ${subtitle}
+                </p>
+              `
+              : ""
+          }
+        </div>
+
+        <div style="background:#ffffff;border:1px solid #eadce5;border-top:0;border-radius:0 0 18px 18px;padding:28px 24px;">
+          ${
+            badge
+              ? `
+                <div style="display:inline-block;background:#fff1f7;color:#7a2459;border:1px solid #f3d3e3;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px;">
+                  ${badge}
+                </div>
+              `
+              : ""
+          }
+
+          ${content}
+
+          <div style="border-top:1px solid #e5e7eb;margin-top:28px;padding-top:18px;text-align:center;">
+            <p style="margin:0;color:#94a3b8;font-size:12px;line-height:1.6;">
+              HubEthio &bull; Ethiopian Community Services
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 /*
   PUBLIC
   Create a new Tailoring appointment request
@@ -121,82 +175,86 @@ if (ownerEmail) {
       subject:
         `New Tailoring appointment request: ${listing.title}`,
 
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;padding:24px;color:#111827;">
-          <h1 style="color:#7a2459;">
-            New Tailoring Appointment Request
-          </h1>
-
-          <p>
+      html: tailoringEmailLayout({
+        title: "New Tailoring Appointment Request",
+        subtitle: "A customer is waiting for your response.",
+        badge: "New Request",
+        content: `
+          <p style="margin:0 0 8px;font-size:16px;line-height:1.6;">
             You received a new appointment request for
             <strong>${escapeHtml(listing.title)}</strong>.
           </p>
 
-          <div style="background:#fff7fb;border:1px solid #eadce5;border-radius:12px;padding:20px;margin:24px 0;">
-            <p>
-              <strong>Customer:</strong>
+          <p style="margin:0 0 22px;color:#64748b;font-size:14px;line-height:1.6;">
+            Review the customer details below, then open your Tailoring Workspace to confirm or decline the request.
+          </p>
+
+          <div style="background:#fff8fb;border:1px solid #eadce5;border-radius:14px;padding:20px;">
+            <div style="font-size:13px;font-weight:700;color:#7a2459;text-transform:uppercase;letter-spacing:.6px;margin-bottom:16px;">
+              Appointment Details
+            </div>
+
+            <p style="margin:0 0 12px;line-height:1.5;">
+              <strong>Customer:</strong><br/>
               ${escapeHtml(customerName)}
             </p>
 
-            <p>
-              <strong>Email:</strong>
+            <p style="margin:0 0 12px;line-height:1.5;">
+              <strong>Email:</strong><br/>
               ${escapeHtml(customerEmail)}
             </p>
 
-            <p>
-              <strong>Phone:</strong>
+            <p style="margin:0 0 12px;line-height:1.5;">
+              <strong>Phone:</strong><br/>
               ${escapeHtml(customerPhone)}
             </p>
 
-            <p>
-              <strong>Service:</strong>
+            <p style="margin:0 0 12px;line-height:1.5;">
+              <strong>Service:</strong><br/>
               ${escapeHtml(service)}
             </p>
 
-            <p>
-              <strong>Preferred Date:</strong>
+            <p style="margin:0 0 12px;line-height:1.5;">
+              <strong>Preferred Date:</strong><br/>
               ${escapeHtml(formattedDate)}
             </p>
 
-            <p>
-              <strong>Preferred Time:</strong>
+            <p style="margin:0;line-height:1.5;">
+              <strong>Preferred Time:</strong><br/>
               ${escapeHtml(preferredTime)}
             </p>
 
             ${
               notes
                 ? `
-                  <p>
-                    <strong>Customer Notes:</strong><br/>
-                    ${escapeHtml(notes).replaceAll(
-                      "\n",
-                      "<br/>"
-                    )}
-                  </p>
+                  <div style="border-top:1px solid #eadce5;margin-top:18px;padding-top:18px;">
+                    <p style="margin:0;line-height:1.6;">
+                      <strong>Customer Notes:</strong><br/>
+                      ${escapeHtml(notes).replaceAll(
+                        "\n",
+                        "<br/>"
+                      )}
+                    </p>
+                  </div>
                 `
                 : ""
             }
           </div>
 
-          <p>
-            Log in to your HubEthio Tailoring Workspace
-            to confirm, decline, or manage this request.
-          </p>
-
-          <div style="text-align:center;margin:28px 0;">
+          <div style="text-align:center;margin:28px 0 18px;">
             <a
-              href="https://hubethio.com/owner/workspaces/tailoring"
-              style="display:inline-block;background:#7a2459;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:10px;font-weight:bold;"
+              href="${"https:" + "//" + "hubethio.com" + "/owner/workspaces/tailoring"}"
+              style="display:inline-block;background:#7a2459;color:#ffffff;text-decoration:none;padding:14px 22px;border-radius:10px;font-size:15px;font-weight:700;"
             >
               Open Tailoring Workspace
             </a>
           </div>
 
-          <p style="color:#64748b;font-size:13px;">
-            HubEthio Business Services
+          <p style="margin:0;text-align:center;color:#64748b;font-size:13px;line-height:1.6;">
+            Sign in to HubEthio to confirm, decline, or manage this appointment request.
           </p>
-        </div>
-      `,
+        `,
+      }),
     });
   } catch (emailErr) {
     console.error(
@@ -210,67 +268,80 @@ try {
   await sendEmail({
     to: customerEmail,
     subject: `Your Tailoring appointment request was received: ${listing.title}`,
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;padding:24px;color:#111827;">
-        <h1 style="color:#7a2459;">
-          Appointment Request Received
-        </h1>
-
-        <p>
+    html: tailoringEmailLayout({
+      title: "Appointment Request Received",
+      subtitle: "Your request has been sent to the business.",
+      badge: "Request Received",
+      content: `
+        <p style="margin:0 0 12px;font-size:16px;line-height:1.6;">
           Hello ${escapeHtml(customerName)},
         </p>
 
-        <p>
+        <p style="margin:0 0 22px;font-size:15px;line-height:1.7;">
           Your appointment request was successfully sent to
           <strong>${escapeHtml(listing.title)}</strong>.
         </p>
 
-        <div style="background:#fff7fb;border:1px solid #eadce5;border-radius:12px;padding:20px;margin:24px 0;">
-          <p>
-            <strong>Service:</strong>
+        <div style="background:#fff8fb;border:1px solid #eadce5;border-radius:14px;padding:20px;">
+          <div style="font-size:13px;font-weight:700;color:#7a2459;text-transform:uppercase;letter-spacing:.6px;margin-bottom:16px;">
+            Your Request
+          </div>
+
+          <p style="margin:0 0 12px;line-height:1.5;">
+            <strong>Service:</strong><br/>
             ${escapeHtml(service)}
           </p>
 
-          <p>
-            <strong>Preferred Date:</strong>
+          <p style="margin:0 0 12px;line-height:1.5;">
+            <strong>Preferred Date:</strong><br/>
             ${escapeHtml(
               new Date(preferredDate).toLocaleDateString(
                 "en-US",
-                { timeZone: "UTC" }
+                {
+                  timeZone: "UTC",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                }
               )
             )}
           </p>
 
-          <p>
-            <strong>Preferred Time:</strong>
+          <p style="margin:0;line-height:1.5;">
+            <strong>Preferred Time:</strong><br/>
             ${escapeHtml(preferredTime)}
           </p>
 
           ${
             notes
               ? `
-                <p>
-                  <strong>Your Notes:</strong><br/>
-                  ${escapeHtml(notes).replaceAll(
-                    "\n",
-                    "<br/>"
-                  )}
-                </p>
+                <div style="border-top:1px solid #eadce5;margin-top:18px;padding-top:18px;">
+                  <p style="margin:0;line-height:1.6;">
+                    <strong>Your Notes:</strong><br/>
+                    ${escapeHtml(notes).replaceAll(
+                      "\n",
+                      "<br/>"
+                    )}
+                  </p>
+                </div>
               `
               : ""
           }
         </div>
 
-        <p>
-          This is a request, not a confirmed appointment yet.
-          The business will review your requested date and time.
-        </p>
+        <div style="background:#f8fafc;border-left:4px solid #7a2459;border-radius:8px;padding:16px 18px;margin-top:22px;">
+          <p style="margin:0;font-size:14px;line-height:1.6;color:#475569;">
+            <strong style="color:#1f2937;">What happens next?</strong><br/>
+            This is an appointment request, not a confirmed appointment yet.
+            The business will review your requested date and time and notify you when the status changes.
+          </p>
+        </div>
 
-        <p style="color:#64748b;font-size:13px;">
-          HubEthio Business Services
+        <p style="margin:22px 0 0;text-align:center;color:#64748b;font-size:13px;line-height:1.6;">
+          Thank you for using HubEthio to connect with local community businesses.
         </p>
-      </div>
-    `,
+      `,
+    }),
   });
 } catch (emailErr) {
   console.error(
@@ -445,63 +516,58 @@ router.patch(
       subject:
         `Tailoring appointment ${status}: ${businessTitle}`,
 
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;padding:24px;color:#111827;">
-          <h1 style="color:#7a2459;">
-            Appointment ${escapeHtml(status)}
-          </h1>
-
-          <p>
-            Hello ${escapeHtml(
-              request.customerName
-            )},
+      html: tailoringEmailLayout({
+        title: `Appointment ${escapeHtml(status)}`,
+        subtitle: escapeHtml(statusMessage),
+        badge: escapeHtml(status),
+        content: `
+          <p style="margin:0 0 12px;font-size:16px;line-height:1.6;">
+            Hello ${escapeHtml(request.customerName)},
           </p>
 
-          <p>
+          <p style="margin:0 0 22px;font-size:15px;line-height:1.7;">
             ${escapeHtml(statusMessage)}
           </p>
 
-          <p>
-            Business:
-            <strong>
+          <div style="background:#fff8fb;border:1px solid #eadce5;border-radius:14px;padding:20px;">
+            <div style="font-size:13px;font-weight:700;color:#7a2459;text-transform:uppercase;letter-spacing:.6px;margin-bottom:16px;">
+              Appointment Details
+            </div>
+
+            <p style="margin:0 0 12px;line-height:1.5;">
+              <strong>Business:</strong><br/>
               ${escapeHtml(businessTitle)}
-            </strong>
-          </p>
-
-          <div style="background:#fff7fb;border:1px solid #eadce5;border-radius:12px;padding:20px;margin:24px 0;">
-            <p>
-              <strong>Service:</strong>
-              ${escapeHtml(
-                request.service
-              )}
             </p>
 
-            <p>
-              <strong>Date:</strong>
-              ${escapeHtml(
-                formattedDate
-              )}
+            <p style="margin:0 0 12px;line-height:1.5;">
+              <strong>Service:</strong><br/>
+              ${escapeHtml(request.service)}
             </p>
 
-            <p>
-              <strong>Time:</strong>
-              ${escapeHtml(
-                request.preferredTime
-              )}
+            <p style="margin:0 0 12px;line-height:1.5;">
+              <strong>Date:</strong><br/>
+              ${escapeHtml(formattedDate)}
+            </p>
+
+            <p style="margin:0;line-height:1.5;">
+              <strong>Time:</strong><br/>
+              ${escapeHtml(request.preferredTime)}
             </p>
 
             ${
               request.ownerNotes
                 ? `
-                  <p>
-                    <strong>Business Notes:</strong><br/>
-                    ${escapeHtml(
-                      request.ownerNotes
-                    ).replaceAll(
-                      "\n",
-                      "<br/>"
-                    )}
-                  </p>
+                  <div style="border-top:1px solid #eadce5;margin-top:18px;padding-top:18px;">
+                    <p style="margin:0;line-height:1.6;">
+                      <strong>Business Notes:</strong><br/>
+                      ${escapeHtml(
+                        request.ownerNotes
+                      ).replaceAll(
+                        "\n",
+                        "<br/>"
+                      )}
+                    </p>
+                  </div>
                 `
                 : ""
             }
@@ -510,20 +576,29 @@ router.patch(
           ${
             status === "Confirmed"
               ? `
-                <p>
-                  Please contact the business directly
-                  if you need to make changes to your
-                  appointment.
-                </p>
+                <div style="background:#f8fafc;border-left:4px solid #7a2459;border-radius:8px;padding:16px 18px;margin-top:22px;">
+                  <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">
+                    <strong style="color:#1f2937;">Appointment confirmed</strong><br/>
+                    Please contact the business directly if you need to make changes to your appointment.
+                  </p>
+                </div>
               `
               : ""
           }
 
-          <p style="color:#64748b;font-size:13px;">
-            HubEthio Business Services
-          </p>
-        </div>
-      `,
+          ${
+            status === "Completed"
+              ? `
+                <div style="background:#f8fafc;border-left:4px solid #7a2459;border-radius:8px;padding:16px 18px;margin-top:22px;">
+                  <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">
+                    Thank you for using HubEthio to connect with local community businesses.
+                  </p>
+                </div>
+              `
+              : ""
+          }
+        `,
+      }),
     });
   } catch (emailErr) {
     console.error(
