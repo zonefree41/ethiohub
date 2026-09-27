@@ -1,4 +1,5 @@
 import React from "react";
+import { Capacitor } from "@capacitor/core";
 import { Share } from "@capacitor/share";
 import { Preferences } from "@capacitor/preferences";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
@@ -16,6 +17,9 @@ import AddressAutocomplete from "../components/AddressAutocomplete.jsx";
 
 
 export default function Listing() {
+  const isIOS =
+    __IOS_BUILD__ || Capacitor.getPlatform() === "ios";
+
   const pathParts = window.location.pathname.split("/").filter(Boolean);
   const id = pathParts[1];
   const isValidListingId = /^[a-f\d]{24}$/i.test(id);
@@ -1728,7 +1732,8 @@ function hasRentalDetails(item) {
           <h3>{item.title}</h3>
 
           <div className="listing-mini-badges">
-            {(item.paymentStatus === "active" || item.paymentStatus === "trial") &&
+            {!isIOS &&
+              (item.paymentStatus === "active" || item.paymentStatus === "trial") &&
               item.isFeatured && (
                 <span className="mini-featured-badge">⭐ Featured</span>
               )}
@@ -1983,8 +1988,9 @@ document.title = seoTitle;
 ) : (
   <span className="listing-available-badge">🟢 Available</span>
 )}
-                  {(listing.paymentStatus === "active" ||
-                    listing.paymentStatus === "trial") &&
+                  {!isIOS &&
+                    (listing.paymentStatus === "active" ||
+                      listing.paymentStatus === "trial") &&
                     listing.isFeatured && <span>⭐ Featured</span>}
 
                   {(listing.paymentStatus === "active" ||

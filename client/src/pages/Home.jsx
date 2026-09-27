@@ -100,7 +100,9 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
 
         const [categoryData, listingData] = await Promise.all([
           apiGet("/api/categories"),
-          apiGet("/api/listings?featured=true"),
+          isIOS
+            ? Promise.resolve([])
+            : apiGet("/api/listings?featured=true"),
         ]);
 
         if (!alive) return;
@@ -555,7 +557,7 @@ function formatHousingPhone(value) {
 
         {error && <div className="home-error">Error: {error}</div>}
 
-        {!loading && !error && (
+        {!isIOS && !loading && !error && (
           <section className="home-section">
             <h2>⭐ Featured Businesses</h2>
             <p className="home-section-text">

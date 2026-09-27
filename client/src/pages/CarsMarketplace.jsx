@@ -125,7 +125,7 @@ export default function CarsMarketplace() {
                           {vehicle.model}
                         </h2>
 
-                        {vehicle.isFeatured && (
+                        {!isIOSBuild && vehicle.isFeatured && (
                           <span className="cars-featured">
                             ⭐ Featured
                           </span>

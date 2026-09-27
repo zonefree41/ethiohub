@@ -1,4 +1,5 @@
 import React from "react";
+import { Capacitor } from "@capacitor/core";
 import { apiGet, apiPost } from "../api/http.js";
 import "./Category.css";
 import { Helmet } from "react-helmet-async";
@@ -77,6 +78,9 @@ function isTransportationListing(listing) {
 }
 
 export default function Category() {
+  const isIOS =
+    __IOS_BUILD__ || Capacitor.getPlatform() === "ios";
+
   const slug = window.location.pathname.split("/").pop();
   const search = getParam("search");
   const city = getParam("city");
@@ -136,7 +140,9 @@ if (petsAllowed) qs.set("petsAllowed", petsAllowed);
 if (parking) qs.set("parking", parking);
 if (utilitiesIncluded) qs.set("utilitiesIncluded", utilitiesIncluded);
 if (furnished) qs.set("furnished", furnished);
-if (sortBy) qs.set("sortBy", sortBy);
+if (sortBy && !(isIOS && sortBy === "featured")) {
+  qs.set("sortBy", sortBy);
+}
 
         const data = await apiGet(`/api/listings?${qs.toString()}`);
         if (!alive) return;
@@ -415,9 +421,12 @@ const seoDescription =
         <option value="3">3+</option>
       </select>
 
-      <select name="sortBy" defaultValue={sortBy}>
+      <select
+  name="sortBy"
+  defaultValue={isIOS && sortBy === "featured" ? "" : sortBy}
+>
   <option value="">Sort By</option>
-  <option value="featured">⭐ Featured</option>
+  {!isIOS && <option value="featured">⭐ Featured</option>}
   <option value="newest">🆕 Newest</option>
   <option value="priceLow">💲 Price: Low → High</option>
   <option value="priceHigh">💰 Price: High → Low</option>
@@ -620,7 +629,7 @@ const seoDescription =
 
     <div className="category-badges category-transport-status-badges">
       <span className="category-available-badge">🟢 Available</span>
-      {listing.isFeatured && <span>⭐ Featured</span>}
+      {!isIOS && listing.isFeatured && <span>⭐ Featured</span>}
       {listing.isVerified && <span>✅ Verified</span>}
     </div>
   </div>
@@ -659,9 +668,11 @@ const seoDescription =
     <span className="category-available-badge">🟢 Available</span>
   ))}
 
-      {!isTransportationListing(listing) && listing.isFeatured && (
-        <span>⭐ Featured</span>
-      )}
+      {!isIOS &&
+        !isTransportationListing(listing) &&
+        listing.isFeatured && (
+          <span>⭐ Featured</span>
+        )}
       {!isTransportationListing(listing) && listing.isVerified && (
         <span>✅ Verified</span>
       )}

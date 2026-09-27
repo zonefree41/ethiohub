@@ -1,4 +1,5 @@
 import React from "react";
+import { Capacitor } from "@capacitor/core";
 import { apiGet } from "../api/http.js";
 import "./Location.css";
 import { Helmet } from "react-helmet-async";
@@ -54,6 +55,9 @@ const LOCATIONS = {
 };
 
 export default function Location() {
+  const isIOS =
+    __IOS_BUILD__ || Capacitor.getPlatform() === "ios";
+
   const slug = window.location.pathname.split("/").pop();
   const location = LOCATIONS[slug];
 
@@ -146,8 +150,10 @@ export default function Location() {
   });
 
   const sortedListings = [...filteredListings].sort((a, b) => {
-  if (a.isFeatured && !b.isFeatured) return -1;
-  if (!a.isFeatured && b.isFeatured) return 1;
+  if (!isIOS) {
+    if (a.isFeatured && !b.isFeatured) return -1;
+    if (!a.isFeatured && b.isFeatured) return 1;
+  }
   if (a.isVerified && !b.isVerified) return -1;
   if (!a.isVerified && b.isVerified) return 1;
   return a.title.localeCompare(b.title);
@@ -277,7 +283,7 @@ const seoDescription = location
                 {filteredListings.length !== 1 ? "es" : ""} in {location.city}
               </h2>
               <p>
-  {featuredCount > 0
+  {!isIOS && featuredCount > 0
     ? `${featuredCount} featured business${featuredCount !== 1 ? "es" : ""} available in this area.`
     : `Browse trusted Ethiopian services in ${location.city}, ${location.state}.`}
 </p>
@@ -326,7 +332,7 @@ const seoDescription = location
                       </div>
 
                       <div className="location-badges">
-                        {listing.isFeatured && <span>⭐ Featured</span>}
+                        {!isIOS && listing.isFeatured && <span>⭐ Featured</span>}
                         {listing.isVerified && <span>✅ Verified</span>}
                       </div>
 
