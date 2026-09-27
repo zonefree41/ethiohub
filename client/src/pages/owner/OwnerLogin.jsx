@@ -62,17 +62,28 @@ const redirect =
 
 window.location.href = redirect;
     } catch (err) {
-  const message =
-    err.message || "Login failed";
-
-  setError(message);
+  const message = String(
+    err?.message || ""
+  ).toLowerCase();
 
   if (
-    message
-      .toLowerCase()
-      .includes("verify your email")
+    message.includes("verify your email")
   ) {
+    setError(
+      "Please verify your email before signing in."
+    );
     setNeedsVerification(true);
+  } else if (
+    message.includes("invalid email or password") ||
+    message.includes("incorrect email or password")
+  ) {
+    setError(
+      "Incorrect email or password. Please try again."
+    );
+  } else {
+    setError(
+      "We couldn’t sign you in right now. Please check your connection and try again."
+    );
   }
 }
   }
@@ -91,7 +102,7 @@ window.location.href = redirect;
         </div>
 
         {message && <div className="owner-auth-success">{message}</div>}
-        {error && <div className="owner-auth-error">Error: {error}</div>}
+        {error && <div className="owner-auth-error">{error}</div>}
 
         {needsVerification && (
   <button
