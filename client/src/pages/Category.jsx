@@ -21,6 +21,21 @@ function getGoogleMapsUrl(listing) {
   )}`;
 }
 
+function getAppleMapsUrl(listing) {
+  const address = [
+    listing.address,
+    listing.city,
+    listing.state,
+    listing.zip,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  const query = address || listing.title || "";
+
+  return `https://maps.apple.com/?q=${encodeURIComponent(query)}`;
+}
+
 function getParam(name) {
   const url = new URL(window.location.href);
   return url.searchParams.get(name) || "";
@@ -702,7 +717,7 @@ const seoDescription =
   )}
 
   <a
-  href={getGoogleMapsUrl(listing)}
+  href={isIOS ? getAppleMapsUrl(listing) : getGoogleMapsUrl(listing)}
   target="_blank"
   rel="noreferrer"
   className="category-action-btn"

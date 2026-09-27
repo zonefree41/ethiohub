@@ -1824,9 +1824,11 @@ function hasRentalDetails(item) {
     .filter(Boolean)
     .join(", ");
 
-  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    address
-  )}`;
+  const directionsUrl = isIOS
+    ? `https://maps.apple.com/?q=${encodeURIComponent(address)}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        address
+      )}`;
 
   const websiteUrl = listing.website
     ? listing.website.startsWith("http")
@@ -5372,7 +5374,7 @@ document.title = seoTitle;
     </a>
   )}
   {address && (
-    <a href={`https://maps.google.com/?q=${encodeURIComponent(address)}`} target="_blank" rel="noreferrer" className="listing-contact-btn">
+    <a href={directionsUrl} target="_blank" rel="noreferrer" className="listing-contact-btn">
       📍 Location
     </a>
   )}

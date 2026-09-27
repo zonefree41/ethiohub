@@ -16,6 +16,16 @@ function getGoogleMapsUrl(listing) {
   )}`;
 }
 
+function getAppleMapsUrl(listing) {
+  const address = [listing.address, listing.city, listing.state, listing.zip]
+    .filter(Boolean)
+    .join(", ");
+
+  const query = address || listing.title || "";
+
+  return `https://maps.apple.com/?q=${encodeURIComponent(query)}`;
+}
+
 const LOCATIONS = {
   "silver-spring-md": {
     city: "Silver Spring",
@@ -354,7 +364,7 @@ const seoDescription = location
                         )}
 
                         <a
-  href={getGoogleMapsUrl(listing)}
+  href={isIOS ? getAppleMapsUrl(listing) : getGoogleMapsUrl(listing)}
   target="_blank"
   rel="noreferrer"
 >
