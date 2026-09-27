@@ -38,6 +38,16 @@ export default function Listing() {
   const [reviewMessage, setReviewMessage] = React.useState("");
   const [reviewError, setReviewError] = React.useState("");
 
+  const [reportingReviewId, setReportingReviewId] =
+    React.useState(null);
+  const [reportReason, setReportReason] =
+    React.useState("abusive");
+  const [reportDetails, setReportDetails] =
+    React.useState("");
+  const [reportMessage, setReportMessage] =
+    React.useState("");
+  const [reportError, setReportError] =
+    React.useState("");
   const [isSaved, setIsSaved] = React.useState(false);
   const [nearbyListings, setNearbyListings] = React.useState([]);
   const [relatedListings, setRelatedListings] = React.useState([]);
@@ -468,7 +478,24 @@ const [quoteForm, setQuoteForm] = React.useState({
   async function loadReviews() {
     try {
       const data = await apiGet(`/api/reviews/${id}`);
-      setReviews(data.reviews || []);
+
+      const result = await Preferences.get({
+        key: "hubethioBlockedReviews",
+      });
+
+      const storedBlocked = result.value
+        ? JSON.parse(result.value)
+        : [];
+
+      const blocked = Array.isArray(storedBlocked)
+        ? storedBlocked
+        : [];
+
+      setReviews(
+        (data.reviews || []).filter(
+          (review) => !blocked.includes(review._id)
+        )
+      );
       setAverageRating(data.averageRating || 0);
       setTotalReviews(data.totalReviews || 0);
     } catch (err) {
@@ -1444,6 +1471,60 @@ async function submitEventServiceRequest(e) {
       await loadReviews();
     } catch (err) {
       setReviewError(err.message || "Failed to submit review");
+    }
+  }
+
+  async function submitReviewModeration(reviewId, action) {
+    setReportMessage("");
+    setReportError("");
+
+    try {
+      await apiPost(`/api/reviews/${reviewId}/report`, {
+        reason: reportReason,
+        details: reportDetails,
+        action,
+      });
+
+      if (action === "block") {
+        const result = await Preferences.get({
+          key: "hubethioBlockedReviews",
+        });
+
+        const storedBlocked = result.value
+          ? JSON.parse(result.value)
+          : [];
+
+        const currentBlocked = Array.isArray(storedBlocked)
+          ? storedBlocked
+          : [];
+
+        const updatedBlocked = [
+          ...new Set([...currentBlocked, reviewId]),
+        ];
+
+        await Preferences.set({
+          key: "hubethioBlockedReviews",
+          value: JSON.stringify(updatedBlocked),
+        });
+
+        setReviews((current) =>
+          current.filter((review) => review._id !== reviewId)
+        );
+      }
+
+      setReportMessage(
+        action === "block"
+          ? "Review hidden and report submitted."
+          : "Report submitted successfully."
+      );
+
+      setReportingReviewId(null);
+      setReportReason("abusive");
+      setReportDetails("");
+    } catch (err) {
+      setReportError(
+        err.message || "Failed to submit report."
+      );
     }
   }
 
@@ -5551,6 +5632,16 @@ document.title = seoTitle;
 
               {reviewMessage && <div className="listing-review-success">{reviewMessage}</div>}
               {reviewError && <div className="listing-review-error">{reviewError}</div>}
+              {reportMessage && (
+                <div className="listing-review-success">
+                  {reportMessage}
+                </div>
+              )}
+              {reportError && (
+                <div className="listing-review-error">
+                  {reportError}
+                </div>
+              )}
 
               <form onSubmit={submitReview} className="listing-review-form">
                 <input
@@ -5598,6 +5689,96 @@ document.title = seoTitle;
                         ? new Date(review.createdAt).toLocaleDateString()
                         : ""}
                     </small>
+
+                    <div className="listing-review-moderation-actions">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReportMessage("");
+                          setReportError("");
+                          setReportingReviewId(
+                            reportingReviewId === review._id
+                              ? null
+                              : review._id
+                          );
+                        }}
+                      >
+                        Report
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          submitReviewModeration(
+                            review._id,
+                            "block"
+                          )
+                        }
+                      >
+                        Block
+                      </button>
+                    </div>
+
+                    {reportingReviewId === review._id && (
+                      <div className="listing-review-report-form">
+                        <label>
+                          Reason
+                          <select
+                            value={reportReason}
+                            onChange={(e) =>
+                              setReportReason(e.target.value)
+                            }
+                          >
+                            <option value="abusive">
+                              Abusive content
+                            </option>
+                            <option value="harassment">
+                              Harassment
+                            </option>
+                            <option value="hate">
+                              Hate speech
+                            </option>
+                            <option value="spam">
+                              Spam
+                            </option>
+                            <option value="fraud">
+                              Fraud or misleading content
+                            </option>
+                            <option value="obscene">
+                              Obscene content
+                            </option>
+                            <option value="other">
+                              Other
+                            </option>
+                          </select>
+                        </label>
+
+                        <label>
+                          Additional details (optional)
+                          <textarea
+                            rows="3"
+                            maxLength="1000"
+                            value={reportDetails}
+                            onChange={(e) =>
+                              setReportDetails(e.target.value)
+                            }
+                            placeholder="Tell us what is wrong with this review."
+                          />
+                        </label>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            submitReviewModeration(
+                              review._id,
+                              "report"
+                            )
+                          }
+                        >
+                          Submit Report
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

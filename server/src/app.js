@@ -241,6 +241,11 @@ for (const path of publicSubmissionPaths) {
   );
 }
 
+app.post(
+  "/api/reviews/:reviewId/report",
+  publicSubmissionLimiter
+);
+
 /*
 |--------------------------------------------------------------------------
 | Health Check

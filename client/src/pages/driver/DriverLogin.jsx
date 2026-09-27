@@ -16,6 +16,9 @@ export default function DriverLogin() {
   const [message, setMessage] =
     React.useState("");
 
+  const [acceptedTerms, setAcceptedTerms] =
+    React.useState(false);
+
   React.useEffect(() => {
     document.title = "Driver Login | HubEthio";
   }, []);
@@ -138,7 +141,24 @@ export default function DriverLogin() {
             </a>
           </div>
 
-          <button type="submit">
+          <label className="driver-auth-terms">
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              required
+            />
+            <span>
+              I agree to the{" "}
+              <a href="/terms" target="_blank" rel="noreferrer">
+                Terms of Service
+              </a>{" "}
+              and acknowledge HubEthio’s zero-tolerance policy for
+              objectionable content and abusive users.
+            </span>
+          </label>
+
+          <button type="submit" disabled={!acceptedTerms}>
             Driver Login
           </button>
         </form>

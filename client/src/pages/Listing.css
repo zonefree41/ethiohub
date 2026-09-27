@@ -308,6 +308,63 @@
   color: #6b7280;
 }
 
+.listing-review-moderation-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.listing-review-moderation-actions button {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.listing-review-moderation-actions button:hover {
+  background: #f3f4f6;
+}
+
+.listing-review-report-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.listing-review-report-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.listing-review-report-form select,
+.listing-review-report-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+  background: #ffffff;
+}
+
+.listing-review-report-form button {
+  justify-self: start;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
 /* Final mobile polish */
 @media (max-width: 640px) {
   .listing-page {

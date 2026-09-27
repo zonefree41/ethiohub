@@ -159,3 +159,33 @@
     font-size: 28px;
   }
 }
+
+.driver-auth-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.driver-auth-terms input[type="checkbox"] {
+  width: 18px;
+  min-height: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  flex: 0 0 18px;
+  accent-color: #2563eb;
+  box-shadow: none;
+}
+
+.driver-auth-terms a {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.driver-auth-form button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

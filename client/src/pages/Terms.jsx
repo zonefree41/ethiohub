@@ -53,11 +53,23 @@ export default function Terms() {
             revenue, or search ranking.
           </p>
 
-          <h2>Reviews</h2>
+          <h2>User Content and Community Safety</h2>
           <p>
-            Reviews must reflect honest user experiences. HubEthio reserves the
-            right to remove abusive, fraudulent, spam, misleading, or unrelated
-            reviews.
+            HubEthio has zero tolerance for objectionable content or abusive
+            users. Reviews and other user-submitted content must be respectful,
+            lawful, and based on genuine experiences.
+          </p>
+          <p>
+            Users may not submit content that is abusive, threatening, harassing,
+            hateful, obscene, fraudulent, spam, misleading, illegal, or otherwise
+            objectionable. HubEthio may review, reject, remove, or restrict such
+            content and may suspend or terminate users who violate these rules.
+          </p>
+          <p>
+            Users may report inappropriate content or abusive behavior to
+            HubEthio. Reports will be reviewed within 24 hours, and HubEthio will take
+            appropriate action, including removing objectionable content or
+            restricting offending users when warranted.
           </p>
 
           <h2>No Professional Advice</h2>

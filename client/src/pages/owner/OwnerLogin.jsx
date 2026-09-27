@@ -10,6 +10,7 @@ export default function OwnerLogin() {
 
   const [error, setError] = React.useState("");
   const [message, setMessage] = React.useState("");
+  const [acceptedTerms, setAcceptedTerms] = React.useState(false);
 
   const [needsVerification, setNeedsVerification] =
   React.useState(false);
@@ -138,7 +139,26 @@ window.location.href = redirect;
             required
           />
 
-          <button type="submit">Login</button>
+          <label className="owner-auth-terms">
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              required
+            />
+            <span>
+              I agree to the{" "}
+              <a href="/terms" target="_blank" rel="noreferrer">
+                Terms of Service
+              </a>{" "}
+              and acknowledge HubEthio’s zero-tolerance policy for
+              objectionable content and abusive users.
+            </span>
+          </label>
+
+          <button type="submit" disabled={!acceptedTerms}>
+            Login
+          </button>
         </form>
 
         <div className="owner-auth-links">

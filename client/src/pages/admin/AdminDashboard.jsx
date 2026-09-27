@@ -20,6 +20,8 @@ export default function AdminDashboard() {
   React.useState("pending");
   const [pendingReviews, setPendingReviews] = React.useState([]);
 const [reviewsLoading, setReviewsLoading] = React.useState(false);
+const [pendingReviewReports, setPendingReviewReports] = React.useState([]);
+const [reviewReportsLoading, setReviewReportsLoading] = React.useState(false);
 const [editingListing, setEditingListing] = React.useState(null);
 
 const [adminUser, setAdminUser] = React.useState(null);
@@ -96,6 +98,28 @@ async function loadPendingReviews() {
   }
 }
 
+async function loadPendingReviewReports() {
+  try {
+    setReviewReportsLoading(true);
+
+    const data = await apiGet(
+      "/api/reviews/admin/reports/pending",
+      token
+    );
+
+    setPendingReviewReports(
+      Array.isArray(data) ? data : []
+    );
+  } catch (err) {
+    console.error(
+      "Failed to load pending review reports:",
+      err
+    );
+  } finally {
+    setReviewReportsLoading(false);
+  }
+}
+
 async function approveReview(id) {
   try {
     setMessage("");
@@ -127,6 +151,61 @@ async function deleteReview(id) {
   }
 }
 
+async function removeReportedReview(reportId) {
+  const confirmed = window.confirm(
+    "Remove this reported review and resolve the report?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setMessage("");
+    setError("");
+
+    await apiDelete(
+      `/api/reviews/admin/reports/${reportId}/review`,
+      token
+    );
+
+    setMessage("✅ Reported review removed and report resolved");
+
+    await Promise.all([
+      loadPendingReviewReports(),
+      loadPendingReviews(),
+    ]);
+  } catch (err) {
+    setError(
+      err.message || "Failed to remove reported review"
+    );
+  }
+}
+
+async function dismissReviewReport(reportId) {
+  const confirmed = window.confirm(
+    "Dismiss this report without removing the review?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setMessage("");
+    setError("");
+
+    await apiPatch(
+      `/api/reviews/admin/reports/${reportId}/status`,
+      { status: "dismissed" },
+      token
+    );
+
+    setMessage("✅ Review report dismissed");
+    await loadPendingReviewReports();
+  } catch (err) {
+    setError(
+      err.message || "Failed to dismiss review report"
+    );
+  }
+}
+
   React.useEffect(() => {
     if (!token) {
       window.location.href = "/admin/login";
@@ -148,6 +227,7 @@ async function deleteReview(id) {
       loadClaims();
       loadBusinessRequests();
       loadPendingReviews();
+      loadPendingReviewReports();
     }
 
     initializeDashboard();
@@ -379,6 +459,7 @@ async function deleteBusinessRequest(id, businessName) {
       loadClaims();
       loadBusinessRequests();
       loadPendingReviews();
+      loadPendingReviewReports();
     }}
   >
     Refresh
@@ -727,6 +808,109 @@ async function deleteBusinessRequest(id, businessName) {
       ))}
     </section>
   )}
+</section>
+
+<section
+  id="admin-reported-reviews"
+  className="admin-claims-section"
+>
+  <div className="admin-dashboard-section-header">
+    <div>
+      <h2>Reported Reviews</h2>
+      <p>
+        Review flagged content and take moderation action within 24 hours.
+      </p>
+    </div>
+  </div>
+
+  {reviewReportsLoading && (
+    <p>Loading reported reviews...</p>
+  )}
+
+  {!reviewReportsLoading &&
+    pendingReviewReports.length === 0 && (
+      <div className="admin-dashboard-state">
+        <h2>No reported reviews</h2>
+        <p>There are no pending content reports.</p>
+      </div>
+    )}
+
+  {!reviewReportsLoading &&
+    pendingReviewReports.length > 0 && (
+      <section className="admin-claims-grid">
+        {pendingReviewReports.map((report) => (
+          <article
+            key={report._id}
+            className="admin-claim-card"
+          >
+            <h3>
+              {report.listingId?.title ||
+                "Unknown Business"}
+            </h3>
+
+            <p>
+              <strong>Reason:</strong>{" "}
+              {report.reason}
+            </p>
+
+            <p>
+              <strong>Action reported:</strong>{" "}
+              {report.action}
+            </p>
+
+            <p>
+              <strong>Reviewer:</strong>{" "}
+              {report.reviewId?.name ||
+                "Unknown Reviewer"}
+            </p>
+
+            <p>
+              <strong>Review:</strong>{" "}
+              {report.reviewId?.comment ||
+                "Review no longer available"}
+            </p>
+
+            {report.details && (
+              <p>
+                <strong>Report details:</strong>{" "}
+                {report.details}
+              </p>
+            )}
+
+            <p>
+              <strong>Reported:</strong>{" "}
+              {report.createdAt
+                ? new Date(
+                    report.createdAt
+                  ).toLocaleString()
+                : "N/A"}
+            </p>
+
+            <div className="admin-listing-actions">
+              <button
+                type="button"
+                className="admin-btn-delete"
+                onClick={() =>
+                  removeReportedReview(report._id)
+                }
+              >
+                Remove Review & Resolve
+              </button>
+
+              <button
+                type="button"
+                className="admin-btn-neutral"
+                onClick={() =>
+                  dismissReviewReport(report._id)
+                }
+              >
+                Dismiss Report
+              </button>
+            </div>
+          </article>
+        ))}
+      </section>
+    )}
 </section>
 
         <section
