@@ -54,9 +54,22 @@ export default function DriverLogin() {
       window.location.href =
         "/driver/dashboard";
     } catch (err) {
-      setError(
-        err.message || "Driver login failed"
-      );
+      const message = String(
+        err?.message || ""
+      ).toLowerCase();
+
+      if (
+        message.includes("invalid email or password") ||
+        message.includes("incorrect email or password")
+      ) {
+        setError(
+          "Incorrect email or password. Please try again."
+        );
+      } else {
+        setError(
+          "We couldn’t sign you in right now. Please check your connection and try again."
+        );
+      }
     }
   }
 
@@ -91,7 +104,7 @@ export default function DriverLogin() {
 
         {error && (
           <div className="driver-auth-error">
-            Error: {error}
+            {error}
           </div>
         )}
 
