@@ -491,13 +491,22 @@ const [quoteForm, setQuoteForm] = React.useState({
         ? storedBlocked
         : [];
 
-      setReviews(
-        (data.reviews || []).filter(
-          (review) => !blocked.includes(review._id)
-        )
+      const visibleReviews = (data.reviews || []).filter(
+        (review) => !blocked.includes(review._id)
       );
-      setAverageRating(data.averageRating || 0);
-      setTotalReviews(data.totalReviews || 0);
+
+      const visibleTotal = visibleReviews.length;
+      const visibleAverage =
+        visibleTotal > 0
+          ? visibleReviews.reduce(
+              (sum, review) => sum + Number(review.rating || 0),
+              0
+            ) / visibleTotal
+          : 0;
+
+      setReviews(visibleReviews);
+      setAverageRating(visibleAverage);
+      setTotalReviews(visibleTotal);
     } catch (err) {
       console.error("Failed to load reviews:", err);
     }
@@ -1507,9 +1516,26 @@ async function submitEventServiceRequest(e) {
           value: JSON.stringify(updatedBlocked),
         });
 
-        setReviews((current) =>
-          current.filter((review) => review._id !== reviewId)
-        );
+        setReviews((current) => {
+          const visibleReviews = current.filter(
+            (review) => review._id !== reviewId
+          );
+
+          const visibleTotal = visibleReviews.length;
+          const visibleAverage =
+            visibleTotal > 0
+              ? visibleReviews.reduce(
+                  (sum, review) =>
+                    sum + Number(review.rating || 0),
+                  0
+                ) / visibleTotal
+              : 0;
+
+          setTotalReviews(visibleTotal);
+          setAverageRating(visibleAverage);
+
+          return visibleReviews;
+        });
       }
 
       setReportMessage(
