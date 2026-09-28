@@ -150,7 +150,7 @@ export default function DriverLogin() {
             />
             <span>
               I agree to the{" "}
-              <a href="/terms" target="_blank" rel="noreferrer">
+              <a href="/terms">
                 Terms of Service
               </a>{" "}
               and acknowledge HubEthio’s zero-tolerance policy for
