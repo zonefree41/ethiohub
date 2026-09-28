@@ -311,6 +311,36 @@ const [tailoringAppointmentForm, setTailoringAppointmentForm] =
     notes: "",
   });
 
+const [autoRepairRequestForm, setAutoRepairRequestForm] =
+  React.useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    vehicleYear: "",
+    vehicleMake: "",
+    vehicleModel: "",
+    serviceNeeded: "",
+    problemDescription: "",
+    preferredDate: "",
+    preferredTime: "",
+    notes: "",
+  });
+
+const [
+  submittingAutoRepairRequest,
+  setSubmittingAutoRepairRequest,
+] = React.useState(false);
+
+const [
+  autoRepairRequestMessage,
+  setAutoRepairRequestMessage,
+] = React.useState("");
+
+const [
+  autoRepairRequestError,
+  setAutoRepairRequestError,
+] = React.useState("");
+
 const [
   submittingTailoringAppointment,
   setSubmittingTailoringAppointment,
@@ -1354,6 +1384,67 @@ async function submitTailoringAppointment(e) {
     );
   } finally {
     setSubmittingTailoringAppointment(false);
+  }
+}
+
+async function submitAutoRepairRequest(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingAutoRepairRequest(true);
+    setAutoRepairRequestMessage("");
+    setAutoRepairRequestError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/auto-repair-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...autoRepairRequestForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit auto repair request."
+      );
+    }
+
+    setAutoRepairRequestMessage(
+      "Auto repair request submitted successfully!"
+    );
+
+    setAutoRepairRequestForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      vehicleYear: "",
+      vehicleMake: "",
+      vehicleModel: "",
+      serviceNeeded: "",
+      problemDescription: "",
+      preferredDate: "",
+      preferredTime: "",
+      notes: "",
+    });
+  } catch (err) {
+    setAutoRepairRequestError(
+      err.message ||
+        "Failed to submit auto repair request."
+    );
+  } finally {
+    setSubmittingAutoRepairRequest(false);
   }
 }
 
@@ -5361,6 +5452,227 @@ document.title = seoTitle;
       <p className="listing-beauty-request-disclaimer">
         This is an appointment request. The business
         must confirm your requested date and time.
+      </p>
+    </form>
+  </section>
+)}
+
+{listing.categoryId?.slug === "auto-repair" && (
+  <section className="listing-beauty-request">
+    <div className="listing-beauty-request-header">
+      <h3>🔧 Request Auto Repair Service</h3>
+      <p>
+        Send a service request directly to{" "}
+        {listing.title}.
+      </p>
+    </div>
+
+    {autoRepairRequestMessage && (
+      <div className="listing-beauty-request-success">
+        {autoRepairRequestMessage}
+      </div>
+    )}
+
+    {autoRepairRequestError && (
+      <div className="listing-beauty-request-error">
+        {autoRepairRequestError}
+      </div>
+    )}
+
+    <form
+      className="listing-beauty-request-form"
+      onSubmit={submitAutoRepairRequest}
+    >
+      <div className="listing-beauty-request-grid">
+        <label>
+          Your Name
+          <input
+            type="text"
+            required
+            value={autoRepairRequestForm.customerName}
+            onChange={(e) =>
+              setAutoRepairRequestForm((current) => ({
+                ...current,
+                customerName: e.target.value,
+              }))
+            }
+            placeholder="Full name"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            required
+            value={autoRepairRequestForm.customerEmail}
+            onChange={(e) =>
+              setAutoRepairRequestForm((current) => ({
+                ...current,
+                customerEmail: e.target.value,
+              }))
+            }
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label>
+          Phone
+          <input
+            type="tel"
+            required
+            value={autoRepairRequestForm.customerPhone}
+            onChange={(e) =>
+              setAutoRepairRequestForm((current) => ({
+                ...current,
+                customerPhone: e.target.value,
+              }))
+            }
+            placeholder="Phone number"
+          />
+        </label>
+
+        <label>
+          Vehicle Year
+          <input
+            type="number"
+            required
+            min="1900"
+            max="2100"
+            value={autoRepairRequestForm.vehicleYear}
+            onChange={(e) =>
+              setAutoRepairRequestForm((current) => ({
+                ...current,
+                vehicleYear: e.target.value,
+              }))
+            }
+            placeholder="2020"
+          />
+        </label>
+
+        <label>
+          Vehicle Make
+          <input
+            type="text"
+            required
+            value={autoRepairRequestForm.vehicleMake}
+            onChange={(e) =>
+              setAutoRepairRequestForm((current) => ({
+                ...current,
+                vehicleMake: e.target.value,
+              }))
+            }
+            placeholder="Toyota"
+          />
+        </label>
+
+        <label>
+          Vehicle Model
+          <input
+            type="text"
+            required
+            value={autoRepairRequestForm.vehicleModel}
+            onChange={(e) =>
+              setAutoRepairRequestForm((current) => ({
+                ...current,
+                vehicleModel: e.target.value,
+              }))
+            }
+            placeholder="Camry"
+          />
+        </label>
+
+        <label>
+          Service Needed
+          <input
+            type="text"
+            required
+            value={autoRepairRequestForm.serviceNeeded}
+            onChange={(e) =>
+              setAutoRepairRequestForm((current) => ({
+                ...current,
+                serviceNeeded: e.target.value,
+              }))
+            }
+            placeholder="Oil change, brakes, diagnostics..."
+          />
+        </label>
+
+        <label>
+          Preferred Date
+          <input
+            type="date"
+            required
+            value={autoRepairRequestForm.preferredDate}
+            onChange={(e) =>
+              setAutoRepairRequestForm((current) => ({
+                ...current,
+                preferredDate: e.target.value,
+              }))
+            }
+          />
+        </label>
+
+        <label>
+          Preferred Time
+          <input
+            type="time"
+            required
+            value={autoRepairRequestForm.preferredTime}
+            onChange={(e) =>
+              setAutoRepairRequestForm((current) => ({
+                ...current,
+                preferredTime: e.target.value,
+              }))
+            }
+          />
+        </label>
+      </div>
+
+      <label className="listing-beauty-request-notes">
+        Describe the Problem
+        <textarea
+          rows="4"
+          required
+          value={autoRepairRequestForm.problemDescription}
+          onChange={(e) =>
+            setAutoRepairRequestForm((current) => ({
+              ...current,
+              problemDescription: e.target.value,
+            }))
+          }
+          placeholder="Describe the problem, warning lights, noises, symptoms, or other details."
+        />
+      </label>
+
+      <label className="listing-beauty-request-notes">
+        Additional Notes
+        <textarea
+          rows="3"
+          value={autoRepairRequestForm.notes}
+          onChange={(e) =>
+            setAutoRepairRequestForm((current) => ({
+              ...current,
+              notes: e.target.value,
+            }))
+          }
+          placeholder="Anything else the repair shop should know?"
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-beauty-request-submit"
+        disabled={submittingAutoRepairRequest}
+      >
+        {submittingAutoRepairRequest
+          ? "Sending Request..."
+          : "Request Service"}
+      </button>
+
+      <p className="listing-beauty-request-disclaimer">
+        This is a service request. The repair shop must
+        confirm your requested date and time.
       </p>
     </form>
   </section>

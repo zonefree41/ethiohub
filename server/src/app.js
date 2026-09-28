@@ -37,6 +37,7 @@ import adminHousingRequestRoutes from "./routes/adminHousingRequests.js";
 import adminTravelRequestsRoutes from "./routes/adminTravelRequests.js";
 import beautyAppointmentRoutes from "./routes/beautyAppointmentRequests.js";
 import tailoringAppointmentRoutes from "./routes/tailoringAppointmentRequests.js";
+import autoRepairRequestRoutes from "./routes/autoRepairRequests.js";
 import housingInquiryRoutes from "./routes/housingInquiries.js";
 import immigrationConsultationRequestRoutes from "./routes/immigrationConsultationRequests.js";
 import adminOwnerInvitationRoutes from "./routes/adminOwnerInvitations.js";
@@ -297,6 +298,10 @@ app.use(
 app.use(
   "/api/tailoring-appointment-requests",
   tailoringAppointmentRoutes
+);
+app.use(
+  "/api/auto-repair-requests",
+  autoRepairRequestRoutes
 );
 app.use(
   "/api/admin/owner-invitations",

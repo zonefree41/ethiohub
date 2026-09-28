@@ -11,6 +11,9 @@ export default function AutoRepairWorkspace() {
   const [listings, setListings] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
+  const [serviceRequests, setServiceRequests] = React.useState([]);
+  const [loadingRequests, setLoadingRequests] = React.useState(true);
+  const [requestError, setRequestError] = React.useState("");
 
   React.useEffect(() => {
     document.title = "Auto Repair Workspace | HubEthio";
@@ -73,8 +76,106 @@ export default function AutoRepairWorkspace() {
       }
     }
 
-    loadAutoRepairListings();
+    Promise.all([
+      loadAutoRepairListings(),
+      loadServiceRequests(),
+    ]);
   }, [token]);
+
+  async function loadServiceRequests() {
+    try {
+      setLoadingRequests(true);
+      setRequestError("");
+
+      const data = await apiGet(
+        "/api/auto-repair-requests/owner",
+        token
+      );
+
+      setServiceRequests(
+        Array.isArray(data) ? data : []
+      );
+    } catch (err) {
+      console.error(
+        "Failed to load Auto Repair requests:",
+        err
+      );
+
+      setRequestError(
+        err.message ||
+          "Failed to load service requests."
+      );
+
+      setServiceRequests([]);
+    } finally {
+      setLoadingRequests(false);
+    }
+  }
+
+  async function updateServiceRequestStatus(
+    requestId,
+    status
+  ) {
+    try {
+      setRequestError("");
+
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL ||
+          "http://localhost:5001"
+        }/api/auto-repair-requests/${requestId}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Failed to update service request."
+        );
+      }
+
+      setServiceRequests((current) =>
+        current.map((request) =>
+          request._id === requestId
+            ? data.request
+            : request
+        )
+      );
+    } catch (err) {
+      console.error(
+        "Auto Repair request update failed:",
+        err
+      );
+
+      setRequestError(
+        err.message ||
+          "Failed to update service request."
+      );
+    }
+  }
+
+  const totalRequests = serviceRequests.length;
+
+  const newRequests = serviceRequests.filter(
+    (request) => request.status === "New"
+  ).length;
+
+  const confirmedRequests = serviceRequests.filter(
+    (request) => request.status === "Confirmed"
+  ).length;
+
+  const completedRequests = serviceRequests.filter(
+    (request) => request.status === "Completed"
+  ).length;
 
   const approvedCount = listings.filter(
     (listing) =>
@@ -146,6 +247,22 @@ export default function AutoRepairWorkspace() {
                   value:
                     approvedCount,
                 },
+                {
+                  label: "Service Requests",
+                  value: totalRequests,
+                },
+                {
+                  label: "New Requests",
+                  value: newRequests,
+                },
+                {
+                  label: "Confirmed",
+                  value: confirmedRequests,
+                },
+                {
+                  label: "Completed",
+                  value: completedRequests,
+                },
                 ...(!isIOSBuild
                   ? [
                       {
@@ -164,6 +281,227 @@ export default function AutoRepairWorkspace() {
                 },
               ]}
             />
+
+            <section className="auto-repair-requests-section">
+              <div className="auto-repair-requests-header">
+                <div>
+                  <h2>Recent Service Requests</h2>
+                  <p>
+                    Review customer auto repair requests
+                    and their current status.
+                  </p>
+                </div>
+              </div>
+
+              {requestError && (
+                <div className="auto-repair-workspace-error">
+                  Error: {requestError}
+                </div>
+              )}
+
+              {loadingRequests ? (
+                <div className="auto-repair-workspace-state">
+                  Loading service requests...
+                </div>
+              ) : serviceRequests.length === 0 ? (
+                <div className="auto-repair-workspace-state">
+                  <h3>No service requests yet</h3>
+                  <p>
+                    New customer Auto Repair service
+                    requests will appear here.
+                  </p>
+                </div>
+              ) : (
+                <div className="auto-repair-requests-list">
+                  {serviceRequests
+                    .slice(0, 5)
+                    .map((request) => (
+                      <article
+                        key={request._id}
+                        className="auto-repair-request-card"
+                      >
+                        <div className="auto-repair-request-card-top">
+                          <div>
+                            <h3>
+                              {request.customerName ||
+                                "Unknown Customer"}
+                            </h3>
+
+                            <p>
+                              {request.serviceNeeded ||
+                                "Service not provided"}
+                            </p>
+                          </div>
+
+                          <span
+                            className={`auto-repair-request-status status-${String(
+                              request.status || "New"
+                            )
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")}`}
+                          >
+                            {request.status || "New"}
+                          </span>
+                        </div>
+
+                        <div className="auto-repair-request-details">
+                          <div>
+                            <strong>Vehicle</strong>
+                            <span>
+                              {[
+                                request.vehicleYear,
+                                request.vehicleMake,
+                                request.vehicleModel,
+                              ]
+                                .filter(Boolean)
+                                .join(" ") ||
+                                "Not provided"}
+                            </span>
+                          </div>
+
+                          <div>
+                            <strong>Date</strong>
+                            <span>
+                              {request.preferredDate
+                                ? new Date(
+                                    request.preferredDate
+                                  ).toLocaleDateString(
+                                    undefined,
+                                    { timeZone: "UTC" }
+                                  )
+                                : "Not provided"}
+                            </span>
+                          </div>
+
+                          <div>
+                            <strong>Time</strong>
+                            <span>
+                              {request.preferredTime ||
+                                "Not provided"}
+                            </span>
+                          </div>
+
+                          <div>
+                            <strong>Phone</strong>
+                            <span>
+                              {request.customerPhone ||
+                                "Not provided"}
+                            </span>
+                          </div>
+
+                          <div>
+                            <strong>Email</strong>
+                            <span>
+                              {request.customerEmail ||
+                                "Not provided"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="auto-repair-request-notes">
+                          <strong>Problem Description</strong>
+                          <p>
+                            {request.problemDescription ||
+                              "Not provided"}
+                          </p>
+                        </div>
+
+                        {request.notes && (
+                          <div className="auto-repair-request-notes">
+                            <strong>Customer Notes</strong>
+                            <p>{request.notes}</p>
+                          </div>
+                        )}
+
+                        {request.ownerNotes && (
+                          <div className="auto-repair-request-notes">
+                            <strong>Owner Notes</strong>
+                            <p>{request.ownerNotes}</p>
+                          </div>
+                        )}
+
+                        <div className="auto-repair-request-actions">
+                          {request.status === "New" && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateServiceRequestStatus(
+                                    request._id,
+                                    "Confirmed"
+                                  )
+                                }
+                              >
+                                Confirm
+                              </button>
+
+                              <button
+                                type="button"
+                                className="danger"
+                                onClick={() =>
+                                  updateServiceRequestStatus(
+                                    request._id,
+                                    "Declined"
+                                  )
+                                }
+                              >
+                                Decline
+                              </button>
+                            </>
+                          )}
+
+                          {request.status === "Confirmed" && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateServiceRequestStatus(
+                                    request._id,
+                                    "Completed"
+                                  )
+                                }
+                              >
+                                Mark Completed
+                              </button>
+
+                              <button
+                                type="button"
+                                className="secondary"
+                                onClick={() =>
+                                  updateServiceRequestStatus(
+                                    request._id,
+                                    "Cancelled"
+                                  )
+                                }
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          )}
+
+                          {request.status === "Declined" && (
+                            <span className="auto-repair-request-final-state">
+                              Request declined
+                            </span>
+                          )}
+
+                          {request.status === "Completed" && (
+                            <span className="auto-repair-request-final-state">
+                              Service completed
+                            </span>
+                          )}
+
+                          {request.status === "Cancelled" && (
+                            <span className="auto-repair-request-final-state">
+                              Service request cancelled
+                            </span>
+                          )}
+                        </div>
+                      </article>
+                    ))}
+                </div>
+              )}
+            </section>
 
             <section className="auto-repair-workspace-grid">
               {listings.map(
