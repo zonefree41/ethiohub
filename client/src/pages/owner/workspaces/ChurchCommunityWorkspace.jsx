@@ -11,6 +11,10 @@ export default function ChurchCommunityWorkspace() {
   const [listings, setListings] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
+  const [inquiries, setInquiries] = React.useState([]);
+  const [loadingInquiries, setLoadingInquiries] =
+    React.useState(true);
+  const [inquiryError, setInquiryError] = React.useState("");
 
   React.useEffect(() => {
     document.title =
@@ -74,8 +78,104 @@ export default function ChurchCommunityWorkspace() {
       }
     }
 
-    loadChurchCommunityListings();
+    Promise.all([
+      loadChurchCommunityListings(),
+      loadInquiries(),
+    ]);
   }, [token]);
+
+  async function loadInquiries() {
+    try {
+      setLoadingInquiries(true);
+      setInquiryError("");
+
+      const data = await apiGet(
+        "/api/church-community-inquiries/owner",
+        token
+      );
+
+      setInquiries(
+        Array.isArray(data) ? data : []
+      );
+    } catch (err) {
+      console.error(
+        "Failed to load Church / Community inquiries:",
+        err
+      );
+
+      setInquiryError(
+        err.message ||
+          "Failed to load community inquiries."
+      );
+
+      setInquiries([]);
+    } finally {
+      setLoadingInquiries(false);
+    }
+  }
+
+  async function updateInquiryStatus(inquiryId, status) {
+    try {
+      setInquiryError("");
+
+      const baseUrl =
+        import.meta.env.VITE_API_URL ||
+        ("http:" + "//localhost:5001");
+
+      const response = await fetch(
+        `${baseUrl}/api/church-community-inquiries/${inquiryId}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Failed to update community inquiry."
+        );
+      }
+
+      setInquiries((current) =>
+        current.map((inquiry) =>
+          inquiry._id === inquiryId
+            ? data.inquiry
+            : inquiry
+        )
+      );
+    } catch (err) {
+      console.error(
+        "Church / Community inquiry update failed:",
+        err
+      );
+
+      setInquiryError(
+        err.message ||
+          "Failed to update community inquiry."
+      );
+    }
+  }
+
+  const totalInquiries = inquiries.length;
+
+  const newInquiries = inquiries.filter(
+    (inquiry) => inquiry.status === "New"
+  ).length;
+
+  const contactedInquiries = inquiries.filter(
+    (inquiry) => inquiry.status === "Contacted"
+  ).length;
+
+  const resolvedInquiries = inquiries.filter(
+    (inquiry) => inquiry.status === "Resolved"
+  ).length;
 
   const approvedCount = listings.filter(
     (listing) =>
@@ -147,6 +247,22 @@ export default function ChurchCommunityWorkspace() {
                   value:
                     approvedCount,
                 },
+                {
+                  label: "Inquiries",
+                  value: totalInquiries,
+                },
+                {
+                  label: "New Inquiries",
+                  value: newInquiries,
+                },
+                {
+                  label: "Contacted",
+                  value: contactedInquiries,
+                },
+                {
+                  label: "Resolved",
+                  value: resolvedInquiries,
+                },
                 ...(!isIOSBuild
                   ? [
                       {
@@ -165,6 +281,192 @@ export default function ChurchCommunityWorkspace() {
                 },
               ]}
             />
+
+            <section className="church-community-inquiries-section">
+              <div className="church-community-inquiries-header">
+                <div>
+                  <h2>Recent Community Inquiries</h2>
+                  <p>
+                    Review customer questions and requests
+                    sent to your organization.
+                  </p>
+                </div>
+              </div>
+
+              {inquiryError && (
+                <div className="church-community-workspace-error">
+                  Error: {inquiryError}
+                </div>
+              )}
+
+              {loadingInquiries ? (
+                <div className="church-community-workspace-state">
+                  Loading community inquiries...
+                </div>
+              ) : inquiries.length === 0 ? (
+                <div className="church-community-workspace-state">
+                  <h3>No community inquiries yet</h3>
+                  <p>
+                    New customer Church / Community
+                    inquiries will appear here.
+                  </p>
+                </div>
+              ) : (
+                <div className="church-community-inquiries-list">
+                  {inquiries.slice(0, 5).map((inquiry) => (
+                    <article
+                      key={inquiry._id}
+                      className="church-community-inquiry-card"
+                    >
+                      <div className="church-community-inquiry-card-top">
+                        <div>
+                          <h3>
+                            {inquiry.customerName ||
+                              "Unknown Customer"}
+                          </h3>
+
+                          <p>
+                            {inquiry.inquiryType ||
+                              "General Inquiry"}
+                          </p>
+                        </div>
+
+                        <span
+                          className={`church-community-inquiry-status status-${String(
+                            inquiry.status || "New"
+                          )
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}`}
+                        >
+                          {inquiry.status || "New"}
+                        </span>
+                      </div>
+
+                      <div className="church-community-inquiry-details">
+                        <div>
+                          <strong>Listing</strong>
+                          <span>
+                            {inquiry.listingId?.title ||
+                              "Church / Community"}
+                          </span>
+                        </div>
+
+                        <div>
+                          <strong>Phone</strong>
+                          <span>
+                            {inquiry.customerPhone ||
+                              "Not provided"}
+                          </span>
+                        </div>
+
+                        <div>
+                          <strong>Email</strong>
+                          <span>
+                            {inquiry.customerEmail ||
+                              "Not provided"}
+                          </span>
+                        </div>
+
+                        <div>
+                          <strong>Preferred Contact</strong>
+                          <span>
+                            {inquiry.preferredContactMethod ||
+                              "Either"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="church-community-inquiry-notes">
+                        <strong>Message</strong>
+                        <p>
+                          {inquiry.message ||
+                            "No message provided"}
+                        </p>
+                      </div>
+
+                      {inquiry.ownerNotes && (
+                        <div className="church-community-inquiry-notes">
+                          <strong>Owner Notes</strong>
+                          <p>{inquiry.ownerNotes}</p>
+                        </div>
+                      )}
+
+                      <div className="church-community-inquiry-actions">
+                        {inquiry.status === "New" && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                updateInquiryStatus(
+                                  inquiry._id,
+                                  "Contacted"
+                                )
+                              }
+                            >
+                              Mark Contacted
+                            </button>
+
+                            <button
+                              type="button"
+                              className="secondary"
+                              onClick={() =>
+                                updateInquiryStatus(
+                                  inquiry._id,
+                                  "Closed"
+                                )
+                              }
+                            >
+                              Close
+                            </button>
+                          </>
+                        )}
+
+                        {inquiry.status === "Contacted" && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                updateInquiryStatus(
+                                  inquiry._id,
+                                  "Resolved"
+                                )
+                              }
+                            >
+                              Mark Resolved
+                            </button>
+
+                            <button
+                              type="button"
+                              className="secondary"
+                              onClick={() =>
+                                updateInquiryStatus(
+                                  inquiry._id,
+                                  "Closed"
+                                )
+                              }
+                            >
+                              Close
+                            </button>
+                          </>
+                        )}
+
+                        {inquiry.status === "Resolved" && (
+                          <span className="church-community-inquiry-final-state">
+                            Inquiry resolved
+                          </span>
+                        )}
+
+                        {inquiry.status === "Closed" && (
+                          <span className="church-community-inquiry-final-state">
+                            Inquiry closed
+                          </span>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
 
             <section className="church-community-workspace-grid">
               {listings.map(

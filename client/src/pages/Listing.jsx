@@ -326,6 +326,31 @@ const [autoRepairRequestForm, setAutoRepairRequestForm] =
     notes: "",
   });
 
+const [churchCommunityInquiryForm, setChurchCommunityInquiryForm] =
+  React.useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    inquiryType: "",
+    preferredContactMethod: "Either",
+    message: "",
+  });
+
+const [
+  submittingChurchCommunityInquiry,
+  setSubmittingChurchCommunityInquiry,
+] = React.useState(false);
+
+const [
+  churchCommunityInquiryMessage,
+  setChurchCommunityInquiryMessage,
+] = React.useState("");
+
+const [
+  churchCommunityInquiryError,
+  setChurchCommunityInquiryError,
+] = React.useState("");
+
 const [
   submittingAutoRepairRequest,
   setSubmittingAutoRepairRequest,
@@ -1384,6 +1409,62 @@ async function submitTailoringAppointment(e) {
     );
   } finally {
     setSubmittingTailoringAppointment(false);
+  }
+}
+
+async function submitChurchCommunityInquiry(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingChurchCommunityInquiry(true);
+    setChurchCommunityInquiryMessage("");
+    setChurchCommunityInquiryError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/church-community-inquiries`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...churchCommunityInquiryForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit Church / Community inquiry."
+      );
+    }
+
+    setChurchCommunityInquiryMessage(
+      "Your inquiry was submitted successfully!"
+    );
+
+    setChurchCommunityInquiryForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      inquiryType: "",
+      preferredContactMethod: "Either",
+      message: "",
+    });
+  } catch (err) {
+    setChurchCommunityInquiryError(
+      err.message ||
+        "Failed to submit Church / Community inquiry."
+    );
+  } finally {
+    setSubmittingChurchCommunityInquiry(false);
   }
 }
 
@@ -5673,6 +5754,176 @@ document.title = seoTitle;
       <p className="listing-beauty-request-disclaimer">
         This is a service request. The repair shop must
         confirm your requested date and time.
+      </p>
+    </form>
+  </section>
+)}
+
+{listing.categoryId?.slug === "church-community" && (
+  <section className="listing-beauty-request">
+    <div className="listing-beauty-request-header">
+      <h3>Send a Community Inquiry</h3>
+      <p>
+        Contact {listing.title} directly with your question
+        or request.
+      </p>
+    </div>
+
+    {churchCommunityInquiryMessage && (
+      <div className="listing-beauty-request-success">
+        {churchCommunityInquiryMessage}
+      </div>
+    )}
+
+    {churchCommunityInquiryError && (
+      <div className="listing-beauty-request-error">
+        {churchCommunityInquiryError}
+      </div>
+    )}
+
+    <form
+      className="listing-beauty-request-form"
+      onSubmit={submitChurchCommunityInquiry}
+    >
+      <div className="listing-beauty-request-grid">
+        <label>
+          Your Name
+          <input
+            type="text"
+            required
+            value={churchCommunityInquiryForm.customerName}
+            onChange={(e) =>
+              setChurchCommunityInquiryForm((current) => ({
+                ...current,
+                customerName: e.target.value,
+              }))
+            }
+            placeholder="Full name"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            required
+            value={churchCommunityInquiryForm.customerEmail}
+            onChange={(e) =>
+              setChurchCommunityInquiryForm((current) => ({
+                ...current,
+                customerEmail: e.target.value,
+              }))
+            }
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label>
+          Phone
+          <input
+            type="tel"
+            required
+            value={churchCommunityInquiryForm.customerPhone}
+            onChange={(e) =>
+              setChurchCommunityInquiryForm((current) => ({
+                ...current,
+                customerPhone: e.target.value,
+              }))
+            }
+            placeholder="Phone number"
+          />
+        </label>
+
+        <label>
+          Inquiry Type
+          <select
+            required
+            value={churchCommunityInquiryForm.inquiryType}
+            onChange={(e) =>
+              setChurchCommunityInquiryForm((current) => ({
+                ...current,
+                inquiryType: e.target.value,
+              }))
+            }
+          >
+            <option value="">Select inquiry type</option>
+            <option value="General Information">
+              General Information
+            </option>
+            <option value="Religious Services">
+              Religious Services
+            </option>
+            <option value="Programs and Activities">
+              Programs &amp; Activities
+            </option>
+            <option value="Membership">
+              Membership
+            </option>
+            <option value="Volunteering">
+              Volunteering
+            </option>
+            <option value="Community Assistance">
+              Community Assistance
+            </option>
+            <option value="Donations">
+              Donations
+            </option>
+            <option value="Other">
+              Other
+            </option>
+          </select>
+        </label>
+
+        <label>
+          Preferred Contact Method
+          <select
+            value={
+              churchCommunityInquiryForm.preferredContactMethod
+            }
+            onChange={(e) =>
+              setChurchCommunityInquiryForm((current) => ({
+                ...current,
+                preferredContactMethod: e.target.value,
+              }))
+            }
+          >
+            <option value="Either">Phone or Email</option>
+            <option value="Phone">Phone</option>
+            <option value="Email">Email</option>
+          </select>
+        </label>
+      </div>
+
+      <label className="listing-beauty-request-notes">
+        Message
+        <textarea
+          rows="5"
+          required
+          maxLength="2000"
+          value={churchCommunityInquiryForm.message}
+          onChange={(e) =>
+            setChurchCommunityInquiryForm((current) => ({
+              ...current,
+              message: e.target.value,
+            }))
+          }
+          placeholder="Tell the organization how they can help you."
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-beauty-request-submit"
+        disabled={submittingChurchCommunityInquiry}
+      >
+        {submittingChurchCommunityInquiry
+          ? "Sending Inquiry..."
+          : "Send Inquiry"}
+      </button>
+
+      <p className="listing-beauty-request-disclaimer">
+        Your inquiry will be sent directly to this
+        organization for follow-up.
       </p>
     </form>
   </section>
