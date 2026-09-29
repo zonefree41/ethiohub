@@ -180,6 +180,7 @@ router.post(
         description = "",
         price,
         imageUrl = "",
+        imageUrls = [],
         isAvailable = true,
         dietaryTags = [],
         spicyLevel = "None",
@@ -253,6 +254,29 @@ router.post(
       const numericDisplayOrder =
         Number(displayOrder);
 
+      const cleanImageUrls = Array.isArray(imageUrls)
+        ? imageUrls
+            .map((url) => normalizeText(url))
+            .filter(Boolean)
+        : [];
+
+      const legacyImageUrl =
+        normalizeText(imageUrl);
+
+      if (
+        legacyImageUrl &&
+        !cleanImageUrls.includes(legacyImageUrl)
+      ) {
+        cleanImageUrls.unshift(legacyImageUrl);
+      }
+
+      if (cleanImageUrls.length > 5) {
+        return res.status(400).json({
+          message:
+            "A menu item can have up to 5 photos.",
+        });
+      }
+
       const item =
         await RestaurantMenuItem.create({
           listingId: restaurant._id,
@@ -262,7 +286,8 @@ router.post(
           description:
             normalizeText(description),
           price: numericPrice,
-          imageUrl: normalizeText(imageUrl),
+          imageUrl: cleanImageUrls[0] || "",
+          imageUrls: cleanImageUrls,
           isAvailable:
             isAvailable !== false,
           dietaryTags:
@@ -332,6 +357,7 @@ router.patch(
         description,
         price,
         imageUrl,
+        imageUrls,
         isAvailable,
         dietaryTags,
         spicyLevel,
@@ -388,9 +414,37 @@ router.patch(
         item.price = numericPrice;
       }
 
-      if (imageUrl !== undefined) {
+      if (imageUrls !== undefined) {
+        if (!Array.isArray(imageUrls)) {
+          return res.status(400).json({
+            message:
+              "Menu item photos must be an array.",
+          });
+        }
+
+        const cleanImageUrls = imageUrls
+          .map((url) => normalizeText(url))
+          .filter(Boolean);
+
+        if (cleanImageUrls.length > 5) {
+          return res.status(400).json({
+            message:
+              "A menu item can have up to 5 photos.",
+          });
+        }
+
+        item.imageUrls = cleanImageUrls;
         item.imageUrl =
+          cleanImageUrls[0] || "";
+      } else if (imageUrl !== undefined) {
+        const cleanImageUrl =
           normalizeText(imageUrl);
+
+        item.imageUrl = cleanImageUrl;
+        item.imageUrls =
+          cleanImageUrl
+            ? [cleanImageUrl]
+            : [];
       }
 
       if (isAvailable !== undefined) {

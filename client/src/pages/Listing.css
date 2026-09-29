@@ -2870,10 +2870,48 @@ gmp-place-autocomplete {
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
 }
 
-.listing-restaurant-menu-image {
+.listing-restaurant-menu-gallery {
   flex: 0 0 125px;
   width: 125px;
-  min-height: 135px;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+}
+
+.listing-restaurant-menu-image {
+  width: 125px;
+  height: 135px;
+  display: block;
+  object-fit: cover;
+}
+
+.listing-restaurant-menu-thumbnails {
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  overflow-x: auto;
+}
+
+.listing-restaurant-menu-thumbnails button {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.listing-restaurant-menu-thumbnails button.is-active {
+  border-color: #2563eb;
+}
+
+.listing-restaurant-menu-thumbnails img {
+  width: 100%;
+  height: 100%;
+  display: block;
   object-fit: cover;
 }
 
@@ -2946,10 +2984,14 @@ gmp-place-autocomplete {
     align-items: stretch;
   }
 
-  .listing-restaurant-menu-image {
-    flex-basis: 105px;
+  .listing-restaurant-menu-gallery {
+    flex: 0 0 105px;
     width: 105px;
-    min-height: 125px;
+  }
+
+  .listing-restaurant-menu-image {
+    width: 105px;
+    height: 125px;
   }
 
   .listing-restaurant-menu-content {
@@ -2962,10 +3004,18 @@ gmp-place-autocomplete {
     flex-direction: column;
   }
 
+  .listing-restaurant-menu-gallery {
+    flex: none;
+    width: 100%;
+  }
+
   .listing-restaurant-menu-image {
     width: 100%;
     height: 180px;
-    min-height: 0;
+  }
+
+  .listing-restaurant-menu-thumbnails {
+    justify-content: flex-start;
   }
 
   .listing-restaurant-menu-item-top {

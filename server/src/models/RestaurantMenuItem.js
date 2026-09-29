@@ -43,10 +43,26 @@ const restaurantMenuItemSchema = new mongoose.Schema(
       min: 0,
     },
 
+    // Legacy primary photo kept for backward compatibility.
     imageUrl: {
       type: String,
       default: "",
       trim: true,
+    },
+
+    // Restaurant menu items can have up to 5 photos.
+    imageUrls: {
+      type: [
+        {
+          type: String,
+          trim: true,
+        },
+      ],
+      default: [],
+      validate: {
+        validator: (urls) => urls.length <= 5,
+        message: "A menu item can have up to 5 photos.",
+      },
     },
 
     isAvailable: {

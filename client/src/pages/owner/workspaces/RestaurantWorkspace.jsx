@@ -32,6 +32,7 @@ export default function RestaurantWorkspace() {
     description: "",
     price: "",
     imageUrl: "",
+    imageUrls: [],
     isAvailable: true,
     dietaryTags: [],
     spicyLevel: "None",
@@ -164,9 +165,39 @@ export default function RestaurantWorkspace() {
   }
 
   async function handleMenuImageUpload(event) {
-    const file = event.target.files?.[0];
+    const files = Array.from(
+      event.target.files || []
+    );
 
-    if (!file || menuUploading) {
+    if (!files.length || menuUploading) {
+      return;
+    }
+
+    const existingPhotos =
+      menuForm.imageUrls.length > 0
+        ? menuForm.imageUrls
+        : menuForm.imageUrl
+          ? [menuForm.imageUrl]
+          : [];
+
+    const remainingSlots =
+      5 - existingPhotos.length;
+
+    if (remainingSlots <= 0) {
+      setMenuMessage(
+        "A menu item can have up to 5 photos."
+      );
+      event.target.value = "";
+      return;
+    }
+
+    if (files.length > remainingSlots) {
+      setMenuMessage(
+        `You can add only ${remainingSlots} more photo${
+          remainingSlots === 1 ? "" : "s"
+        }.`
+      );
+      event.target.value = "";
       return;
     }
 
@@ -175,25 +206,48 @@ export default function RestaurantWorkspace() {
       setMenuMessage("");
       setError("");
 
-      const data = await apiUpload(
-        "/api/upload",
-        file,
-        token
-      );
+      const uploadedUrls = [];
 
-      if (!data?.url) {
-        throw new Error(
-          "Menu image upload did not return an image URL."
+      for (const file of files) {
+        const data = await apiUpload(
+          "/api/upload",
+          file,
+          token
         );
+
+        if (!data?.url) {
+          throw new Error(
+            "Menu image upload did not return an image URL."
+          );
+        }
+
+        uploadedUrls.push(data.url);
       }
 
-      setMenuForm((current) => ({
-        ...current,
-        imageUrl: data.url,
-      }));
+      setMenuForm((current) => {
+        const currentPhotos =
+          current.imageUrls.length > 0
+            ? current.imageUrls
+            : current.imageUrl
+              ? [current.imageUrl]
+              : [];
+
+        const nextPhotos = [
+          ...currentPhotos,
+          ...uploadedUrls,
+        ].slice(0, 5);
+
+        return {
+          ...current,
+          imageUrl: nextPhotos[0] || "",
+          imageUrls: nextPhotos,
+        };
+      });
 
       setMenuMessage(
-        "Menu item photo uploaded successfully."
+        `${uploadedUrls.length} menu photo${
+          uploadedUrls.length === 1 ? "" : "s"
+        } uploaded successfully.`
       );
     } catch (err) {
       setMenuMessage(
@@ -259,6 +313,12 @@ export default function RestaurantWorkspace() {
         menuForm.description.trim(),
       price: numericPrice,
       imageUrl: menuForm.imageUrl.trim(),
+      imageUrls:
+        menuForm.imageUrls.length > 0
+          ? menuForm.imageUrls
+          : menuForm.imageUrl
+            ? [menuForm.imageUrl.trim()]
+            : [],
       isAvailable: menuForm.isAvailable,
       dietaryTags: menuForm.dietaryTags,
       spicyLevel: menuForm.spicyLevel,
@@ -309,6 +369,7 @@ export default function RestaurantWorkspace() {
         description: "",
         price: "",
         imageUrl: "",
+        imageUrls: [],
         isAvailable: true,
         dietaryTags: [],
         spicyLevel: "None",
@@ -350,7 +411,17 @@ export default function RestaurantWorkspace() {
         item.price !== null
           ? String(item.price)
           : "",
-      imageUrl: item.imageUrl || "",
+      imageUrl:
+        item.imageUrls?.[0] ||
+        item.imageUrl ||
+        "",
+      imageUrls:
+        Array.isArray(item.imageUrls) &&
+        item.imageUrls.length > 0
+          ? item.imageUrls.slice(0, 5)
+          : item.imageUrl
+            ? [item.imageUrl]
+            : [],
       isAvailable:
         item.isAvailable !== false,
       dietaryTags: Array.isArray(
@@ -382,6 +453,7 @@ export default function RestaurantWorkspace() {
       description: "",
       price: "",
       imageUrl: "",
+      imageUrls: [],
       isAvailable: true,
       dietaryTags: [],
       spicyLevel: "None",
@@ -703,37 +775,76 @@ export default function RestaurantWorkspace() {
                   </div>
 
                   <label className="restaurant-menu-full-field">
-                    <span>Menu Item Photo</span>
+                    <span>
+                      Menu Item Photos — up to 5
+                    </span>
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                      multiple
                       onChange={handleMenuImageUpload}
-                      disabled={menuUploading}
+                      disabled={
+                        menuUploading ||
+                        menuForm.imageUrls.length >= 5
+                      }
                     />
                   </label>
 
-                  {menuForm.imageUrl && (
+                  {menuForm.imageUrls.length > 0 && (
                     <div className="restaurant-menu-image-preview restaurant-menu-full-field">
-                      <img
-                        src={menuForm.imageUrl}
-                        alt={
-                          menuForm.name
-                            ? `${menuForm.name} preview`
-                            : "Menu item preview"
-                        }
-                      />
+                      <p>
+                        {menuForm.imageUrls.length} of 5 photos
+                        {" · "}
+                        First photo is the main photo.
+                      </p>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setMenuForm((current) => ({
-                            ...current,
-                            imageUrl: "",
-                          }))
-                        }
-                      >
-                        Remove Photo
-                      </button>
+                      <div className="restaurant-menu-image-preview-grid">
+                        {menuForm.imageUrls.map(
+                          (photoUrl, photoIndex) => (
+                            <div
+                              key={`${photoUrl}-${photoIndex}`}
+                              className="restaurant-menu-image-preview-item"
+                            >
+                              <img
+                                src={photoUrl}
+                                alt={
+                                  menuForm.name
+                                    ? `${menuForm.name} photo ${photoIndex + 1}`
+                                    : `Menu item photo ${photoIndex + 1}`
+                                }
+                              />
+
+                              {photoIndex === 0 && (
+                                <span className="restaurant-menu-primary-photo">
+                                  Main
+                                </span>
+                              )}
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setMenuForm((current) => {
+                                    const nextPhotos =
+                                      current.imageUrls.filter(
+                                        (_, index) =>
+                                          index !== photoIndex
+                                      );
+
+                                    return {
+                                      ...current,
+                                      imageUrl:
+                                        nextPhotos[0] || "",
+                                      imageUrls: nextPhotos,
+                                    };
+                                  })
+                                }
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -854,12 +965,27 @@ export default function RestaurantWorkspace() {
                               key={item._id}
                               className="restaurant-menu-item-card"
                             >
-                              {item.imageUrl && (
-                                <img
-                                  src={item.imageUrl}
-                                  alt={item.name}
-                                  className="restaurant-menu-item-image"
-                                />
+                              {(item.imageUrls?.[0] ||
+                                item.imageUrl) && (
+                                <div className="restaurant-menu-item-image-wrap">
+                                  <img
+                                    src={
+                                      item.imageUrls?.[0] ||
+                                      item.imageUrl
+                                    }
+                                    alt={item.name}
+                                    className="restaurant-menu-item-image"
+                                  />
+
+                                  {Array.isArray(
+                                    item.imageUrls
+                                  ) &&
+                                    item.imageUrls.length > 1 && (
+                                      <span className="restaurant-menu-photo-count">
+                                        {item.imageUrls.length} photos
+                                      </span>
+                                    )}
+                                </div>
                               )}
 
                               <div className="restaurant-menu-item-content">

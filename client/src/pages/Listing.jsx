@@ -335,6 +335,11 @@ const [restaurantMenuLoading, setRestaurantMenuLoading] =
 const [restaurantMenuError, setRestaurantMenuError] =
   React.useState("");
 
+const [
+  restaurantMenuPhotoIndexes,
+  setRestaurantMenuPhotoIndexes,
+] = React.useState({});
+
 const [churchCommunityInquiryForm, setChurchCommunityInquiryForm] =
   React.useState({
     customerName: "",
@@ -5672,17 +5677,79 @@ document.title = seoTitle;
                         b.displayOrder || 0
                       )
                   )
-                  .map((item) => (
+                  .map((item) => {
+                    const photos =
+                      Array.isArray(item.imageUrls) &&
+                      item.imageUrls.length > 0
+                        ? item.imageUrls.slice(0, 5)
+                        : item.imageUrl
+                          ? [item.imageUrl]
+                          : [];
+
+                    const selectedPhotoIndex =
+                      Math.min(
+                        restaurantMenuPhotoIndexes[
+                          item._id
+                        ] || 0,
+                        Math.max(photos.length - 1, 0)
+                      );
+
+                    return (
                     <article
                       key={item._id}
                       className="listing-restaurant-menu-item"
                     >
-                      {item.imageUrl && (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className="listing-restaurant-menu-image"
-                        />
+                      {photos.length > 0 && (
+                        <div className="listing-restaurant-menu-gallery">
+                          <img
+                            src={
+                              photos[selectedPhotoIndex]
+                            }
+                            alt={`${item.name} photo ${
+                              selectedPhotoIndex + 1
+                            }`}
+                            className="listing-restaurant-menu-image"
+                          />
+
+                          {photos.length > 1 && (
+                            <div className="listing-restaurant-menu-thumbnails">
+                              {photos.map(
+                                (
+                                  photoUrl,
+                                  photoIndex
+                                ) => (
+                                  <button
+                                    key={`${photoUrl}-${photoIndex}`}
+                                    type="button"
+                                    className={
+                                      photoIndex ===
+                                      selectedPhotoIndex
+                                        ? "is-active"
+                                        : ""
+                                    }
+                                    onClick={() =>
+                                      setRestaurantMenuPhotoIndexes(
+                                        (current) => ({
+                                          ...current,
+                                          [item._id]:
+                                            photoIndex,
+                                        })
+                                      )
+                                    }
+                                    aria-label={`Show ${item.name} photo ${
+                                      photoIndex + 1
+                                    }`}
+                                  >
+                                    <img
+                                      src={photoUrl}
+                                      alt=""
+                                    />
+                                  </button>
+                                )
+                              )}
+                            </div>
+                          )}
+                        </div>
                       )}
 
                       <div className="listing-restaurant-menu-content">
@@ -5736,7 +5803,8 @@ document.title = seoTitle;
                         )}
                       </div>
                     </article>
-                  ))}
+                    );
+                  })}
               </div>
             </div>
           ))}
