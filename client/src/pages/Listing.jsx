@@ -326,6 +326,15 @@ const [autoRepairRequestForm, setAutoRepairRequestForm] =
     notes: "",
   });
 
+const [restaurantMenuItems, setRestaurantMenuItems] =
+  React.useState([]);
+
+const [restaurantMenuLoading, setRestaurantMenuLoading] =
+  React.useState(false);
+
+const [restaurantMenuError, setRestaurantMenuError] =
+  React.useState("");
+
 const [churchCommunityInquiryForm, setChurchCommunityInquiryForm] =
   React.useState({
     customerName: "",
@@ -529,6 +538,55 @@ const [quoteForm, setQuoteForm] = React.useState({
       alive = false;
     };
   }, [id, isValidListingId]);
+
+  React.useEffect(() => {
+    if (
+      !listing?._id ||
+      listing.categoryId?.slug !== "restaurant"
+    ) {
+      setRestaurantMenuItems([]);
+      setRestaurantMenuError("");
+      setRestaurantMenuLoading(false);
+      return;
+    }
+
+    let alive = true;
+
+    async function loadRestaurantMenu() {
+      try {
+        setRestaurantMenuLoading(true);
+        setRestaurantMenuError("");
+
+        const data = await apiGet(
+          `/api/restaurant-menu-items/public/${listing._id}`
+        );
+
+        if (alive) {
+          setRestaurantMenuItems(
+            Array.isArray(data) ? data : []
+          );
+        }
+      } catch (err) {
+        if (alive) {
+          setRestaurantMenuItems([]);
+          setRestaurantMenuError(
+            err.message ||
+              "Failed to load restaurant menu."
+          );
+        }
+      } finally {
+        if (alive) {
+          setRestaurantMenuLoading(false);
+        }
+      }
+    }
+
+    loadRestaurantMenu();
+
+    return () => {
+      alive = false;
+    };
+  }, [listing?._id, listing?.categoryId?.slug]);
 
   async function loadReviews() {
     try {
@@ -2159,6 +2217,10 @@ listing.categoryId?.slug ===
 const isPrintingListing =
 listing.categoryId?.slug ===
 "printing-promotional-services";
+
+const isRestaurantListing =
+  listing.categoryId?.slug ===
+  "restaurant";
 
 const isCargoShippingListing =
   listing.categoryId?.slug ===
@@ -5535,6 +5597,151 @@ document.title = seoTitle;
         must confirm your requested date and time.
       </p>
     </form>
+  </section>
+)}
+
+{isRestaurantListing && (
+  <section className="listing-restaurant-menu">
+    <div className="listing-restaurant-menu-header">
+      <div>
+        <h3>Menu</h3>
+        <p>
+          Explore food and drinks available from{" "}
+          {listing.title}.
+        </p>
+      </div>
+    </div>
+
+    {restaurantMenuLoading && (
+      <div className="listing-restaurant-menu-state">
+        Loading menu...
+      </div>
+    )}
+
+    {!restaurantMenuLoading &&
+      restaurantMenuError && (
+        <div className="listing-restaurant-menu-error">
+          Menu is temporarily unavailable.
+        </div>
+      )}
+
+    {!restaurantMenuLoading &&
+      !restaurantMenuError &&
+      restaurantMenuItems.length === 0 && (
+        <div className="listing-restaurant-menu-empty">
+          This restaurant has not added menu items yet.
+        </div>
+      )}
+
+    {!restaurantMenuLoading &&
+      !restaurantMenuError &&
+      restaurantMenuItems.length > 0 && (
+        <div className="listing-restaurant-menu-groups">
+          {Object.entries(
+            restaurantMenuItems.reduce(
+              (groups, item) => {
+                const category =
+                  item.category?.trim() ||
+                  "Menu";
+
+                if (!groups[category]) {
+                  groups[category] = [];
+                }
+
+                groups[category].push(item);
+                return groups;
+              },
+              {}
+            )
+          ).map(([category, items]) => (
+            <div
+              key={category}
+              className="listing-restaurant-menu-group"
+            >
+              <h4>{category}</h4>
+
+              <div className="listing-restaurant-menu-items">
+                {items
+                  .slice()
+                  .sort(
+                    (a, b) =>
+                      Number(
+                        a.displayOrder || 0
+                      ) -
+                      Number(
+                        b.displayOrder || 0
+                      )
+                  )
+                  .map((item) => (
+                    <article
+                      key={item._id}
+                      className="listing-restaurant-menu-item"
+                    >
+                      {item.imageUrl && (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className="listing-restaurant-menu-image"
+                        />
+                      )}
+
+                      <div className="listing-restaurant-menu-content">
+                        <div className="listing-restaurant-menu-item-top">
+                          <h5>{item.name}</h5>
+
+                          <strong>
+                            $
+                            {Number(
+                              item.price || 0
+                            ).toFixed(2)}
+                          </strong>
+                        </div>
+
+                        {item.description && (
+                          <p>
+                            {item.description}
+                          </p>
+                        )}
+
+                        {(item.spicyLevel !==
+                          "None" ||
+                          (Array.isArray(
+                            item.dietaryTags
+                          ) &&
+                            item.dietaryTags
+                              .length > 0)) && (
+                          <div className="listing-restaurant-menu-tags">
+                            {item.spicyLevel &&
+                              item.spicyLevel !==
+                                "None" && (
+                                <span>
+                                  🌶️{" "}
+                                  {
+                                    item.spicyLevel
+                                  }
+                                </span>
+                              )}
+
+                            {Array.isArray(
+                              item.dietaryTags
+                            ) &&
+                              item.dietaryTags.map(
+                                (tag) => (
+                                  <span key={tag}>
+                                    {tag}
+                                  </span>
+                                )
+                              )}
+                          </div>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
   </section>
 )}
 
