@@ -340,6 +340,21 @@ const [translatorServiceRequestForm, setTranslatorServiceRequestForm] =
     notes: "",
   });
 
+const [tutorServiceRequestForm, setTutorServiceRequestForm] =
+  React.useState({
+    customerName: "",
+    studentName: "",
+    customerEmail: "",
+    customerPhone: "",
+    subject: "",
+    learningLevel: "",
+    sessionType: "",
+    requestDescription: "",
+    preferredDate: "",
+    preferredTime: "",
+    notes: "",
+  });
+
 const [restaurantMenuItems, setRestaurantMenuItems] =
   React.useState([]);
 
@@ -407,6 +422,21 @@ const [
 const [
   translatorServiceRequestError,
   setTranslatorServiceRequestError,
+] = React.useState("");
+
+const [
+  submittingTutorServiceRequest,
+  setSubmittingTutorServiceRequest,
+] = React.useState(false);
+
+const [
+  tutorServiceRequestMessage,
+  setTutorServiceRequestMessage,
+] = React.useState("");
+
+const [
+  tutorServiceRequestError,
+  setTutorServiceRequestError,
 ] = React.useState("");
 
 const [
@@ -1678,6 +1708,67 @@ async function submitTranslatorServiceRequest(e) {
     );
   } finally {
     setSubmittingTranslatorServiceRequest(false);
+  }
+}
+
+async function submitTutorServiceRequest(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingTutorServiceRequest(true);
+    setTutorServiceRequestMessage("");
+    setTutorServiceRequestError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/tutor-service-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...tutorServiceRequestForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit tutoring service request."
+      );
+    }
+
+    setTutorServiceRequestMessage(
+      "Tutoring service request submitted successfully!"
+    );
+
+    setTutorServiceRequestForm({
+      customerName: "",
+      studentName: "",
+      customerEmail: "",
+      customerPhone: "",
+      subject: "",
+      learningLevel: "",
+      sessionType: "",
+      requestDescription: "",
+      preferredDate: "",
+      preferredTime: "",
+      notes: "",
+    });
+  } catch (err) {
+    setTutorServiceRequestError(
+      err.message ||
+        "Failed to submit tutoring service request."
+    );
+  } finally {
+    setSubmittingTutorServiceRequest(false);
   }
 }
 
@@ -6334,6 +6425,241 @@ document.title = seoTitle;
       <p className="listing-beauty-request-disclaimer">
         This is a service request. The translator or interpreter
         must confirm your requested service, date, and time.
+      </p>
+    </form>
+  </section>
+)}
+
+{listing.categoryId?.slug === "tutor" && (
+  <section className="listing-beauty-request">
+    <div className="listing-beauty-request-header">
+      <h3>📚 Request Tutoring</h3>
+      <p>
+        Send a tutoring request directly to{" "}
+        {listing.title}.
+      </p>
+    </div>
+
+    {tutorServiceRequestMessage && (
+      <div className="listing-beauty-request-success">
+        {tutorServiceRequestMessage}
+      </div>
+    )}
+
+    {tutorServiceRequestError && (
+      <div className="listing-beauty-request-error">
+        {tutorServiceRequestError}
+      </div>
+    )}
+
+    <form
+      className="listing-beauty-request-form"
+      onSubmit={submitTutorServiceRequest}
+    >
+      <div className="listing-beauty-request-grid">
+        <label>
+          Your Name
+          <input
+            type="text"
+            required
+            value={tutorServiceRequestForm.customerName}
+            onChange={(e) =>
+              setTutorServiceRequestForm((current) => ({
+                ...current,
+                customerName: e.target.value,
+              }))
+            }
+            placeholder="Parent, guardian, or student name"
+          />
+        </label>
+
+        <label>
+          Student Name
+          <input
+            type="text"
+            required
+            value={tutorServiceRequestForm.studentName}
+            onChange={(e) =>
+              setTutorServiceRequestForm((current) => ({
+                ...current,
+                studentName: e.target.value,
+              }))
+            }
+            placeholder="Student name"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            required
+            value={tutorServiceRequestForm.customerEmail}
+            onChange={(e) =>
+              setTutorServiceRequestForm((current) => ({
+                ...current,
+                customerEmail: e.target.value,
+              }))
+            }
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label>
+          Phone
+          <input
+            type="tel"
+            required
+            value={tutorServiceRequestForm.customerPhone}
+            onChange={(e) =>
+              setTutorServiceRequestForm((current) => ({
+                ...current,
+                customerPhone: e.target.value,
+              }))
+            }
+            placeholder="Phone number"
+          />
+        </label>
+
+        <label>
+          Subject
+          <input
+            type="text"
+            required
+            value={tutorServiceRequestForm.subject}
+            onChange={(e) =>
+              setTutorServiceRequestForm((current) => ({
+                ...current,
+                subject: e.target.value,
+              }))
+            }
+            placeholder="Math, English, Science..."
+          />
+        </label>
+
+        <label>
+          Learning Level
+          <select
+            required
+            value={tutorServiceRequestForm.learningLevel}
+            onChange={(e) =>
+              setTutorServiceRequestForm((current) => ({
+                ...current,
+                learningLevel: e.target.value,
+              }))
+            }
+          >
+            <option value="">Select level</option>
+            <option value="Elementary School">
+              Elementary School
+            </option>
+            <option value="Middle School">
+              Middle School
+            </option>
+            <option value="High School">
+              High School
+            </option>
+            <option value="College">College</option>
+            <option value="Adult / Other">
+              Adult / Other
+            </option>
+          </select>
+        </label>
+
+        <label>
+          Session Type
+          <select
+            required
+            value={tutorServiceRequestForm.sessionType}
+            onChange={(e) =>
+              setTutorServiceRequestForm((current) => ({
+                ...current,
+                sessionType: e.target.value,
+              }))
+            }
+          >
+            <option value="">Select session type</option>
+            <option value="In-Person">In-Person</option>
+            <option value="Online">Online</option>
+            <option value="Either">Either</option>
+          </select>
+        </label>
+
+        <label>
+          Preferred Date
+          <input
+            type="date"
+            required
+            value={tutorServiceRequestForm.preferredDate}
+            onChange={(e) =>
+              setTutorServiceRequestForm((current) => ({
+                ...current,
+                preferredDate: e.target.value,
+              }))
+            }
+          />
+        </label>
+
+        <label>
+          Preferred Time
+          <input
+            type="time"
+            required
+            value={tutorServiceRequestForm.preferredTime}
+            onChange={(e) =>
+              setTutorServiceRequestForm((current) => ({
+                ...current,
+                preferredTime: e.target.value,
+              }))
+            }
+          />
+        </label>
+      </div>
+
+      <label className="listing-beauty-request-notes">
+        What Does the Student Need Help With?
+        <textarea
+          rows="4"
+          required
+          value={tutorServiceRequestForm.requestDescription}
+          onChange={(e) =>
+            setTutorServiceRequestForm((current) => ({
+              ...current,
+              requestDescription: e.target.value,
+            }))
+          }
+          placeholder="Describe the topics, assignments, test preparation, learning goals, or areas where help is needed."
+        />
+      </label>
+
+      <label className="listing-beauty-request-notes">
+        Additional Notes
+        <textarea
+          rows="3"
+          value={tutorServiceRequestForm.notes}
+          onChange={(e) =>
+            setTutorServiceRequestForm((current) => ({
+              ...current,
+              notes: e.target.value,
+            }))
+          }
+          placeholder="Anything else the tutor should know?"
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-beauty-request-submit"
+        disabled={submittingTutorServiceRequest}
+      >
+        {submittingTutorServiceRequest
+          ? "Sending Request..."
+          : "Request Tutoring"}
+      </button>
+
+      <p className="listing-beauty-request-disclaimer">
+        This is a tutoring request. The tutor must confirm
+        the requested session, date, and time.
       </p>
     </form>
   </section>
