@@ -201,7 +201,7 @@ export default function TutorWorkspace() {
       label="Tutoring Business Workspace"
       title="Tutor"
       icon="🗣️"
-      description="Manage translation and interpretation service listings, customer requests, business information, and activity."
+      description="Manage tutoring service listings, student requests, business information, and activity."
     >
       {error && (
         <div className="tutor-workspace-error">
@@ -287,7 +287,7 @@ export default function TutorWorkspace() {
                 <div>
                   <h2>Recent Service Requests</h2>
                   <p>
-                    Review customer translation and interpretation requests
+                    Review customer tutoring requests
                     and their current status.
                   </p>
                 </div>
@@ -585,7 +585,7 @@ export default function TutorWorkspace() {
 
                         <p>
                           {listing.description_en ||
-                            "No translation or interpretation service description added yet."}
+                            "No tutoring service description added yet."}
                         </p>
                       </div>
                     </div>
