@@ -326,6 +326,20 @@ const [autoRepairRequestForm, setAutoRepairRequestForm] =
     notes: "",
   });
 
+const [translatorServiceRequestForm, setTranslatorServiceRequestForm] =
+  React.useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    serviceType: "",
+    languageFrom: "",
+    languageTo: "",
+    requestDescription: "",
+    preferredDate: "",
+    preferredTime: "",
+    notes: "",
+  });
+
 const [restaurantMenuItems, setRestaurantMenuItems] =
   React.useState([]);
 
@@ -378,6 +392,21 @@ const [
 const [
   autoRepairRequestError,
   setAutoRepairRequestError,
+] = React.useState("");
+
+const [
+  submittingTranslatorServiceRequest,
+  setSubmittingTranslatorServiceRequest,
+] = React.useState(false);
+
+const [
+  translatorServiceRequestMessage,
+  setTranslatorServiceRequestMessage,
+] = React.useState("");
+
+const [
+  translatorServiceRequestError,
+  setTranslatorServiceRequestError,
 ] = React.useState("");
 
 const [
@@ -1589,6 +1618,66 @@ async function submitAutoRepairRequest(e) {
     );
   } finally {
     setSubmittingAutoRepairRequest(false);
+  }
+}
+
+async function submitTranslatorServiceRequest(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingTranslatorServiceRequest(true);
+    setTranslatorServiceRequestMessage("");
+    setTranslatorServiceRequestError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/translator-service-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...translatorServiceRequestForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit translator service request."
+      );
+    }
+
+    setTranslatorServiceRequestMessage(
+      "Translator service request submitted successfully!"
+    );
+
+    setTranslatorServiceRequestForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      serviceType: "",
+      languageFrom: "",
+      languageTo: "",
+      requestDescription: "",
+      preferredDate: "",
+      preferredTime: "",
+      notes: "",
+    });
+  } catch (err) {
+    setTranslatorServiceRequestError(
+      err.message ||
+        "Failed to submit translator service request."
+    );
+  } finally {
+    setSubmittingTranslatorServiceRequest(false);
   }
 }
 
@@ -6029,6 +6118,222 @@ document.title = seoTitle;
       <p className="listing-beauty-request-disclaimer">
         This is a service request. The repair shop must
         confirm your requested date and time.
+      </p>
+    </form>
+  </section>
+)}
+
+{listing.categoryId?.slug === "translator" && (
+  <section className="listing-beauty-request">
+    <div className="listing-beauty-request-header">
+      <h3>🗣️ Request Translation or Interpretation</h3>
+      <p>
+        Send a service request directly to{" "}
+        {listing.title}.
+      </p>
+    </div>
+
+    {translatorServiceRequestMessage && (
+      <div className="listing-beauty-request-success">
+        {translatorServiceRequestMessage}
+      </div>
+    )}
+
+    {translatorServiceRequestError && (
+      <div className="listing-beauty-request-error">
+        {translatorServiceRequestError}
+      </div>
+    )}
+
+    <form
+      className="listing-beauty-request-form"
+      onSubmit={submitTranslatorServiceRequest}
+    >
+      <div className="listing-beauty-request-grid">
+        <label>
+          Your Name
+          <input
+            type="text"
+            required
+            value={translatorServiceRequestForm.customerName}
+            onChange={(e) =>
+              setTranslatorServiceRequestForm((current) => ({
+                ...current,
+                customerName: e.target.value,
+              }))
+            }
+            placeholder="Full name"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            required
+            value={translatorServiceRequestForm.customerEmail}
+            onChange={(e) =>
+              setTranslatorServiceRequestForm((current) => ({
+                ...current,
+                customerEmail: e.target.value,
+              }))
+            }
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label>
+          Phone
+          <input
+            type="tel"
+            required
+            value={translatorServiceRequestForm.customerPhone}
+            onChange={(e) =>
+              setTranslatorServiceRequestForm((current) => ({
+                ...current,
+                customerPhone: e.target.value,
+              }))
+            }
+            placeholder="Phone number"
+          />
+        </label>
+
+        <label>
+          Service Type
+          <select
+            required
+            value={translatorServiceRequestForm.serviceType}
+            onChange={(e) =>
+              setTranslatorServiceRequestForm((current) => ({
+                ...current,
+                serviceType: e.target.value,
+              }))
+            }
+          >
+            <option value="">Select service</option>
+            <option value="Document Translation">
+              Document Translation
+            </option>
+            <option value="In-Person Interpretation">
+              In-Person Interpretation
+            </option>
+            <option value="Phone Interpretation">
+              Phone Interpretation
+            </option>
+            <option value="Video Interpretation">
+              Video Interpretation
+            </option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+
+        <label>
+          Translate From
+          <input
+            type="text"
+            required
+            value={translatorServiceRequestForm.languageFrom}
+            onChange={(e) =>
+              setTranslatorServiceRequestForm((current) => ({
+                ...current,
+                languageFrom: e.target.value,
+              }))
+            }
+            placeholder="Example: Amharic"
+          />
+        </label>
+
+        <label>
+          Translate To
+          <input
+            type="text"
+            required
+            value={translatorServiceRequestForm.languageTo}
+            onChange={(e) =>
+              setTranslatorServiceRequestForm((current) => ({
+                ...current,
+                languageTo: e.target.value,
+              }))
+            }
+            placeholder="Example: English"
+          />
+        </label>
+
+        <label>
+          Preferred Date
+          <input
+            type="date"
+            required
+            value={translatorServiceRequestForm.preferredDate}
+            onChange={(e) =>
+              setTranslatorServiceRequestForm((current) => ({
+                ...current,
+                preferredDate: e.target.value,
+              }))
+            }
+          />
+        </label>
+
+        <label>
+          Preferred Time
+          <input
+            type="time"
+            required
+            value={translatorServiceRequestForm.preferredTime}
+            onChange={(e) =>
+              setTranslatorServiceRequestForm((current) => ({
+                ...current,
+                preferredTime: e.target.value,
+              }))
+            }
+          />
+        </label>
+      </div>
+
+      <label className="listing-beauty-request-notes">
+        Describe Your Request
+        <textarea
+          rows="4"
+          required
+          value={translatorServiceRequestForm.requestDescription}
+          onChange={(e) =>
+            setTranslatorServiceRequestForm((current) => ({
+              ...current,
+              requestDescription: e.target.value,
+            }))
+          }
+          placeholder="Describe the document, appointment, interpretation need, or other service details."
+        />
+      </label>
+
+      <label className="listing-beauty-request-notes">
+        Additional Notes
+        <textarea
+          rows="3"
+          value={translatorServiceRequestForm.notes}
+          onChange={(e) =>
+            setTranslatorServiceRequestForm((current) => ({
+              ...current,
+              notes: e.target.value,
+            }))
+          }
+          placeholder="Anything else the translator should know?"
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-beauty-request-submit"
+        disabled={submittingTranslatorServiceRequest}
+      >
+        {submittingTranslatorServiceRequest
+          ? "Sending Request..."
+          : "Request Service"}
+      </button>
+
+      <p className="listing-beauty-request-disclaimer">
+        This is a service request. The translator or interpreter
+        must confirm your requested service, date, and time.
       </p>
     </form>
   </section>

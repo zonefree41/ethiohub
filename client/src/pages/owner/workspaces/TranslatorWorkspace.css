@@ -32,6 +32,192 @@
   line-height: 1.6;
 }
 
+.translator-requests-section {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+}
+
+.translator-requests-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.translator-requests-header h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 1.45rem;
+}
+
+.translator-requests-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.translator-requests-list {
+  display: grid;
+  gap: 16px;
+}
+
+.translator-request-card {
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #f8fafc;
+}
+
+.translator-request-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.translator-request-card-top h3 {
+  margin: 0;
+  color: #172033;
+  font-size: 1.15rem;
+}
+
+.translator-request-card-top p {
+  margin: 5px 0 0;
+  color: #475569;
+  font-weight: 700;
+}
+
+.translator-request-status {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.translator-request-status.status-new {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.translator-request-status.status-confirmed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.translator-request-status.status-declined {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.translator-request-status.status-completed {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.translator-request-status.status-cancelled {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.translator-request-details {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.translator-request-details > div {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.translator-request-details strong,
+.translator-request-details span {
+  display: block;
+}
+
+.translator-request-details strong {
+  margin-bottom: 5px;
+  color: #475569;
+  font-size: 0.8rem;
+}
+
+.translator-request-details span {
+  color: #475569;
+  overflow-wrap: anywhere;
+}
+
+.translator-request-notes {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.translator-request-notes strong {
+  color: #475569;
+}
+
+.translator-request-notes p {
+  margin: 6px 0 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.translator-request-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.translator-request-actions button {
+  min-height: 42px;
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 10px;
+  background: #334155;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.translator-request-actions button:hover {
+  opacity: 0.92;
+}
+
+.translator-request-actions button.danger {
+  background: #b91c1c;
+}
+
+.translator-request-actions button.secondary {
+  background: #64748b;
+}
+
+.translator-request-final-state {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+}
+
 .translator-workspace-grid {
   display: grid;
   gap: 22px;
@@ -169,5 +355,36 @@
   .translator-workspace-actions a {
     width: 100%;
     box-sizing: border-box;
+  }
+}
+@media (max-width: 850px) {
+  .translator-request-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .translator-requests-section {
+    padding: 18px;
+  }
+
+  .translator-request-card {
+    padding: 16px;
+  }
+
+  .translator-request-card-top {
+    flex-direction: column;
+  }
+
+  .translator-request-details {
+    grid-template-columns: 1fr;
+  }
+
+  .translator-request-actions {
+    flex-direction: column;
+  }
+
+  .translator-request-actions button {
+    width: 100%;
   }
 }
