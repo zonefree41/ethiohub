@@ -355,6 +355,19 @@ const [tutorServiceRequestForm, setTutorServiceRequestForm] =
     notes: "",
   });
 
+const [realEstateInquiryForm, setRealEstateInquiryForm] =
+  React.useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    inquiryType: "",
+    preferredLocation: "",
+    propertyDetails: "",
+    preferredDate: "",
+    preferredTime: "",
+    notes: "",
+  });
+
 const [restaurantMenuItems, setRestaurantMenuItems] =
   React.useState([]);
 
@@ -437,6 +450,21 @@ const [
 const [
   tutorServiceRequestError,
   setTutorServiceRequestError,
+] = React.useState("");
+
+const [
+  submittingRealEstateInquiry,
+  setSubmittingRealEstateInquiry,
+] = React.useState(false);
+
+const [
+  realEstateInquiryMessage,
+  setRealEstateInquiryMessage,
+] = React.useState("");
+
+const [
+  realEstateInquiryError,
+  setRealEstateInquiryError,
 ] = React.useState("");
 
 const [
@@ -1769,6 +1797,65 @@ async function submitTutorServiceRequest(e) {
     );
   } finally {
     setSubmittingTutorServiceRequest(false);
+  }
+}
+
+async function submitRealEstateInquiry(e) {
+  e.preventDefault();
+
+  try {
+    setSubmittingRealEstateInquiry(true);
+    setRealEstateInquiryMessage("");
+    setRealEstateInquiryError("");
+
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_API_URL ||
+        "http://localhost:5001"
+      }/api/real-estate-inquiries`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          listingId: listing._id,
+          ...realEstateInquiryForm,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+          "Failed to submit real estate inquiry."
+      );
+    }
+
+    setRealEstateInquiryMessage(
+      "Real estate inquiry submitted successfully!"
+    );
+
+    setRealEstateInquiryForm({
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      inquiryType: "",
+      preferredLocation: "",
+      propertyDetails: "",
+      preferredDate: "",
+      preferredTime: "",
+      notes: "",
+    });
+  } catch (err) {
+    setRealEstateInquiryError(
+      err.message ||
+        "Failed to submit real estate inquiry."
+    );
+  } finally {
+    setSubmittingRealEstateInquiry(false);
   }
 }
 
@@ -6660,6 +6747,200 @@ document.title = seoTitle;
       <p className="listing-beauty-request-disclaimer">
         This is a tutoring request. The tutor must confirm
         the requested session, date, and time.
+      </p>
+    </form>
+  </section>
+)}
+
+{listing.categoryId?.slug === "real-estate-agent" && (
+  <section className="listing-beauty-request">
+    <div className="listing-beauty-request-header">
+      <h3>🏡 Contact This Real Estate Agent</h3>
+      <p>
+        Send a real estate inquiry directly to{" "}
+        {listing.title}.
+      </p>
+    </div>
+
+    {realEstateInquiryMessage && (
+      <div className="listing-beauty-request-success">
+        {realEstateInquiryMessage}
+      </div>
+    )}
+
+    {realEstateInquiryError && (
+      <div className="listing-beauty-request-error">
+        {realEstateInquiryError}
+      </div>
+    )}
+
+    <form
+      className="listing-beauty-request-form"
+      onSubmit={submitRealEstateInquiry}
+    >
+      <div className="listing-beauty-request-grid">
+        <label>
+          Your Name
+          <input
+            type="text"
+            required
+            value={realEstateInquiryForm.customerName}
+            onChange={(e) =>
+              setRealEstateInquiryForm((current) => ({
+                ...current,
+                customerName: e.target.value,
+              }))
+            }
+            placeholder="Your name"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            type="email"
+            required
+            value={realEstateInquiryForm.customerEmail}
+            onChange={(e) =>
+              setRealEstateInquiryForm((current) => ({
+                ...current,
+                customerEmail: e.target.value,
+              }))
+            }
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label>
+          Phone
+          <input
+            type="tel"
+            required
+            value={realEstateInquiryForm.customerPhone}
+            onChange={(e) =>
+              setRealEstateInquiryForm((current) => ({
+                ...current,
+                customerPhone: e.target.value,
+              }))
+            }
+            placeholder="Phone number"
+          />
+        </label>
+
+        <label>
+          What Can We Help You With?
+          <select
+            required
+            value={realEstateInquiryForm.inquiryType}
+            onChange={(e) =>
+              setRealEstateInquiryForm((current) => ({
+                ...current,
+                inquiryType: e.target.value,
+              }))
+            }
+          >
+            <option value="">Select inquiry type</option>
+            <option value="Buy">Buy</option>
+            <option value="Sell">Sell</option>
+            <option value="Rent">Rent</option>
+            <option value="Property Viewing">
+              Property Viewing
+            </option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+
+        <label>
+          Preferred Location
+          <input
+            type="text"
+            required
+            value={realEstateInquiryForm.preferredLocation}
+            onChange={(e) =>
+              setRealEstateInquiryForm((current) => ({
+                ...current,
+                preferredLocation: e.target.value,
+              }))
+            }
+            placeholder="City, neighborhood, ZIP code..."
+          />
+        </label>
+
+        <label>
+          Preferred Date
+          <input
+            type="date"
+            required
+            value={realEstateInquiryForm.preferredDate}
+            onChange={(e) =>
+              setRealEstateInquiryForm((current) => ({
+                ...current,
+                preferredDate: e.target.value,
+              }))
+            }
+          />
+        </label>
+
+        <label>
+          Preferred Time
+          <input
+            type="time"
+            required
+            value={realEstateInquiryForm.preferredTime}
+            onChange={(e) =>
+              setRealEstateInquiryForm((current) => ({
+                ...current,
+                preferredTime: e.target.value,
+              }))
+            }
+          />
+        </label>
+      </div>
+
+      <label className="listing-beauty-request-notes">
+        Property Details / What Are You Looking For?
+        <textarea
+          rows="4"
+          required
+          value={realEstateInquiryForm.propertyDetails}
+          onChange={(e) =>
+            setRealEstateInquiryForm((current) => ({
+              ...current,
+              propertyDetails: e.target.value,
+            }))
+          }
+          placeholder="Describe the property, price range, bedrooms, selling needs, viewing request, or other real estate details."
+        />
+      </label>
+
+      <label className="listing-beauty-request-notes">
+        Additional Notes
+        <textarea
+          rows="3"
+          value={realEstateInquiryForm.notes}
+          onChange={(e) =>
+            setRealEstateInquiryForm((current) => ({
+              ...current,
+              notes: e.target.value,
+            }))
+          }
+          placeholder="Anything else the real estate agent should know?"
+        />
+      </label>
+
+      <button
+        type="submit"
+        className="listing-beauty-request-submit"
+        disabled={submittingRealEstateInquiry}
+      >
+        {submittingRealEstateInquiry
+          ? "Sending Inquiry..."
+          : "Send Real Estate Inquiry"}
+      </button>
+
+      <p className="listing-beauty-request-disclaimer">
+        This is an inquiry only. The real estate agent must
+        confirm any appointment, property viewing, date, or time.
       </p>
     </form>
   </section>

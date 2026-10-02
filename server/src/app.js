@@ -42,6 +42,7 @@ import churchCommunityInquiryRoutes from "./routes/churchCommunityInquiries.js";
 import restaurantMenuItemRoutes from "./routes/restaurantMenuItems.js";
 import translatorServiceRequestRoutes from "./routes/translatorServiceRequests.js";
 import tutorServiceRequestRoutes from "./routes/tutorServiceRequests.js";
+import realEstateInquiryRoutes from "./routes/realEstateInquiries.js";
 import housingInquiryRoutes from "./routes/housingInquiries.js";
 import immigrationConsultationRequestRoutes from "./routes/immigrationConsultationRequests.js";
 import adminOwnerInvitationRoutes from "./routes/adminOwnerInvitations.js";
@@ -323,6 +324,11 @@ app.use(
 app.use(
   "/api/tutor-service-requests",
   tutorServiceRequestRoutes
+);
+
+app.use(
+  "/api/real-estate-inquiries",
+  realEstateInquiryRoutes
 );
 app.use(
   "/api/admin/owner-invitations",
