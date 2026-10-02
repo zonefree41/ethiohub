@@ -285,7 +285,7 @@ export default function RealEstateWorkspace() {
             <section className="real-estate-requests-section">
               <div className="real-estate-requests-header">
                 <div>
-                  <h2>Recent Service Requests</h2>
+                  <h2>Recent Inquiries</h2>
                   <p>
                     Review customer real estate inquiries
                     and their current status.
@@ -489,7 +489,7 @@ export default function RealEstateWorkspace() {
 
                           {request.status === "Completed" && (
                             <span className="real-estate-request-final-state">
-                              Service completed
+                              Inquiry completed
                             </span>
                           )}
 
