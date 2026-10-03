@@ -248,7 +248,6 @@ if (path.startsWith("/owner/workspaces/events-entertainment")) {
 if (path.startsWith("/owner/workspaces/travel-airline-services")) {
   return <TravelAirlineServicesWorkspace />;
 }
-if (path.startsWith("/listing/")) return <Listing />;
 
   if (path.startsWith("/submit")) return <><Submit /><Footer /></>;
 if (path.startsWith("/listing/")) return <><Listing /><Footer /></>;
