@@ -7233,7 +7233,7 @@ document.title = seoTitle;
   {isRealEstateListing && (phone || whatsapp || listing.website) && (
     <div className="listing-contact-heading">
       <strong>Other ways to connect</strong>
-      <span>Choose the contact method that works best for you.</span>
+      <span>Prefer direct contact? You can also reach this agent using the options below.</span>
     </div>
   )}
 
