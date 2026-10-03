@@ -2506,6 +2506,24 @@ const isRealEstateListing =
   listing.categoryId?.slug ===
   "real-estate-agent";
 
+const hasStructuredInquiry =
+  isImmigrationListing ||
+  isInsuranceListing ||
+  isTaxListing ||
+  isNotaryListing ||
+  isPrintingListing ||
+  isCargoShippingListing ||
+  isEventsEntertainmentListing ||
+  isRealEstateListing ||
+  [
+    "beauty-wellness",
+    "tailoring-alterations",
+    "auto-repair",
+    "translator",
+    "tutor",
+    "church-community",
+  ].includes(listing.categoryId?.slug);
+
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
   : categoryName;
@@ -2641,7 +2659,7 @@ document.title = seoTitle;
                 <b>Location:</b> {address || "N/A"}
               </p>
 
-              {!isRealEstateListing && (
+              {!hasStructuredInquiry && (
                 <p>
                   <b>Phone:</b> {phone || "N/A"}
                 </p>
@@ -7210,7 +7228,7 @@ document.title = seoTitle;
       ✈️ Request Travel Quote
     </a>
   )}
-  {!isRealEstateListing && (
+  {!hasStructuredInquiry && (
     <>
       <button
         type="button"
@@ -7230,10 +7248,10 @@ document.title = seoTitle;
     </>
   )}
 
-  {isRealEstateListing && (phone || whatsapp || listing.website) && (
+  {hasStructuredInquiry && (phone || whatsapp || listing.website) && (
     <div className="listing-contact-heading">
       <strong>Other ways to connect</strong>
-      <span>Prefer direct contact? You can also reach this agent using the options below.</span>
+      <span>Prefer direct contact? You can also reach this provider using the options below.</span>
     </div>
   )}
 
@@ -7258,7 +7276,7 @@ document.title = seoTitle;
     </a>
   )}
 
-  {isRealEstateListing && (
+  {hasStructuredInquiry && (
     <div className="listing-utility-actions">
       <button
         type="button"
