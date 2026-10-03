@@ -1,6 +1,7 @@
 import express from "express";
 import Listing from "../models/Listing.js";
 import Category from "../models/Category.js";
+import VehicleListing from "../models/VehicleListing.js";
 
 const router = express.Router();
 
@@ -26,14 +27,16 @@ function urlEntry(loc, priority = "0.8", changefreq = "weekly") {
 
 router.get("/sitemap.xml", async (_req, res) => {
   try {
-    const [categories, listings] = await Promise.all([
+    const [categories, listings, vehicles] = await Promise.all([
       Category.find({}).select("slug updatedAt").lean(),
       Listing.find({ status: "approved" }).select("_id updatedAt").lean(),
+      VehicleListing.find({ status: "approved" }).select("_id updatedAt").lean(),
     ]);
 
     const staticUrls = [
       urlEntry(`${SITE_URL}/`, "1.0", "daily"),
       urlEntry(`${SITE_URL}/submit`, "0.7", "monthly"),
+      urlEntry(`${SITE_URL}/cars`, "0.9", "daily"),
       urlEntry(`${SITE_URL}/category/all`, "0.8", "weekly"),
       urlEntry(`${SITE_URL}/location/alexandria-va`, "0.9", "weekly"),
       urlEntry(`${SITE_URL}/location/silver-spring-md`, "0.9", "weekly"),
@@ -52,9 +55,13 @@ router.get("/sitemap.xml", async (_req, res) => {
       urlEntry(`${SITE_URL}/listing/${listing._id}`, "0.9", "weekly")
     );
 
+    const vehicleUrls = vehicles.map((vehicle) =>
+      urlEntry(`${SITE_URL}/cars/${vehicle._id}`, "0.8", "weekly")
+    );
+
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticUrls, ...categoryUrls, ...listingUrls].join("")}
+${[...staticUrls, ...categoryUrls, ...listingUrls, ...vehicleUrls].join("")}
 </urlset>`;
 
     res.header("Content-Type", "application/xml");
