@@ -28,7 +28,7 @@ router.get("/sitemap.xml", async (_req, res) => {
   try {
     const [categories, listings] = await Promise.all([
       Category.find({}).select("slug updatedAt").lean(),
-      Listing.find({}).select("_id updatedAt").lean(),
+      Listing.find({ status: "approved" }).select("_id updatedAt").lean(),
     ]);
 
     const staticUrls = [
