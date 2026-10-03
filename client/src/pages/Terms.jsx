@@ -1,13 +1,14 @@
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import "./Terms.css";
 
 export default function Terms() {
-  React.useEffect(() => {
-    document.title = "Terms of Service | HubEthio";
-  }, []);
-
   return (
     <main className="terms-page">
+      <Helmet>
+        <title>Terms of Service | HubEthio</title>
+        <meta name="description" content="Read the HubEthio Terms of Service covering use of the HubEthio website, mobile app, business listings, and community features." />
+      </Helmet>
       <div className="terms-container">
         <a href="/" className="terms-back">
           ‹ Back to HubEthio

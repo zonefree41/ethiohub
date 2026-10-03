@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import { apiPost } from "../api/http.js";
 import "./Pricing.css";
 
@@ -11,10 +12,6 @@ export default function Pricing() {
 
   const [loadingPlan, setLoadingPlan] = React.useState("");
   const [error, setError] = React.useState("");
-
-  React.useEffect(() => {
-    document.title = "Pricing | HubEthio";
-  }, []);
 
   async function startCheckout(plan) {
     setError("");
@@ -46,6 +43,10 @@ export default function Pricing() {
 
   return (
     <main className="pricing-page">
+      <Helmet>
+        <title>Pricing | HubEthio</title>
+        <meta name="description" content="Explore HubEthio business listing plans and discover options to promote your business and reach more customers." />
+      </Helmet>
       <div className="pricing-container">
         <a href="/" className="pricing-back">
           ‹ Back to HubEthio

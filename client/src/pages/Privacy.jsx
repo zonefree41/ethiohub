@@ -1,13 +1,14 @@
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import "./Privacy.css";
 
 export default function Privacy() {
-  React.useEffect(() => {
-    document.title = "Privacy Policy | HubEthio";
-  }, []);
-
   return (
     <main className="privacy-page">
+      <Helmet>
+        <title>Privacy Policy | HubEthio</title>
+        <meta name="description" content="Read the HubEthio Privacy Policy to learn how we collect, use, and protect information when you use our website and mobile app." />
+      </Helmet>
       <div className="privacy-container">
         <a href="/" className="privacy-back">
           ‹ Back to HubEthio

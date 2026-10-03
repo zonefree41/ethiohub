@@ -1,13 +1,14 @@
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import "./Contact.css";
 
 export default function Contact() {
-  React.useEffect(() => {
-    document.title = "Contact | HubEthio";
-  }, []);
-
   return (
     <main className="contact-page">
+      <Helmet>
+        <title>Contact | HubEthio</title>
+        <meta name="description" content="Contact HubEthio for help with business listings, account support, and finding services on the HubEthio platform." />
+      </Helmet>
       <div className="contact-container">
         <a href="/" className="contact-back">
           ‹ Back to HubEthio
