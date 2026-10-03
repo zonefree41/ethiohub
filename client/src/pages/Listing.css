@@ -3022,3 +3022,32 @@ gmp-place-autocomplete {
     gap: 10px;
   }
 }
+
+.listing-contact-heading {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.listing-contact-heading strong {
+  color: #111827;
+  font-size: 16px;
+}
+
+.listing-contact-heading span {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.listing-utility-actions {
+  flex-basis: 100%;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 14px;
+  margin-top: 6px;
+  border-top: 1px solid #e5e7eb;
+}

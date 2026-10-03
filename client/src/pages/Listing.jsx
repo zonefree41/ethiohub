@@ -2502,6 +2502,10 @@ const isEventsEntertainmentListing =
   listing.categoryId?.slug ===
   "events-entertainment";
 
+const isRealEstateListing =
+  listing.categoryId?.slug ===
+  "real-estate-agent";
+
   const categoryDisplay = listing.subcategory
   ? `${categoryName} • ${listing.subcategory}`
   : categoryName;
@@ -2637,9 +2641,11 @@ document.title = seoTitle;
                 <b>Location:</b> {address || "N/A"}
               </p>
 
-              <p>
-                <b>Phone:</b> {phone || "N/A"}
-              </p>
+              {!isRealEstateListing && (
+                <p>
+                  <b>Phone:</b> {phone || "N/A"}
+                </p>
+              )}
             </div>
 
             {isHousingListing && hasRentalDetails(listing) && (
@@ -7204,25 +7210,36 @@ document.title = seoTitle;
       ✈️ Request Travel Quote
     </a>
   )}
-  <button
-    type="button"
-    className="listing-save-btn"
-    onClick={toggleFavorite}
-  >
-    {isSaved ? "Saved ❤️" : "Save Business 🤍"}
-  </button>
+  {!isRealEstateListing && (
+    <>
+      <button
+        type="button"
+        className="listing-save-btn"
+        onClick={toggleFavorite}
+      >
+        {isSaved ? "Saved ❤️" : "Save Business 🤍"}
+      </button>
 
-  <button
-    type="button"
-    className="listing-share-btn"
-    onClick={shareBusiness}
-  >
-    Share 🔗
-  </button>
+      <button
+        type="button"
+        className="listing-share-btn"
+        onClick={shareBusiness}
+      >
+        Share 🔗
+      </button>
+    </>
+  )}
+
+  {isRealEstateListing && (phone || whatsapp || listing.website) && (
+    <div className="listing-contact-heading">
+      <strong>Other ways to connect</strong>
+      <span>Choose the contact method that works best for you.</span>
+    </div>
+  )}
 
   {phone && (
     <a href={`tel:${phone}`} className="listing-contact-btn">
-      📞 Call
+      {isRealEstateListing ? "📞 Call Agent" : "📞 Call"}
     </a>
   )}
   {whatsapp && (
@@ -7232,13 +7249,33 @@ document.title = seoTitle;
   )}
   {address && (
     <a href={directionsUrl} target="_blank" rel="noreferrer" className="listing-contact-btn">
-      📍 Location
+      📍 Get Directions
     </a>
   )}
   {listing.website && (
     <a href={listing.website} target="_blank" rel="noreferrer" className="listing-contact-btn">
       🌐 Website
     </a>
+  )}
+
+  {isRealEstateListing && (
+    <div className="listing-utility-actions">
+      <button
+        type="button"
+        className="listing-save-btn"
+        onClick={toggleFavorite}
+      >
+        {isSaved ? "Saved ❤️" : "Save Business 🤍"}
+      </button>
+
+      <button
+        type="button"
+        className="listing-share-btn"
+        onClick={shareBusiness}
+      >
+        Share 🔗
+      </button>
+    </div>
   )}
 </div>
 
