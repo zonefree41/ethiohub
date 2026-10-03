@@ -36,6 +36,10 @@ router.get("/sitemap.xml", async (_req, res) => {
     const staticUrls = [
       urlEntry(`${SITE_URL}/`, "1.0", "daily"),
       urlEntry(`${SITE_URL}/submit`, "0.7", "monthly"),
+      urlEntry(`${SITE_URL}/pricing`, "0.6", "monthly"),
+      urlEntry(`${SITE_URL}/contact`, "0.6", "monthly"),
+      urlEntry(`${SITE_URL}/privacy`, "0.4", "yearly"),
+      urlEntry(`${SITE_URL}/terms`, "0.4", "yearly"),
       urlEntry(`${SITE_URL}/cars`, "0.9", "daily"),
       urlEntry(`${SITE_URL}/category/all`, "0.8", "weekly"),
       urlEntry(`${SITE_URL}/location/alexandria-va`, "0.9", "weekly"),
