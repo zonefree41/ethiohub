@@ -431,16 +431,16 @@ const availableSubcategories = Array.isArray(selectedCategory?.subcategories)
 
         <section className="submit-hero">
   <p className="submit-label">Business Submission</p>
-  <h1>Submit Ethiopian Business / Service</h1>
+  <h1>Submit Your Business / Service</h1>
   <p>
-    Add your Ethiopian business or community service to HubEthio. After
+    Add your business or community service to HubEthio. After
     submission, your listing will be reviewed before it appears publicly.
   </p>
 </section>
 
 <div className="submit-benefits">
   <div className="submit-benefit">✅ Free Business Listing</div>
-  <div className="submit-benefit">📍 Reach Ethiopian Customers</div>
+  <div className="submit-benefit">📍 Reach Local Customers</div>
   <div className="submit-benefit">📱 Built for Web & Mobile</div>
   {!isIOSBuild && (
             <div className="submit-benefit">⭐ Featured Listings Available</div>
