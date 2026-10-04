@@ -434,9 +434,9 @@ function formatHousingPhone(value) {
 
       <section className="home-hero">
         <div className="home-hero-content">
-          <span className="home-badge">🇪🇹 Ethiopian Community Marketplace</span>
+          <span className="home-badge">Local Community Marketplace</span>
 
-          <h1>Find trusted Ethiopian services near you</h1>
+          <h1>Find trusted local services near you</h1>
 
           <p className="home-subtitle">
             Search businesses, professionals, restaurants, tax preparers,
@@ -561,14 +561,14 @@ function formatHousingPhone(value) {
           <section className="home-section">
             <h2>⭐ Featured Businesses</h2>
             <p className="home-section-text">
-              Promoted Ethiopian businesses and community services.
+              Promoted local businesses and community services.
             </p>
 
             {generalFeaturedListings.length === 0 ? (
               <div className="home-empty-state">
                 <h3>No featured businesses yet</h3>
                 <p>
-                  Featured Ethiopian businesses will appear here after they are
+                  Featured businesses will appear here after they are
                   approved and upgraded. Be one of the first businesses to join
                   HubEthio.
                 </p>

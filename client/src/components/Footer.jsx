@@ -16,7 +16,7 @@ export default function Footer() {
             <h2>HubEthio</h2>
 
             <p>
-              Connecting Ethiopian businesses, professionals, and communities
+              Connecting local businesses, professionals, and communities
               across the DMV area and beyond.
             </p>
 
@@ -39,7 +39,7 @@ export default function Footer() {
           {!isIOS && (
   <div className="footer-app">
     <h3>Download HubEthio</h3>
-    <p>Find Ethiopian businesses faster on Android.</p>
+    <p>Find local businesses and services faster on Android.</p>
 
     <a
       href={GOOGLE_PLAY_URL}
@@ -86,7 +86,7 @@ export default function Footer() {
         </div>
 
         <div className="site-footer-bottom">
-          <p>© 2026 HubEthio. All rights reserved. Built for the Ethiopian community.</p>
+          <p>© 2026 HubEthio. All rights reserved. Built for local communities.</p>
         </div>
       </div>
     </footer>
